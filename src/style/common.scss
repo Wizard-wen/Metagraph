@@ -1,0 +1,30 @@
+
+* {
+  box-sizing: border-box;
+}
+
+
+input {
+  outline: none;
+}
+
+
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
+}
+
+$fontColor: #24292e !global;
+
+
+$themeColor: #d14424;
+$textColor: #41464b;
+$borderColor: #eee;
+$lightGray: #f9f9f9;
+$backgroundColor: #f5f6f7;
+
+$boxShadow: 3px 3px 3px rgba(#000, 0.15);
+
+$borderRadius: 2px;

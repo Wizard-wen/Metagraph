@@ -1,0 +1,124 @@
+<template>
+  <ant-list item-layout="vertical" size="large" style="width: 100%" :data-source="repositoryList">
+    <template #renderItem="{ item }">
+      <ant-list-item key="item.title" style="text-align: left">
+        <template #actions>
+          <span>
+            <StarOutlined style="margin-right: 8px"/>
+            {{ item.star }}
+          </span>
+          <span>
+            <LikeOutlined style="margin-right: 8px"/>
+            34
+          </span>
+          <span>
+            <MessageOutlined style="margin-right: 8px"/>
+            15
+          </span>
+        </template>
+        <template #extra>
+          <img
+            width="272"
+            alt="logo"
+            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"/>
+        </template>
+        <ant-list-item-meta :description="item.content.description">
+          <template #title>
+            <a :href="item.href">{{ item.content.name }}</a>
+          </template>
+          <template #avatar>
+            <ant-avatar :src="item.author.avatar"/>
+          </template>
+        </ant-list-item-meta>
+        <div style="height: 39px;">
+          <ant-tag>qqq</ant-tag>
+          <ant-tag>qqq</ant-tag>
+          <ant-tag>qqq</ant-tag>
+          <ant-tag>qqq</ant-tag>
+        </div>
+      </ant-list-item>
+    </template>
+  </ant-list>
+  <ant-pagination v-model:current="current" :total="total" @change="onPaginationChange"/>
+</template>
+<script lang="ts">
+import { RepositoryApiService } from '@/api.service';
+import { useStore } from '@/store';
+import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import {
+  computed, defineComponent, onMounted, reactive, ref, watch
+} from 'vue';
+import { useRoute } from 'vue-router';
+
+const listData: Record<string, string>[] = [];
+
+for (let i = 0; i < 23; i++) {
+  listData.push({
+    href: 'https://www.antdv.com/',
+    title: `ant design vue part ${i}`,
+    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    description:
+      'Ant Design, a design language for background applications, is refined by Ant UED Team.',
+    content:
+      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+  });
+}
+
+export default defineComponent({
+  components: {
+    StarOutlined,
+    LikeOutlined,
+    MessageOutlined,
+  },
+  setup() {
+    const route = useRoute();
+    // const queryName = ref('');
+    // queryName.value = route.params.name as string;
+    const current = ref(0);
+    const total = ref(0);
+    let repositoryList = ref();
+    const actions: Record<string, string>[] = [
+      { type: 'StarOutlined', text: '156' },
+      { type: 'LikeOutlined', text: '156' },
+      { type: 'MessageOutlined', text: '2' },
+    ];
+    watch(() => route.params, async (value) => {
+      const result = await RepositoryApiService.getRepositoryList({
+        pageIndex: 0,
+        pageSize: 10,
+        name: value.name as string
+      });
+      repositoryList.value = result.data?.list ?? [];
+      total.value = result.data?.total || 0;
+      console.log(repositoryList);
+    });
+    onMounted(async () => {
+      const result = await RepositoryApiService.getRepositoryList({
+        pageIndex: 0,
+        pageSize: 10,
+        name: route.params.name as string
+      });
+      repositoryList.value = result.data?.list ?? [];
+      total.value = result.data?.total || 0;
+    });
+    const onPaginationChange = async (page: number, pageSize: number) => {
+      console.log(page);
+      const result = await RepositoryApiService.getRepositoryList({
+        pageIndex: page - 1,
+        pageSize: 10,
+        name: route.params.name as string
+      });
+      repositoryList.value = result.data?.list ?? [];
+      total.value = result.data?.total || 0;
+    };
+    return {
+      listData,
+      repositoryList,
+      actions,
+      current,
+      total,
+      onPaginationChange
+    };
+  },
+});
+</script>

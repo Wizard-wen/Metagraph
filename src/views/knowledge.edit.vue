@@ -1,0 +1,180 @@
+<template>
+  <ant-spin :spinning="spinning">
+    <div class="knowledge-edit">
+      <div class="knowledge-header">
+        <div class="title-box">
+          <div class="title">
+            <div class="name"></div>
+          </div>
+        </div>
+      </div>
+      <div class="knowledge-content">
+        <div class="knowledge-editor">
+          <section-article-tip-tap
+            :editable="true"
+            :entity-id="knowledgeEntityId"
+            :article-content="knowledgeDescription"
+            @saveSectionArticle="handleSaveSectionArticle"
+            @mention="handleMention"></section-article-tip-tap>
+        </div>
+        <div class="knowledge-form">
+          <KnowledgeEditForm :knowledge="knowledgeForm"></KnowledgeEditForm>
+          <h3>评论</h3>
+          <Comment :entityType="'Knowledge'" :entityId="knowledgeEntityId"></Comment>
+        </div>
+      </div>
+    </div>
+  </ant-spin>
+</template>
+
+<script lang="ts">
+import { ActionEnum, MutationEnum, useStore } from "@/store";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { Modal } from "ant-design-vue";
+import {
+  computed, createVNode,
+  defineComponent, onMounted, reactive, ref, toRefs
+} from 'vue';
+import { useRoute } from 'vue-router';
+import KnowledgeEditForm from '@/views/knowledge.edit/knowledge.edit.form.vue';
+import { EntityCompletelyListItemType, KnowledgeModelType } from "../../../edu-graph-constant";
+import { EdgeApiService, EntityApiService, KnowledgeApiService, SectionApiService } from '../api.service';
+import SectionArticleTipTap from './repository/editable.repository/section.article.tiptap.vue';
+import { tiptapInitData } from '@/store/constant/tiptap.init.data';
+import Comment from './repository/editable.repository/comment.vue';
+
+export default defineComponent({
+  name: 'knowledge.edit',
+  components: {
+    KnowledgeEditForm,
+    SectionArticleTipTap,
+    Comment
+  },
+  setup() {
+    const route = useRoute();
+    const store = useStore();
+    const spinning = computed(() => store.state.isSpinning);
+    const { knowledgeEntityId, repositoryEntityId } = toRefs(route.query);
+    const knowledge: { list?: EntityCompletelyListItemType } = reactive<{ list?: EntityCompletelyListItemType }>({ list: undefined });
+    const knowledgeForm = computed(() => ({
+      repositoryEntityId: repositoryEntityId.value,
+      name: (<KnowledgeModelType> knowledge.list?.content).name,
+      knowledgeBaseType: (<KnowledgeModelType> knowledge.list?.content).knowledgeBaseTypeId,
+      domainId: (<KnowledgeModelType> knowledge.list?.content).domainId,
+    }));
+    const knowledgeDescription = ref(tiptapInitData)
+    onMounted(async () => {
+      const result = await EntityApiService.getEntityById({ entityId: <string> knowledgeEntityId.value });
+      if (result.data) {
+        knowledge.list = result.data;
+        knowledgeDescription.value = JSON.parse((<KnowledgeModelType> result.data.content)?.description!)
+      }
+      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, { repositoryEntityId: repositoryEntityId.value })
+    });
+    const handleSaveSectionArticle = async (params: {
+      content: Record<string, any>,
+      contentHtml: any
+    }) => {
+      console.log(params);
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: true })
+      await KnowledgeApiService.saveDescription({
+        description: JSON.stringify(params.content),
+        descriptionHTML: params.contentHtml,
+        entityId: <string> knowledgeEntityId.value
+      })
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: false })
+    }
+    const handleMention = (params: {
+      name: string, id: string, success: Function, fail: Function
+    }) => {
+      Modal.confirm({
+        title: '是否设置知识点为前置知识点?',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '',
+        async onOk() {
+          params.success()
+          // await SectionApiService.bindSectionEntity({
+          //   entityId: params.id,
+          //   entityType: "Knowledge",
+          //   repositoryEntityId: repositoryEntityId.value as string,
+          //   sectionId: sectionEntityId.value!
+          // });
+          await EdgeApiService.createKnowledgeEdge({
+            originKnowledgeEntityId: params.id,
+            knowledgeEntityId: knowledgeEntityId.value as string,
+            targetKnowledgeEntityId: knowledgeEntityId.value as string,
+            edgeRepositoryEntityId: repositoryEntityId.value as string,
+            description: `From ${knowledgeForm.value.name}`
+          });
+        },
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onCancel() {
+          params.fail()
+        },
+      });
+    }
+    return {
+      knowledgeForm,
+      knowledge,
+      handleSaveSectionArticle,
+      knowledgeDescription,
+      handleMention,
+      knowledgeEntityId,
+      repositoryEntityId,
+      spinning
+    }
+  }
+});
+</script>
+
+<style scoped lang="scss">
+@import "../style/common.scss";
+
+.knowledge-edit {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  .knowledge-header {
+    padding: 12px 0;
+    background: #fafbfc;
+    height: 56px;
+    border-bottom: 1px solid $borderColor;
+
+    .title-box {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 32px;
+
+      .title {
+        margin-right: 16px;
+        display: flex;
+        height: 32px;
+        line-height: 32px;
+        font-size: 18px;
+
+        .name {
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  .knowledge-content {
+    height: calc(100vh - 56px);
+    width: 100%;
+    display: flex;
+
+    .knowledge-editor {
+      flex: 1;
+    }
+
+    .knowledge-form {
+      width: 400px;
+      padding: 30px;
+    }
+  }
+}
+
+</style>
