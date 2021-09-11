@@ -10,6 +10,8 @@
         </div>
         <div class="view-switch">
           <ant-switch
+            @click="handleSwitchClick"
+            @change="handleSwitchChange"
             checked-children="Graph"
             un-checked-children="Section"
             v-model:checked="viewStatus"/>
@@ -21,7 +23,7 @@
         <section-tree></section-tree>
         <div class="text-content">
           <section-article-tip-tap
-            v-if="repositoryEntityId"
+            v-if="repositoryEntityId && sectionEntityId"
             :entityId="repositoryEntityId"
             :editable="isEditable"
             :article-content="sectionArticle"
@@ -31,6 +33,7 @@
               <Comment :entityId="entityId" :entity-type="'Repository'"></Comment>
             </template>
           </section-article-tip-tap>
+          <ant-empty v-else :image="simpleImage"/>
         </div>
         <div class="style-panel">
           <toolbar></toolbar>
@@ -49,13 +52,13 @@
 <script lang="ts">
 import { RepositoryApiService, SectionApiService } from '@/api.service';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
-import { EntityCompletelyListItemType, RepositoryModelType, RepositoryResponseType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType, RepositoryModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, provide, reactive, ref, onUpdated, watch, computed, toRefs, createVNode
+  defineComponent, onMounted, reactive, ref, computed, createVNode
 } from 'vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { useRoute } from 'vue-router';
-import { Modal } from 'ant-design-vue';
+import { Modal, Empty } from 'ant-design-vue';
 import Toolbar from './repository/editable.repository/toobar.vue';
 import SectionTree from './repository/editable.repository/section.tree.vue';
 import SectionArticleTipTap from './repository/editable.repository/section.article.tiptap.vue';
@@ -75,7 +78,7 @@ export default defineComponent({
     const route = useRoute();
     const store = useStore();
     const spinning = computed(() => store.state.isSpinning);
-    const { repositoryEntityId } = toRefs(route.params);
+    const repositoryEntityId = ref('');
     const repository = reactive<{
       repositoryModel?: EntityCompletelyListItemType
     }>({
@@ -85,65 +88,81 @@ export default defineComponent({
     const viewStatus = ref(true);
     const sectionEntityId = computed(() => {
       if (store.state.repositoryEdit.selectedTreeNodeSectionKeys) {
-        return store.state.repositoryEdit.selectedTreeNodeSectionKeys[0]
+        return store.state.repositoryEdit.selectedTreeNodeSectionKeys[0];
       }
-      return undefined
-    })
+      return undefined;
+    });
     const getRepositoryByEntityId = async () => {
       const response = await RepositoryApiService.getRepositoryById({
-        repositoryEntityId: repositoryEntityId.value as string
+        repositoryEntityId: route.query.repositoryEntityId as string
       });
       if (response.data) {
         repository.repositoryModel = response.data;
         let status = false;
         if (localStorage.getItem('user')) {
-          const user = localStorage.getItem('user');
-          status = (<RepositoryModelType> response.data.content).userId === JSON.parse(user!).id;
+          const user = localStorage.getItem('user')!;
+          const content = response.data.content as RepositoryModelType;
+          status = content.userId === JSON.parse(user).id;
           isEditable.value = status;
         }
         store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
           status
-        })
+        });
       }
     };
     const sectionArticle = computed(() => store.state.repositoryEdit.sectionArticleContent);
     onMounted(async () => {
+      repositoryEntityId.value = route.query.repositoryEntityId as string;
       await getRepositoryByEntityId();
     });
     const saveSectionArticle = async (params: {
       content: Record<string, any>,
       contentHtml: string
     }) => {
-      console.log('params', params);
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true })
       await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
         content: params.content,
         contentHtml: params.contentHtml
       });
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false })
     };
     const handleMention = (params: {
-      name: string, id: string, success: Function, fail: Function
+      name: string, id: string, success: () => void, fail: () => void,
+      content: Record<string, any>,
+      contentHtml: string
     }) => {
       Modal.confirm({
         title: '是否绑定知识点至当前单元?',
         icon: createVNode(ExclamationCircleOutlined),
         content: '',
         async onOk() {
-          params.success()
-          await SectionApiService.bindSectionEntity({
-            entityId: params.id,
-            entityType: "Knowledge",
-            repositoryEntityId: repositoryEntityId.value as string,
-            sectionId: sectionEntityId.value!
+          params.success();
+          if (sectionEntityId.value) {
+            await SectionApiService.bindSectionEntity({
+              entityId: params.id,
+              entityType: 'Knowledge',
+              repositoryEntityId: route.query.repositoryEntityId as string,
+              sectionId: sectionEntityId.value
+            });
+            await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
+              content: params.content,
+              contentHtml: params.contentHtml
+            });
+          }
+        },
+        async onCancel() {
+          params.fail();
+          await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
+            content: params.content,
+            contentHtml: params.contentHtml
           });
         },
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        onCancel() {
-          params.fail()
-        },
       });
-    }
+    };
+    const handleSwitchClick = () => {
+      console.log('click');
+    };
+    const handleSwitchChange = () => {
+      console.log('change');
+    };
     return {
       repository,
       viewStatus,
@@ -153,7 +172,10 @@ export default defineComponent({
       sectionEntityId,
       repositoryEntityId,
       handleMention,
-      spinning
+      spinning,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      handleSwitchClick,
+      handleSwitchChange
     };
   }
 });

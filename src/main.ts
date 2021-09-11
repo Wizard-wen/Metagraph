@@ -1,5 +1,4 @@
-// import { SlatePlugin, vRef } from '@/components/slate-vue-next';
-import { ConfigService } from "@/config/config.service";
+import { ConfigService } from '@/config/config.service';
 import { createApp } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 import type { AxiosRequestConfig } from 'axios';
@@ -8,7 +7,7 @@ import {
   PageHeader, Switch, Spin, Card, Steps, Comment,
   DatePicker, Checkbox, Radio, Dropdown, Menu,
   Avatar, Pagination, Upload, List, Tag, Drawer,
-  Descriptions, Col, Row
+  Descriptions, Col, Row, Empty
 } from 'ant-design-vue';
 // import VueNativeSock from 'vue-native-websocket-vue3';
 import App from './App.vue';
@@ -17,13 +16,8 @@ import { store, key } from './store';
 import 'ant-design-vue/dist/antd.css';
 import '@ant-design/icons-vue';
 import './style/common.scss';
-// import './style/slate.style.css';
 // antd 组件
 import Contextmenu from './directives/contextmenu';
-
-// const apiLocalBaseURL = 'http://localhost:7250/';
-// const apiTestBaseURL = 'http://edu.songxiwen.com.cn/';
-// const apiBaseURL = apiLocalBaseURL;
 
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
   config.baseURL = ConfigService.apiBaseURL;
@@ -31,7 +25,6 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
     ...config.headers,
     'edu-user-token': JSON.parse(localStorage.getItem('user') || '{}')?.token || ''
   };
-  // config.baseURL = apiBaseURL;
   return config;
 });
 
@@ -51,6 +44,7 @@ app.component('AntCol', Col);
 app.component('AntRow', Row);
 app.component('AntTree', Tree);
 app.component('AntDrawer', Drawer);
+app.component('AntEmpty', Empty);
 app.component('AntDescriptions', Descriptions);
 app.component('AntDescriptionsItem', Descriptions.Item);
 app.component('AntDirectoryTree', Tree.DirectoryTree);

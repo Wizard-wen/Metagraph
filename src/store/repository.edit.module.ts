@@ -195,12 +195,11 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
       //     },
       //   ],
       // });
-      state.knowledgeList = nodes.map((item: any) => ({
-        id: item.entityId,
+      state.knowledgeList = nodes.map((item: EntityCompletelyListItemType) => ({
+        id: item.entity.id,
         height: 30,
         width: 150,
-        position: item.position || {},
-        label: (item.knowledge).name,
+        label: (<KnowledgeModelType | ExerciseModelType> item.content).name,
         data: item,
         attrs: {
           root: {
@@ -215,14 +214,14 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
         ports: {
           items: [
             {
-              id: `${item.entityId}-in`,
+              id: `${item.entity.id}-in`,
               group: 'in',
               attrs: {
                 text: { text: 'in' },
               },
             },
             {
-              id: `${item.entityId}-out`,
+              id: `${item.entity.id}-out`,
               group: 'out',
               attrs: {
                 text: { text: 'out' },
@@ -462,12 +461,12 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
         contentHtml
       });
       // 刷新页面
-      await dispatch(ActionEnum.GET_SECTION_CONTENT, { sectionId: state.selectedTreeNode[0] });
+      if (state.selectedTreeNode.length) {
+        await dispatch(ActionEnum.GET_SECTION_CONTENT, { sectionId: state.selectedTreeNode[0] });
+      }
     },
     // 创建section item
-    async [ActionEnum.CREAT_SECTION_ITEM](context, params
-      :
-      SectionCreateRequestType) {
+    async [ActionEnum.CREAT_SECTION_ITEM](context, params: SectionCreateRequestType) {
       await SectionApiService.createSectionTree(params);
     },
 
@@ -487,10 +486,10 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
       const edgeList = await EdgeApiService.getEdgeListByRepositoryId({
         edgeRepositoryEntityId: params.repositoryEntityId
       });
-      // const repositoryKnowledgeList = await KnowledgeApiService.getRepositoryKnowledgeList({
-      //   repositoryEntityId: params.repositoryEntityId
-      // });
-      const repositoryKnowledgeList = await RepositoryApiService.getRepositoryBindEntityListInGraph(params.repositoryEntityId);
+      const repositoryKnowledgeList = await KnowledgeApiService.getRepositoryKnowledgeList({
+        repositoryEntityId: params.repositoryEntityId
+      });
+      // const repositoryKnowledgeList = await RepositoryApiService.getRepositoryBindEntityListInGraph(params.repositoryEntityId);
       commit(MutationEnum.SET_EDGE_LIST_BY_REPOSITORY_ID, {
         edges: edgeList.data,
         nodes: repositoryKnowledgeList.data

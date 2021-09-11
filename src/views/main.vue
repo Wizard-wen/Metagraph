@@ -8,7 +8,7 @@
 <script lang="ts">
 import { useStore } from '@/store';
 import { defineComponent, computed } from 'vue';
-import EduHeader from '../components/header/edu.header.vue';
+import EduHeader from './main/edu.header.vue';
 
 export default defineComponent({
   name: 'Main',

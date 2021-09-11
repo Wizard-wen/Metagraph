@@ -8,18 +8,23 @@
       <div class="repo-list">
         <div class="repo-header">
           Repositories
-          <ant-button type="primary" :size="'small'" @click="goCreateRepositoryPage">
+          <ant-button :size="'small'" @click="goCreateRepositoryPage">
             <template #icon>
-              <BookOutlined/>
+              <PlusOutlined/>
             </template>
             New
           </ant-button>
         </div>
         <div class="search">
-          <input type="text" placeholder="Find a repository..." class="search-input">
+          <ant-input
+            v-model:value="searchText"
+            type="text"
+            @change="handleFilterRepositoryList($event)"
+            placeholder="Find a repository..."
+            class="search-input"></ant-input>
         </div>
         <div>
-          <ant-list size="small" :data-source="ownRepositoryList">
+          <ant-list size="small" :data-source="filteredRepositoryList">
             <template #renderItem="{ item }">
               <ant-list-item>
                 <div class="repo-item" @click="goRepoPage(item)">
@@ -40,49 +45,73 @@
 </template>
 
 <script lang="ts">
+import { RepositoryApiService } from '@/api.service';
 import { useStore } from '@/store';
+import { RepositoryModelType } from 'edu-graph-constant';
 import {
   computed, defineComponent, onMounted, reactive, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { BookOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType } from '../../../../edu-graph-constant';
 
 export default defineComponent({
   name: 'home-aside',
   components: {
-    BookOutlined
+    PlusOutlined
   },
   setup() {
     const router = useRouter();
     const store = useStore();
-    const ownRepositoryList = computed(() => store.state.repositoryList.ownRepositoryList);
-    const user = reactive<{content?: any}>({
+    const searchText = ref<string>('');
+    const ownRepositoryList = ref<EntityCompletelyListItemType[]>();
+    const filteredRepositoryList = ref<EntityCompletelyListItemType[]>();
+    const user = reactive<{ content?: any }>({
       content: undefined
     });
-
+    const getOwnRepositoryList = async () => {
+      const result = await RepositoryApiService.getOwnRepositoryList();
+      if (result.data) {
+        ownRepositoryList.value = result.data;
+      }
+    };
     const goCreateRepositoryPage = async () => {
       await router.push('/repository/create');
     };
-    onMounted(() => {
+    onMounted(async () => {
       if (localStorage.getItem('user') !== null) {
         console.log(localStorage.getItem('user'));
         user.content = JSON.parse(localStorage.getItem('user')!);
+        await getOwnRepositoryList();
+        filteredRepositoryList.value = ownRepositoryList.value
       }
     });
     const goRepoPage = async (item: EntityCompletelyListItemType) => {
       await router.push({
         name: 'EditableRepository',
-        params: {
+        query: {
           repositoryEntityId: item.entity.id
         }
       });
+    };
+    const handleFilterRepositoryList = () => {
+      console.log(searchText.value);
+      if (searchText.value === ''){
+        filteredRepositoryList.value = ownRepositoryList.value
+      }
+      filteredRepositoryList.value = ownRepositoryList
+        .value?.filter(
+          (item: EntityCompletelyListItemType) => (item.content as RepositoryModelType).name.includes(searchText.value)
+        );
     };
     return {
       goCreateRepositoryPage,
       ownRepositoryList,
       goRepoPage,
-      user
+      handleFilterRepositoryList,
+      filteredRepositoryList,
+      user,
+      searchText
     };
   }
 });
@@ -99,14 +128,14 @@ export default defineComponent({
 
   .user {
     display: flex;
-    //justify-content: space-between;
     padding: 16px 0;
     margin-bottom: 24px;
-    margin-top: 16px;
+    //margin-top: 16px;
     border-bottom: 1px solid #eaecef;
 
     .name {
       height: 32px;
+      font-size: 16px;
       line-height: 32px;
       text-align: left;
       margin-left: 15px;
@@ -121,7 +150,7 @@ export default defineComponent({
       .repo-header {
         height: 28px;
         display: flex;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         margin-bottom: 4px;
         align-items: center;

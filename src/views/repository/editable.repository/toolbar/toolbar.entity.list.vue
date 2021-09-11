@@ -1,8 +1,7 @@
 <template>
   <div class="entity-list">
     <toolbar-entity-list-item
-      :entityType="'Knowledge'"
-      class="toolbar-entity-list-item"></toolbar-entity-list-item>
+      :entityType="'Knowledge'"></toolbar-entity-list-item>
   </div>
 </template>
 

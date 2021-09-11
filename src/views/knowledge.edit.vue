@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { ActionEnum, MutationEnum, useStore } from "@/store";
+import { useStore } from "@/store";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { Modal } from "ant-design-vue";
 import {
@@ -37,8 +37,8 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 import KnowledgeEditForm from '@/views/knowledge.edit/knowledge.edit.form.vue';
-import { EntityCompletelyListItemType, KnowledgeModelType } from "../../../edu-graph-constant";
-import { EdgeApiService, EntityApiService, KnowledgeApiService, SectionApiService } from '../api.service';
+import { EntityCompletelyListItemType, KnowledgeModelType } from "edu-graph-constant";
+import { EdgeApiService, EntityApiService, KnowledgeApiService } from '../api.service';
 import SectionArticleTipTap from './repository/editable.repository/section.article.tiptap.vue';
 import { tiptapInitData } from '@/store/constant/tiptap.init.data';
 import Comment from './repository/editable.repository/comment.vue';
@@ -55,37 +55,43 @@ export default defineComponent({
     const store = useStore();
     const spinning = computed(() => store.state.isSpinning);
     const { knowledgeEntityId, repositoryEntityId } = toRefs(route.query);
-    const knowledge: { list?: EntityCompletelyListItemType } = reactive<{ list?: EntityCompletelyListItemType }>({ list: undefined });
+    const knowledge: {
+      list?: EntityCompletelyListItemType
+    } = reactive<{ list?: EntityCompletelyListItemType }>({ list: undefined });
     const knowledgeForm = computed(() => ({
       repositoryEntityId: repositoryEntityId.value,
       name: (<KnowledgeModelType> knowledge.list?.content).name,
       knowledgeBaseType: (<KnowledgeModelType> knowledge.list?.content).knowledgeBaseTypeId,
       domainId: (<KnowledgeModelType> knowledge.list?.content).domainId,
     }));
-    const knowledgeDescription = ref(tiptapInitData)
+    const knowledgeDescription = ref(tiptapInitData);
     onMounted(async () => {
-      const result = await EntityApiService.getEntityById({ entityId: <string> knowledgeEntityId.value });
+      const result = await EntityApiService.getEntityById({
+        entityId: <string> knowledgeEntityId.value
+      });
       if (result.data) {
         knowledge.list = result.data;
-        knowledgeDescription.value = JSON.parse((<KnowledgeModelType> result.data.content)?.description!)
-      }
-      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, { repositoryEntityId: repositoryEntityId.value })
-    });
+        let description = (<KnowledgeModelType> result.data.content)?.description;
+        if (!description) {
+          knowledgeDescription.value = tiptapInitData;
+        } else {
+          knowledgeDescription.value = JSON.parse(description);
+        }
+      }});
     const handleSaveSectionArticle = async (params: {
       content: Record<string, any>,
       contentHtml: any
     }) => {
-      console.log(params);
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true })
       await KnowledgeApiService.saveDescription({
         description: JSON.stringify(params.content),
         descriptionHTML: params.contentHtml,
         entityId: <string> knowledgeEntityId.value
       })
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false })
     }
     const handleMention = (params: {
-      name: string, id: string, success: Function, fail: Function
+      name: string, id: string, success: Function, fail: Function,
+      content: Record<string, any>,
+      contentHtml: any
     }) => {
       Modal.confirm({
         title: '是否设置知识点为前置知识点?',
@@ -93,23 +99,24 @@ export default defineComponent({
         content: '',
         async onOk() {
           params.success()
-          // await SectionApiService.bindSectionEntity({
-          //   entityId: params.id,
-          //   entityType: "Knowledge",
-          //   repositoryEntityId: repositoryEntityId.value as string,
-          //   sectionId: sectionEntityId.value!
-          // });
           await EdgeApiService.createKnowledgeEdge({
             originKnowledgeEntityId: params.id,
             knowledgeEntityId: knowledgeEntityId.value as string,
             targetKnowledgeEntityId: knowledgeEntityId.value as string,
             edgeRepositoryEntityId: repositoryEntityId.value as string,
-            description: `From ${knowledgeForm.value.name}`
+            description: `From ${ knowledgeForm.value.name }`
           });
+          await handleSaveSectionArticle({
+            content: params.content,
+            contentHtml: params.contentHtml
+          })
         },
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        onCancel() {
-          params.fail()
+        async onCancel() {
+          params.fail();
+          await handleSaveSectionArticle({
+            content: params.content,
+            contentHtml: params.contentHtml
+          })
         },
       });
     }

@@ -2,7 +2,8 @@
   <div class="edu-header">
     <div class="left">
       <div class="logo">
-        <ant-avatar style="margin-right: 10px; cursor: pointer" @click="goHomePage"></ant-avatar>
+        <ant-avatar :src="'../..//assets/Hogwartscrest.png'"
+                    style="margin-right: 10px; cursor: pointer" @click="goHomePage"></ant-avatar>
       </div>
       <div class="search">
         <ant-input-search @search="handleSearch"></ant-input-search>

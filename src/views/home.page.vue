@@ -29,8 +29,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     onMounted(() => {
-      store.dispatch(ActionEnum.GET_REPOSITORY_LIST);
-      store.dispatch(ActionEnum.GET_OWN_REPOSITORY_LIST);
+      if (localStorage.getItem('user') !== null) {
+        // store.dispatch(ActionEnum.GET_REPOSITORY_LIST);
+        // store.dispatch(ActionEnum.GET_OWN_REPOSITORY_LIST);
+      }
     });
   }
 });

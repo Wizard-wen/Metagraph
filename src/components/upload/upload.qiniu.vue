@@ -8,11 +8,12 @@
     :before-upload="beforeUpload"
     :custom-request="handleCustomRequest"
   >
-    <img v-if="imageUrl" :src="rootUrl + imageUrl" alt="avatar"/>
+    <div class="div1" v-if="imageUrl">
+      <img :src="imageUrl" alt="avatar"/>
+    </div>
     <div v-else>
       <LoadingOutlined v-if="loading"/>
       <PlusOutlined v-else/>
-      <div class="ant-upload-text">Upload</div>
     </div>
   </ant-upload>
 </template>
@@ -55,11 +56,6 @@ export default defineComponent({
     modelValue: {
       type: String,
       required: true
-    },
-    rootUrl: {
-      type: String,
-      default: 'http://file.songxiwen.com.cn/'
-      // required: true
     }
   },
   components: {
@@ -67,33 +63,15 @@ export default defineComponent({
     PlusOutlined,
   },
   setup(props, context) {
-    const { modelValue, rootUrl } = toRefs(props);
-    const fileList = ref<{ url: string }[]>([{ url: rootUrl.value + modelValue.value }]);
+    const { modelValue } = toRefs(props);
+    const fileList = ref<{ url: string }[]>([{ url: modelValue.value }]);
     const loading = ref<boolean>(false);
     const imageUrl = ref<string>(modelValue.value);
     watch(modelValue, (value) => {
       console.log(value);
-      fileList.value = [{ url: rootUrl.value + value }];
+      fileList.value = [{ url: value }];
       imageUrl.value = value;
     });
-    // const handleChange = (info: FileInfo) => {
-    //   if (info.file.status === 'uploading') {
-    //     loading.value = true;
-    //     return;
-    //   }
-    //   if (info.file.status === 'done') {
-    //     // Get this url from response in real world.
-    //     getBase64(info.file.originFileObj, (base64Url: string) => {
-    //       imageUrl.value = base64Url;
-    //       loading.value = false;
-    //     });
-    //   }
-    //   if (info.file.status === 'error') {
-    //     loading.value = false;
-    //     message.error('upload error');
-    //   }
-    // };
-
     const beforeUpload = (file: FileItem) => {
       const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
       if (!isJpgOrPng) {
@@ -127,13 +105,9 @@ export default defineComponent({
         return;
       }
       const observer = {
-        complete(response: { key: string; }) {
+        complete(response: { key: string; url: string; }) {
           console.log(response);
-          context.emit('update:modelValue', response.key);
-          // fileList.value = [{
-          //   url: rootUrl + response.key
-          // }];
-          // imageUrl.value = rootUrl + response.key;
+          context.emit('update:modelValue', response.url);
         }
       };
       await qiniu
@@ -144,19 +118,6 @@ export default defineComponent({
         )
         .subscribe(observer);
     };
-
-    // const handleUpload = (event: InputEvent) => {
-    //   const inputElement = event.target as HTMLInputElement;
-    //   if (inputElement.files && inputElement.files[0]) {
-    //     console.log('file', inputElement.files[0]);
-    //     const file = inputElement.files[0];
-    //     customRequestUploadHandler({
-    //       name: file.name,
-    //       file,
-    //       type: file.type.split('/')[1] as FileEnum
-    //     });
-    //   }
-    // };
 
     const handleCustomRequest = (option: any) => {
       console.log(option);
@@ -194,5 +155,20 @@ export default defineComponent({
 .ant-upload-select-picture-card .ant-upload-text {
   margin-top: 8px;
   color: #666;
+}
+
+.div1 {
+  width: 300px;
+  height: 300px;
+  border: 1px solid black;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.div1 img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  margin: auto;
 }
 </style>

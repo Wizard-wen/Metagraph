@@ -83,8 +83,6 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useStore();
-    const router = useRouter();
-    const { repositoryEntityId } = route.params;
     const repositoryGraphEdges = computed(() => store.state.repositoryEdit.repositoryEdgeList);
     const repositoryGraphNodes = computed(() => store.state.repositoryEdit.knowledgeList);
     const isExtendTreeGraphShow = ref(false);
@@ -142,8 +140,8 @@ export default defineComponent({
         originKnowledgeEntityId: knowledgeFormState.originKnowledgeEntityId,
         knowledgeEntityId: knowledgeFormState.knowledgeEntityId,
         targetKnowledgeEntityId: knowledgeFormState.targetKnowledgeEntityId,
-        edgeRepositoryEntityId: repositoryEntityId as string,
-        description: `From ${(entity.content as KnowledgeModelType).name}`
+        edgeRepositoryEntityId: route.query.repositoryEntityId as string,
+        description: `From ${ (entity.content as KnowledgeModelType).name }`
       });
       modalConfirmLoading.value = false;
       isModalVisible.value = false;
@@ -153,18 +151,21 @@ export default defineComponent({
       container: undefined
     });
     onUnmounted(() => {
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
       ws.container?.close();
       graph.value.graph?.dispose();
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     });
     onMounted(async () => {
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
       if (!ws.container) {
-        ws.container = new WebSocket(`${ConfigService.websocketBaseURL}/websocket`);
+        ws.container = new WebSocket(`${ ConfigService.websocketBaseURL }`);
       }
       ws.container?.addEventListener('open', (event) => {
         console.log(event);
       });
-      ws.container?.addEventListener('close', (event) => {
-        ws.container = new WebSocket(`${ConfigService.websocketBaseURL}/websocket`);
+      ws.container?.addEventListener('close', () => {
+        ws.container = new WebSocket(`${ConfigService.websocketBaseURL}`);
       });
       ws.container?.addEventListener('message', (event) => {
         console.log(event);
@@ -172,7 +173,7 @@ export default defineComponent({
       // 初始化图
       store.commit(MutationEnum.INIT_GRAPH);
       await store.dispatch(ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID, {
-        repositoryEntityId
+        repositoryEntityId: route.query.repositoryEntityId as string
       });
       if (graph.value.graph === undefined) {
         return;
@@ -183,7 +184,6 @@ export default defineComponent({
         height: (window.innerHeight.valueOf() - 100) * 0.6,
         center: [300, 200],
       });
-      console.log(repositoryGraphNodes.value);
       const newModel = gridLayout.layout({
         edges: repositoryGraphEdges.value as any,
         nodes: repositoryGraphNodes.value as any
@@ -211,7 +211,6 @@ export default defineComponent({
       });
       graph.value.graph.on('edge:selected', ({ cell, edge }) => {
         console.log(edge, cell);
-        // edge.attrs =
         edge.setAttrs({
           line: {
             stroke: '#7c68fc', // 指定 path 元素的填充色
@@ -228,16 +227,12 @@ export default defineComponent({
         });
       });
       graph.value.graph.on('node:click', async ({ cell }) => {
-        // if (cell.shape === 'edge') {
-        //   return;
-        // }
         store.commit(MutationEnum.SET_SELECTED_ENTITY_ID, { id: cell.id });
         await store.dispatch(ActionEnum.GET_PRE_EXTEND_KNOWLEDGE_LIST, {
-          repositoryEntityId,
+          repositoryEntityId: route.query.repositoryEntityId as string,
           knowledgeEntityId: cell.id
         });
       });
-
       graph.value.graph.on('node:moved', async ({ x, y, node }) => {
         console.log(x, y, node.data);
         ws.container?.send(JSON.stringify({
@@ -251,15 +246,6 @@ export default defineComponent({
       });
       graph.value.graph.on('edge:removed', ({ edge, options }) => {
         console.log(edge, options);
-
-        // if (!options.ui) {
-        //   return;
-        // }
-        //
-        // const target = edge.getTargetCell();
-        // if (target instanceof MyShape) {
-        //   target.updateInPorts(graph.value.graph!);
-        // }
       });
       graph.value.graph.on('edge:mouseenter', ({ edge }) => {
         edge.addTools([
@@ -276,6 +262,7 @@ export default defineComponent({
       graph.value.graph.on('edge:mouseleave', ({ edge }) => {
         edge.removeTools();
       });
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     });
 
     const handleZoomInGraph = () => {
@@ -320,7 +307,7 @@ export default defineComponent({
         position: absolute;
         right: 10px;
         top: 0;
-        z-index: 9999;
+        z-index: 999;
       }
 
       .graph-graph {

@@ -20,11 +20,12 @@
         <template #Section>
           <FolderOutlined/>
         </template>
-        <template #title="{ key: treeKey, title, entity, section }"  v-if="editable">
+        <template #title="{ key: treeKey, title, entity, section }" v-if="editable">
           <ant-dropdown :trigger="['contextmenu']" :disabled="entity !== undefined">
             <span>{{ title }}</span>
             <template #overlay>
-              <ant-menu @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, section)">
+              <ant-menu
+                @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, section)">
                 <ant-menu-item key="Section">插入单元</ant-menu-item>
                 <ant-menu-item key="Knowledge">绑定知识点</ant-menu-item>
                 <ant-menu-item key="Change">修改</ant-menu-item>
@@ -39,8 +40,10 @@
       :visible="isCreateSectionModalShown"
       :confirm-loading="confirmLoading"
       @ok="handleCreateSection"
-      @cancel="handleCancel">
-      <ant-input v-if="entityType === 'Section' || entityType === 'Change'" v-model:value="sectionName"></ant-input>
+      @cancel="isCreateSectionModalShown = false">
+      <ant-input
+        v-if="entityType === 'Section' || entityType === 'Change'"
+        v-model:value="sectionName"></ant-input>
       <ant-select
         v-else
         v-model:value="selectedEntityId"
@@ -59,7 +62,7 @@
 <script lang="ts">
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import {
-  FolderOpenOutlined, FolderOutlined, FileWordOutlined, FilePptOutlined
+  FolderOutlined, FileWordOutlined
 } from '@ant-design/icons-vue';
 import {
   computed, defineComponent, onBeforeMount, ref, onMounted, reactive, watch, toRefs
@@ -72,29 +75,13 @@ import KnowledgeDrawer from './knowledge.drawer.vue';
 export default defineComponent({
   name: 'section.tree',
   components: {
-    FolderOpenOutlined,
     FileWordOutlined,
-    FilePptOutlined,
     FolderOutlined,
     KnowledgeDrawer
   },
-  data(): {
-    confirmLoading: boolean
-  } {
-    return {
-      confirmLoading: false,
-    };
-  },
-  methods: {
-    handleCancel(e: MouseEvent) {
-      console.log('Clicked cancel button');
-      this.isCreateSectionModalShown = false;
-    },
-  },
-  setup() {
+  setup: function () {
     const route = useRoute();
     const store = useStore();
-    const { repositoryEntityId } = route.params;
     const sectionTree = computed(() => store.state.repositoryEdit.sectionTree);
     const selectedTreeNode = computed(() => store.state.repositoryEdit.selectedTreeNode);
     const editable = computed(() => store.state.repositoryEdit.editable);
@@ -103,6 +90,7 @@ export default defineComponent({
     const entityType = ref<'Section' | 'Knowledge' | 'Exercise' | 'Change'>('Section');
     const sectionName = ref<string>('');
     const sectionModalTitle = ref<string>('');
+    const confirmLoading = ref(false);
     // 选中的tree节点
     const selectedTreeNodeKeys = ref<string[]>([]);
     // 绑定实体下拉列表
@@ -113,7 +101,11 @@ export default defineComponent({
     const isDrawerShown = ref(false);
     const selectedTreeNodeEntityId = ref('');
     onMounted(async () => {
-      await store.dispatch(ActionEnum.GET_SECTION_TREE, { repositoryEntityId });
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      await store.dispatch(ActionEnum.GET_SECTION_TREE, {
+        repositoryEntityId: route.query.repositoryEntityId as string
+      });
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     });
     onBeforeMount(async () => {
       document.addEventListener('contextmenu', (event: MouseEvent) => {
@@ -127,7 +119,11 @@ export default defineComponent({
       }
     });
 
-    async function openCreateSectionModal(params: { type: 'Section' | 'Knowledge' | 'Exercise' | 'Change', section?: any, isRoot?: boolean }) {
+    async function openCreateSectionModal(params: {
+      type: 'Section' | 'Knowledge' | 'Exercise' | 'Change',
+      section?: any,
+      isRoot?: boolean
+    }) {
       entityType.value = params.type;
       isCreateSectionModalShown.value = true;
       selectModalData.selectedEntityId = '';
@@ -162,7 +158,7 @@ export default defineComponent({
       if (entityType.value === 'Section') {
         await SectionApiService.createSectionTree({
           name: sectionName.value,
-          repositoryEntityId: repositoryEntityId as string,
+          repositoryEntityId: route.query.repositoryEntityId as string,
           parentId: selectedTreeNode.value?.length ? selectedTreeNode.value[0] : undefined,
         });
       } else if (entityType.value === 'Change') {
@@ -176,13 +172,15 @@ export default defineComponent({
         }
         await SectionApiService.bindSectionEntity({
           entityId: selectModalData.selectedEntityId,
-          entityType: <"Knowledge" | "Exercise"> entityType.value,
-          repositoryEntityId: repositoryEntityId as string,
+          entityType: entityType.value as 'Knowledge',
+          repositoryEntityId: route.query.repositoryEntityId as string,
           sectionId: selectedTreeNode.value[0],
         });
       }
       isCreateSectionModalShown.value = false;
-      await store.dispatch(ActionEnum.GET_SECTION_TREE, { repositoryEntityId });
+      await store.dispatch(ActionEnum.GET_SECTION_TREE, {
+        repositoryEntityId: route.query.repositoryEntityId as string
+      });
     }
 
     const getSectionContentByKey = (key: string) => {
@@ -192,11 +190,14 @@ export default defineComponent({
     };
 
     function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
+      console.log(selectedKeys, info);
       // 提交commit改变当前选中的 tree node
       store.commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, { keys: selectedKeys });
       if (info.node.dataRef.section) {
         getSectionContentByKey(selectedKeys[0]);
-        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_SECTION_KEYS, { sectionKeys: selectedKeys });
+        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_SECTION_KEYS, {
+          sectionKeys: selectedKeys
+        });
         store.commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, { entityKeys: [] });
       } else {
         selectedTreeNodeEntityId.value = selectedKeys[0];
@@ -228,7 +229,8 @@ export default defineComponent({
       sectionModalTitle,
       isDrawerShown,
       selectedTreeNodeEntityId,
-      editable
+      editable,
+      confirmLoading
     };
   }
 });

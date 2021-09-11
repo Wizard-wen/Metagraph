@@ -2,8 +2,8 @@ import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/a
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 
 export class EntityApiService {
-  static getEntityList(params: { name: string; entityType?: string, pageIndex: number, pageSize: number }): Promise<PublicApiResponseType<any>> {
-    return RequestUtil.post<{ name: string; entityType?: string, pageIndex: number, pageSize: number }, any>({
+  static getEntityList(params: { name?: string; entityType?: string, pageIndex: number, pageSize: number }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{ name?: string; entityType?: string, pageIndex: number, pageSize: number }, any>({
       apiPath: ApiPathEnum.GetEntityList,
       requestBody: params
     });

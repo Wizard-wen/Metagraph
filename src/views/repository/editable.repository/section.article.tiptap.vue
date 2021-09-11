@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { ActionEnum, useStore } from '@/store';
-import tippy from 'tippy.js';
+import tippy, { Instance } from 'tippy.js';
 import {
   defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, PropType, toRefs
 } from 'vue';
@@ -42,7 +42,6 @@ import { useRoute } from 'vue-router';
 import ArticleLimit from './section.article/article.limit.vue';
 import MentionList from './tiptap/mention.list.vue';
 import SectionArticleControl from './section.article/section.article.control.vue';
-// import Comment from './comment.vue';
 
 export default defineComponent({
   name: 'section.article.tiptap',
@@ -69,10 +68,10 @@ export default defineComponent({
   setup(props, context) {
     const route = useRoute();
     const store = useStore();
-    const { repositoryEntityId } = route.params;
     const { articleContent, editable } = toRefs(props);
     const knowledgeList = computed(() => store.state.repositoryEdit.repositoryEntityList);
     const limit = ref(280);
+    const timer = ref(0);
     const CustomMention = Mention.extend({
       renderHTML({ node, HTMLAttributes }) {
         return [
@@ -114,9 +113,6 @@ export default defineComponent({
         };
       },
     });
-    onMounted(async () => {
-      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, { repositoryEntityId });
-    });
     const editor: Ref<Editor | undefined> = useEditor({
       editable: editable.value,
       extensions: [
@@ -132,18 +128,19 @@ export default defineComponent({
             class: 'mention',
           },
           suggestion: {
-            items: (query) => knowledgeList.value,
+            items: () => knowledgeList.value,
             render: () => {
-              let component: any;
-              let popup: any;
+              let component: VueRenderer;
+              let popup: Instance[];
               return {
                 // eslint-disable-next-line no-shadow
                 onStart: (props) => {
-                  console.log(props);
-                  component = new VueRenderer(MentionList, {
-                    editor: editor.value!,
-                    props,
-                  });
+                  if (editor.value) {
+                    component = new VueRenderer(MentionList, {
+                      editor: editor.value,
+                      props,
+                    });
+                  }
                   popup = tippy('body', {
                     getReferenceClientRect: props.clientRect,
                     appendTo: () => document.body,
@@ -154,13 +151,14 @@ export default defineComponent({
                     placement: 'bottom-start',
                   });
                 },
+                // eslint-disable-next-line no-shadow
                 onUpdate(props) {
-                  console.log('update ---> ', props);
                   component.updateProps(props);
                   popup[0].setProps({
                     getReferenceClientRect: props.clientRect,
                   });
                 },
+                // eslint-disable-next-line no-shadow
                 onKeyDown(props) {
                   return component.ref?.onKeyDown(props);
                 },
@@ -172,24 +170,11 @@ export default defineComponent({
             },
             // eslint-disable-next-line no-shadow
             command: ({ editor, range, props }) => {
-              console.log('command --- >', editor, range, props);
-              // editor
-              //   .chain()
-              //   .focus()
-              //   .insertContentAt(range, [
-              //     {
-              //       type: 'mention',
-              //       attrs: { name: props.name, id: props.id }
-              //     },
-              //     {
-              //       type: 'text',
-              //       text: ' ',
-              //     },
-              //   ])
-              //   .run();
               context.emit('mention', {
                 name: props.name,
                 id: props.id,
+                content: editor.getJSON(),
+                contentHtml: editor.getHTML(),
                 success() {
                   editor
                     .chain()
@@ -227,32 +212,45 @@ export default defineComponent({
       editorProps: {
         handleClick: (view, pos, event) => {
           console.log(view, pos, event);
-          console.log(editor.value?.state?.selection?.empty);
+          context.emit('clickMention');
           return true;
         }
       },
     });
-    // 更新article
-    watch(articleContent, (newValue) => {
-      console.log('change ', newValue);
-      editor.value?.commands.setContent(newValue);
-    });
-
-    watch(editable, (newValue) => {
-      console.log('change ', newValue);
-      editor.value?.setEditable(newValue);
+    onMounted(async () => {
+      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
+        repositoryEntityId: route.query.repositoryEntityId
+      });
+      // 定时存储文章
+      timer.value = window.setInterval(() => {
+        context.emit('saveSectionArticle', {
+          content: editor.value?.getJSON(),
+          contentHtml: editor.value?.getHTML()
+        });
+      }, 10000);
     });
     onUnmounted(() => {
+      // 清除定时器
+      if (timer.value) {
+        window.clearInterval(timer.value);
+      }
       editor.value?.destroy();
     });
+    // 更新article
+    watch(articleContent, (newValue) => {
+      editor.value?.commands.setContent(newValue);
+    });
+    // 是否可编辑
+    watch(editable, (newValue) => {
+      editor.value?.setEditable(newValue);
+    });
+    // 存储单元文章
     const saveSectionArticle = () => {
-      console.log('save');
       context.emit('saveSectionArticle', {
         content: editor.value?.getJSON(),
         contentHtml: editor.value?.getHTML()
       });
     };
-
     return {
       editor, limit, saveSectionArticle,
     };

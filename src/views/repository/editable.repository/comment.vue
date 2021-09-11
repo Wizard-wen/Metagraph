@@ -28,9 +28,6 @@
           :content="item.content"
           :author="item.user.name"
           :datetime="item.createdAt">
-          <!--          <template #actions>-->
-          <!--            <span>Reply to</span>-->
-          <!--          </template>-->
         </ant-comment>
       </ant-list-item>
     </template>
@@ -60,9 +57,6 @@ export default defineComponent({
   },
   setup(props) {
     const { entityType, entityId } = toRefs(props);
-    const store = useStore();
-    const route = useRoute();
-    const { repositoryEntityId } = route.params;
     const comments = ref<any[]>([]);
     const submitting = ref<boolean>(false);
     const value = ref<string>('');
@@ -93,20 +87,6 @@ export default defineComponent({
       });
       await getCommentList();
       submitting.value = false;
-
-      // setTimeout(() => {
-      //   submitting.value = false;
-      //   comments.value = [
-      //     {
-      //       author: 'Han Solo',
-      //       avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      //       content: value.value,
-      //       datetime: moment().fromNow(),
-      //     },
-      //     ...comments.value,
-      //   ];
-      //   value.value = '';
-      // }, 1000);
     };
 
     return {

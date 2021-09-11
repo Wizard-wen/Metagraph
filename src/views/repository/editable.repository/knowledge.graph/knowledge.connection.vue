@@ -11,7 +11,7 @@
     </div>
     <div class="content">
       <template v-if="toolbarState === 'pre'">
-        <ant-card class="card-header" title="inner repository">
+        <ant-card class="card-header" title="仓库内">
           <div class="card-content">
             <div
               v-for="(item, index) in preInnerKnowledgeList"
@@ -22,7 +22,7 @@
             </div>
           </div>
         </ant-card>
-        <ant-card class="card-header" title="outer repository">
+        <ant-card class="card-header" title="仓库外">
           <div class="card-content">
             <div
               v-for="(item, index) in preOuterKnowledgeList"
@@ -38,7 +38,7 @@
         </ant-card>
       </template>
       <template v-else>
-        <ant-card class="card-header" title="inner repository">
+        <ant-card class="card-header" title="仓库内">
           <div class="card-content">
             <div
               v-for="(item, index) in extendInnerKnowledgeList"
@@ -49,7 +49,7 @@
             </div>
           </div>
         </ant-card>
-        <ant-card class="card-header" title="outer repository">
+        <ant-card class="card-header" title="仓库外">
           <div class="card-content">
             <div
               v-for="(item, index) in extendOuterKnowledgeList"
@@ -84,7 +84,6 @@ export default defineComponent({
     // 如果已经在仓库中，就不允许再重复拖拽
     const store = useStore();
     const route = useRoute();
-    const { repositoryEntityId } = route.params;
     const preInnerKnowledgeList = computed(() => store.state.repositoryEdit.preInnerKnowledgeList);
     const extendInnerKnowledgeList = computed(() => store.state.repositoryEdit.extendInnerKnowledgeList);
     const preOuterKnowledgeList = computed(() => store.state.repositoryEdit.preOuterKnowledgeList);
@@ -119,7 +118,7 @@ export default defineComponent({
         label: (entity.content as KnowledgeModelType).name,
         data: {
           entity,
-          repositoryEntityId
+          repositoryEntityId: route.query.repositoryEntityId
         },
         ports: [
           {

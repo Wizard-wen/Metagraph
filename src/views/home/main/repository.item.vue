@@ -1,13 +1,13 @@
 <template>
   <div class="repository-item">
-    <ant-avatar class="icon"></ant-avatar>
+    <ant-avatar class="icon" :src="repository.author.avatar"></ant-avatar>
     <div class="content">
       <div class="title">
-        laden666666 starred {{ repository.author.name }}/{{ repository.content.name }} 5 days ago
+        {{ repository.author.name }}
       </div>
       <div class="box">
         <div class="name" @click="goRepo($event)">
-          {{ repository.author.name }}/{{ repository.content.name }}
+          {{ repository.content.name }}
         </div>
         <div class="des">{{ repository.content.description }}</div>
         <div class="others">
@@ -18,8 +18,10 @@
           </div>
           <div class="updatedAt">Updated {{ repository.content.updatedAt }}</div>
         </div>
-        <ant-button class="star-btn" @click="addStar($event, repository.hasStared)"
-                    :type="repository.hasStared ? 'primary': 'default'"
+        <ant-button
+          class="star-btn"
+          @click="addStar($event, repository.hasStared)"
+          :type="repository.hasStared ? 'primary': 'default'"
         >{{ repository.hasStared ? 'Stared' : 'Star' }}
         </ant-button>
       </div>
@@ -51,7 +53,7 @@ export default defineComponent({
     const goRepo = () => {
       router.push({
         name: 'EditableRepository',
-        params: {
+        query: {
           repositoryEntityId: repository.value.entity.id
         }
       });

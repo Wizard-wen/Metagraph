@@ -1,45 +1,14 @@
 <template>
   <ant-card class="card-header">
-    <ant-button style="width: 100%" @click="showModal">
+    <ant-button style="width: 100%" @click="handleModalShow" v-if="editable">
       <template #icon>
         <PlusOutlined/>
       </template>
     </ant-button>
-    <ant-modal
-      title="Bind Knowledge"
-      v-model:visible="isModalVisible"
-      :confirm-loading="modalConfirmLoading"
-      @ok="handleModalOk">
-      <ant-form
-        ref="knowledgeFormRef"
-        :model="knowledgeFormState"
-        :rules="knowledgeFormRules">
-        <ant-form-item label="Knowledge" name="name">
-          <ant-select
-            show-search
-            v-model:value="knowledgeFormState.name"
-            placeholder="input search text"
-            style="width: 200px"
-            :default-active-first-option="false"
-            :show-arrow="false"
-            :filter-option="false"
-            @search="handleSearch"
-            @change="handleChange"
-          >
-            <template #notFoundContent>
-              <ant-button style="width: 100%" @click="createNewEntity($event)">
-                <template #icon>
-                  <PlusOutlined/>
-                </template>
-              </ant-button>
-            </template>
-            <ant-select-option v-for="d in searchData" :key="d.entity.id">
-              {{ d.content.name }}
-            </ant-select-option>
-          </ant-select>
-        </ant-form-item>
-      </ant-form>
-    </ant-modal>
+    <CreateBindKnowledgeModal
+      v-if="isModalVisible"
+      @close="handleModalClose"
+      :is-modal-visible="isModalVisible"></CreateBindKnowledgeModal>
     <div class="list-item" :class="{'list-item-active': item.entity.id === selectedEntityId}"
          v-for="item in entityList"
          :key="item.id">
@@ -66,20 +35,16 @@
 </template>
 
 <script lang="ts">
-import { KnowledgeApiService } from '@/api.service/knowledge.api.service';
 import {
-  defineComponent, ref, onMounted, reactive, computed, toRaw, toRefs
+  defineComponent, ref, onMounted, computed, toRefs
 } from 'vue';
 import { ActionEnum, useStore } from '@/store';
 import { useRoute, useRouter } from 'vue-router';
-import { Modal } from 'ant-design-vue';
 import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
-import { throttle } from 'lodash';
-import { EntityApiService, RepositoryApiService } from '@/api.service';
 import ViewIcon from '@/components/icons/view.icon.vue';
 import EditIcon from '@/components/icons/edit.icon.vue';
 import KnowledgeDrawer from '@/views/repository/editable.repository/knowledge.drawer.vue';
-import { KnowledgeModelType } from "../../../../../../edu-graph-constant";
+import CreateBindKnowledgeModal from './create.bind.knowledge.modal.vue';
 
 export default defineComponent({
   components: {
@@ -87,7 +52,8 @@ export default defineComponent({
     StarOutlined,
     KnowledgeDrawer,
     ViewIcon,
-    EditIcon
+    EditIcon,
+    CreateBindKnowledgeModal
   },
   props: {
     entityType: {
@@ -99,8 +65,8 @@ export default defineComponent({
     const { entityType } = toRefs(props);
     const route = useRoute();
     const router = useRouter();
-    const { repositoryEntityId } = route.params;
     const store = useStore();
+    const repositoryEntityId = ref('');
     const repositoryEntityList = computed(() => store.state.repositoryEdit.repositoryEntityList);
     const editable = computed(() => store.state.repositoryEdit.editable);
     const entityList = computed(() => repositoryEntityList.value.filter((item) => item.entity.entityType === entityType.value));
@@ -108,115 +74,14 @@ export default defineComponent({
     // modal
     const isModalVisible = ref<boolean>(false);
     const modalConfirmLoading = ref<boolean>(false);
-    // form
-    const knowledgeFormRef = ref();
-    const knowledgeFormState = reactive<{
-      name?: string;
-    }>({
-      name: undefined
-    });
-    // modal form
-    const showModal = () => {
-      if (entityType.value !== 'Knowledge') {
-        Modal.error({
-          title: 'Bind Exercise',
-          content: '暂时不支持绑定习题',
-        });
-        return;
-      }
+    const handleModalShow = () => {
       isModalVisible.value = true;
-      knowledgeFormState.name = '';
     };
-    const handleModalOk = async () => {
-      if (knowledgeFormState.name === undefined) {
-        return;
-      }
-      modalConfirmLoading.value = true;
-      await RepositoryApiService.BindEntityToRepository({
-        repositoryEntityId: repositoryEntityId as string,
-        entityType: 'Knowledge',
-        entityId: knowledgeFormState.name
-      });
+    const handleModalClose = () => {
       isModalVisible.value = false;
-      modalConfirmLoading.value = false;
     };
-
-    const searchData = ref<any[]>([]);
-    const value = ref();
-
     const isDrawerShown = ref(false);
     const selectedTreeNodeEntityId = ref('');
-
-    async function getEntityList(name: string) {
-      modalConfirmLoading.value = true;
-      const result = await EntityApiService.getEntityList({
-        name,
-        entityType: 'Knowledge',
-        pageIndex: 0,
-        pageSize: 80
-      });
-      searchData.value = result.data.list;
-      modalConfirmLoading.value = false;
-    }
-
-    const handleSearch = throttle((val: string) => {
-      console.log('on search');
-      knowledgeFormState.name = val;
-      getEntityList(knowledgeFormState.name);
-    }, 200);
-    const handleChange = async (val: string) => {
-      console.log('on change');
-      knowledgeFormState.name = val;
-      await getEntityList(knowledgeFormState.name);
-    };
-    const createNewEntity = async (event: MouseEvent) => {
-      if (knowledgeFormState.name === undefined) {
-        return;
-      }
-      modalConfirmLoading.value = true;
-      const result = await KnowledgeApiService.create({
-        knowledgeBaseTypeId: '606fe62050a08412400387e5',
-        repositoryEntityId: repositoryEntityId as string,
-        name: knowledgeFormState.name
-      });
-      if(!result.data){
-        throw new Error('');
-      }
-      await router.push({
-        name: 'KnowledgeEdit',
-        query: {
-          knowledgeEntityId: result.data.entity.id,
-          repositoryEntityId,
-          name: (<KnowledgeModelType>result.data.content).name
-        }
-      });
-      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
-        repositoryEntityId
-      });
-      modalConfirmLoading.value = false;
-      isModalVisible.value = false;
-    };
-    // form function
-    const knowledgeFormRules = {
-      name: {
-        required: true,
-        message: 'Please input name',
-      },
-    };
-    const submitKnowledgeForm = () => {
-      knowledgeFormRef.value
-        .validate()
-        .then(() => {
-          console.log('values', knowledgeFormState, toRaw(knowledgeFormState));
-        })
-        .catch((error: Error) => {
-          console.log('error', error);
-        });
-    };
-    const resetKnowledgeForm = () => {
-      knowledgeFormRef.value.resetFields();
-    };
-
     const handleClickEntityItem = (item: any, type: 'view' | 'edit') => {
       if (type === 'view') {
         selectedTreeNodeEntityId.value = item.entity.id;
@@ -227,14 +92,15 @@ export default defineComponent({
           name: 'KnowledgeEdit',
           query: {
             knowledgeEntityId: item.entity.id,
-            repositoryEntityId
+            repositoryEntityId: route.query.repositoryEntityId as string
           }
         });
       }
     };
     onMounted(async () => {
+      repositoryEntityId.value = route.query.repositoryEntityId as string;
       await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
-        repositoryEntityId
+        repositoryEntityId: route.query.repositoryEntityId as string
       });
     });
     return {
@@ -243,19 +109,8 @@ export default defineComponent({
       selectedEntityId,
       isModalVisible,
       modalConfirmLoading,
-      showModal,
-      handleModalOk,
-      // form
-      knowledgeFormRef,
-      knowledgeFormState,
-      knowledgeFormRules,
-      submitKnowledgeForm,
-      resetKnowledgeForm,
-      handleSearch,
-      handleChange,
-      searchData,
-      value,
-      createNewEntity,
+      handleModalShow,
+      handleModalClose,
       handleClickEntityItem,
       isDrawerShown,
       selectedTreeNodeEntityId,

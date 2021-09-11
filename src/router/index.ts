@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
   //   ]
   // },
   {
-    path: '/repo/editable/:repositoryEntityId',
+    path: '/repo/editable',
     name: 'EditableRepository',
     component: () => import('@/views/editable.repository.vue')
   },
