@@ -1,5 +1,4 @@
 <template>
-
   <div class="edge-box">
     <EntityTag :knowledge="knowledgeList[0]" :knowledge-type="'Pre'"></EntityTag>
     <EntityTag :knowledge="knowledgeList[1]" :knowledge-type="'Pre'"></EntityTag>
@@ -33,7 +32,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../../../style/common';
+@import '../../../style/common';
 
 .edge-box {
 }

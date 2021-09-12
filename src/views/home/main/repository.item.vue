@@ -6,7 +6,7 @@
         {{ repository.author.name }}
       </div>
       <div class="box">
-        <div class="name" @click="goRepo($event)">
+        <div class="name" @click="goRepositoryPage($event)">
           {{ repository.content.name }}
         </div>
         <div class="des">{{ repository.content.description }}</div>
@@ -16,9 +16,10 @@
             <StarOutlined style="margin-right: 8px"/>
             <span>{{ repository.star }}</span>
           </div>
-          <div class="updatedAt">Updated {{ repository.content.updatedAt }}</div>
+          <div class="updatedAt">更新于 {{ date }}</div>
         </div>
         <ant-button
+          v-if="hasToken"
           class="star-btn"
           @click="addStar($event, repository.hasStared)"
           :type="repository.hasStared ? 'primary': 'default'"
@@ -31,8 +32,11 @@
 
 <script lang="ts">
 import { StarApiService } from '@/api.service/star.api.service';
+import { PublicUtils } from "@/utils/public.utils";
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
-import { defineComponent, toRefs, PropType } from 'vue';
+import {
+  defineComponent, toRefs, PropType, ref, onMounted, computed
+} from 'vue';
 import { useRouter } from 'vue-router';
 import { StarOutlined } from '@ant-design/icons-vue';
 
@@ -49,8 +53,13 @@ export default defineComponent({
   },
   setup(props, context) {
     const { repository } = toRefs<{ repository: EntityCompletelyListItemType }>(props);
+    const date = computed(() => PublicUtils.formatDate(
+      new Date(repository.value.content.updatedAt),
+      'yyyy-MM-dd hh:mm:ss'
+    ));
     const router = useRouter();
-    const goRepo = () => {
+    const hasToken = ref(false);
+    const goRepositoryPage = () => {
       router.push({
         name: 'EditableRepository',
         query: {
@@ -72,9 +81,17 @@ export default defineComponent({
         });
       }
     };
+    onMounted(() => {
+      const user = localStorage.getItem('user');
+      if (user) {
+        hasToken.value = true;
+      }
+    });
     return {
-      goRepo,
+      goRepositoryPage,
       addStar,
+      hasToken,
+      date
     };
   }
 });
@@ -85,7 +102,9 @@ export default defineComponent({
   padding: 16px 0;
   border-bottom: 1px solid #eaecef;
   display: flex;
-  width: 1000px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
 
   .icon {
     margin-right: 15px;

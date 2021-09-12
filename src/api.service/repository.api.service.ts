@@ -23,20 +23,20 @@ export class RepositoryApiService {
     });
   }
 
-  // 查询仓库列表 模糊搜索
-  static async getRepositoryList(params: RepositoryListRequestFilterType): Promise<PublicApiResponseType<{
-    list: EntityCompletelyListItemType[],
-    total: number
-  }>> {
-    console.log('params', params);
-    return RequestUtil.post<RepositoryListRequestFilterType, {
-      list: EntityCompletelyListItemType[],
-      total: number
-    }>({
-      apiPath: ApiPathEnum.GetRepositoryList,
-      requestBody: params
-    });
-  }
+  // // 查询仓库列表 模糊搜索
+  // static async getRepositoryList(params: RepositoryListRequestFilterType): Promise<PublicApiResponseType<{
+  //   list: EntityCompletelyListItemType[],
+  //   total: number
+  // }>> {
+  //   console.log('params', params);
+  //   return RequestUtil.post<RepositoryListRequestFilterType, {
+  //     list: EntityCompletelyListItemType[],
+  //     total: number
+  //   }>({
+  //     apiPath: ApiPathEnum.GetRepositoryList,
+  //     requestBody: params
+  //   });
+  // }
 
   static async getOwnRepositoryList(): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
     return RequestUtil.get<EntityCompletelyListItemType[]>({
@@ -44,19 +44,19 @@ export class RepositoryApiService {
     });
   }
 
-  static async getRepositoryById(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
-    return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType>({
-      apiPath: ApiPathEnum.GetRepositoryById,
-      requestBody: params
-    });
-  }
+  // static async getRepositoryById(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
+  //   return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType>({
+  //     apiPath: ApiPathEnum.GetRepositoryById,
+  //     requestBody: params
+  //   });
+  // }
 
-  static async getRepositoryBindEntityList(repositoryEntityId: string): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
-    return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType[]>({
-      apiPath: ApiPathEnum.GetRepositoryBindEntityList,
-      requestBody: { repositoryEntityId }
-    });
-  }
+  // static async getRepositoryBindEntityList(repositoryEntityId: string): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
+  //   return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType[]>({
+  //     apiPath: ApiPathEnum.GetRepositoryBindEntityList,
+  //     requestBody: { repositoryEntityId }
+  //   });
+  // }
 
   static async getRepositoryBindEntityListInGraph(repositoryEntityId: string): Promise<PublicApiResponseType<RepositoryEntityModelType[]>> {
     return RequestUtil.post<{ repositoryEntityId: string }, RepositoryEntityModelType[]>({

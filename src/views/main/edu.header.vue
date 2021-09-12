@@ -2,7 +2,7 @@
   <div class="edu-header">
     <div class="left">
       <div class="logo">
-        <ant-avatar :src="'../..//assets/Hogwartscrest.png'"
+        <ant-avatar src="./Hogwartscrest.png"
                     style="margin-right: 10px; cursor: pointer" @click="goHomePage"></ant-avatar>
       </div>
       <div class="search">
@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="right">
-      <div style="margin-right: 20px;line-height: 35px">
+      <div style="margin-right: 20px;line-height: 35px" v-if="isLogin">
         <ant-dropdown>
           <PlusOutlined style="color: #fff; line-height: 35px;font-size: 18px;"/>
           <template #overlay>

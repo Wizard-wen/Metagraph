@@ -16,8 +16,10 @@ import { store, key } from './store';
 import 'ant-design-vue/dist/antd.css';
 import '@ant-design/icons-vue';
 import './style/common.scss';
+import './style/hide.style.scss';
 // antd 组件
 import Contextmenu from './directives/contextmenu';
+import Hide from './directives/hide';
 
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
   config.baseURL = ConfigService.apiBaseURL;
@@ -40,6 +42,7 @@ const app = createApp(App);
 //
 
 app.directive('contextmenu', Contextmenu);
+app.directive('hide', Hide);
 app.component('AntCol', Col);
 app.component('AntRow', Row);
 app.component('AntTree', Tree);

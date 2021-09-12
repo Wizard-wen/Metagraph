@@ -6,7 +6,7 @@
         v-for="item in repositoryList"></repository-item>
     </div>
     <ant-pagination
-      style="width: 1000px; margin-top: 50px"
+      class="pagination"
       v-model:current="current"
       :total="total"
       @change="onPaginationChange"/>
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { RepositoryApiService } from '@/api.service';
+import { RepositoryNoAuthApiService } from '@/api.service';
 import { useStore } from '@/store';
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
@@ -34,7 +34,7 @@ export default defineComponent({
     const total = ref();
     const onPaginationChange = async (page: number) => {
       console.log(page);
-      const result = await RepositoryApiService.getRepositoryList({
+      const result = await RepositoryNoAuthApiService.getList({
         pageIndex: page - 1,
         pageSize: 10
       });
@@ -62,8 +62,11 @@ export default defineComponent({
   .content {
     width: 100%;
     max-width: 1400px;
-    //display: flex;
-    margin: 0 auto;
+    margin: 50px auto 50px;
+  }
+
+  .pagination {
+    width: 100%;
   }
 }
 </style>

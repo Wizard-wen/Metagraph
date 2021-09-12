@@ -4,9 +4,15 @@
  */
 
 import {
-  SectionApiService, RepositoryApiService,
-  EdgeApiService, KnowledgeApiService
+  SectionApiService,
+  RepositoryApiService,
+  EdgeApiService,
+  KnowledgeApiService,
+  EdgeNoAuthApiService,
+  KnowledgeNoAuthApiService,
+  RepositoryNoAuthApiService
 } from '@/api.service';
+import { SectionNoAuthApiService } from '@/api.service/no.auth/section.no.auth.api.service';
 // import { CustomerNode } from '@/components/graph/customer.node';
 import { MyShape, magnetAvailabilityHighlighter } from '@/components/graph/my.shape';
 import { ActionEnum, MutationEnum, tiptapInitData } from '@/store/constant';
@@ -429,7 +435,7 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
   actions: {
     // 获取section tree
     async [ActionEnum.GET_SECTION_TREE]({ commit, dispatch }, { repositoryEntityId }) {
-      const response = await SectionApiService.getSectionTree({ repositoryEntityId });
+      const response = await SectionNoAuthApiService.getSectionTree({ repositoryEntityId });
       if (response.data) {
         if (response.data.length) {
           // 如果section存在，那么选中第一个
@@ -449,12 +455,16 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
     },
     // 获取section article
     async [ActionEnum.GET_SECTION_CONTENT]({ commit }, { sectionId }) {
-      const result = await SectionApiService.getSectionArticle({ sectionId });
+      const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
       commit(MutationEnum.SET_SECTION_ARTICLE_CONTENT, { content: result.data?.article.content });
       commit(MutationEnum.SET_SECTION_ARTICLE_TITLE, { content: result.data?.article.title });
     },
     // 保存section article
     async [ActionEnum.SAVE_SECTION_CONTENT]({ dispatch, state }, { content, contentHtml }) {
+      if (!state.selectedTreeNode || state.selectedTreeNode.length === 0) {
+        console.log('当前没有选中的单元');
+        return;
+      }
       await SectionApiService.saveSectionArticle({
         sectionId: state.selectedTreeNode[0],
         content,
@@ -474,7 +484,7 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
     async [ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST]({ commit }, params: {
       repositoryEntityId: string
     }) {
-      const result = await RepositoryApiService
+      const result = await RepositoryNoAuthApiService
         .getRepositoryBindEntityList(params.repositoryEntityId);
       commit(MutationEnum.SET_REPOSITORY_BIND_ENTITY_LIST, { list: result });
     },
@@ -483,13 +493,12 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
       {
         repositoryEntityId: string
       }) {
-      const edgeList = await EdgeApiService.getEdgeListByRepositoryId({
+      const edgeList = await EdgeNoAuthApiService.getListByRepositoryId({
         edgeRepositoryEntityId: params.repositoryEntityId
       });
-      const repositoryKnowledgeList = await KnowledgeApiService.getRepositoryKnowledgeList({
+      const repositoryKnowledgeList = await KnowledgeNoAuthApiService.getRepositoryKnowledgeList({
         repositoryEntityId: params.repositoryEntityId
       });
-      // const repositoryKnowledgeList = await RepositoryApiService.getRepositoryBindEntityListInGraph(params.repositoryEntityId);
       commit(MutationEnum.SET_EDGE_LIST_BY_REPOSITORY_ID, {
         edges: edgeList.data,
         nodes: repositoryKnowledgeList.data
@@ -504,7 +513,7 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
           :
           string
       }) {
-      const result = await KnowledgeApiService.findEdgesByKnowledgeEntityId(params);
+      const result = await KnowledgeNoAuthApiService.findEdgesByKnowledgeEntityId(params);
       commit(MutationEnum.SET_PRE_EXTEND_KNOWLEDGE_LIST, result.data);
     },
     // 获取知识点详情

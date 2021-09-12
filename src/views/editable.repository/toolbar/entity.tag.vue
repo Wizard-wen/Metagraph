@@ -3,12 +3,12 @@
   <div class="edge-item">
     <div class="top-arrow" v-if="k2 === 'Pre' || k2  === 'Current'">
       <img height="16" width="16" style=""
-           src="../../../../assets/repo/arrowUp1.svg" alt="">
+           src="../../../assets/repo/arrowUp1.svg" alt="">
     </div>
     <div class="entity" >
       <div class="left">
         <img height="16" width="16"
-             src="../../../../assets/repo/arrowLeft1.svg" alt="">
+             src="../../../assets/repo/arrowLeft1.svg" alt="">
       </div>
       <div class="content" :class="{'entity-active': k2 === 'Current'}">
         <div class="inner-content">
@@ -33,12 +33,12 @@
       </div>
       <div class="right">
         <img height="16" width="16"
-             src="../../../../assets/repo/arrowRight1.svg" alt="">
+             src="../../../assets/repo/arrowRight1.svg" alt="">
       </div>
     </div>
     <div class="bottom-arrow" v-if="k2  === 'After' || k2  === 'Current'">
       <img height="16" width="16" style=""
-           src="../../../../assets/repo/arrowDown4.svg" alt="">
+           src="../../../assets/repo/arrowDown4.svg" alt="">
     </div>
   </div>
 </template>
@@ -77,7 +77,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-@import '../../../../style/common';
+@import '../../../style/common';
 
 .edge-item {
   .top-arrow {

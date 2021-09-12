@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { EdgeApiService, KnowledgeApiService, RepositoryApiService } from '@/api.service';
+import { EdgeNoAuthApiService, RepositoryApiService } from '@/api.service';
 import {
   defineComponent, onMounted, reactive
 } from 'vue';
@@ -33,7 +33,7 @@ export default defineComponent({
     }>({});
 
     async function getEdges() {
-      const result = await EdgeApiService.getEdgeList();
+      const result = await EdgeNoAuthApiService.getEdgeList();
       edges.list = result.data!;
     }
 

@@ -43,7 +43,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
 import ViewIcon from '@/components/icons/view.icon.vue';
 import EditIcon from '@/components/icons/edit.icon.vue';
-import KnowledgeDrawer from '@/views/repository/editable.repository/knowledge.drawer.vue';
+import KnowledgeDrawer from '@/views/editable.repository/knowledge.drawer.vue';
 import CreateBindKnowledgeModal from './create.bind.knowledge.modal.vue';
 
 export default defineComponent({

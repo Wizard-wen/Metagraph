@@ -14,25 +14,27 @@
 </template>
 
 <script lang="ts">
+import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
-  defineComponent, watch, ref, toRefs
+  defineComponent, watch, ref, toRefs, PropType
 } from 'vue';
 
 export default defineComponent({
   props: {
     items: {
-      type: Array,
+      type: Array as PropType<EntityCompletelyListItemType[]>,
       required: true,
     },
-
     command: {
       type: Function,
       required: true,
     },
   },
-  setup(props: any) {
-    const { items, command } = toRefs(props);
-    console.log(items, command);
+  setup(props) {
+    const { items, command } = toRefs<{
+      items: EntityCompletelyListItemType[],
+      command: any
+    }>(props);
     const selectedIndex = ref(0);
     watch(items, () => {
       selectedIndex.value = 0;
@@ -48,7 +50,6 @@ export default defineComponent({
 
     function selectItem(index: any) {
       const item = items.value[index];
-      console.log(item, index);
       if (item) {
         command.value({ id: item.entity.id, name: item.entity.name });
       }
@@ -59,22 +60,18 @@ export default defineComponent({
     }
 
     function onKeyDown({ event }: any) {
-      console.log(event);
       if (event.key === 'ArrowUp') {
         upHandler();
         return true;
       }
-
       if (event.key === 'ArrowDown') {
         downHandler();
         return true;
       }
-
       if (event.key === 'Enter') {
         enterHandler();
         return true;
       }
-
       return false;
     }
 

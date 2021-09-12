@@ -3,9 +3,12 @@
     <knowledge-connection></knowledge-connection>
     <div class="graph-content">
       <ant-modal
-        title="Bind Knowledge"
+        title="关联知识点"
         v-model:visible="isModalVisible"
         :confirm-loading="modalConfirmLoading"
+        cancelText="取消"
+        okText="关联"
+        @cancel="handleModalCancel"
         @ok="handleModalOk">
         <ant-form
           ref="knowledgeFormRef"
@@ -59,7 +62,7 @@
 
 <script lang="ts">
 import { magnetAvailabilityHighlighter, MyShape } from '@/components/graph/my.shape';
-import { ConfigService } from "@/config/config.service";
+import { ConfigService } from '@/config/config.service';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import { Addon, Graph, NodeView } from '@antv/x6';
 import { RandomLayout } from '@antv/layout';
@@ -117,6 +120,7 @@ export default defineComponent({
       targetKnowledgeEntityId?: string;
       originKnowledgeEntity?: EntityCompletelyListItemType;
       originKnowledgeEntityId?: string;
+      temporaryEdgeId?: string;
     }>({
       knowledgeEntityId: undefined,
       targetKnowledgeEntityId: undefined,
@@ -136,7 +140,7 @@ export default defineComponent({
         entity = knowledgeFormState.originKnowledgeEntity;
       }
       modalConfirmLoading.value = true;
-      await EdgeApiService.createKnowledgeEdge({
+      await EdgeApiService.create({
         originKnowledgeEntityId: knowledgeFormState.originKnowledgeEntityId,
         knowledgeEntityId: knowledgeFormState.knowledgeEntityId,
         targetKnowledgeEntityId: knowledgeFormState.targetKnowledgeEntityId,
@@ -146,6 +150,11 @@ export default defineComponent({
       modalConfirmLoading.value = false;
       isModalVisible.value = false;
       // todo 刷新页面，否则新创建的节点不在图数据model中
+    };
+    const handleModalCancel = async () => {
+      if (knowledgeFormState.temporaryEdgeId) {
+        graph.value.graph?.removeEdge(knowledgeFormState.temporaryEdgeId);
+      }
     };
     const ws: { container?: WebSocket } = reactive<{ container?: WebSocket }>({
       container: undefined
@@ -165,7 +174,7 @@ export default defineComponent({
         console.log(event);
       });
       ws.container?.addEventListener('close', () => {
-        ws.container = new WebSocket(`${ConfigService.websocketBaseURL}`);
+        ws.container = new WebSocket(`${ ConfigService.websocketBaseURL }`);
       });
       ws.container?.addEventListener('message', (event) => {
         console.log(event);
@@ -191,6 +200,8 @@ export default defineComponent({
       graph.value.graph.fromJSON(newModel);
       graph.value.graph.centerContent();
       graph.value.graph.on('edge:connected', async ({ edge, previousView, currentView }) => {
+        console.log(edge);
+        knowledgeFormState.temporaryEdgeId = edge.id;
         if (edge.getSourceCell() === null || edge.getTargetCell() === null) {
           return;
         }
@@ -278,6 +289,7 @@ export default defineComponent({
       isModalVisible,
       modalConfirmLoading,
       handleModalOk,
+      handleModalCancel,
       // form
       knowledgeFormRef,
       knowledgeFormState,
@@ -290,7 +302,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../../style/common";
+@import "../../style/common";
 
 .graph-box {
   display: flex;

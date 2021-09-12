@@ -38,10 +38,10 @@ import {
 import { useRoute } from 'vue-router';
 import KnowledgeEditForm from '@/views/knowledge.edit/knowledge.edit.form.vue';
 import { EntityCompletelyListItemType, KnowledgeModelType } from "edu-graph-constant";
-import { EdgeApiService, EntityApiService, KnowledgeApiService } from '../api.service';
-import SectionArticleTipTap from './repository/editable.repository/section.article.tiptap.vue';
+import { EdgeApiService, EntityNoAuthApiService, KnowledgeApiService } from '../api.service';
+import SectionArticleTipTap from './editable.repository/section.article.vue';
 import { tiptapInitData } from '@/store/constant/tiptap.init.data';
-import Comment from './repository/editable.repository/comment.vue';
+import Comment from './editable.repository/comment.vue';
 
 export default defineComponent({
   name: 'knowledge.edit',
@@ -66,7 +66,7 @@ export default defineComponent({
     }));
     const knowledgeDescription = ref(tiptapInitData);
     onMounted(async () => {
-      const result = await EntityApiService.getEntityById({
+      const result = await EntityNoAuthApiService.getEntityById({
         entityId: <string> knowledgeEntityId.value
       });
       if (result.data) {
@@ -99,7 +99,7 @@ export default defineComponent({
         content: '',
         async onOk() {
           params.success()
-          await EdgeApiService.createKnowledgeEdge({
+          await EdgeApiService.create({
             originKnowledgeEntityId: params.id,
             knowledgeEntityId: knowledgeEntityId.value as string,
             targetKnowledgeEntityId: knowledgeEntityId.value as string,

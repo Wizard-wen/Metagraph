@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { RepositoryApiService, SectionApiService } from '@/api.service';
+import { RepositoryApiService, RepositoryNoAuthApiService, SectionApiService } from '@/api.service';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import { EntityCompletelyListItemType, RepositoryModelType } from 'edu-graph-constant';
 import {
@@ -59,11 +59,11 @@ import {
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { useRoute } from 'vue-router';
 import { Modal, Empty } from 'ant-design-vue';
-import Toolbar from './repository/editable.repository/toobar.vue';
-import SectionTree from './repository/editable.repository/section.tree.vue';
-import SectionArticleTipTap from './repository/editable.repository/section.article.tiptap.vue';
-import KnowledgeGraph from './repository/editable.repository/knowledge.graph.vue';
-import Comment from './repository/editable.repository/comment.vue';
+import Toolbar from './editable.repository/toolbar.vue';
+import SectionTree from './editable.repository/section.tree.vue';
+import SectionArticleTipTap from './editable.repository/section.article.vue';
+import KnowledgeGraph from './editable.repository/knowledge.graph.vue';
+import Comment from './editable.repository/comment.vue';
 
 export default defineComponent({
   name: 'editable.repository',
@@ -93,7 +93,7 @@ export default defineComponent({
       return undefined;
     });
     const getRepositoryByEntityId = async () => {
-      const response = await RepositoryApiService.getRepositoryById({
+      const response = await RepositoryNoAuthApiService.getById({
         repositoryEntityId: route.query.repositoryEntityId as string
       });
       if (response.data) {

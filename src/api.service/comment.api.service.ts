@@ -2,16 +2,16 @@
  *
  */
 
-import {
-  PublicEntityType,
+import type {
   CommentResponseType,
   CommentCreateRequestType,
   CommentRemoveRequestType,
   CommentPageListRequestType,
-  CommentListItemType, CommentEntityType,
+  CommentListItemType,
 } from 'edu-graph-constant';
 import { ApiPathEnum, PublicApiResponseType, RequestUtil } from './api.config';
 
+// eslint-disable-next-line import/prefer-default-export
 export class CommentApiService {
   static async create(params: CommentCreateRequestType): Promise<PublicApiResponseType<CommentResponseType>> {
     return RequestUtil.post<CommentCreateRequestType, CommentResponseType>({
@@ -23,23 +23,6 @@ export class CommentApiService {
   static async remove(params: CommentRemoveRequestType): Promise<PublicApiResponseType<void>> {
     return RequestUtil.post<CommentRemoveRequestType, void>({
       apiPath: ApiPathEnum.RemoveComment,
-      requestBody: params
-    });
-  }
-
-  static async getCommentByEntityId(params: {
-    entityType: CommentEntityType;
-    entityId: string;
-    pageIndex: number;
-    pageSize: number;
-  }): Promise<PublicApiResponseType<any>> {
-    return RequestUtil.post<{
-      entityType: CommentEntityType;
-      entityId: string;
-      pageIndex: number;
-      pageSize: number;
-    }, any>({
-      apiPath: ApiPathEnum.GetCommentByEntityId,
       requestBody: params
     });
   }

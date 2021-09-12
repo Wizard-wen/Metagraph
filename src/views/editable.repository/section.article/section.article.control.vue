@@ -128,7 +128,7 @@
           代码段
         </div>
       </div>
-      <div class="operation-icon" @click="handleTestClick($event)">
+      <div class="operation-icon" @click="handleCreateMention">
         <div class="icon">
           <FindIcon
             class="icon-svg"
@@ -143,7 +143,6 @@
 </template>
 
 <script lang="ts">
-import { useStore } from "@/store";
 import { defineComponent, PropType, toRefs } from 'vue';
 import Quote from '@/components/icons/quote.vue';
 import H1Icon from '@/components/icons/h1.icon.vue';
@@ -160,9 +159,11 @@ import {
 import { Editor } from '@tiptap/vue-3';
 
 export default defineComponent({
+  name: 'section.article.control',
   props: {
     editor: {
-      type: Object as PropType<Editor>
+      type: Object as PropType<Editor>,
+      required: true
     }
   },
   components: {
@@ -181,18 +182,20 @@ export default defineComponent({
     SaveIcon,
     FindIcon
   },
-  name: 'section.article.control',
   setup(props, context) {
-    const store = useStore();
-    const { editor } = toRefs(props);
+    const { editor } = toRefs<{ editor: Editor }>(props);
+    // 保存文章
     const saveSectionArticle = () => {
       context.emit('save');
     };
-    const handleTestClick = (event: MouseEvent) => {
-      const from = editor.value?.state.selection.from;
-      const to = editor.value?.state.selection.to;
-      const selectionContent = editor.value?.state.doc.textBetween(from!, to!, ' ');
-      console.log(from, to, selectionContent);
+    // 增加section
+    // todo 待优化
+    const handleCreateMention = () => {
+      const { from, to } = editor.value?.state.selection;
+      if (!from || !to) {
+        return;
+      }
+      const selectionContent = editor.value?.state.doc.textBetween(from, to, ' ');
       if (editor.value?.state?.selection?.ranges === undefined) {
         return;
       }
@@ -201,7 +204,6 @@ export default defineComponent({
           {
             type: 'mention',
             attrs: { id: 'test', name: selectionContent }
-          // text: props.name
           },
           {
             type: 'text',
@@ -212,7 +214,7 @@ export default defineComponent({
     };
     return {
       saveSectionArticle,
-      handleTestClick
+      handleCreateMention
     };
   }
 });

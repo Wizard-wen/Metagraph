@@ -1,7 +1,7 @@
 <template>
   <div class="section-article">
     <section-article-control
-      v-if="editable" :editor="editor" @save="saveSectionArticle"></section-article-control>
+      v-if="editable && editor" :editor="editor" @save="saveSectionArticle"></section-article-control>
     <div class="article-container">
       <div class="limit-container">
         <article-limit
@@ -44,12 +44,11 @@ import MentionList from './tiptap/mention.list.vue';
 import SectionArticleControl from './section.article/section.article.control.vue';
 
 export default defineComponent({
-  name: 'section.article.tiptap',
+  name: 'section.article',
   components: {
     EditorContent,
     ArticleLimit,
     SectionArticleControl,
-    // Comment
   },
   props: {
     articleContent: {
@@ -259,7 +258,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../../style/common.scss";
+@import "../../style/common";
 /* Basic editor styles */
 
 .mention {

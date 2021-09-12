@@ -10,27 +10,27 @@ import { EntityCompletelyListItemType, RepositoryListRequestFilterType } from 'e
 import { MutationEnum } from './constant/mutation.enum';
 
 export type RepositoryListType = {
-  repositoryList: EntityCompletelyListItemType[],
-  repositoryListTotal?: number,
+  // repositoryList: EntityCompletelyListItemType[],
+  // repositoryListTotal?: number,
   ownRepositoryList: EntityCompletelyListItemType[];
 }
 
 export const repositoryListModule: Module<RepositoryListType, any> = {
   state: () => ({
-    repositoryList: [],
-    repositoryListTotal: undefined,
+    // repositoryList: [],
+    // repositoryListTotal: undefined,
     followerRepositoryList: [],
     followerRepositoryListTotal: undefined,
     ownRepositoryList: []
   }),
   mutations: {
-    [MutationEnum.SET_REPOSITORY_LIST](state, {
-      repositoryList,
-      repositoryListTotal,
-    }) {
-      state.repositoryList = repositoryList;
-      state.repositoryListTotal = repositoryListTotal;
-    },
+    // [MutationEnum.SET_REPOSITORY_LIST](state, {
+    //   repositoryList,
+    //   repositoryListTotal,
+    // }) {
+    //   state.repositoryList = repositoryList;
+    //   state.repositoryListTotal = repositoryListTotal;
+    // },
     [MutationEnum.SET_OWN_REPOSITORY_LIST](state, {
       ownRepositoryList
     }) {
@@ -38,13 +38,13 @@ export const repositoryListModule: Module<RepositoryListType, any> = {
     },
   },
   actions: {
-    async [ActionEnum.GET_REPOSITORY_LIST]({ commit }, filter: RepositoryListRequestFilterType) {
-      const repositoryList = await RepositoryApiService.getRepositoryList(filter);
-      commit(MutationEnum.SET_REPOSITORY_LIST, {
-        repositoryList: repositoryList.data?.list,
-        repositoryListTotal: repositoryList.data?.total
-      });
-    },
+    // async [ActionEnum.GET_REPOSITORY_LIST]({ commit }, filter: RepositoryListRequestFilterType) {
+    //   const repositoryList = await RepositoryApiService.getRepositoryList(filter);
+    //   commit(MutationEnum.SET_REPOSITORY_LIST, {
+    //     repositoryList: repositoryList.data?.list,
+    //     repositoryListTotal: repositoryList.data?.total
+    //   });
+    // },
     async [ActionEnum.GET_OWN_REPOSITORY_LIST]({ commit }) {
       const ownRepositoryList = await RepositoryApiService.getOwnRepositoryList();
       commit(MutationEnum.SET_OWN_REPOSITORY_LIST, {

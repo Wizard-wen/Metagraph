@@ -2,8 +2,8 @@
  *
  */
 
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from "@/api.service/api.config";
-import {
+import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
+import type {
   PublicEntityType,
   ExerciseResponseType,
   KnowledgeEdgeResponseType,
@@ -11,8 +11,9 @@ import {
   StarResponseType,
   UserResponseType,
   DomainResponseType
-} from "edu-graph-constant";
+} from 'edu-graph-constant';
 
+// eslint-disable-next-line import/prefer-default-export
 export class StarApiService {
   static async create(params: {
     entityType: PublicEntityType;
@@ -24,7 +25,7 @@ export class StarApiService {
     }, StarResponseType>({
       apiPath: ApiPathEnum.CreateStar,
       requestBody: params
-    })
+    });
   }
 
   static async cancel(params: {
@@ -37,7 +38,7 @@ export class StarApiService {
     }, void>({
       apiPath: ApiPathEnum.CancelStar,
       requestBody: params
-    })
+    });
   }
 
   static async getMyStarList(params: {
@@ -70,7 +71,7 @@ export class StarApiService {
     } | undefined>({
       apiPath: ApiPathEnum.GetMyStarList,
       requestBody: params
-    })
+    });
   }
 
   static async getEntityStarList(params: {
@@ -111,6 +112,6 @@ export class StarApiService {
     } | undefined>({
       apiPath: ApiPathEnum.GetEntityStarList,
       requestBody: params
-    })
+    });
   }
 }

@@ -50,30 +50,14 @@
       :total="total"
       @change="onPaginationChange"/>
   </div>
-
 </template>
 <script lang="ts">
-import { RepositoryApiService } from '@/api.service';
-import { useStore } from '@/store';
+import { RepositoryNoAuthApiService } from '@/api.service';
 import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import {
-  computed, defineComponent, onMounted, reactive, ref, watch
+  defineComponent, onMounted, ref, watch
 } from 'vue';
 import { useRoute } from 'vue-router';
-
-const listData: Record<string, string>[] = [];
-
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-      'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
-}
 
 export default defineComponent({
   components: {
@@ -83,8 +67,6 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    // const queryName = ref('');
-    // queryName.value = route.params.name as string;
     const current = ref(0);
     const total = ref(0);
     const repositoryList = ref();
@@ -94,7 +76,7 @@ export default defineComponent({
       { type: 'MessageOutlined', text: '2' },
     ];
     watch(() => route.params, async (value) => {
-      const result = await RepositoryApiService.getRepositoryList({
+      const result = await RepositoryNoAuthApiService.getList({
         pageIndex: 0,
         pageSize: 10,
         name: value.name as string
@@ -104,7 +86,7 @@ export default defineComponent({
       console.log(repositoryList);
     });
     onMounted(async () => {
-      const result = await RepositoryApiService.getRepositoryList({
+      const result = await RepositoryNoAuthApiService.getList({
         pageIndex: 0,
         pageSize: 10,
         name: route.params.name as string
@@ -113,8 +95,7 @@ export default defineComponent({
       total.value = result.data?.total || 0;
     });
     const onPaginationChange = async (page: number, pageSize: number) => {
-      console.log(page);
-      const result = await RepositoryApiService.getRepositoryList({
+      const result = await RepositoryNoAuthApiService.getList({
         pageIndex: page - 1,
         pageSize: 10,
         name: route.params.name as string
@@ -123,7 +104,6 @@ export default defineComponent({
       total.value = result.data?.total || 0;
     };
     return {
-      listData,
       repositoryList,
       actions,
       current,

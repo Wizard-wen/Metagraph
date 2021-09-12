@@ -154,7 +154,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import '../../../../style/common';
+@import '../../../style/common';
 
 .toolbar {
   border-left: solid 1px $borderColor;

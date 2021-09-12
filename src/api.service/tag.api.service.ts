@@ -1,16 +1,13 @@
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
-import { PublicEntityType, StarResponseType } from '../../../edu-graph-constant';
-import { TagModelType } from '../../../edu-graph-constant/dist/type/tag.type';
-
 /**
  * @author wizard.song
+ * @date 2021/09/12
  */
 
-export class TagApiService {
-  static create() {
-    // todo
-  }
+import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
+import { TagModelType } from '../../../edu-graph-constant/dist/type/tag.type';
 
+// eslint-disable-next-line import/prefer-default-export
+export class TagApiService {
   static async getList(params: {
     pageIndex: number;
     pageSize: number;

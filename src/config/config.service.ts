@@ -3,6 +3,7 @@
  * @date  2021/9/11 12:08
  */
 
+// eslint-disable-next-line import/prefer-default-export
 export class ConfigService {
   private static apiLocalBaseURL = 'http://localhost:7250/'
 
@@ -12,7 +13,7 @@ export class ConfigService {
 
   private static websocketLocalBaseURL = 'ws://localhost:8089/websocket'
 
-  private static websocketTestBaseURL = 'ws://82.156.195.140:8089/websocket'
+  private static websocketTestBaseURL = 'ws://edu.songxiwen.com.cn/websocket'
 
   static websocketBaseURL = ConfigService.websocketTestBaseURL
 }

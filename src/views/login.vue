@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-box">
       <div class="login-image">
-        <img src="@/assets/Hogwartscrest.png" alt="" height="300" width="300">
+        <img src="../../public/Hogwartscrest.png" alt="" height="300" width="300">
       </div>
       <ant-form
         id="components-form-demo-normal-login"

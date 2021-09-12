@@ -68,7 +68,7 @@ import {
   computed, defineComponent, onBeforeMount, ref, onMounted, reactive, watch, toRefs
 } from 'vue';
 import { useRoute } from 'vue-router';
-import { SectionApiService } from '@/api.service';
+import { EntityNoAuthApiService, SectionApiService } from '@/api.service';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
 import KnowledgeDrawer from './knowledge.drawer.vue';
 
@@ -137,7 +137,7 @@ export default defineComponent({
       }
       if (entityType.value === 'Knowledge') {
         sectionModalTitle.value = '绑定实体';
-        const result = await SectionApiService.getEntityList({
+        const result = await EntityNoAuthApiService.getEntityList({
           name: selectModalData.selectedEntityId,
           entityType: entityType.value,
           pageIndex: 0,

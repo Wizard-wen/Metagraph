@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { EntityApiService } from '@/api.service';
+import { EntityNoAuthApiService } from '@/api.service';
 import {
   defineComponent, onMounted, ref, toRefs, watch
 } from 'vue';
@@ -57,7 +57,7 @@ export default defineComponent({
     const knowledge = ref({});
     watch(isShow, async (newValue, oldValue) => {
       if (newValue) {
-        const result = await EntityApiService.getEntityById({ entityId: entityId.value });
+        const result = await EntityNoAuthApiService.getEntityById({ entityId: entityId.value });
         if (result.data) {
           knowledge.value = result.data;
         }

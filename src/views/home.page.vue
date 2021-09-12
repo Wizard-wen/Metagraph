@@ -1,20 +1,19 @@
 <template>
   <div class="home">
-    <div class="aside">
+    <div class="aside" v-if="isToken">
       <home-aside></home-aside>
     </div>
     <div class="content">
       <home-main></home-main>
     </div>
-    <div class="explore">
+    <div class="explore" v-hide>
       <home-explore></home-explore>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ActionEnum, useStore } from '@/store';
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import HomeAside from './home/home.aside.vue';
 import HomeMain from './home/home.main.vue';
 import HomeExplore from './home/home.explore.vue';
@@ -27,13 +26,17 @@ export default defineComponent({
     HomeExplore
   },
   setup() {
-    const store = useStore();
+    const isToken = ref(false);
     onMounted(() => {
-      if (localStorage.getItem('user') !== null) {
-        // store.dispatch(ActionEnum.GET_REPOSITORY_LIST);
-        // store.dispatch(ActionEnum.GET_OWN_REPOSITORY_LIST);
+      const user = localStorage.getItem('user');
+      if (user) {
+        isToken.value = true;
       }
     });
+
+    return {
+      isToken
+    };
   }
 });
 </script>
@@ -49,7 +52,8 @@ export default defineComponent({
   }
 
   .content {
-    width: calc(100% - 700px);
+    flex: 1;
+    min-width: 500px;
   }
 
   .explore {

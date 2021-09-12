@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { debounce } from 'lodash';
-import { EntityApiService, KnowledgeApiService, RepositoryApiService } from "@/api.service";
+import { EntityNoAuthApiService, KnowledgeApiService, RepositoryApiService, RepositoryNoAuthApiService } from "@/api.service";
 import { ActionEnum, useStore } from "@/store";
 import { EntityCompletelyListItemType, KnowledgeModelType } from "edu-graph-constant";
 import {
@@ -123,7 +123,7 @@ export default defineComponent({
 
     async function getEntityList() {
       modalConfirmLoading.value = true;
-      const result = await EntityApiService.getEntityList({
+      const result = await EntityNoAuthApiService.getEntityList({
         name: searchText.value,
         entityType: 'Knowledge',
         pageIndex: currentPage.value - 1,
@@ -135,7 +135,7 @@ export default defineComponent({
     }
 
     onMounted(async () => {
-      const result = await RepositoryApiService.getRepositoryBindEntityList(route.query.repositoryEntityId as string);
+      const result = await RepositoryNoAuthApiService.getRepositoryBindEntityList(route.query.repositoryEntityId as string);
       if(result.data){
         currentRepositoryBindList.value = result.data.map(item => item.entity.id);
       }

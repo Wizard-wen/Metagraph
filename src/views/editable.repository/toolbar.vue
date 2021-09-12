@@ -7,7 +7,8 @@
         v-for="tab in elementTabs"
         :key="tab.value"
         @click="setToolbarState(tab.value)"
-      >{{tab.label}}</div>
+      >{{ tab.label }}
+      </div>
     </div>
     <div class="content">
       <component :is="currentPanelComponent"></component>
@@ -35,7 +36,7 @@ export default defineComponent({
       store.commit(MutationEnum.SET_TOOLBAR_STATE, value);
     };
     const currentPanelComponent = computed(() => {
-      const panelMap: {[key: string]: unknown} = {
+      const panelMap: { [key: string]: unknown } = {
         EntityList: ToolbarEntityList,
         KnowledgeEdge: ToolbarKnowledgeEdge,
       };
@@ -53,18 +54,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../../style/common';
+@import '../../style/common';
+
 .toolbar {
   border-left: solid 1px $borderColor;
   background-color: #fff;
   min-height: 100%;
   display: flex;
   flex-direction: column;
+
   .tabs {
     height: 32px;
     font-size: 12px;
     flex-shrink: 0;
     display: flex;
+
     .tab {
       flex: 1;
       display: flex;
@@ -84,6 +88,7 @@ export default defineComponent({
       }
     }
   }
+
   .content {
     // padding: 12px;
     font-size: 13px;
