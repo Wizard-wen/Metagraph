@@ -8,6 +8,9 @@
       <div class="search">
         <ant-input-search @search="handleSearch"></ant-input-search>
       </div>
+      <div>
+        <ant-button type="text" :ghost="true">Knowledge Map</ant-button>
+      </div>
     </div>
     <div class="right">
       <div style="margin-right: 20px;line-height: 35px" v-if="isLogin">
@@ -151,6 +154,7 @@ export default defineComponent({
   justify-content: space-between;
 
   .left {
+    padding-left: 15px;
     display: flex;
   }
 

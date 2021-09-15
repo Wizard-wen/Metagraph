@@ -61,19 +61,21 @@
 </template>
 
 <script lang="ts">
-import { magnetAvailabilityHighlighter, MyShape } from '@/components/graph/my.shape';
-import { ConfigService } from '@/config/config.service';
-import { ActionEnum, MutationEnum, useStore } from '@/store';
 import { Addon, Graph, NodeView } from '@antv/x6';
 import { RandomLayout } from '@antv/layout';
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, computed, reactive, ref, onUnmounted
+  defineComponent, onMounted, computed, reactive, ref, onUnmounted, watch
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { ActionEnum, MutationEnum, useStore } from '@/store';
+import { ConfigService } from '@/config/config.service';
+import { magnetAvailabilityHighlighter, MyShape } from '@/components/graph/my.shape';
+import { RepositoryApiService } from '@/api.service';
 import { EdgeApiService } from '@/api.service/edge.api.service';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
+import { WebsocketService } from '@/service/websocket.service';
 import KnowledgeConnection from './knowledge.graph/knowledge.connection.vue';
 
 export default defineComponent({
@@ -86,14 +88,16 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useStore();
-    const repositoryGraphEdges = computed(() => store.state.repositoryEdit.repositoryEdgeList);
-    const repositoryGraphNodes = computed(() => store.state.repositoryEdit.knowledgeList);
+    const repositoryGraphEdges = computed(() => store.state.repositoryEditor.repositoryEdgeList);
+    const repositoryGraphNodes = computed(() => store.state.repositoryEditor.knowledgeList);
+    const isEditable = computed(() => store.state.repositoryEditor.editable);
     const isExtendTreeGraphShow = ref(false);
     const isPreTreeGraphShow = ref(false);
+    const isUserOwnRepository = ref(false);
     const graph = computed<{
       graph?: Graph,
       dnd?: Addon.Dnd
-    }>(() => store.state.repositoryEdit.graph);
+    }>(() => store.state.repositoryEditor.graph);
 
     function update(view: NodeView) {
       const { cell } = view;
@@ -135,7 +139,7 @@ export default defineComponent({
         || knowledgeFormState.originKnowledgeEntity === undefined) {
         return;
       }
-      let entity: EntityCompletelyListItemType = knowledgeFormState.targetKnowledgeEntity;
+      let entity: any = knowledgeFormState.targetKnowledgeEntity;
       if (knowledgeFormState.knowledgeEntityId === knowledgeFormState.originKnowledgeEntityId) {
         entity = knowledgeFormState.originKnowledgeEntity;
       }
@@ -145,7 +149,7 @@ export default defineComponent({
         knowledgeEntityId: knowledgeFormState.knowledgeEntityId,
         targetKnowledgeEntityId: knowledgeFormState.targetKnowledgeEntityId,
         edgeRepositoryEntityId: route.query.repositoryEntityId as string,
-        description: `From ${ (entity.content as KnowledgeModelType).name }`
+        description: `From ${(entity.content as KnowledgeModelType).name}`
       });
       modalConfirmLoading.value = false;
       isModalVisible.value = false;
@@ -156,49 +160,72 @@ export default defineComponent({
         graph.value.graph?.removeEdge(knowledgeFormState.temporaryEdgeId);
       }
     };
-    const ws: { container?: WebSocket } = reactive<{ container?: WebSocket }>({
-      container: undefined
-    });
+    const websocketService = ref<WebsocketService>();
     onUnmounted(() => {
       store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
-      ws.container?.close();
+      // 关闭websocket
+      websocketService.value?.close();
+      websocketService.value = undefined;
+      // 销毁图
       graph.value.graph?.dispose();
       store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     });
+    watch(isEditable, (newValue) => {
+      if (newValue) {
+        websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
+          {
+            event: 'graph',
+            handler(message) {
+              console.log(message);
+            }
+          }
+        ]);
+      }
+    });
+    const checkIfUserOwnRepository = async () => {
+      if (localStorage.getItem('user') === null) {
+        return false;
+      }
+      const result = await RepositoryApiService.checkIfUserOwnRepository({
+        repositoryEntityId: route.query.repositoryEntityId as string
+      });
+      if (result.data) {
+        return result.data.hasAuth;
+      }
+      return false;
+    };
     onMounted(async () => {
       store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
-      if (!ws.container) {
-        ws.container = new WebSocket(`${ ConfigService.websocketBaseURL }`);
-      }
-      ws.container?.addEventListener('open', (event) => {
-        console.log(event);
-      });
-      ws.container?.addEventListener('close', () => {
-        ws.container = new WebSocket(`${ ConfigService.websocketBaseURL }`);
-      });
-      ws.container?.addEventListener('message', (event) => {
-        console.log(event);
+      isUserOwnRepository.value = await checkIfUserOwnRepository();
+      store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
+        status: isUserOwnRepository.value
       });
       // 初始化图
       store.commit(MutationEnum.INIT_GRAPH);
       await store.dispatch(ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID, {
-        repositoryEntityId: route.query.repositoryEntityId as string
+        repositoryEntityId: route.query.repositoryEntityId as string,
+        hasAuth: isUserOwnRepository.value
       });
       if (graph.value.graph === undefined) {
         return;
       }
-      const gridLayout = new RandomLayout({
-        type: 'random',
-        width: window.innerWidth.valueOf() - 520,
-        height: (window.innerHeight.valueOf() - 100) * 0.6,
-        center: [300, 200],
+      // const gridLayout = new RandomLayout({
+      //   type: 'random',
+      //   width: window.innerWidth.valueOf() - 520,
+      //   height: (window.innerHeight.valueOf() - 100) * 0.6,
+      //   center: [300, 200],
+      // });
+      // const newModel = gridLayout.layout({
+      //   edges: repositoryGraphEdges.value as any,
+      //   nodes: repositoryGraphNodes.value as any
+      // });
+      repositoryGraphNodes.value.forEach((item: any) => {
+        console.log(item);
+        graph.value.graph?.addNode(item);
       });
-      const newModel = gridLayout.layout({
-        edges: repositoryGraphEdges.value as any,
-        nodes: repositoryGraphNodes.value as any
-      });
-      graph.value.graph.fromJSON(newModel);
-      graph.value.graph.centerContent();
+      repositoryGraphEdges.value.forEach((item: any) => graph.value.graph?.addEdge(item));
+      // graph.value.graph.fromJSON(newModel);
+      // graph.value.graph.centerContent();
       graph.value.graph.on('edge:connected', async ({ edge, previousView, currentView }) => {
         console.log(edge);
         knowledgeFormState.temporaryEdgeId = edge.id;
@@ -230,7 +257,6 @@ export default defineComponent({
       });
       graph.value.graph.on('edge:unselected', ({ cell, edge }) => {
         console.log(edge, cell);
-        // edge.attrs =
         edge.setAttrs({
           line: {
             stroke: '#000', // 指定 path 元素的填充色
@@ -246,29 +272,31 @@ export default defineComponent({
       });
       graph.value.graph.on('node:moved', async ({ x, y, node }) => {
         console.log(x, y, node.data);
-        ws.container?.send(JSON.stringify({
+        websocketService.value?.send({
           event: 'graph',
           data: {
             entityId: node.data.entity.id,
             x,
             y
           }
-        }));
+        });
       });
       graph.value.graph.on('edge:removed', ({ edge, options }) => {
         console.log(edge, options);
       });
       graph.value.graph.on('edge:mouseenter', ({ edge }) => {
-        edge.addTools([
-          'source-arrowhead',
-          'target-arrowhead',
-          {
-            name: 'button-remove',
-            args: {
-              distance: -30,
+        if (localStorage.getItem('user') && isUserOwnRepository.value) {
+          edge.addTools([
+            'source-arrowhead',
+            'target-arrowhead',
+            {
+              name: 'button-remove',
+              args: {
+                distance: -30,
+              },
             },
-          },
-        ]);
+          ]);
+        }
       });
       graph.value.graph.on('edge:mouseleave', ({ edge }) => {
         edge.removeTools();
@@ -282,6 +310,7 @@ export default defineComponent({
     const handleZoomOutGraph = () => {
       graph.value.graph?.zoom(-0.1);
     };
+
     return {
       isExtendTreeGraphShow,
       isPreTreeGraphShow,
@@ -295,7 +324,8 @@ export default defineComponent({
       knowledgeFormState,
       knowledgeInEdgeList,
       handleZoomInGraph,
-      handleZoomOutGraph
+      handleZoomOutGraph,
+
     };
   },
 });

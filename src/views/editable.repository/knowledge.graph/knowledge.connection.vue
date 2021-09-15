@@ -84,15 +84,15 @@ export default defineComponent({
     // 如果已经在仓库中，就不允许再重复拖拽
     const store = useStore();
     const route = useRoute();
-    const preInnerKnowledgeList = computed(() => store.state.repositoryEdit.preInnerKnowledgeList);
-    const extendInnerKnowledgeList = computed(() => store.state.repositoryEdit.extendInnerKnowledgeList);
-    const preOuterKnowledgeList = computed(() => store.state.repositoryEdit.preOuterKnowledgeList);
-    const extendOuterKnowledgeList = computed(() => store.state.repositoryEdit.extendOuterKnowledgeList);
+    const preInnerKnowledgeList = computed(() => store.state.repositoryEditor.preInnerKnowledgeList);
+    const extendInnerKnowledgeList = computed(() => store.state.repositoryEditor.extendInnerKnowledgeList);
+    const preOuterKnowledgeList = computed(() => store.state.repositoryEditor.preOuterKnowledgeList);
+    const extendOuterKnowledgeList = computed(() => store.state.repositoryEditor.extendOuterKnowledgeList);
     const repositoryEntityIdList = computed(() => store.getters.repositoryEntityIdList);
     const graph = computed<{
       graph?: Graph,
       dnd?: Addon.Dnd
-    }>(() => store.state.repositoryEdit.graph);
+    }>(() => store.state.repositoryEditor.graph);
     const toolbarElementList = [
       { label: '前置', value: 'pre' },
       { label: '导出', value: 'extend' },

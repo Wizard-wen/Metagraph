@@ -82,9 +82,9 @@ export default defineComponent({
   setup: function () {
     const route = useRoute();
     const store = useStore();
-    const sectionTree = computed(() => store.state.repositoryEdit.sectionTree);
-    const selectedTreeNode = computed(() => store.state.repositoryEdit.selectedTreeNode);
-    const editable = computed(() => store.state.repositoryEdit.editable);
+    const sectionTree = computed(() => store.state.repositoryEditor.sectionTree);
+    const selectedTreeNode = computed(() => store.state.repositoryEditor.selectedTreeNode);
+    const editable = computed(() => store.state.repositoryEditor.editable);
     const isContextMenuShown = ref(false);
     const isCreateSectionModalShown = ref(false);
     const entityType = ref<'Section' | 'Knowledge' | 'Exercise' | 'Change'>('Section');

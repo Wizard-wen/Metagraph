@@ -27,7 +27,7 @@ export default defineComponent({
   name: 'Toolbar',
   setup() {
     const store = useStore();
-    const toolbarState = computed(() => store.state.repositoryEdit.toolbarState);
+    const toolbarState = computed(() => store.state.repositoryEditor.toolbarState);
     const elementTabs = [
       { label: '实体', value: 'EntityList' },
       { label: '知识链路', value: 'KnowledgeEdge' },

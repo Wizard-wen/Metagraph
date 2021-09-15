@@ -67,10 +67,10 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     const repositoryEntityId = ref('');
-    const repositoryEntityList = computed(() => store.state.repositoryEdit.repositoryEntityList);
-    const editable = computed(() => store.state.repositoryEdit.editable);
-    const entityList = computed(() => repositoryEntityList.value.filter((item) => item.entity.entityType === entityType.value));
-    const selectedEntityId = computed(() => store.state.repositoryEdit.selectedEntityId);
+    const repositoryEntityList = computed(() => store.state.repositoryEditor.repositoryEntityList);
+    const editable = computed(() => store.state.repositoryEditor.editable);
+    const entityList = computed(() => repositoryEntityList.value.filter((item: any) => item.entity.entityType === entityType.value));
+    const selectedEntityId = computed(() => store.state.repositoryEditor.selectedEntityId);
     // modal
     const isModalVisible = ref<boolean>(false);
     const modalConfirmLoading = ref<boolean>(false);

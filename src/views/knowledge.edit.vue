@@ -53,11 +53,11 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useStore();
-    const spinning = computed(() => store.state.isSpinning);
+    const spinning = computed(() => store.state.global.isSpinning);
     const { knowledgeEntityId, repositoryEntityId } = toRefs(route.query);
     const knowledge: {
-      list?: EntityCompletelyListItemType
-    } = reactive<{ list?: EntityCompletelyListItemType }>({ list: undefined });
+      list?: any
+    } = reactive<{ list?: any }>({ list: undefined });
     const knowledgeForm = computed(() => ({
       repositoryEntityId: repositoryEntityId.value,
       name: (<KnowledgeModelType> knowledge.list?.content).name,

@@ -3,8 +3,10 @@
  * @date 2021/09/12
  */
 
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
-import { TagModelType } from '../../../edu-graph-constant/dist/type/tag.type';
+import type { TagModelType } from 'edu-graph-constant';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class TagApiService {

@@ -2,6 +2,7 @@
   <div class="section-article">
     <section-article-control
       v-if="editable && editor" :editor="editor" @save="saveSectionArticle"></section-article-control>
+    <ant-button @click="upload">text</ant-button>
     <div class="article-container">
       <div class="limit-container">
         <article-limit
@@ -23,7 +24,6 @@
 </template>
 
 <script lang="ts">
-import { ActionEnum, useStore } from '@/store';
 import tippy, { Instance } from 'tippy.js';
 import {
   defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, PropType, toRefs
@@ -39,6 +39,8 @@ import CharacterCount from '@tiptap/extension-character-count';
 import Mention from '@tiptap/extension-mention';
 import StarterKit from '@tiptap/starter-kit';
 import { useRoute } from 'vue-router';
+import { TipTapCustomImage } from '@/views/editable.repository/tiptap/image.plugin';
+import { ActionEnum, useStore } from '@/store';
 import ArticleLimit from './section.article/article.limit.vue';
 import MentionList from './tiptap/mention.list.vue';
 import SectionArticleControl from './section.article/section.article.control.vue';
@@ -68,7 +70,7 @@ export default defineComponent({
     const route = useRoute();
     const store = useStore();
     const { articleContent, editable } = toRefs(props);
-    const knowledgeList = computed(() => store.state.repositoryEdit.repositoryEntityList);
+    const knowledgeList = computed(() => store.state.repositoryEditor.repositoryEntityList);
     const limit = ref(280);
     const timer = ref(0);
     const CustomMention = Mention.extend({
@@ -205,6 +207,10 @@ export default defineComponent({
               });
             },
           },
+        }),
+        TipTapCustomImage(async (file: File) => {
+          console.log(file);
+          return '';
         })
       ],
       content: articleContent.value,
@@ -250,8 +256,14 @@ export default defineComponent({
         contentHtml: editor.value?.getHTML()
       });
     };
+    const upload = () => {
+      editor.value?.commands.focus();
+      editor.value?.commands.setImage({
+        src: 'http://file.songxiwen.com.cn/icon1.jpeg'
+      });
+    };
     return {
-      editor, limit, saveSectionArticle,
+      editor, limit, saveSectionArticle, upload
     };
   }
 });

@@ -4,12 +4,12 @@
  */
 
 import type {
-  SectionCreateRequestType,
-  SectionTreeNodeType,
   SectionResponseType,
-  SectionEntityType, SectionArticleResponseType
+  SectionEntityType
 } from 'edu-graph-constant';
-import { ApiPathEnum, RequestUtil, PublicApiResponseType } from './api.config';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SectionApiService {

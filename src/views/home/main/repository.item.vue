@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { StarApiService } from '@/api.service/star.api.service';
-import { PublicUtils } from "@/utils/public.utils";
+import { CommonUtil } from "@/utils/common.util";
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
   defineComponent, toRefs, PropType, ref, onMounted, computed
@@ -52,8 +52,8 @@ export default defineComponent({
     }
   },
   setup(props, context) {
-    const { repository } = toRefs<{ repository: EntityCompletelyListItemType }>(props);
-    const date = computed(() => PublicUtils.formatDate(
+    const { repository } = toRefs<{ repository: any }>(props);
+    const date = computed(() => CommonUtil.formatDate(
       new Date(repository.value.content.updatedAt),
       'yyyy-MM-dd hh:mm:ss'
     ));

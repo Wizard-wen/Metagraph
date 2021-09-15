@@ -1,6 +1,11 @@
-/* eslint-disable import/prefer-default-export */
+/**
+ * @author wizard.song
+ * @date 2021/09/14 23:35
+ */
+
+// eslint-disable-next-line no-shadow
 export enum ActionEnum {
-  GET_SECTION_TREE='getSectionTree',
+  GET_SECTION_TREE = 'getSectionTree',
   GET_SECTION_CONTENT = 'getSectionContent',
   SAVE_SECTION_CONTENT = 'saveSectionContent',
   CREAT_SECTION_ITEM = 'createSectionItem',
@@ -10,14 +15,13 @@ export enum ActionEnum {
   GET_PRE_EXTEND_KNOWLEDGE_LIST = 'getPreExtendKnowledgeList',
   // 获取选中实体（知识点）的详情
   GET_SELECTED_ENTITY_DETAIL = 'getSelectedEntityDetail',
-
-
-
-
-
-  // user
+  /**
+   * user
+   */
   LOGIN_BY_NAME = 'loginByName',
-  // home
+  /**
+   * home
+   */
   GET_REPOSITORY_LIST = 'getRepositoryList',
   GET_OWN_REPOSITORY_LIST = 'getOwnRepositoryList',
   GET_QUERY_REPOSITORY_LIST = 'getQueryRepositoryList'

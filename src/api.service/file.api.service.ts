@@ -1,14 +1,19 @@
 /**
- *
+ * @author songxiwen
+ * @date  2021/9/12 23:28
  */
 
-import { FileEnum, FilePageListResponseType, FileResponseType, } from 'edu-graph-constant';
+import { FileEnum, } from 'edu-graph-constant';
 import type {
   QiniuUploadingCredentialRequestType,
-  QiniuUploadingCredentialResponseType
+  QiniuUploadingCredentialResponseType,
+  FilePageListResponseType, FileResponseType,
 } from 'edu-graph-constant';
-import { ApiPathEnum, RequestUtil, PublicApiResponseType } from './api.config';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
+// eslint-disable-next-line import/prefer-default-export
 export class FileApiService {
   static async getCredential(params: QiniuUploadingCredentialRequestType): Promise<PublicApiResponseType<QiniuUploadingCredentialResponseType>> {
     return RequestUtil.post<QiniuUploadingCredentialRequestType, QiniuUploadingCredentialResponseType>({

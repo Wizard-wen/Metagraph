@@ -3,7 +3,9 @@
  * @date 2021/09/12 16:29
  */
 
-import { ApiPathEnum, RequestUtil, PublicApiResponseType } from './api.config';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class UserApiService {
@@ -18,7 +20,7 @@ export class UserApiService {
     name: string;
     password: string;
     confirmPassword: string;
-    icon: string;
+    avatar: string;
     phone?: string;
     email: string;
     type: 'personal' | 'organization'
@@ -27,7 +29,7 @@ export class UserApiService {
       name: string;
       password: string;
       confirmPassword: string;
-      icon: string;
+      avatar: string;
       phone?: string;
       email: string;
       type: 'personal' | 'organization'

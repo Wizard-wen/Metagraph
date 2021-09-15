@@ -1,19 +1,21 @@
-/* eslint-disable import/prefer-default-export */
 /**
  * @author wizard
  * @date 2021/03/13 16:29
  */
 
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
 import {
   RepositoryEntityType,
   RepositoryCreateType,
-  RepositoryListRequestFilterType, RepositoryEntityModelType
+  RepositoryEntityModelType
 } from 'edu-graph-constant';
 import type {
   EntityCompletelyListItemType
 } from 'edu-graph-constant';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
+// eslint-disable-next-line import/prefer-default-export
 export class RepositoryApiService {
   // 创建仓库
   static async createRepository(params: RepositoryCreateType): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
@@ -69,6 +71,13 @@ export class RepositoryApiService {
     return RequestUtil.post<undefined, EntityCompletelyListItemType[]>({
       apiPath: ApiPathEnum.GetRepositoryEntityList,
       requestBody: undefined
+    });
+  }
+
+  static async checkIfUserOwnRepository(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<{ hasAuth: boolean }>> {
+    return RequestUtil.post<{ repositoryEntityId: string }, { hasAuth: boolean }>({
+      apiPath: ApiPathEnum.CheckIfUserOwnRepository,
+      requestBody: params
     });
   }
 

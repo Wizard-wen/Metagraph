@@ -3,9 +3,7 @@
  * @date 2021/09/12 23:36
  */
 
-import axios from 'axios';
-
-// eslint-disable-next-line no-shadow
+// eslint-disable-next-line no-shadow,import/prefer-default-export
 export enum ApiPathEnum {
   /**
    * knowledge
@@ -75,6 +73,7 @@ export enum ApiPathEnum {
   // GetRepositoryById = '/repository/get/id',
   GetOwnRepositoryList = '/repository/getOwnList',
   getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
+  CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
   GetRepositoryEntityList = '/repository/getEntityList',
   BindToRepository = '/repository/bind/entity',
   // no.auth repository
@@ -84,59 +83,9 @@ export enum ApiPathEnum {
   /**
    * tag
    */
-  GetTagList = '/tag/getList'
-}
-
-export interface PublicApiResponseType<T> {
-  data?: T;
-  message?: string;
-}
-
-export class RequestUtil {
-  static post<RequestType, ResponseType>(params: {
-    requestBody: RequestType,
-    apiPath: ApiPathEnum
-  }): Promise<PublicApiResponseType<ResponseType>> {
-    return new Promise((resolve) => {
-      axios.post<{
-        data: ResponseType;
-        code: number;
-        message: string;
-      }>(params.apiPath, params.requestBody).then((data) => {
-        if (data.data.code === 0) {
-          resolve({
-            data: data.data.data
-          });
-        }
-        resolve({ message: data.data.message });
-      }).catch((error) => {
-        resolve({
-          message: error.message
-        });
-      });
-    });
-  }
-
-  static get<ResponseType>(params: {
-    apiPath: ApiPathEnum
-  }): Promise<PublicApiResponseType<ResponseType>> {
-    return new Promise((resolve) => {
-      axios.get<{
-        data: ResponseType;
-        code: number;
-        message: string;
-      }>(params.apiPath).then((data) => {
-        if (data.data.code === 0) {
-          resolve({
-            data: data.data.data
-          });
-        }
-        resolve({ message: data.data.message });
-      }).catch((error) => {
-        resolve({
-          message: error.message
-        });
-      });
-    });
-  }
+  GetTagList = '/tag/getList',
+  /**
+   * nlp
+   */
+  ParseWord = '/nlp/parse/word'
 }

@@ -1,15 +1,15 @@
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
-import {
-  EntityCompletelyListItemType,
-  FileEnum,
-  KnowledgePageListResponseType,
-  KnowledgeResponseType
-} from 'edu-graph-constant';
-
 /**
  * @author songxiwen
  * @date  2021/9/12 22:46
  */
+
+import type {
+  EntityCompletelyListItemType,
+  KnowledgeResponseType
+} from 'edu-graph-constant';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class KnowledgeNoAuthApiService {
@@ -35,30 +35,22 @@ export class KnowledgeNoAuthApiService {
     });
   }
 
-  // static async getAllList(): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
-  //   return RequestUtil.post<undefined, EntityCompletelyListItemType[]>({
-  //     apiPath: ApiPathEnum.GetNoAuthKnowledgeAllList,
-  //     requestBody: undefined
-  //   });
-  // }
-
   static async getRepositoryKnowledgeList(params: {
     repositoryEntityId: string;
-  }): Promise<PublicApiResponseType<KnowledgeResponseType[]>> {
+  }): Promise<PublicApiResponseType<{
+    list: EntityCompletelyListItemType[],
+    view: { [key: string]: { x: number; y: number } }
+  }>> {
     return RequestUtil.post<{
       repositoryEntityId: string;
-    }, KnowledgeResponseType[]>({
+    }, {
+      list: EntityCompletelyListItemType[],
+      view: { [key: string]: { x: number; y: number } }
+    }>({
       apiPath: ApiPathEnum.GetNoAuthKnowledgeListByRepositoryEntityId,
       requestBody: params
     });
   }
-
-  // static async getPageList(params: { name: string; fileType: FileEnum }): Promise<PublicApiResponseType<KnowledgePageListResponseType>> {
-  //   return RequestUtil.post<{ name: string; fileType: FileEnum }, KnowledgePageListResponseType>({
-  //     apiPath: ApiPathEnum.GetNoAuthKnowledgePageList,
-  //     requestBody: params
-  //   });
-  // }
 
   /**
    * 获取关联，返回值分为四个维度，（前置、导出）（库内、库外）

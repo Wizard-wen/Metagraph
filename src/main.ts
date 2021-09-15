@@ -1,23 +1,27 @@
-import { ConfigService } from '@/config/config.service';
+/**
+ * @author waizrd.song
+ * @date 2021/03/31
+ */
+
 import { createApp } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 import {
-  Button, Input, Modal, Tree, Select, Form, Icon,
+  Button, Input, Modal, Tree, Select, Form,
   PageHeader, Switch, Spin, Card, Steps, Comment,
   DatePicker, Checkbox, Radio, Dropdown, Menu,
   Avatar, Pagination, Upload, List, Tag, Drawer,
   Descriptions, Col, Row, Empty
 } from 'ant-design-vue';
-// import VueNativeSock from 'vue-native-websocket-vue3';
+import 'ant-design-vue/dist/antd.css';
+import { ConfigService } from '@/config/config.service';
 import App from './App.vue';
 import router from './router';
 import { store, key } from './store';
-import 'ant-design-vue/dist/antd.css';
-import '@ant-design/icons-vue';
+// 自定义style
 import './style/common.scss';
 import './style/hide.style.scss';
-// antd 组件
+// 自定义指令
 import Contextmenu from './directives/contextmenu';
 import Hide from './directives/hide';
 
@@ -40,9 +44,10 @@ axios.interceptors.response.use((response: AxiosResponse) =>
 
 const app = createApp(App);
 //
-
+// 引入全局directive
 app.directive('contextmenu', Contextmenu);
 app.directive('hide', Hide);
+// 引入全局component
 app.component('AntCol', Col);
 app.component('AntRow', Row);
 app.component('AntTree', Tree);
@@ -67,7 +72,6 @@ app.component('AntTextArea', Input.TextArea);
 app.component('AntInputSearch', Input.Search);
 app.component('AntInputPassword', Input.Password);
 app.component('AntUpload', Upload);
-app.component('AntIcon', Icon);
 app.component('AntDatePicker', DatePicker);
 app.component('AntPageHeader', PageHeader);
 app.component('AntSwitch', Switch);
@@ -85,8 +89,8 @@ app.component('AntList', List);
 app.component('AntListItem', List.Item);
 app.component('AntListItemMeta', List.Item.Meta);
 app.component('AntTag', Tag);
-
-// app.use(SlatePlugin);
 app.use(Form);
-// app.use(VueNativeSock, 'ws://localhost:8089');
-app.use(store, key).use(router).mount('#app');
+// 传入 injection key
+app.use(store, key);
+app.use(router);
+app.mount('#app');

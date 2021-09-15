@@ -1,4 +1,7 @@
-/* eslint-disable import/prefer-default-export */
+/**
+ * @author wizard.song
+ * @date 2021/09/14 23:35
+ */
 
 // eslint-disable-next-line no-shadow
 export enum MutationEnum {

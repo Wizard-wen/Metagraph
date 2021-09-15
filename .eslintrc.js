@@ -18,6 +18,7 @@ module.exports = {
     'comma-dangle': 'off',
     'no-null': 'off',
     'no-underscore-dangle': 'off',
-    'no-unused-expressions': 'off'
+    'no-unused-expressions': 'off',
+    'import/prefer-default-export': 'off'
   },
 };

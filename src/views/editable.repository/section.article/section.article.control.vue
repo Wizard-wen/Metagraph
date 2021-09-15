@@ -138,25 +138,63 @@
           查找
         </div>
       </div>
+      <div class="operation-icon" @click="handleUpload">
+        <div class="icon">
+          <UploadIcon class="icon-svg"/>
+        </div>
+        <div class="name">
+          上传
+        </div>
+      </div>
     </div>
   </div>
+  <ant-modal
+    title="上传"
+    :width="1000"
+    :visible="isUploadModalShown"
+    @ok="handleCreateArticle"
+    @cancel="isUploadModalShown = false">
+    <input type="file" @change="uploadWord($event)">
+    <div v-if="text" style="max-height: 500px;overflow: scroll;width: 100%; padding: 20px;line-height: 24px;">
+      <p>{{ text }}</p>
+    </div>
+    <div v-if="words" style="max-height: 300px;overflow: scroll;width: 100%;">
+      <ant-list size="small" bordered :data-source="words">
+        <template #renderItem="{ item }">
+          <ant-list-item>{{ item.word }} ----  {{item.weight}}</ant-list-item>
+        </template>
+      </ant-list>
+    </div>
+  </ant-modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from 'vue';
-import Quote from '@/components/icons/quote.vue';
+import { FileApiService } from '@/api.service';
+import { NlpApiService } from '@/api.service/nlp.api.service';
+import CodeIcon from '@/components/icons/code.icon.vue';
+import FindIcon from '@/components/icons/find.icon.vue';
 import H1Icon from '@/components/icons/h1.icon.vue';
 import H2Icon from '@/components/icons/h2.icon.vue';
 import H3Icon from '@/components/icons/h3.icon.vue';
-import CodeIcon from '@/components/icons/code.icon.vue';
+import Quote from '@/components/icons/quote.vue';
 import SaveIcon from '@/components/icons/save.icon.vue';
-import FindIcon from '@/components/icons/find.icon.vue';
+import UploadIcon from '@/components/icons/upload.icon.vue';
 import {
-  BoldOutlined, ItalicOutlined, StrikethroughOutlined, UndoOutlined, RedoOutlined,
+  BoldOutlined,
+  ItalicOutlined,
   OrderedListOutlined,
+  RedoOutlined,
+  StrikethroughOutlined,
+  UndoOutlined,
   UnorderedListOutlined
 } from '@ant-design/icons-vue';
 import { Editor } from '@tiptap/vue-3';
+import { FileEnum } from 'edu-graph-constant';
+import * as qiniu from 'qiniu-js';
+import {
+  defineComponent, PropType, ref, toRefs
+} from 'vue';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   name: 'section.article.control',
@@ -174,6 +212,7 @@ export default defineComponent({
     OrderedListOutlined,
     UnorderedListOutlined,
     RedoOutlined,
+    UploadIcon,
     Quote,
     H1Icon,
     H2Icon,
@@ -184,10 +223,12 @@ export default defineComponent({
   },
   setup(props, context) {
     const { editor } = toRefs<{ editor: Editor }>(props);
+    const route = useRoute();
     // 保存文章
     const saveSectionArticle = () => {
       context.emit('save');
     };
+    const isUploadModalShown = ref(false);
     // 增加section
     // todo 待优化
     const handleCreateMention = () => {
@@ -201,20 +242,101 @@ export default defineComponent({
       }
       editor.value?.chain()
         .focus().insertContentAt({ from, to } as any, [
-          {
-            type: 'mention',
-            attrs: { id: 'test', name: selectionContent }
-          },
-          {
-            type: 'text',
-            text: ' ',
-          },
-        ])
+        {
+          type: 'mention',
+          attrs: { id: 'test', name: selectionContent }
+        },
+        {
+          type: 'text',
+          text: ' ',
+        },
+      ])
         .run();
+    };
+    const handleUpload = () => {
+      isUploadModalShown.value = true;
+    };
+    const handleCreateArticle = () => {
+
+    };
+
+    const fileUrl = ref<undefined | string>(undefined);
+    const text = ref('');
+    const words = ref<{ word: string; weight: number; }[]>([]);
+
+    const customRequestUploadHandler = async (params: {
+      file: File,
+      name: string;
+      type: FileEnum
+    }) => {
+      const result: {
+        data?: {
+          key: string;
+          uploadToken: string;
+        };
+        message?: string;
+      } = await FileApiService.getCredential({
+        name: params.name,
+        type: params.type
+      });
+      const tokenForUploading = result.data;
+      console.log(tokenForUploading);
+      if (tokenForUploading === undefined) {
+        return;
+      }
+      const observer = {
+        complete(response: { key: string; url: string; }) {
+          console.log(response);
+          fileUrl.value = response.url;
+          NlpApiService.parseWord({
+            url: fileUrl.value!,
+            repositoryEntityId: route.query.repositoryEntityId as string
+          }).then((data) => {
+            if (data.data) {
+              text.value = data.data.text;
+              words.value = data.data.list;
+            }
+          });
+        }
+      };
+      await qiniu
+        .upload(
+          params.file,
+          tokenForUploading.key,
+          tokenForUploading.uploadToken
+        )
+        .subscribe(observer);
+    };
+    const uploadWord = async (event: InputEvent) => {
+      console.log(event);
+      const target = event.target as HTMLInputElement;
+      if (target.files === null) {
+        return;
+      }
+      const file = target.files[0];
+      await customRequestUploadHandler({
+        file,
+        name: file.name,
+        type: FileEnum.Text
+      });
+      // const result = await NlpApiService.parseWord({
+      //   url: fileUrl.value!,
+      //   repositoryEntityId: route.query.repositoryEntityId as string
+      // });
+      // if (result.data) {
+      //   text.value = result.data.text;
+      //   words.value = result.data.list;
+      // }
     };
     return {
       saveSectionArticle,
-      handleCreateMention
+      handleCreateMention,
+      handleUpload,
+      isUploadModalShown,
+      handleCreateArticle,
+      uploadWord,
+      text,
+      words
     };
   }
 });

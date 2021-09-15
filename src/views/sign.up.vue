@@ -19,9 +19,9 @@
       <ant-form-item ref="confirmPassword" label="确认密码" name="confirmPassword">
         <ant-input-password v-model:value="signUpFormState.confirmPassword"/>
       </ant-form-item>
-      <ant-form-item label="头像" ref="formIconRef" name="icon">
+      <ant-form-item label="头像" ref="formIconRef" name="avatar">
         <upload-qiniu
-          v-model="signUpFormState.icon"
+          v-model="signUpFormState.avatar"
           @update:modelValue="handleIconChange"></upload-qiniu>
       </ant-form-item>
       <ant-form-item label="账号类型" ref="type" name="type">
@@ -59,7 +59,7 @@ interface SignUpFormState {
   name: string;
   password: string;
   confirmPassword: string;
-  icon: string;
+  avatar: string;
   phone?: string;
   email: string;
   type: 'personal' | 'organization'
@@ -77,7 +77,7 @@ export default defineComponent({
       name: '',
       password: '',
       confirmPassword: '',
-      icon: '',
+      avatar: '',
       phone: '',
       email: '',
       type: 'personal'
@@ -116,12 +116,12 @@ export default defineComponent({
       email: [
         { required: true, message: '请输入邮箱', trigger: 'blur' },
       ],
-      icon: [
+      avatar: [
         { required: true, message: '请上传头像', trigger: 'change' },
       ]
     };
     const handleIconChange = (event: any) => {
-      signUpFormState.icon = event;
+      signUpFormState.avatar = event;
       // 触发图片表单验证
       formIconRef.value.onFieldChange();
     };

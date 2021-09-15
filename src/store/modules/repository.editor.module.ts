@@ -1,79 +1,30 @@
 /**
- * @author wizard.song
- * @date 2021/
+ * @author songxiwen
+ * @date  2021/9/14 23:29
  */
-
-import {
-  SectionApiService,
-  RepositoryApiService,
-  EdgeApiService,
-  KnowledgeApiService,
-  EdgeNoAuthApiService,
-  KnowledgeNoAuthApiService,
-  RepositoryNoAuthApiService
-} from '@/api.service';
-import { SectionNoAuthApiService } from '@/api.service/no.auth/section.no.auth.api.service';
-// import { CustomerNode } from '@/components/graph/customer.node';
-import { MyShape, magnetAvailabilityHighlighter } from '@/components/graph/my.shape';
-import { ActionEnum, MutationEnum, tiptapInitData } from '@/store/constant';
-import { ToolbarState } from '@/types/toolbar';
 import {
   Addon, Graph, Node, Shape
 } from '@antv/x6';
 import type {
   EntityCompletelyListItemType, ExerciseModelType, KnowledgeModelType,
-  SectionCreateRequestType, SectionResponseType
+  SectionCreateRequestType
 } from 'edu-graph-constant';
 import { Module } from 'vuex';
+import {
+  SectionApiService,
+  RepositoryApiService,
+  EdgeNoAuthApiService,
+  KnowledgeNoAuthApiService,
+  RepositoryNoAuthApiService
+} from '@/api.service';
+import { SectionNoAuthApiService } from '@/api.service/no.auth/section.no.auth.api.service';
+import { magnetAvailabilityHighlighter } from '@/components/graph/my.shape';
+import { ActionEnum, MutationEnum, tiptapInitData } from '@/store/constant';
+import { RepositoryEditorStateType, RootStateType } from '@/store/type';
 
-type KnowledgePreExtendEntityTreeNodeType = {
-  id: string;
-  label: string;
-} & EntityCompletelyListItemType
-
-export type RepositoryEditStateType = {
-  editable: boolean;
-  toolbarState: ToolbarState;
-
-  repositoryEntityList: EntityCompletelyListItemType[];
-  // section tree
-  sectionTree: SectionResponseType[];
-  // section对应的文章实体
-  sectionArticleContent: any;
-  // section对应的文章标题
-  sectionArticleTitle: string;
-  // 当前选中的section key(id)
-  selectedTreeNode: string[];
-  // 当前选中的tree node keys中属于section的部分
-  selectedTreeNodeSectionKeys: string[],
-  // 当前选中的tree node keys中属于entity的部分
-  selectedTreeNodeEntityKeys: string[],
-  // 仓库中当前选中的实体（知识点）id
-  selectedEntityId: string;
-  // 仓库中选中实体（知识点）详情
-  selectedEntityDetail: any;
-  // 选中知识点位于仓库内的前置知识点列表
-  preInnerKnowledgeList?: KnowledgePreExtendEntityTreeNodeType[],
-  // 选中知识点位于仓库外的前置知识点列表
-  preOuterKnowledgeList?: KnowledgePreExtendEntityTreeNodeType[],
-  // 选中知识点位于仓库外的导出知识点列表
-  extendInnerKnowledgeList?: KnowledgePreExtendEntityTreeNodeType[],
-  // 选中知识点位于仓库外的导出知识点列表
-  extendOuterKnowledgeList?: KnowledgePreExtendEntityTreeNodeType[],
-  // antV graph实例
-  graph: {
-    graph?: Graph,
-    dnd?: Addon.Dnd
-  }
-  // 仓库内知识边列表，graph
-  repositoryEdgeList: any[];
-  // 仓库内知识点列表，graph
-  knowledgeList: EntityCompletelyListItemType[];
-}
-
-export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
+export const repositoryEditorModule: Module<RepositoryEditorStateType, RootStateType> = {
   state: () => ({
-    editable: false,
+    editable: undefined,
     // section
     sectionTree: [],
     // section富文本
@@ -145,79 +96,9 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
     [MutationEnum.SET_SELECTED_ENTITY_DETAIL](state, { detail }) {
       state.selectedEntityDetail = detail;
     },
-    [MutationEnum.SET_EDGE_LIST_BY_REPOSITORY_ID](state, { nodes, edges }) {
-      // MyShape.config({
-      //   attrs: {
-      //     root: {
-      //       magnet: false,
-      //     },
-      //     body: {
-      //       fill: '#f5f5f5',
-      //       stroke: '#d9d9d9',
-      //       strokeWidth: 1,
-      //     },
-      //   },
-      //   ports: {
-      //     items: [
-      //       {
-      //         group: 'out',
-      //       },
-      //     ],
-      //     groups: {
-      //       in: {
-      //         position: {
-      //           name: 'top',
-      //         },
-      //         attrs: {
-      //           portBody: {
-      //             magnet: 'passive',
-      //             r: 6,
-      //             stroke: '#ffa940',
-      //             fill: '#fff',
-      //             strokeWidth: 2,
-      //           },
-      //         },
-      //       },
-      //       out: {
-      //         position: {
-      //           name: 'bottom',
-      //         },
-      //         attrs: {
-      //           portBody: {
-      //             magnet: true,
-      //             r: 6,
-      //             fill: '#fff',
-      //             stroke: '#3199FF',
-      //             strokeWidth: 2,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   portMarkup: [
-      //     {
-      //       tagName: 'circle',
-      //       selector: 'portBody',
-      //     },
-      //   ],
-      // });
-      state.knowledgeList = nodes.map((item: EntityCompletelyListItemType) => ({
-        id: item.entity.id,
-        height: 30,
-        width: 150,
-        label: (<KnowledgeModelType | ExerciseModelType> item.content).name,
-        data: item,
-        attrs: {
-          root: {
-            magnet: false,
-          },
-          body: {
-            fill: '#f5f5f5',
-            stroke: '#d9d9d9',
-            strokeWidth: 1,
-          },
-        },
-        ports: {
+    [MutationEnum.SET_EDGE_LIST_BY_REPOSITORY_ID](state, { nodes, edges, hasAuth }) {
+      state.knowledgeList = nodes.list.map((item: EntityCompletelyListItemType) => {
+        const ports = {
           items: [
             {
               id: `${item.entity.id}-in`,
@@ -270,14 +151,45 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
               },
             },
           },
-        },
-        portMarkup: [
-          {
-            tagName: 'circle',
-            selector: 'portBody',
+        };
+        let node: any = {
+          id: item.entity.id,
+          height: 30,
+          width: 150,
+          label: (<KnowledgeModelType | ExerciseModelType> item.content).name,
+          data: item,
+          attrs: {
+            root: {
+              magnet: false,
+            },
+            body: {
+              fill: '#f5f5f5',
+              stroke: '#d9d9d9',
+              strokeWidth: 1,
+            },
           },
-        ],
-      }));
+          portMarkup: [
+            {
+              tagName: 'circle',
+              selector: 'portBody',
+            },
+          ],
+        };
+        if (nodes.view[item.entity.id]) {
+          console.log(nodes.view[item.entity.id]);
+          node = {
+            ...node,
+            position: nodes.view[item.entity.id]
+          };
+        }
+        if (hasAuth) {
+          return {
+            ...node,
+            ports
+          };
+        }
+        return node;
+      });
       state.repositoryEdgeList = edges.map((item: any) => ({
         id: item.id,
         source: {
@@ -290,7 +202,6 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
         },
         labels: [item.description || ''],
         connector: 'rounded',
-        // connector: 'normal',
         attrs: {
           line: {
             stroke: '#a0a0a0',
@@ -488,20 +399,17 @@ export const repositoryEditModule: Module<RepositoryEditStateType, any> = {
         .getRepositoryBindEntityList(params.repositoryEntityId);
       commit(MutationEnum.SET_REPOSITORY_BIND_ENTITY_LIST, { list: result });
     },
-    async [ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID]({ commit }, params
-      :
-      {
-        repositoryEntityId: string
-      }) {
+    async [ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID]({ commit }, { repositoryEntityId, hasAuth }) {
       const edgeList = await EdgeNoAuthApiService.getListByRepositoryId({
-        edgeRepositoryEntityId: params.repositoryEntityId
+        edgeRepositoryEntityId: repositoryEntityId
       });
       const repositoryKnowledgeList = await KnowledgeNoAuthApiService.getRepositoryKnowledgeList({
-        repositoryEntityId: params.repositoryEntityId
+        repositoryEntityId
       });
       commit(MutationEnum.SET_EDGE_LIST_BY_REPOSITORY_ID, {
         edges: edgeList.data,
-        nodes: repositoryKnowledgeList.data
+        nodes: repositoryKnowledgeList.data,
+        hasAuth
       });
     },
     // 获取前置、导出知识点

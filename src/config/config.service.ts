@@ -9,11 +9,11 @@ export class ConfigService {
 
   private static apiTestBaseURL = 'http://edu.songxiwen.com.cn/api'
 
-  static apiBaseURL = ConfigService.apiTestBaseURL
+  static apiBaseURL = ConfigService.apiLocalBaseURL
 
   private static websocketLocalBaseURL = 'ws://localhost:8089/websocket'
 
   private static websocketTestBaseURL = 'ws://edu.songxiwen.com.cn/websocket'
 
-  static websocketBaseURL = ConfigService.websocketTestBaseURL
+  static websocketBaseURL = ConfigService.websocketLocalBaseURL
 }

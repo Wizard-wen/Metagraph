@@ -17,7 +17,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const spinning = computed(() => store.state.isSpinning);
+    const spinning = computed(() => store.state.global.isSpinning);
     return {
       spinning
     };

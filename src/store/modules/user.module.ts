@@ -1,27 +1,13 @@
 /**
- *
+ * @author songxiwen
+ * @date  2021/9/14 23:29
  */
 
 import { Module } from 'vuex';
-import { MutationEnum } from './constant/mutation.enum';
+import { RootStateType, UserStateType } from '@/store/type';
+import { MutationEnum } from '@/store/constant';
 
-export type UserStateType = {
-  user?: {
-    id: string;
-    name: string;
-  };
-  isLogin?: boolean;
-  token?: string;
-  userState?: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  isLoginState?: boolean;
-  tokenState?: string
-}
-
-export const userModule: Module<UserStateType, any> = {
+export const userModule: Module<UserStateType, RootStateType> = {
   state: () => ({
     user: undefined,
     isLogin: false,
@@ -45,7 +31,7 @@ export const userModule: Module<UserStateType, any> = {
           return JSON.parse(localStorage.getItem('user')!);
         }
         return undefined;
-      }
+      };
     },
     tokenState(state) {
       if (state.token) {

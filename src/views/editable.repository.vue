@@ -54,7 +54,7 @@ import { RepositoryApiService, RepositoryNoAuthApiService, SectionApiService } f
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import { EntityCompletelyListItemType, RepositoryModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, reactive, ref, computed, createVNode
+  defineComponent, onMounted, reactive, ref, computed, createVNode, onBeforeMount
 } from 'vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { useRoute } from 'vue-router';
@@ -77,7 +77,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useStore();
-    const spinning = computed(() => store.state.isSpinning);
+    const spinning = computed(() => store.state.global.isSpinning);
     const repositoryEntityId = ref('');
     const repository = reactive<{
       repositoryModel?: EntityCompletelyListItemType
@@ -87,8 +87,8 @@ export default defineComponent({
     const isEditable = ref(false);
     const viewStatus = ref(true);
     const sectionEntityId = computed(() => {
-      if (store.state.repositoryEdit.selectedTreeNodeSectionKeys) {
-        return store.state.repositoryEdit.selectedTreeNodeSectionKeys[0];
+      if (store.state.repositoryEditor.selectedTreeNodeSectionKeys) {
+        return store.state.repositoryEditor.selectedTreeNodeSectionKeys[0];
       }
       return undefined;
     });
@@ -105,15 +105,21 @@ export default defineComponent({
           status = content.userId === JSON.parse(user).id;
           isEditable.value = status;
         }
+        console.log('befor commit ', status);
         store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
           status
         });
       }
     };
-    const sectionArticle = computed(() => store.state.repositoryEdit.sectionArticleContent);
+    const sectionArticle = computed(() => store.state.repositoryEditor.sectionArticleContent);
+    onBeforeMount(async () => {
+      store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
+        status: undefined
+      });
+      await getRepositoryByEntityId();
+    });
     onMounted(async () => {
       repositoryEntityId.value = route.query.repositoryEntityId as string;
-      await getRepositoryByEntityId();
     });
     const saveSectionArticle = async (params: {
       content: Record<string, any>,

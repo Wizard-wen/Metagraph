@@ -1,8 +1,8 @@
 /**
- *
+ * @author wizard
+ * @date 2021/09/12 16:29
  */
 
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
 import type {
   PublicEntityType,
   ExerciseResponseType,
@@ -12,6 +12,9 @@ import type {
   UserResponseType,
   DomainResponseType
 } from 'edu-graph-constant';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class StarApiService {

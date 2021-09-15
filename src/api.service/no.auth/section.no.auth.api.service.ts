@@ -1,10 +1,12 @@
-import { ApiPathEnum, PublicApiResponseType, RequestUtil } from '@/api.service/api.config';
-import { SectionArticleResponseType, SectionTreeNodeType } from 'edu-graph-constant';
-
 /**
  * @author songxiwen
  * @date  2021/9/12 23:21
  */
+
+import type { SectionArticleResponseType, SectionTreeNodeType } from 'edu-graph-constant';
+import { ApiPathEnum } from '@/api.service/config/api.config';
+import { RequestUtil } from '@/utils';
+import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SectionNoAuthApiService {
