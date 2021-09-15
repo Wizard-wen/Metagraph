@@ -1,0 +1,152 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Pingfang SC", "Microsoft Yahei", "WenQuanYi Micro Hei", 'PingFangSC-Medium', sans-serif;
+    font-size: .14rem;
+    user-select: none;
+    overflow-x: hidden;
+    background: transparent !important;
+}
+
+* {
+    -webkit-text-size-adjust: none;
+}
+
+html {
+    /* overflow-y: scroll; */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    background-color: #f9f9f9;
+    font-size: 100px;
+}
+
+body,
+div,
+span,
+header,
+footer,
+nav,
+section,
+aside,
+article,
+ul,
+dl,
+dt,
+dd,
+li,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+i,
+b,
+select,
+figure,
+figcaption {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-style: normal;
+    text-decoration: none;
+    border: none;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    outline: none;
+    word-break: break-all;
+    /* 字体 element-ui */
+
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+}
+input,
+input[type="button"],
+input[type="submit"],
+input[type="search"],
+input[type="reset"] {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+textarea {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* //动画 */
+.u_fadeOut-show {
+    animation-name: u_fadeOut-show;
+    animation-duration: .3s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
+}
+
+@keyframes u_fadeOut-show {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.clearFix:before,
+.clearFix:after {
+    content: '.';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.html_file p {
+    font: 18px/32px "Microsoft Yahei";
+    color: #404040;
+    text-indent: 2em;
+    margin: 32px 0 0;
+}
+
+input[type=search]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    /*此处只是去掉默认的小×*/
+}
+
+#app :not(.ivu-slider-input) > .ivu-input-number, #app :not(.ivu-slider-input) > .ivu-date-picker, #app :not(.ivu-slider-input) > .ivu-date-picker{
+    width: 100%;
+}
+#app .ivu-cascader{
+    display: inline-block;
+    width: 100%;
+}
+#app .ivu-layout-header{
+    background-color: #262626;
+}
+
+/* *::-webkit-scrollbar {
+    width: 4px;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(136,136,136,0.1);
+    border-radius: 4px;
+}
+*:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(136,136,136,0.4);
+} */
+
+body .el-table th.gutter{
+    display: table-cell!important;
+}
+
+body .el-table colgroup.gutter{
+    display: table-cell!important;
+}
+
+th{
+    padding: 0!important;
+}
+
+
+
+
