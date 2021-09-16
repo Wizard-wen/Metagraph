@@ -2,7 +2,7 @@
 
 > 让不同知识背景的人站在同一起跑线
 
-__[点击体验](http://sdu.songxiwen.co.cn)__
+__[点击体验](http://edu.songxiwen.com.cn)__
 
 # Introduce
 Graph Designer是一款知识创作分享工具，不同于以往的知识创作平台，Graph Designer提供了强大的内容关联能力。
