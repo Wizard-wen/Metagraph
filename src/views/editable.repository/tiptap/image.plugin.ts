@@ -4,7 +4,7 @@
  */
 
 import { Node, nodeInputRule } from '@tiptap/core';
-
+import { Text } from '@tiptap/extension-text';
 import { uploadImagePlugin, UploadFn } from './upload_image';
 
 /**
@@ -31,7 +31,7 @@ declare module '@tiptap/core' {
       /**
        * Add an image
        */
-      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType;
+      setImage: (options: { src: string; alt?: string; title?: string; class?: string; height: string; width: string }) => ReturnType;
     };
   }
 }
@@ -64,6 +64,15 @@ export const TipTapCustomImage = (uploadFn: UploadFn) => Node.create<ImageOption
       title: {
         default: null,
       },
+      class: {
+        default: null,
+      },
+      height: {
+        default: null,
+      },
+      width: {
+        default: null,
+      },
     };
   },
   parseHTML: () => [
@@ -77,6 +86,7 @@ export const TipTapCustomImage = (uploadFn: UploadFn) => Node.create<ImageOption
           src: element.getAttribute('src'),
           title: element.getAttribute('title'),
           alt: element.getAttribute('alt'),
+          class: element.getAttribute('class'),
         };
         return obj;
       },
@@ -87,14 +97,15 @@ export const TipTapCustomImage = (uploadFn: UploadFn) => Node.create<ImageOption
   addCommands() {
     return {
       setImage:
-          (attrs) => ({ state, dispatch }) => {
-            const { selection } = state;
-            const position = selection.$head ? selection.$head.pos : selection.$to.pos;
-
-            const node = this.type.create(attrs);
-            const transaction = state.tr.insert(position, node);
-            return dispatch?.(transaction);
-          },
+        (attrs) => ({ state, dispatch }) => {
+          const { selection } = state;
+          const position = selection.$head ? selection.$head.pos : selection.$to.pos;
+          console.log('before', selection, this);
+          const node = this.type.create(attrs);
+          const transaction = state.tr.insert(position, node);
+          console.log('after', selection, transaction.selection);
+          return dispatch?.(transaction);
+        },
     };
   },
   addInputRules() {

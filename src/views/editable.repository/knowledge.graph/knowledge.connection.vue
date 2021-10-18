@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { Addon, Graph } from '@antv/x6';
+import * as AntvX6 from '@antv/x6';
 import {
   computed, defineComponent, ref
 } from 'vue';
@@ -90,8 +90,8 @@ export default defineComponent({
     const extendOuterKnowledgeList = computed(() => store.state.repositoryEditor.extendOuterKnowledgeList);
     const repositoryEntityIdList = computed(() => store.getters.repositoryEntityIdList);
     const graph = computed<{
-      graph?: Graph,
-      dnd?: Addon.Dnd
+      graph?: AntvX6.Graph,
+      dnd?: AntvX6.Addon.Dnd
     }>(() => store.state.repositoryEditor.graph);
     const toolbarElementList = [
       { label: '前置', value: 'pre' },

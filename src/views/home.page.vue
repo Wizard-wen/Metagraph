@@ -54,6 +54,8 @@ export default defineComponent({
   .content {
     flex: 1;
     min-width: 500px;
+    height: calc(100vh - 62px);
+    overflow: scroll;
   }
 
   .explore {

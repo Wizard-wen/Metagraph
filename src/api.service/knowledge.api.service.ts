@@ -44,4 +44,21 @@ export class KnowledgeApiService {
       requestBody: params
     });
   }
+
+  static async update(params: {
+    knowledgeEntityId: string;
+    name: string;
+    knowledgeBaseTypeId: string;
+    domainId?: string;
+  }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
+    return RequestUtil.post<{
+      knowledgeEntityId: string;
+      name: string;
+      knowledgeBaseTypeId: string;
+      domainId?: string;
+    }, EntityCompletelyListItemType>({
+      apiPath: ApiPathEnum.UpdateKnowledge,
+      requestBody: params
+    });
+  }
 }

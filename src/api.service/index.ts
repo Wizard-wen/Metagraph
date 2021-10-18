@@ -19,3 +19,4 @@ export { RepositoryNoAuthApiService } from './no.auth/repository.no.auth.api.ser
 export { EdgeNoAuthApiService } from './no.auth/edge.no.auth.api.service';
 export { KnowledgeNoAuthApiService } from './no.auth/knowledge.no.auth.api.service';
 export { CommentNoAuthApiService } from './no.auth/comment.no.auth.api.service';
+export { SectionNoAuthApiService } from './no.auth/section.no.auth.api.service';

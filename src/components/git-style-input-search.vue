@@ -9,10 +9,7 @@
                @focus="show()"
                @keydown.enter="getSearchList($event)"
         >
-        <img
-          v-if="!isSearchListShow"
-          height="25" width="25" class="search-icon"
-          src="../assets/edu-header/search.svg" alt="">
+        <search-icon v-if="!isSearchListShow" style="font-size: 25px;"></search-icon>
       </div>
       <div class="search-list" v-if="isSearchListShow">
         <div class="search-item"
@@ -22,9 +19,7 @@
              @mouseout="handleMouseover($event, 'out')"
              :style="{background: inner ? '#0366d6': '#fff', color: inner ? '#fff' : 'black'}">
           <div class="icon" style="display: block">
-            <img
-              height="30" width="30"
-              src="../assets/edu-header/search.svg" alt="">
+            <search-icon v-if="!isSearchListShow" style="font-size: 30px;"></search-icon>
           </div>
           <div class="text">{{ item.name }}</div>
           <div class="tag">all</div>
@@ -37,9 +32,7 @@
 <script lang="ts">
 import { RepositoryApiService } from '@/api.service';
 import { defineComponent } from 'vue';
-import type {
-  RepositoryResponseType,
-} from 'edu-graph-constant';
+import SearchIcon from '@/components/icons/search.icon.vue';
 
 export default defineComponent({
   name: 'edu-header',
@@ -59,7 +52,9 @@ export default defineComponent({
       return this.isSearchListShow ? 'expand-search-input' : 'normal-search-input';
     }
   },
-  components: {},
+  components: {
+    SearchIcon
+  },
   methods: {
     handleInputFocus(event: InputEvent, status: 'blur' | 'focus') {
       console.log(event);

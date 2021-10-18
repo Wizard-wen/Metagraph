@@ -29,7 +29,7 @@
               <ant-list-item>
                 <div class="repo-item" @click="goRepoPage(item)">
                   <div class="icon">
-                    <img src="@/assets/home-aside/knowledge.svg" height="16" width="16" alt="">
+                    <repository-list-icon style="font-size: 16px;"></repository-list-icon>
                   </div>
                   <span class="text" style="max-width: 125px">{{ item.author.name }}</span>
                   /
@@ -45,20 +45,22 @@
 </template>
 
 <script lang="ts">
-import { RepositoryApiService } from '@/api.service';
-import { useStore } from '@/store';
 import { RepositoryModelType } from 'edu-graph-constant';
 import {
-  computed, defineComponent, onMounted, reactive, ref
+  defineComponent, onMounted, reactive, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import type { EntityCompletelyListItemType } from '../../../../edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { useStore } from '@/store';
+import { RepositoryApiService } from '@/api.service';
+import RepositoryListIcon from '@/components/icons/repository.list.icon.vue';
 
 export default defineComponent({
   name: 'home-aside',
   components: {
-    PlusOutlined
+    PlusOutlined,
+    RepositoryListIcon
   },
   setup() {
     const router = useRouter();
@@ -83,7 +85,7 @@ export default defineComponent({
         console.log(localStorage.getItem('user'));
         user.content = JSON.parse(localStorage.getItem('user')!);
         await getOwnRepositoryList();
-        filteredRepositoryList.value = ownRepositoryList.value
+        filteredRepositoryList.value = ownRepositoryList.value;
       }
     });
     const goRepoPage = async (item: EntityCompletelyListItemType) => {
@@ -96,8 +98,8 @@ export default defineComponent({
     };
     const handleFilterRepositoryList = () => {
       console.log(searchText.value);
-      if (searchText.value === ''){
-        filteredRepositoryList.value = ownRepositoryList.value
+      if (searchText.value === '') {
+        filteredRepositoryList.value = ownRepositoryList.value;
       }
       filteredRepositoryList.value = ownRepositoryList
         .value?.filter(

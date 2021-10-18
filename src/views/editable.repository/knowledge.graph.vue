@@ -49,7 +49,9 @@
           <zoom-in-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomInGraph"/>
           <zoom-out-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomOutGraph"/>
         </div>
-        <div id="container" class="graph-graph"></div>
+        <div style="display: flex">
+          <div id="container" class="graph-graph"></div>
+        </div>
         <div id="mini-map-container" class="graph-mini-map"></div>
 
       </div>
@@ -61,16 +63,14 @@
 </template>
 
 <script lang="ts">
-import { Addon, Graph, NodeView } from '@antv/x6';
-import { RandomLayout } from '@antv/layout';
+import * as AntvX6 from '@antv/x6';
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
 import {
   defineComponent, onMounted, computed, reactive, ref, onUnmounted, watch
 } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import { ConfigService } from '@/config/config.service';
-import { magnetAvailabilityHighlighter, MyShape } from '@/components/graph/my.shape';
 import { RepositoryApiService } from '@/api.service';
 import { EdgeApiService } from '@/api.service/edge.api.service';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
@@ -95,22 +95,9 @@ export default defineComponent({
     const isPreTreeGraphShow = ref(false);
     const isUserOwnRepository = ref(false);
     const graph = computed<{
-      graph?: Graph,
-      dnd?: Addon.Dnd
+      graph?: AntvX6.Graph,
+      dnd?: AntvX6.Addon.Dnd
     }>(() => store.state.repositoryEditor.graph);
-
-    function update(view: NodeView) {
-      const { cell } = view;
-      if (cell instanceof MyShape) {
-        cell.getInPorts().forEach((port) => {
-          const portNode = view.findPortElem(port.id!, 'portBody');
-          view.unhighlight(portNode, {
-            highlighter: magnetAvailabilityHighlighter,
-          });
-        });
-        cell.updateInPorts(graph.value.graph!);
-      }
-    }
 
     const knowledgeInEdgeList = ref<EntityCompletelyListItemType[]>([]);
     // modal
@@ -231,12 +218,6 @@ export default defineComponent({
         knowledgeFormState.temporaryEdgeId = edge.id;
         if (edge.getSourceCell() === null || edge.getTargetCell() === null) {
           return;
-        }
-        if (previousView) {
-          update(previousView as NodeView);
-        }
-        if (currentView) {
-          update(currentView as NodeView);
         }
         const sourceCellData = edge.getSourceCell()?.data;
         const targetCellData = edge.getTargetCell()?.data;

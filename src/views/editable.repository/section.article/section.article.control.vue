@@ -161,7 +161,7 @@
     <div v-if="words" style="max-height: 300px;overflow: scroll;width: 100%;">
       <ant-list size="small" bordered :data-source="words">
         <template #renderItem="{ item }">
-          <ant-list-item>{{ item.word }} ----  {{item.weight}}</ant-list-item>
+          <ant-list-item>{{ item.word }} ---- {{ item.weight }}</ant-list-item>
         </template>
       </ant-list>
     </div>
@@ -169,16 +169,6 @@
 </template>
 
 <script lang="ts">
-import { FileApiService } from '@/api.service';
-import { NlpApiService } from '@/api.service/nlp.api.service';
-import CodeIcon from '@/components/icons/code.icon.vue';
-import FindIcon from '@/components/icons/find.icon.vue';
-import H1Icon from '@/components/icons/h1.icon.vue';
-import H2Icon from '@/components/icons/h2.icon.vue';
-import H3Icon from '@/components/icons/h3.icon.vue';
-import Quote from '@/components/icons/quote.vue';
-import SaveIcon from '@/components/icons/save.icon.vue';
-import UploadIcon from '@/components/icons/upload.icon.vue';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -192,9 +182,19 @@ import { Editor } from '@tiptap/vue-3';
 import { FileEnum } from 'edu-graph-constant';
 import * as qiniu from 'qiniu-js';
 import {
-  defineComponent, PropType, ref, toRefs
+  defineComponent, PropType, ref, toRef
 } from 'vue';
 import { useRoute } from 'vue-router';
+import { FileApiService } from '@/api.service';
+import { NlpApiService } from '@/api.service/nlp.api.service';
+import CodeIcon from '@/components/icons/code.icon.vue';
+import FindIcon from '@/components/icons/find.icon.vue';
+import H1Icon from '@/components/icons/h1.icon.vue';
+import H2Icon from '@/components/icons/h2.icon.vue';
+import H3Icon from '@/components/icons/h3.icon.vue';
+import Quote from '@/components/icons/quote.vue';
+import SaveIcon from '@/components/icons/save.icon.vue';
+import UploadIcon from '@/components/icons/upload.icon.vue';
 
 export default defineComponent({
   name: 'section.article.control',
@@ -221,12 +221,13 @@ export default defineComponent({
     SaveIcon,
     FindIcon
   },
-  setup(props, context) {
-    const { editor } = toRefs<{ editor: Editor }>(props);
+  emits: ['save'],
+  setup(props, { emit }) {
+    const editor = toRef(props, 'editor');
     const route = useRoute();
     // 保存文章
     const saveSectionArticle = () => {
-      context.emit('save');
+      emit('save');
     };
     const isUploadModalShown = ref(false);
     // 增加section
@@ -242,15 +243,15 @@ export default defineComponent({
       }
       editor.value?.chain()
         .focus().insertContentAt({ from, to } as any, [
-        {
-          type: 'mention',
-          attrs: { id: 'test', name: selectionContent }
-        },
-        {
-          type: 'text',
-          text: ' ',
-        },
-      ])
+          {
+            type: 'mention',
+            attrs: { id: 'test', name: selectionContent }
+          },
+          {
+            type: 'text',
+            text: ' ',
+          },
+        ])
         .run();
     };
     const handleUpload = () => {
@@ -319,14 +320,6 @@ export default defineComponent({
         name: file.name,
         type: FileEnum.Text
       });
-      // const result = await NlpApiService.parseWord({
-      //   url: fileUrl.value!,
-      //   repositoryEntityId: route.query.repositoryEntityId as string
-      // });
-      // if (result.data) {
-      //   text.value = result.data.text;
-      //   words.value = result.data.list;
-      // }
     };
     return {
       saveSectionArticle,

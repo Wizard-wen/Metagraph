@@ -3,6 +3,7 @@
  * @date 2021/09/12 16:29
  */
 
+import type { UserModelType } from 'edu-graph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
@@ -13,6 +14,13 @@ export class UserApiService {
     return RequestUtil.post<{ password: string; name: string }, any>({
       apiPath: ApiPathEnum.LoginByName,
       requestBody: params
+    });
+  }
+
+  static async getById(): Promise<PublicApiResponseType<UserModelType>> {
+    return RequestUtil.post<undefined, UserModelType>({
+      apiPath: ApiPathEnum.GetById,
+      requestBody: undefined
     });
   }
 

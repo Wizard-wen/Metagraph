@@ -71,7 +71,7 @@ Graph Designer的核心思想是帮助您在创作内容的同时思考和整理
     - [ ] 我的pr
     - [ ] 我的消息列表
 
-#Quick Start
+# Quick Start
 
 ## 创建仓库
 
@@ -91,7 +91,7 @@ Graph Designer的核心思想是帮助您在创作内容的同时思考和整理
 - 图编辑时记录下位置信息，存储在RepositoryEntity表中
 
 
-#Roadmap
+# Roadmap
 ## Feature
 - 知识地图页面，支持知识路径搜索，基于Neo4j图数据库
 - 知识地图页面，支持输入Cypher语句，回显搜索结果

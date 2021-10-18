@@ -45,6 +45,7 @@
         <ant-form-item label="仓库描述">
           <ant-text-area v-model:value="repositoryFormState.description"/>
         </ant-form-item>
+<!--        <upload-crop></upload-crop>-->
       </ant-form>
       <div class="control-button">
         <ant-button type="primary" @click="onSubmit">创建</ant-button>
@@ -55,6 +56,7 @@
   </div>
 </template>
 <script lang="ts">
+import UploadCrop from '@/components/upload/upload.crop.vue'
 import { RepositoryApiService } from '@/api.service';
 import {
   defineComponent, reactive, UnwrapRef
@@ -74,7 +76,8 @@ export default defineComponent({
   components: {
     UploadQiniu,
     LockOutlined,
-    BookOutlined
+    BookOutlined,
+    UploadCrop
   },
   setup() {
     const repositoryFormState: UnwrapRef<RepositoryFormStateType> = reactive({

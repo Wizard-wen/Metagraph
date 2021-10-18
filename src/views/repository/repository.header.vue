@@ -12,24 +12,24 @@
       <div class="control">
         <div class="btn">
           <div class="detail">
-            <img height="16" width="16" style="margin-right: 5px;vertical-align: text-top"
-                 src="../../assets/repo/star.svg" alt="">
+            <star-icon
+              style="font-size: 16px;margin-right: 6px; vertical-align: text-bottom"></star-icon>
             Watch
           </div>
           <div class="count">24</div>
         </div>
         <div class="btn">
           <div class="detail">
-            <img height="16" width="16" style="margin-right: 5px;vertical-align: text-top"
-                 src="../../assets/repo/star.svg" alt="">
+            <star-icon
+              style="font-size: 16px;margin-right: 6px; vertical-align: text-bottom"></star-icon>
             Watch
           </div>
           <div class="count">24</div>
         </div>
         <div class="btn">
           <div class="detail">
-            <img height="16" width="16" style="margin-right: 5px;vertical-align: text-top"
-                 src="../../assets/repo/star.svg" alt="">
+            <star-icon
+              style="font-size: 16px;margin-right: 6px; vertical-align: text-bottom"></star-icon>
             Watch
           </div>
           <div class="count">24</div>
@@ -40,8 +40,8 @@
       <div class="nav">
         <div class="nav-item" v-for="(item, index) in 6"
              :key="index" :class="{'nav-item-active': index === 0}">
-          <img height="16" width="16" style="margin-right: 6px; vertical-align: text-bottom"
-               src="../../assets/repo/star.svg" alt="">
+          <star-icon
+            style="font-size: 16px;margin-right: 6px; vertical-align: text-bottom"></star-icon>
           <span>Code</span>
           <span style="margin-left: 6px">11</span>
         </div>
@@ -52,9 +52,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import StarIcon from '@/components/icons/star.icon.vue';
 
 export default defineComponent({
-  name: 'repository.header'
+  name: 'repository.header',
+  components: {
+    StarIcon
+  }
 });
 </script>
 
@@ -125,11 +129,14 @@ export default defineComponent({
       }
     }
   }
-  .nav-box{
+
+  .nav-box {
     width: 100%;
     padding: 0 32px;
+
     .nav {
       display: flex;
+
       .nav-item {
         display: flex;
         align-items: center;
@@ -140,9 +147,11 @@ export default defineComponent({
         line-height: 30px;
         text-align: center;
       }
+
       .nav-item-active {
         position: relative;
-        &:before{
+
+        &:before {
           content: "";
           position: absolute;
           left: 0;

@@ -34,11 +34,11 @@
   </ant-list>
 </template>
 <script lang="ts">
-import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
 import {
-  defineComponent, onMounted, PropType, ref, toRefs
+  defineComponent, onMounted, PropType, ref, toRef, watch
 } from 'vue';
 import { CommentEntityType } from 'edu-graph-constant';
+import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
 
 type Comment = Record<string, string>;
 
@@ -49,19 +49,23 @@ export default defineComponent({
       required: true
     },
     entityType: {
-      type: String as PropType<CommentEntityType>,
+      type: String,
       required: true
     }
   },
   setup(props) {
-    const { entityType, entityId } = toRefs(props);
+    const entityType = toRef(props, 'entityType');
+    const entityId = toRef(props, 'entityId');
     const commentList = ref<any[]>([]);
     const submitting = ref<boolean>(false);
     const commentContent = ref<string>('');
+    watch(entityType, (newValue) => {
+      console.log(newValue, 'sssssss');
+    });
     const getCommentList = async () => {
       const result = await CommentNoAuthApiService.getCommentByEntityId({
         entityId: entityId.value,
-        entityType: entityType.value,
+        entityType: entityType.value as CommentEntityType,
         pageIndex: 0,
         pageSize: 10
       });
@@ -76,7 +80,7 @@ export default defineComponent({
       submitting.value = true;
       await CommentApiService.create({
         entityId: entityId.value,
-        entityType: entityType.value,
+        entityType: entityType.value as CommentEntityType,
         content: commentContent.value
       });
       await getCommentList();

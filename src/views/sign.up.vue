@@ -53,7 +53,7 @@ import {
   defineComponent, reactive, ref, UnwrapRef
 } from 'vue';
 import { useRouter } from 'vue-router';
-import UploadQiniu from '../components/upload/upload.qiniu.vue';
+import UploadQiniu from '@/components/upload/upload.qiniu.vue';
 
 interface SignUpFormState {
   name: string;

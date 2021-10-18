@@ -2,9 +2,7 @@
  * @author songxiwen
  * @date  2021/9/14 23:29
  */
-import {
-  Addon, Graph, Node, Shape
-} from '@antv/x6';
+import * as AntvX6 from '@antv/x6';
 import type {
   EntityCompletelyListItemType, ExerciseModelType, KnowledgeModelType,
   SectionCreateRequestType
@@ -15,10 +13,9 @@ import {
   RepositoryApiService,
   EdgeNoAuthApiService,
   KnowledgeNoAuthApiService,
-  RepositoryNoAuthApiService
+  RepositoryNoAuthApiService,
+  SectionNoAuthApiService
 } from '@/api.service';
-import { SectionNoAuthApiService } from '@/api.service/no.auth/section.no.auth.api.service';
-import { magnetAvailabilityHighlighter } from '@/components/graph/my.shape';
 import { ActionEnum, MutationEnum, tiptapInitData } from '@/store/constant';
 import { RepositoryEditorStateType, RootStateType } from '@/store/type';
 
@@ -228,7 +225,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     },
     // 初始化 antV Graph
     [MutationEnum.INIT_GRAPH](state) {
-      state.graph.graph = new Graph({
+      state.graph.graph = new AntvX6.Graph({
         autoResize: true,
         selecting: {
           enabled: true,
@@ -249,7 +246,15 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
           visible: true, // 渲染网格背景
         },
         highlighting: {
-          magnetAvailable: magnetAvailabilityHighlighter,
+          magnetAvailable: {
+            name: 'stroke',
+            args: {
+              attrs: {
+                fill: '#fff',
+                stroke: '#47C769',
+              },
+            },
+          },
           magnetAdsorbed: {
             name: 'stroke',
             args: {
@@ -275,7 +280,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
             },
           },
           createEdge() {
-            return new Shape.Edge({
+            return new AntvX6.Shape.Edge({
               attrs: {
                 line: {
                   stroke: '#a0a0a0',
@@ -318,7 +323,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
         },
       });
       // 初始化可拖拽节点框
-      state.graph.dnd = new Addon.Dnd({
+      state.graph.dnd = new AntvX6.Addon.Dnd({
         // 目标画布。
         target: state.graph.graph,
         // 是否根据目标画布的缩放比例缩放拖拽的节点。
@@ -326,12 +331,12 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
         // 拖拽结束时，而且目标节点不能添加到目标画布时，是否使用动画将代理画布移动到开始拖动的位置。
         animation: true,
         // 拖拽结束时，获取放置到目标画布的节点，默认克隆代理节点。
-        getDropNode(draggingNode: Node, options: Addon.Dnd.GetDropNodeOptions) {
+        getDropNode(draggingNode: AntvX6.Node, options: AntvX6.Addon.Dnd.GetDropNodeOptions) {
           console.log(draggingNode, options);
           return draggingNode.clone();
         },
         // 拖拽结束时，验证节点是否可以放置到目标画布中。
-        async validateNode(droppingNode: Node, options: Addon.Dnd.ValidateNodeOptions) {
+        async validateNode(droppingNode: AntvX6.Node, options: AntvX6.Addon.Dnd.ValidateNodeOptions) {
           // 绑定节点到当前仓库
           await RepositoryApiService.BindEntityToRepository({
             entityId: droppingNode.data.entity.entity.id,

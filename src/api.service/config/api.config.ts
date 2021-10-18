@@ -9,6 +9,7 @@ export enum ApiPathEnum {
    * knowledge
    */
   CreateKnowledge = '/knowledge/create',
+  UpdateKnowledge = '/knowledge/update',
   RemoveKnowledge = '/knowledge/remove/id',
   SaveKnowledgeDescription = '/knowledge/save/description',
   // 获取知识点
@@ -64,6 +65,7 @@ export enum ApiPathEnum {
    * user
    */
   LoginByName = '/account/loginByName',
+  GetById = '/account/getById',
   RegisterByName = '/account/registerByName',
   /**
    * repository
@@ -87,5 +89,7 @@ export enum ApiPathEnum {
   /**
    * nlp
    */
-  ParseWord = '/nlp/parse/word'
+  ParseWord = '/nlp/parse/word',
+  // domain
+  GetDomainList = '/public/domain/getList'
 }

@@ -2,13 +2,11 @@
 
   <div class="edge-item">
     <div class="top-arrow" v-if="k2 === 'Pre' || k2  === 'Current'">
-      <img height="16" width="16" style=""
-           src="../../../assets/repo/arrowUp1.svg" alt="">
+      <arrow-up-icon style="font-size: 16px;"></arrow-up-icon>
     </div>
     <div class="entity" >
       <div class="left">
-        <img height="16" width="16"
-             src="../../../assets/repo/arrowLeft1.svg" alt="">
+        <arrow-left-icon style="font-size: 16px;"></arrow-left-icon>
       </div>
       <div class="content" :class="{'entity-active': k2 === 'Current'}">
         <div class="inner-content">
@@ -32,13 +30,11 @@
         </div>
       </div>
       <div class="right">
-        <img height="16" width="16"
-             src="../../../assets/repo/arrowRight1.svg" alt="">
+        <arrow-right-icon style="font-size: 16px;"></arrow-right-icon>
       </div>
     </div>
     <div class="bottom-arrow" v-if="k2  === 'After' || k2  === 'Current'">
-      <img height="16" width="16" style=""
-           src="../../../assets/repo/arrowDown4.svg" alt="">
+      <arrow-down-icon style="font-size: 16px;"></arrow-down-icon>
     </div>
   </div>
 </template>
@@ -49,12 +45,20 @@ import { CommentOutlined, StarOutlined, TagOutlined } from '@ant-design/icons-vu
 import {
   defineComponent, ref, onMounted, inject, computed
 } from 'vue';
+import ArrowUpIcon from '@/components/icons/arrow.up.icon.vue';
+import ArrowDownIcon from '@/components/icons/arrow.down.icon.vue';
+import ArrowRightIcon from '@/components/icons/arrow.right.icon.vue';
+import ArrowLeftIcon from '@/components/icons/arrow.left.icon.vue';
 
 export default defineComponent({
   components: {
     StarOutlined,
     CommentOutlined,
-    TagOutlined
+    TagOutlined,
+    ArrowUpIcon,
+    ArrowDownIcon,
+    ArrowRightIcon,
+    ArrowLeftIcon
   },
   props: {
     knowledgeType: {

@@ -1,7 +1,9 @@
 <template>
   <div class="section-article">
     <section-article-control
-      v-if="editable && editor" :editor="editor" @save="saveSectionArticle"></section-article-control>
+      v-if="editable && editor"
+      :editor="editor"
+      @save="saveSectionArticle"></section-article-control>
     <ant-button @click="upload">text</ant-button>
     <div class="article-container">
       <div class="limit-container">
@@ -85,9 +87,7 @@ export default defineComponent({
         return {
           name: {
             default: null,
-            parseHTML: (element) => ({
-              name: element.getAttribute('data-mention-name'),
-            }),
+            parseHTML: (element) => ({ name: element.getAttribute('data-mention-name') }),
             renderHTML: (attributes) => {
               if (!attributes.name) {
                 return {};
@@ -116,6 +116,7 @@ export default defineComponent({
     });
     const editor: Ref<Editor | undefined> = useEditor({
       editable: editable.value,
+      content: articleContent.value,
       extensions: [
         Document,
         Paragraph,
@@ -213,7 +214,6 @@ export default defineComponent({
           return '';
         })
       ],
-      content: articleContent.value,
       editorProps: {
         handleClick: (view, pos, event) => {
           console.log(view, pos, event);
@@ -227,12 +227,13 @@ export default defineComponent({
         repositoryEntityId: route.query.repositoryEntityId
       });
       // 定时存储文章
-      timer.value = window.setInterval(() => {
-        context.emit('saveSectionArticle', {
-          content: editor.value?.getJSON(),
-          contentHtml: editor.value?.getHTML()
-        });
-      }, 10000);
+      // timer.value = window.setInterval(() => {
+      //   context.emit('saveSectionArticle', {
+      //     content: editor.value?.getJSON(),
+      //     contentHtml: editor.value?.getHTML()
+      //   });
+      //   editor.value?.commands.focus();
+      // }, 10000);
     });
     onUnmounted(() => {
       // 清除定时器
@@ -256,11 +257,17 @@ export default defineComponent({
         contentHtml: editor.value?.getHTML()
       });
     };
-    const upload = () => {
-      editor.value?.commands.focus();
-      editor.value?.commands.setImage({
-        src: 'http://file.songxiwen.com.cn/icon1.jpeg'
+    const upload = async () => {
+      // editor.value?.commands.focus();
+      const result = editor.value?.commands.setImage({
+        src: 'http://file.songxiwen.com.cn/icon1.jpeg',
+        class: 'custom-tip-tap-image',
+        height: '300',
+        width: '400'
       });
+      console.log(result, ' ------result');
+      // editor.value?.commands.focus();
+      // editor.value?.commands.enter();
     };
     return {
       editor, limit, saveSectionArticle, upload

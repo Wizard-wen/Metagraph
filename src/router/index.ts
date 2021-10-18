@@ -5,6 +5,7 @@
 
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Main from '../views/main.vue';
+import Settings from '../views/settings.vue';
 import Repository from '../views/repository.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -31,6 +32,28 @@ const routes: Array<RouteRecordRaw> = [
         path: '/repository/create',
         name: 'CreateRepository',
         component: () => import('@/views/create.repository.vue')
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: Settings,
+        children: [
+          {
+            path: 'profile',
+            name: 'Profile',
+            component: () => import('@/views/settings/profile.vue')
+          },
+          {
+            path: 'account',
+            name: 'account',
+            component: () => import('@/views/settings/account.vue')
+          },
+          {
+            path: 'security',
+            name: 'security',
+            component: () => import('@/views/settings/security.vue')
+          }
+        ]
       }
     ]
   },

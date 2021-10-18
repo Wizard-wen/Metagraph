@@ -2,14 +2,15 @@
   <div class="edu-header">
     <div class="left">
       <div class="logo">
-        <ant-avatar src="./Hogwartscrest.png"
+
+        <ant-avatar :src="'./hogwarts-logo.webp'"
                     style="margin-right: 10px; cursor: pointer" @click="goHomePage"></ant-avatar>
       </div>
       <div class="search">
         <ant-input-search @search="handleSearch"></ant-input-search>
       </div>
       <div>
-        <ant-button type="text" :ghost="true">Knowledge Map</ant-button>
+        <ant-button type="link" :ghost="true">Knowledge Map</ant-button>
       </div>
     </div>
     <div class="right">
@@ -25,6 +26,7 @@
           </template>
         </ant-dropdown>
       </div>
+      <test-icon style="color: red;line-height: 35px;font-size: 18px;"></test-icon>
       <div class="login-status">
         <div class="no-login" v-if="!isLogin">
           <ant-button ghost @click="goSignInPage">sign in</ant-button>
@@ -68,7 +70,12 @@ export default defineComponent({
   name: 'edu.header',
   components: {
     UserOutlined,
-    PlusOutlined
+    PlusOutlined,
+  },
+  data() {
+    return {
+      // hogwartsLogo: HogwartsLogo
+    };
   },
   setup() {
     const isLogin = ref(false);

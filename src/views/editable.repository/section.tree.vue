@@ -60,7 +60,6 @@
 </template>
 
 <script lang="ts">
-import { ActionEnum, MutationEnum, useStore } from '@/store';
 import {
   FolderOutlined, FileWordOutlined
 } from '@ant-design/icons-vue';
@@ -68,8 +67,9 @@ import {
   computed, defineComponent, onBeforeMount, ref, onMounted, reactive, watch, toRefs
 } from 'vue';
 import { useRoute } from 'vue-router';
-import { EntityNoAuthApiService, SectionApiService } from '@/api.service';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
+import { EntityNoAuthApiService, SectionApiService } from '@/api.service';
+import { ActionEnum, MutationEnum, useStore } from '@/store';
 import KnowledgeDrawer from './knowledge.drawer.vue';
 
 export default defineComponent({
@@ -79,7 +79,7 @@ export default defineComponent({
     FolderOutlined,
     KnowledgeDrawer
   },
-  setup: function () {
+  setup() {
     const route = useRoute();
     const store = useStore();
     const sectionTree = computed(() => store.state.repositoryEditor.sectionTree);
@@ -208,7 +208,7 @@ export default defineComponent({
     }
 
     const onContextMenuClick = (treeKey: string, menuKey: 'Section' | 'Knowledge' | 'Exercise' | 'Change', section?: any) => {
-      console.log(`treeKey: ${ treeKey }, menuKey: ${ menuKey }`);
+      console.log(`treeKey: ${treeKey}, menuKey: ${menuKey}`);
       openCreateSectionModal({ type: menuKey, section });
     };
     return {
