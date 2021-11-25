@@ -38,9 +38,9 @@
 import {
   defineComponent, ref, onMounted, computed, toRefs
 } from 'vue';
-import { ActionEnum, useStore } from '@/store';
 import { useRoute, useRouter } from 'vue-router';
 import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
+import { ActionEnum, useStore } from '@/store';
 import ViewIcon from '@/components/icons/view.icon.vue';
 import EditIcon from '@/components/icons/edit.icon.vue';
 import KnowledgeDrawer from '@/views/editable.repository/knowledge.drawer.vue';

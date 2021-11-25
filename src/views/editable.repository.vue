@@ -1,13 +1,20 @@
 <template>
-  <ant-spin :spinning="spinning">
-    <div class="repo-header" v-if="repository.repositoryModel">
-      <div class="title-box">
-        <div class="title">
-          <ant-avatar style="margin-right: 10px"></ant-avatar>
-          <div class="name">{{ repository.repositoryModel.author.name }}</div>
-          /
-          <div class="name">{{ repository.repositoryModel.content.name }}</div>
+  <ant-spin :spinning="spinning" class="repository-page">
+    <div class="repo-header" v-if="repository.target">
+      <div class="left">
+        <div class="logo" @click="goHomePage">
+          <img src="/hogwarts-logo.webp" height="32" width="32" alt="">
         </div>
+        <div class="title">
+          <div class="name">{{ repository.target.author.name }}</div>
+          &nbsp;/&nbsp;
+          <div class="name">{{ repository.target.content.name }}</div>
+          <ant-tag class="repository-tag">
+            {{ isPublicRepository ? 'public' : 'private' }}
+          </ant-tag>
+        </div>
+      </div>
+      <div class="right">
         <div class="view-switch">
           <ant-switch
             @click="handleSwitchClick"
@@ -26,7 +33,6 @@
             v-if="repositoryEntityId && sectionEntityId"
             :entityId="repositoryEntityId"
             :editable="isEditable"
-            :article-content="sectionArticle"
             @mention="handleMention($event)"
             @saveSectionArticle="saveSectionArticle($event)">
             <template #comment="{entityId}">
@@ -50,20 +56,26 @@
 </template>
 
 <script lang="ts">
-import { RepositoryApiService, RepositoryNoAuthApiService, SectionApiService } from '@/api.service';
-import { ActionEnum, MutationEnum, useStore } from '@/store';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, reactive, ref, computed, createVNode, onBeforeMount
+  defineComponent, onMounted, ref, computed, onBeforeMount, onUnmounted, provide
 } from 'vue';
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { useRoute } from 'vue-router';
-import { Modal, Empty } from 'ant-design-vue';
+import { useRoute, useRouter } from 'vue-router';
+import { Empty } from 'ant-design-vue';
+import {
+  EditableRepositoryService,
+  alternative,
+  isEditable,
+  repositoryModel,
+  sectionEntityId,
+  isPublicRepository
+} from '@/views/editable.repository/editable.repository.service';
+import { ActionEnum, MutationEnum, useStore } from '@/store';
 import Toolbar from './editable.repository/toolbar.vue';
 import SectionTree from './editable.repository/section.tree.vue';
 import SectionArticleTipTap from './editable.repository/section.article.vue';
 import KnowledgeGraph from './editable.repository/knowledge.graph.vue';
 import Comment from './editable.repository/comment.vue';
+import { repositoryEntityIdKey } from './editable.repository/provide.type';
 
 export default defineComponent({
   name: 'editable.repository',
@@ -76,50 +88,30 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const store = useStore();
     const spinning = computed(() => store.state.global.isSpinning);
-    const repositoryEntityId = ref('');
-    const repository = reactive<{
-      repositoryModel?: EntityCompletelyListItemType
-    }>({
-      repositoryModel: undefined
-    });
-    const isEditable = ref(false);
-    const viewStatus = ref(true);
-    const sectionEntityId = computed(() => {
-      if (store.state.repositoryEditor.selectedTreeNodeSectionKeys) {
-        return store.state.repositoryEditor.selectedTreeNodeSectionKeys[0];
-      }
-      return undefined;
-    });
-    const getRepositoryByEntityId = async () => {
-      const response = await RepositoryNoAuthApiService.getById({
-        repositoryEntityId: route.query.repositoryEntityId as string
-      });
-      if (response.data) {
-        repository.repositoryModel = response.data;
-        let status = false;
-        if (localStorage.getItem('user')) {
-          const user = localStorage.getItem('user')!;
-          const content = response.data.content as RepositoryModelType;
-          status = content.userId === JSON.parse(user).id;
-          isEditable.value = status;
-        }
-        console.log('befor commit ', status);
-        store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
-          status
-        });
-      }
+    const repositoryEntityId = ref<string>(route.query.repositoryEntityId as string);
+    provide(repositoryEntityIdKey, repositoryEntityId);
+    const viewStatus = ref(false);
+    const editableRepositoryService = new EditableRepositoryService();
+    const {
+      getRepositoryByEntityId
+    } = editableRepositoryService;
+    const preventContextmenu = (event: MouseEvent) => {
+      event.preventDefault();
     };
-    const sectionArticle = computed(() => store.state.repositoryEditor.sectionArticleContent);
     onBeforeMount(async () => {
       store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
         status: undefined
       });
-      await getRepositoryByEntityId();
+      await getRepositoryByEntityId(repositoryEntityId.value);
+      document.addEventListener('contextmenu', preventContextmenu);
     });
     onMounted(async () => {
-      repositoryEntityId.value = route.query.repositoryEntityId as string;
+    });
+    onUnmounted(() => {
+      document.removeEventListener('contextmenu', preventContextmenu);
     });
     const saveSectionArticle = async (params: {
       content: Record<string, any>,
@@ -131,36 +123,13 @@ export default defineComponent({
       });
     };
     const handleMention = (params: {
-      name: string, id: string, success: () => void, fail: () => void,
+      name: string, id: string, success: () => string, fail: () => string,
       content: Record<string, any>,
       contentHtml: string
     }) => {
-      Modal.confirm({
-        title: '是否绑定知识点至当前单元?',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: '',
-        async onOk() {
-          params.success();
-          if (sectionEntityId.value) {
-            await SectionApiService.bindSectionEntity({
-              entityId: params.id,
-              entityType: 'Knowledge',
-              repositoryEntityId: route.query.repositoryEntityId as string,
-              sectionId: sectionEntityId.value
-            });
-            await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
-              content: params.content,
-              contentHtml: params.contentHtml
-            });
-          }
-        },
-        async onCancel() {
-          params.fail();
-          await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
-            content: params.content,
-            contentHtml: params.contentHtml
-          });
-        },
+      editableRepositoryService.handleMention({
+        ...params,
+        repositoryEntityId: repositoryEntityId.value
       });
     };
     const handleSwitchClick = () => {
@@ -169,19 +138,24 @@ export default defineComponent({
     const handleSwitchChange = () => {
       console.log('change');
     };
+    const goHomePage = async () => {
+      await router.push('/');
+    };
     return {
-      repository,
+      alternative,
+      repository: repositoryModel,
       viewStatus,
-      sectionArticle,
       saveSectionArticle,
       isEditable,
       sectionEntityId,
       repositoryEntityId,
       handleMention,
+      goHomePage,
       spinning,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       handleSwitchClick,
-      handleSwitchChange
+      handleSwitchChange,
+      isPublicRepository
     };
   }
 });
@@ -190,17 +164,27 @@ export default defineComponent({
 <style scoped lang="scss">
 @import "../style/common.scss";
 
+.repository-page {
+  height: 100vh;
+  overflow-y: auto;
+}
+
 .repo-header {
-  padding: 12px 0;
   background: #fafbfc;
   height: 56px;
+  padding: 0 24px;
   border-bottom: 1px solid $borderColor;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  .title-box {
+  .left {
     display: flex;
-    justify-content: space-between;
-    padding: 0 32px;
-    height: 32px;
+    gap: 15px;
+
+    .logo {
+      cursor: pointer;
+    }
 
     .title {
       margin-right: 16px;
@@ -208,12 +192,21 @@ export default defineComponent({
       height: 32px;
       line-height: 32px;
       font-size: 18px;
+      align-items: center;
 
       .name {
         font-weight: 400;
       }
-    }
 
+      .repository-tag {
+        height: 24px;
+        border-radius: 4px;
+        margin-left: 10px;
+      }
+    }
+  }
+
+  .right {
     .view-switch {
       line-height: 32px;
     }
@@ -225,7 +218,6 @@ export default defineComponent({
 
   .section-view {
     height: 100%;
-    //overflow: scroll;
     display: flex;
 
     .section-tree {
@@ -250,6 +242,11 @@ export default defineComponent({
       height: 100%;
       background-color: #fff;
     }
+  }
+
+  .text-content {
+    //height: calc(100vh - 56px);
+    //overflow-y: auto;
   }
 
 }

@@ -8,7 +8,6 @@ export interface ExerciseOperationInterface {
   // 编辑题解
   editAnswer(): void;
 
-
   // 为当前题目涉及的知识点构图
   generateGraphOfTheExercise(): void;
 }

@@ -30,7 +30,7 @@ export default defineComponent({
 
     return {
       title
-    }
+    };
   }
 });
 </script>

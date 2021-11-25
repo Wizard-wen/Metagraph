@@ -110,13 +110,17 @@ export const TipTapCustomImage = (uploadFn: UploadFn) => Node.create<ImageOption
   },
   addInputRules() {
     return [
-      nodeInputRule(IMAGE_INPUT_REGEX, this.type, (match) => {
-        const [, alt, src, title] = match;
-        return {
-          src,
-          alt,
-          title,
-        };
+      nodeInputRule({
+        find: IMAGE_INPUT_REGEX,
+        type: this.type,
+        getAttributes: (match) => {
+          const [, alt, src, title] = match;
+          return {
+            src,
+            alt,
+            title,
+          };
+        }
       }),
     ];
   },

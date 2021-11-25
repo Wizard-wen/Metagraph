@@ -23,14 +23,14 @@
 </template>
 
 <script lang="ts">
-import { RepositoryApiService } from '@/api.service';
 import {
   computed,
   defineComponent, reactive, toRefs, ref
 } from 'vue';
 import { debounce } from 'lodash';
-import { ActionEnum, useStore } from '@/store';
 import { useRouter } from 'vue-router';
+import { ActionEnum, useStore } from '@/store';
+import { RepositoryApiService } from '@/api.service';
 
 export default defineComponent({
   name: 'header.select',

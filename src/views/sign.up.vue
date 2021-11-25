@@ -46,13 +46,13 @@
 
 </template>
 <script lang="ts">
-import { UserApiService } from '@/api.service';
 import { message } from 'ant-design-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
   defineComponent, reactive, ref, UnwrapRef
 } from 'vue';
 import { useRouter } from 'vue-router';
+import { UserApiService } from '@/api.service';
 import UploadQiniu from '@/components/upload/upload.qiniu.vue';
 
 interface SignUpFormState {

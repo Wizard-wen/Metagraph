@@ -30,10 +30,10 @@
 </template>
 
 <script lang="ts">
-import { EntityNoAuthApiService } from '@/api.service';
 import {
   defineComponent, onMounted, ref, toRefs, watch
 } from 'vue';
+import { EntityNoAuthApiService } from '@/api.service';
 import Comment from './comment.vue';
 
 export default defineComponent({
@@ -66,18 +66,18 @@ export default defineComponent({
       }
     });
     const afterVisibleChange = (bool: boolean) => {
-      console.log('visible', bool);
+      // console.log('visible', bool);
       context.emit('showChange', false);
     };
 
-    const showDrawer = () => {
-      visible.value = true;
-    };
+    // const showDrawer = () => {
+    //   visible.value = true;
+    // };
 
     return {
       visible,
       afterVisibleChange,
-      showDrawer,
+      // showDrawer,
       knowledge
     };
   },

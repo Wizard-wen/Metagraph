@@ -7,6 +7,10 @@ import { Module } from 'vuex';
 import { RootStateType, UserStateType } from '@/store/type';
 import { MutationEnum } from '@/store/constant';
 
+let userLocal: any;
+if (localStorage.getItem('user') !== null) {
+  userLocal = JSON.parse(localStorage.getItem('user')!);
+}
 export const userModule: Module<UserStateType, RootStateType> = {
   state: () => ({
     user: undefined,

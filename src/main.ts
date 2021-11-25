@@ -11,7 +11,8 @@ import {
   PageHeader, Switch, Spin, Card, Steps, Comment,
   DatePicker, Checkbox, Radio, Dropdown, Menu,
   Avatar, Pagination, Upload, List, Tag, Drawer,
-  Descriptions, Col, Row, Empty
+  Descriptions, Col, Row, Empty, Tabs, Timeline,
+  Collapse
 } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import { ConfigService } from '@/config/config.service';
@@ -48,6 +49,12 @@ const app = createApp(App);
 app.directive('contextmenu', Contextmenu);
 app.directive('hide', Hide);
 // 引入全局component
+app.component('AntCollapse', Collapse);
+app.component('AntCollapsePanel', Collapse.Panel);
+app.component('AntTimeline', Timeline);
+app.component('AntTimelineItem', Timeline.Item);
+app.component('AntTab', Tabs);
+app.component('AntTabPane', Tabs.TabPane);
 app.component('AntCol', Col);
 app.component('AntRow', Row);
 app.component('AntTree', Tree);

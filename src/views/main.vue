@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
-import { useStore } from '@/store';
 import { defineComponent, computed } from 'vue';
+import { useStore } from '@/store';
 import EduHeader from './main/edu.header.vue';
 
 export default defineComponent({

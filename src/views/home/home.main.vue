@@ -14,12 +14,12 @@
 </template>
 
 <script lang="ts">
-import { RepositoryNoAuthApiService } from '@/api.service';
-import { useStore } from '@/store';
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
   defineComponent, onMounted, ref
 } from 'vue';
+import { RepositoryNoAuthApiService } from '@/api.service';
+import { useStore } from '@/store';
 import RepositoryItem from './main/repository.item.vue';
 
 export default defineComponent({

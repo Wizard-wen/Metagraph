@@ -1,9 +1,11 @@
 <template>
   <div class="section-tree">
     <ant-button
-      v-if="editable"
+      v-if="isEditable"
       style="width: 100%"
-      @click="openCreateSectionModal({type: 'Section', isRoot: true})">
+      @click="openCreateSectionModal({
+        type: 'Section', isRoot: true
+      })">
       创建Section
     </ant-button>
     <div class="tree-content">
@@ -11,7 +13,6 @@
         :tree-data="sectionTree"
         class="ant-tree-customer"
         show-icon
-        default-expand-all
         @select="handleSelectedTreeNode"
         v-model:selectedKeys="selectedTreeNodeKeys">
         <template #Knowledge>
@@ -20,12 +21,12 @@
         <template #Section>
           <FolderOutlined/>
         </template>
-        <template #title="{ key: treeKey, title, entity, section }" v-if="editable">
+        <template #title="{ key: treeKey, title, entity, section }" v-if="isEditable">
           <ant-dropdown :trigger="['contextmenu']" :disabled="entity !== undefined">
             <span>{{ title }}</span>
             <template #overlay>
               <ant-menu
-                @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, section)">
+                @click="({ key: menuKey }) => handleContextMenuClick(treeKey, menuKey, section)">
                 <ant-menu-item key="Section">插入单元</ant-menu-item>
                 <ant-menu-item key="Knowledge">绑定知识点</ant-menu-item>
                 <ant-menu-item key="Change">修改</ant-menu-item>
@@ -36,13 +37,14 @@
       </ant-tree>
     </div>
     <ant-modal
-      :title="sectionModalTitle"
+      :title="title"
+      v-if="isCreateSectionModalShown"
       :visible="isCreateSectionModalShown"
       :confirm-loading="confirmLoading"
       @ok="handleCreateSection"
       @cancel="isCreateSectionModalShown = false">
       <ant-input
-        v-if="entityType === 'Section' || entityType === 'Change'"
+        v-if="entityType === 'Section' || entityType === 'ChangeSection'"
         v-model:value="sectionName"></ant-input>
       <ant-select
         v-else
@@ -64,13 +66,17 @@ import {
   FolderOutlined, FileWordOutlined
 } from '@ant-design/icons-vue';
 import {
-  computed, defineComponent, onBeforeMount, ref, onMounted, reactive, watch, toRefs
+  computed, defineComponent, ref, onMounted, toRefs, watch
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
-import { EntityNoAuthApiService, SectionApiService } from '@/api.service';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import KnowledgeDrawer from './knowledge.drawer.vue';
+import {
+  sectionModalData,
+  SectionTreeService,
+  selectedTreeNode
+} from '@/views/editable.repository/section.tree/section.tree';
 
 export default defineComponent({
   name: 'section.tree',
@@ -82,24 +88,22 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useStore();
+    const sectionTreeService = new SectionTreeService();
     const sectionTree = computed(() => store.state.repositoryEditor.sectionTree);
-    const selectedTreeNode = computed(() => store.state.repositoryEditor.selectedTreeNode);
-    const editable = computed(() => store.state.repositoryEditor.editable);
-    const isContextMenuShown = ref(false);
+    const isEditable = computed(() => store.state.repositoryEditor.editable);
     const isCreateSectionModalShown = ref(false);
-    const entityType = ref<'Section' | 'Knowledge' | 'Exercise' | 'Change'>('Section');
-    const sectionName = ref<string>('');
-    const sectionModalTitle = ref<string>('');
     const confirmLoading = ref(false);
-    // 选中的tree节点
+    // 选中的tree节点，交给视图层  v-model使用 ,不能直接使用computed
     const selectedTreeNodeKeys = ref<string[]>([]);
-    // 绑定实体下拉列表
-    const selectModalData = reactive({
-      entityOptionList: [],
-      selectedEntityId: ''
+    watch(selectedTreeNode, (newValue, oldValue) => {
+      if (newValue && oldValue !== newValue) {
+        selectedTreeNodeKeys.value = newValue;
+      }
     });
     const isDrawerShown = ref(false);
-    const selectedTreeNodeEntityId = ref('');
+    const selectedTreeNodeSectionKeys = computed(() => store.state.repositoryEditor.selectedTreeNodeSectionKeys);
+    const selectedTreeNodeEntityId = computed(() => (store.state.repositoryEditor.selectedTreeNodeEntityKeys[0]?.includes('-')
+      ? store.state.repositoryEditor.selectedTreeNodeEntityKeys[0].split('-')[0] : ''));
     onMounted(async () => {
       store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
       await store.dispatch(ActionEnum.GET_SECTION_TREE, {
@@ -107,129 +111,78 @@ export default defineComponent({
       });
       store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     });
-    onBeforeMount(async () => {
-      document.addEventListener('contextmenu', (event: MouseEvent) => {
-        event.preventDefault();
-      });
-    });
-    watch(selectedTreeNode, (newValue, oldValue) => {
-      if (newValue && oldValue !== newValue) {
-        store.commit(MutationEnum.SET_SELECTED_ENTITY_ID, { id: selectedTreeNode.value[0] });
-        selectedTreeNodeKeys.value = newValue;
-      }
-    });
 
     async function openCreateSectionModal(params: {
-      type: 'Section' | 'Knowledge' | 'Exercise' | 'Change',
+      type: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',
       section?: any,
       isRoot?: boolean
     }) {
-      entityType.value = params.type;
       isCreateSectionModalShown.value = true;
-      selectModalData.selectedEntityId = '';
-      sectionName.value = '';
-      if (entityType.value === 'Section') {
-        sectionModalTitle.value = '创建Section';
-      }
-      if (entityType.value === 'Change') {
-        sectionModalTitle.value = '修改Section';
-        sectionName.value = params?.section?.name || '';
-      }
-      if (entityType.value === 'Knowledge') {
-        sectionModalTitle.value = '绑定实体';
-        const result = await EntityNoAuthApiService.getEntityList({
-          name: selectModalData.selectedEntityId,
-          entityType: entityType.value,
-          pageIndex: 0,
-          pageSize: 80
-        });
-        selectModalData.entityOptionList = result.data.list.map((item: any) => ({
-          key: item.entity.id,
-          label: item.content.name,
-          value: item.entity.id
-        }));
-      }
-      if (params.isRoot) {
-        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, { key: [] });
-      }
+      await sectionTreeService.initSectionModal(params);
     }
 
     async function handleCreateSection() {
-      if (entityType.value === 'Section') {
-        await SectionApiService.createSectionTree({
-          name: sectionName.value,
-          repositoryEntityId: route.query.repositoryEntityId as string,
-          parentId: selectedTreeNode.value?.length ? selectedTreeNode.value[0] : undefined,
-        });
-      } else if (entityType.value === 'Change') {
-        await SectionApiService.updateSectionTree({
-          name: sectionName.value,
-          id: selectedTreeNode.value[0]
-        });
-      } else {
-        if (selectedTreeNode.value.length === 0) {
-          return;
-        }
-        await SectionApiService.bindSectionEntity({
-          entityId: selectModalData.selectedEntityId,
-          entityType: entityType.value as 'Knowledge',
-          repositoryEntityId: route.query.repositoryEntityId as string,
-          sectionId: selectedTreeNode.value[0],
-        });
-      }
+      await sectionTreeService.createSection(route.query.repositoryEntityId as string);
       isCreateSectionModalShown.value = false;
-      await store.dispatch(ActionEnum.GET_SECTION_TREE, {
-        repositoryEntityId: route.query.repositoryEntityId as string
-      });
     }
 
-    const getSectionContentByKey = (key: string) => {
-      store.dispatch(ActionEnum.GET_SECTION_CONTENT, {
-        sectionId: key
-      });
-    };
-
-    function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
-      console.log(selectedKeys, info);
+    async function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
       // 提交commit改变当前选中的 tree node
-      store.commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, { keys: selectedKeys });
-      if (info.node.dataRef.section) {
-        getSectionContentByKey(selectedKeys[0]);
-        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_SECTION_KEYS, {
-          sectionKeys: selectedKeys
-        });
-        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, { entityKeys: [] });
-      } else {
-        selectedTreeNodeEntityId.value = selectedKeys[0];
+      // store.commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, {
+      //   keys: selectedKeys
+      // });
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      // 上次选中的key
+      // const lastSelectedKey = selectedTreeNodeSectionKeys.value[0];
+      // if (info.node.dataRef.section) {
+      //   // 如果点击的是section
+      //   await sectionTreeService.getSectionContentByKey(selectedKeys[0]);
+      //   // 将当前选中的key赋值给section list
+      //   store.commit(MutationEnum.SET_SELECTED_TREE_NODE_SECTION_KEYS, {
+      //     sectionKeys: selectedKeys
+      //   });
+      //   // 清空当前选中的entity list
+      //   store.commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, {
+      //     entityKeys: []
+      //   });
+      // } else {
+      //   // 如果点击的是entity
+      //   isDrawerShown.value = true;
+      //   store.commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, {
+      //     entityKeys: selectedKeys
+      //   });
+      // }
+      // store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
+      //
+      if (!info.node.dataRef.section) {
         isDrawerShown.value = true;
-        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_SECTION_KEYS, { sectionKeys: [] });
-        store.commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, { entityKeys: selectedKeys });
       }
+      await store.dispatch(ActionEnum.SELECTED_SECTION_TREE_NODE, {
+        selectedKeys, info
+      });
+      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     }
 
-    const onContextMenuClick = (treeKey: string, menuKey: 'Section' | 'Knowledge' | 'Exercise' | 'Change', section?: any) => {
-      console.log(`treeKey: ${treeKey}, menuKey: ${menuKey}`);
+    const handleContextMenuClick = (
+      treeKey: string,
+      menuKey: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',
+      section?: any
+    ) => {
       openCreateSectionModal({ type: menuKey, section });
     };
     return {
-      // 新的
-      onContextMenuClick,
-      isContextMenuShown,
-      isCreateSectionModalShown,
-      sectionTree,
+      handleContextMenuClick,
       handleCreateSection,
-      getSectionContentByKey,
-      entityType,
       openCreateSectionModal,
-      sectionName,
+      handleSelectedTreeNode,
       selectedTreeNode,
       selectedTreeNodeKeys,
-      handleSelectedTreeNode,
-      ...toRefs(selectModalData),
-      sectionModalTitle,
+      isCreateSectionModalShown,
+      sectionTree,
+      ...toRefs(sectionModalData),
       isDrawerShown,
       selectedTreeNodeEntityId,
-      editable,
+      isEditable,
       confirmLoading
     };
   }

@@ -73,9 +73,9 @@ import * as AntvX6 from '@antv/x6';
 import {
   computed, defineComponent, ref
 } from 'vue';
-import { useStore } from '@/store';
 import { useRoute } from 'vue-router';
 import type { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
+import { useStore } from '@/store';
 
 export default defineComponent({
   name: 'knowledge.connection',

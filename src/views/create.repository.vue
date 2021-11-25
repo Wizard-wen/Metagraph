@@ -56,13 +56,13 @@
   </div>
 </template>
 <script lang="ts">
-import UploadCrop from '@/components/upload/upload.crop.vue'
-import { RepositoryApiService } from '@/api.service';
 import {
   defineComponent, reactive, UnwrapRef
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { LockOutlined, BookOutlined } from '@ant-design/icons-vue';
+import { RepositoryApiService } from '@/api.service';
+import UploadCrop from '@/components/upload/upload.crop.vue';
 import UploadQiniu from '../components/upload/upload.qiniu.vue';
 
 interface RepositoryFormStateType {
@@ -144,7 +144,6 @@ export default defineComponent({
         width: 750px;
         text-align: left;
 
-
         .radio-icon {
           display: inline-block;
           height: 50px;
@@ -175,7 +174,6 @@ export default defineComponent({
         }
       }
     }
-
 
     .control-button {
       margin: 0;

@@ -4,6 +4,7 @@
  */
 
 import {
+  AlternativeKnowledgeListType,
   EntityCompletelyListItemType
 } from 'edu-graph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
@@ -12,6 +13,44 @@ import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class KnowledgeApiService {
+  static async getAlternativeKnowledgeList(params: {
+    repositoryEntityId: string
+  }): Promise<PublicApiResponseType<AlternativeKnowledgeListType>> {
+    return RequestUtil.post<{ repositoryEntityId: string }, AlternativeKnowledgeListType>({
+      apiPath: ApiPathEnum.GetAlternativeKnowledgeList,
+      requestBody: params
+    });
+  }
+
+  static async createAlternativeKnowledgeList(params: {
+    article: {
+      name: string;
+      url: string;
+      type: 'word'
+    },
+    repositoryEntityId: string,
+    entityList: {
+      name: string,
+      weight: number,
+    }[]
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      article: {
+        name: string;
+        url: string;
+        type: 'word'
+      },
+      repositoryEntityId: string,
+      entityList: {
+        name: string,
+        weight: number,
+      }[]
+    }, void>({
+      apiPath: ApiPathEnum.CreateAlternativeKnowledgeList,
+      requestBody: params
+    });
+  }
+
   static async remove(id: string): Promise<PublicApiResponseType<void>> {
     return RequestUtil.post<{ id: string }, void>({
       apiPath: ApiPathEnum.RemoveKnowledge,

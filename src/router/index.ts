@@ -34,6 +34,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/create.repository.vue')
       },
       {
+        path: 'profile',
+        name: 'UserProfile',
+        component: () => import('@/views/profile.vue')
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: Settings,
@@ -91,7 +96,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/user/star/:userId',
     name: 'UserStar',
     component: () => import('@/views/user/user.star.vue')
-  }
+  },
+  {
+    path: '/test',
+    name: 'ComponentTest',
+    component: () => import('@/views/component.test.vue')
+  },
 ];
 
 const router = createRouter({

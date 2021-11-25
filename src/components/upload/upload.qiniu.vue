@@ -19,13 +19,13 @@
 </template>
 
 <script lang="ts">
-import { FileApiService } from '@/api.service';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import * as qiniu from 'qiniu-js';
 import {
   defineComponent, ref, toRefs, watch
 } from 'vue';
+import { FileApiService } from '@/api.service';
 import { FileEnum } from '../../../../edu-graph-constant';
 
 interface FileItem {

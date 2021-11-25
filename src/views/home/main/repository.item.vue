@@ -2,7 +2,7 @@
   <div class="repository-item">
     <ant-avatar class="icon" :src="repository.author.avatar"></ant-avatar>
     <div class="content">
-      <div class="title">
+      <div class="title" @click="goUserProfilePage">
         {{ repository.author.name }}
       </div>
       <div class="box">
@@ -31,14 +31,14 @@
 </template>
 
 <script lang="ts">
-import { StarApiService } from '@/api.service/star.api.service';
-import { CommonUtil } from "@/utils/common.util";
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
   defineComponent, toRefs, PropType, ref, onMounted, computed
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarOutlined } from '@ant-design/icons-vue';
+import { CommonUtil } from '@/utils/common.util';
+import { StarApiService } from '@/api.service/star.api.service';
 
 export default defineComponent({
   name: 'repository-item',
@@ -81,6 +81,14 @@ export default defineComponent({
         });
       }
     };
+    const goUserProfilePage = () => {
+      router.push({
+        path: '/profile',
+        query: {
+          id: repository.value.author.id
+        }
+      }).then();
+    };
     onMounted(() => {
       const user = localStorage.getItem('user');
       if (user) {
@@ -91,7 +99,8 @@ export default defineComponent({
       goRepositoryPage,
       addStar,
       hasToken,
-      date
+      date,
+      goUserProfilePage
     };
   }
 });
@@ -117,6 +126,7 @@ export default defineComponent({
       height: 32px;
       line-height: 32px;
       text-align: left;
+      cursor: pointer;
     }
 
     .box {

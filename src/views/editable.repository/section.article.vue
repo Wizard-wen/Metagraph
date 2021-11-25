@@ -1,26 +1,34 @@
 <template>
   <div class="section-article">
-    <section-article-control
-      v-if="editable && editor"
-      :editor="editor"
-      @save="saveSectionArticle"></section-article-control>
-    <ant-button @click="upload">text</ant-button>
+    <div class="article-control">
+      <section-article-control
+        v-if="editable && editor"
+        :editor="editor"
+        @save="saveSectionArticle"></section-article-control>
+    </div>
+    <!--    <ant-select -->
+    <!--      v-model:value="articleFontSize" -->
+    <!--      :options="fontSizeList" -->
+    <!--      ref="select">-->
+    <!--    </ant-select>-->
     <div class="article-container">
-      <div class="limit-container">
-        <article-limit
-          v-if="editor"
-          :current="editor.getCharacterCount()"
-          :limit="limit"></article-limit>
-      </div>
+<!--      <div class="limit-container">-->
+<!--        <article-limit-->
+<!--          v-if="editor"-->
+<!--          :current="editor.getCharacterCount()"-->
+<!--          :limit="limit"></article-limit>-->
+<!--      </div>-->
       <div class="editor-container" v-if="editable">
-        <editor-content class="tip-tap-editor" :editor="editor"/>
+        <editor-content
+          :style="{fontSize: articleFontSize}"
+          class="tip-tap-editor" :editor="editor"/>
       </div>
       <div class="editor-container-view" v-else>
         <editor-content class="tip-tap-editor" :editor="editor"/>
       </div>
-      <div class="comment-content">
-        <slot name="comment" :entityId="entityId"></slot>
-      </div>
+<!--      <div class="comment-content">-->
+<!--        <slot name="comment" :entityId="entityId"></slot>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
@@ -28,10 +36,10 @@
 <script lang="ts">
 import tippy, { Instance } from 'tippy.js';
 import {
-  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, PropType, toRefs
+  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, PropType, toRefs, toRef, reactive
 } from 'vue';
 import {
-  useEditor, EditorContent, VueRenderer, Editor, JSONContent
+  useEditor, EditorContent, VueRenderer, Editor
 } from '@tiptap/vue-3';
 import { mergeAttributes } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
@@ -41,9 +49,8 @@ import CharacterCount from '@tiptap/extension-character-count';
 import Mention from '@tiptap/extension-mention';
 import StarterKit from '@tiptap/starter-kit';
 import { useRoute } from 'vue-router';
-import { TipTapCustomImage } from '@/views/editable.repository/tiptap/image.plugin';
+import Image from '@tiptap/extension-image';
 import { ActionEnum, useStore } from '@/store';
-import ArticleLimit from './section.article/article.limit.vue';
 import MentionList from './tiptap/mention.list.vue';
 import SectionArticleControl from './section.article/section.article.control.vue';
 
@@ -51,14 +58,9 @@ export default defineComponent({
   name: 'section.article',
   components: {
     EditorContent,
-    ArticleLimit,
     SectionArticleControl,
   },
   props: {
-    articleContent: {
-      required: true,
-      type: Object as PropType<JSONContent>
-    },
     editable: {
       required: true,
       type: Boolean
@@ -71,16 +73,24 @@ export default defineComponent({
   setup(props, context) {
     const route = useRoute();
     const store = useStore();
-    const { articleContent, editable } = toRefs(props);
+    const editable = toRef(props, 'editable');
     const knowledgeList = computed(() => store.state.repositoryEditor.repositoryEntityList);
-    const limit = ref(280);
+    const limit = ref(30000);
     const timer = ref(0);
+    const articleFontSize = ref('12px');
+    const fontSizeList = reactive([
+      { label: '12px', value: '12px' },
+      { label: '14px', value: '14px' },
+      { label: '16px', value: '16px' },
+      { label: '18px', value: '18px' }
+    ]);
+    const articleContent = computed(() => store.state.repositoryEditor.sectionArticleContent);
     const CustomMention = Mention.extend({
       renderHTML({ node, HTMLAttributes }) {
         return [
           'span',
           mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-          `@${node.attrs.name}`
+          `@${ node.attrs.name }`
         ];
       },
       addAttributes() {
@@ -117,10 +127,18 @@ export default defineComponent({
     const editor: Ref<Editor | undefined> = useEditor({
       editable: editable.value,
       content: articleContent.value,
+      editorProps: {
+        handleClick: (view, pos, event) => {
+          console.log(view, pos, event);
+          context.emit('clickMention');
+          return true;
+        },
+      },
       extensions: [
         Document,
         Paragraph,
         StarterKit,
+        Image,
         Text,
         CharacterCount.configure({
           limit: limit.value,
@@ -172,12 +190,14 @@ export default defineComponent({
             },
             // eslint-disable-next-line no-shadow
             command: ({ editor, range, props }) => {
+              console.log(editor.getJSON());
               context.emit('mention', {
                 name: props.name,
                 id: props.id,
                 content: editor.getJSON(),
                 contentHtml: editor.getHTML(),
                 success() {
+                  console.log('success');
                   editor
                     .chain()
                     .focus()
@@ -192,6 +212,7 @@ export default defineComponent({
                       },
                     ])
                     .run();
+                  return editor.getJSON();
                 },
                 fail() {
                   editor
@@ -204,24 +225,17 @@ export default defineComponent({
                       },
                     ])
                     .run();
+                  return editor.getJSON();
                 }
               });
             },
           },
-        }),
-        TipTapCustomImage(async (file: File) => {
-          console.log(file);
-          return '';
         })
-      ],
-      editorProps: {
-        handleClick: (view, pos, event) => {
-          console.log(view, pos, event);
-          context.emit('clickMention');
-          return true;
-        }
-      },
+      ]
     });
+    // editor.value?.setOptions({
+    //   extensions: []
+    // });
     onMounted(async () => {
       await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
         repositoryEntityId: route.query.repositoryEntityId
@@ -240,10 +254,15 @@ export default defineComponent({
       if (timer.value) {
         window.clearInterval(timer.value);
       }
+      context.emit('saveSectionArticle', {
+        content: editor.value?.getJSON(),
+        contentHtml: editor.value?.getHTML()
+      });
       editor.value?.destroy();
     });
     // 更新article
     watch(articleContent, (newValue) => {
+      console.log(newValue, 'article changed');
       editor.value?.commands.setContent(newValue);
     });
     // 是否可编辑
@@ -257,20 +276,9 @@ export default defineComponent({
         contentHtml: editor.value?.getHTML()
       });
     };
-    const upload = async () => {
-      // editor.value?.commands.focus();
-      const result = editor.value?.commands.setImage({
-        src: 'http://file.songxiwen.com.cn/icon1.jpeg',
-        class: 'custom-tip-tap-image',
-        height: '300',
-        width: '400'
-      });
-      console.log(result, ' ------result');
-      // editor.value?.commands.focus();
-      // editor.value?.commands.enter();
-    };
+
     return {
-      editor, limit, saveSectionArticle, upload
+      editor, limit, saveSectionArticle, articleFontSize, fontSizeList
     };
   }
 });
@@ -291,12 +299,19 @@ export default defineComponent({
   text-align: left;
   background: $backgroundColor;
   width: 100%;
-  height: 100%;
+
+  .article-control {
+    //width: 100%;
+    //height: 46px;
+    //position: absolute;
+    //top: 0;
+    padding-bottom: 15px;
+  }
 
   .article-container {
-    height: 100%;
-    //overflow: scroll;
-    padding-top: 15px;
+    height: calc(100vh - 116px);
+    overflow-y: auto;
+    //padding-top: 15px;
 
     .limit-container {
       width: 816px;
@@ -306,10 +321,10 @@ export default defineComponent({
 
     .editor-container {
       width: 816px;
-      //height: 100%;
-      height: calc(100vh - 147px);
+      min-height: 100%;
+      //height: calc(100vh - 147px);
       //min-height: 600px;
-      overflow: scroll;
+      //overflow: scroll;
       margin: 0 auto;
       background: #fff;
 
@@ -318,7 +333,7 @@ export default defineComponent({
           text-indent: 10px;
           outline: none;
           padding: 20px;
-          min-height: 1000px;
+          //min-height: 1000px;
 
           > * + * {
             margin-top: 0.75em;

@@ -20,6 +20,8 @@ export enum ApiPathEnum {
   GetNoAuthEdgesByKnowledgeEntityId = '/public/knowledge/findEdgesByKnowledgeEntityId',
   // 仓库绑定的知识点
   GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
+  GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
+  CreateAlternativeKnowledgeList = '/knowledge/createAlternativeKnowledgeList',
   /**
    * edge
    */
@@ -66,6 +68,7 @@ export enum ApiPathEnum {
    */
   LoginByName = '/account/loginByName',
   GetById = '/account/getById',
+  GetUserProfileById = '/public/user/profile',
   RegisterByName = '/account/registerByName',
   /**
    * repository
@@ -91,5 +94,12 @@ export enum ApiPathEnum {
    */
   ParseWord = '/nlp/parse/word',
   // domain
-  GetDomainList = '/public/domain/getList'
+  GetDomainList = '/public/domain/getList',
+
+  /**
+   * follow
+   */
+  CheckIfFollowed = '/follow/checkIfFollowed',
+  Follow = '/follow/create',
+  UnFollow = '/follow/stop'
 }

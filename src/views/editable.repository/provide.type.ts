@@ -1,0 +1,8 @@
+/**
+ * @author songxiwen
+ * @date  2021/11/24 15:43
+ */
+
+import { InjectionKey, Ref } from 'vue';
+
+export const repositoryEntityIdKey: InjectionKey<Ref<string>> = Symbol('repositoryEntityId');

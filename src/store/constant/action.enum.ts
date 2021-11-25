@@ -6,6 +6,7 @@
 // eslint-disable-next-line no-shadow
 export enum ActionEnum {
   GET_SECTION_TREE = 'getSectionTree',
+  SELECTED_SECTION_TREE_NODE = 'selectSectionTreeNode',
   GET_SECTION_CONTENT = 'getSectionContent',
   SAVE_SECTION_CONTENT = 'saveSectionContent',
   CREAT_SECTION_ITEM = 'createSectionItem',

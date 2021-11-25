@@ -13,8 +13,8 @@ import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SectionApiService {
-
   static createSectionTree(params: {
+    text?: string;
     name: string;
     repositoryEntityId: string;
     parentId?: string;

@@ -6,6 +6,7 @@
 import { createStore, useStore as baseUseStore } from 'vuex';
 import type { Store } from 'vuex';
 import type { InjectionKey } from 'vue';
+import createPersistedState from 'vuex-persistedstate';
 import {
   globalModule,
   repositoryEditorModule,
@@ -26,6 +27,9 @@ export const store = createStore({
     user: userModule,
     global: globalModule
   },
+  plugins: [createPersistedState({
+    paths: []
+  })],
 });
 
 // 定义自己的 `useStore` 组合式函数

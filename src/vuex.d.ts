@@ -1,0 +1,19 @@
+/**
+ * @author songxiwen
+ * @date  2021/10/21 22:45
+ */
+
+// vuex.d.ts
+import { Store } from 'vuex';
+
+declare module '@vue/runtime-core' {
+  // declare your own store states
+  interface State {
+    count: number
+  }
+
+  // provide typings for `this.$store`
+  interface ComponentCustomProperties {
+    $store: Store<State>
+  }
+}

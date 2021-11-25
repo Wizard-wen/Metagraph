@@ -22,6 +22,7 @@ import { MutationEnum, useStore } from '@/store';
 import { ToolbarState } from '@/types/toolbar';
 import ToolbarEntityList from './toolbar/toolbar.entity.list.vue';
 import ToolbarKnowledgeEdge from './toolbar/toolbar.knowledge.edge.vue';
+import AlternativeKnowledgeList from './toolbar/alternative-knowledge-list.vue';
 
 export default defineComponent({
   name: 'Toolbar',
@@ -31,6 +32,7 @@ export default defineComponent({
     const elementTabs = [
       { label: '实体', value: 'EntityList' },
       { label: '知识链路', value: 'KnowledgeEdge' },
+      { label: '备选', value: 'Alternative' },
     ];
     const setToolbarState = (value: ToolbarState) => {
       store.commit(MutationEnum.SET_TOOLBAR_STATE, value);
@@ -39,6 +41,7 @@ export default defineComponent({
       const panelMap: { [key: string]: unknown } = {
         EntityList: ToolbarEntityList,
         KnowledgeEdge: ToolbarKnowledgeEdge,
+        Alternative: AlternativeKnowledgeList
       };
       return panelMap[toolbarState.value] || null;
     });

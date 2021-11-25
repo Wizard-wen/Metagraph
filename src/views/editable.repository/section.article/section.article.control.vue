@@ -143,29 +143,91 @@
           <UploadIcon class="icon-svg"/>
         </div>
         <div class="name">
-          上传
+          解析
+        </div>
+      </div>
+      <div class="operation-icon" @click="uploadImage">
+        <div class="icon">
+          <ImageIcon class="icon-svg"/>
+        </div>
+        <div class="name">
+          图片
         </div>
       </div>
     </div>
   </div>
   <ant-modal
-    title="上传"
+    title="文本解析"
     :width="1000"
+    :height="700"
+    v-if="isUploadModalShown"
     :visible="isUploadModalShown"
     @ok="handleCreateArticle"
     @cancel="isUploadModalShown = false">
-    <input type="file" @change="uploadWord($event)">
-    <div v-if="text" style="max-height: 500px;overflow: scroll;width: 100%; padding: 20px;line-height: 24px;">
-      <p>{{ text }}</p>
+    <div class="upload-banner">
+      <div class="top">
+        <ant-button class="upload-button">
+          <upload-outlined></upload-outlined>
+          选择word文本
+          <input
+            type="file"
+            @click="clearCurrentUploadingValue($event)"
+            @change="handleFileChange($event)">
+        </ant-button>
+        <ant-button
+          v-if="currentFile"
+          @click="confirmUploadWord"
+          :isLoading="textParsingStatus.isDoing"
+        >{{ uploadButtonText }}
+        </ant-button>
+      </div>
+      <div class="file-name" v-if="wordTitle">
+        <ant-input
+          ref="fileNameInput"
+          v-model:value="wordTitle" suffix="上传前可修改默认文件名"></ant-input>
+      </div>
     </div>
-    <div v-if="words" style="max-height: 300px;overflow: scroll;width: 100%;">
-      <ant-list size="small" bordered :data-source="words">
-        <template #renderItem="{ item }">
-          <ant-list-item>{{ item.word }} ---- {{ item.weight }}</ant-list-item>
-        </template>
-      </ant-list>
-    </div>
+    <ant-tab v-model:activeKey="activeTab">
+      <ant-tab-pane key="1" tab="文本" class="tab-content">
+        <div
+          class="doc-text"
+          v-if="articleText">
+          <p>{{ articleText }}</p>
+        </div>
+      </ant-tab-pane>
+      <ant-tab-pane key="2" tab="关键词" class="tab-content">
+        <ant-list class="doc-keyword" size="small" bordered :data-source="keywords.target">
+          <template #renderItem="{ item }">
+            <ant-list-item class="custom-list-item">
+              <div class="left">
+                <span class="text">{{ item.word }}</span>
+                <ant-tag class="weight-tag">{{ item.weight }}</ant-tag>
+              </div>
+              <CloseOutlined class="remove-icon" @click="removeKeyword(item.index)"/>
+            </ant-list-item>
+          </template>
+        </ant-list>
+      </ant-tab-pane>
+    </ant-tab>
+    <template #footer>
+      <ant-button @click="isUploadModalShown = false">关闭</ant-button>
+      <ant-button
+        type="primary"
+        v-if="isShowOperationButton"
+        @click="createAlternativeKnowledgeList">保存关键字为备用实体
+      </ant-button>
+      <ant-button
+        type="primary"
+        v-if="isShowOperationButton"
+        @click="createWordTextSection">将文本创建为新单元
+      </ant-button>
+    </template>
   </ant-modal>
+  <CreateBindKnowledgeModal
+    :searchText="searchingKeyword"
+    v-if="isCreateBindKnowledgeModalVisible"
+    @close="handleCreateBindKnowledgeModalClose"
+    :is-modal-visible="isCreateBindKnowledgeModalVisible"></CreateBindKnowledgeModal>
 </template>
 
 <script lang="ts">
@@ -176,25 +238,30 @@ import {
   RedoOutlined,
   StrikethroughOutlined,
   UndoOutlined,
-  UnorderedListOutlined
+  UnorderedListOutlined,
+  UploadOutlined,
+  CloseOutlined
 } from '@ant-design/icons-vue';
 import { Editor } from '@tiptap/vue-3';
 import { FileEnum } from 'edu-graph-constant';
-import * as qiniu from 'qiniu-js';
 import {
-  defineComponent, PropType, ref, toRef
+  defineComponent, inject, PropType, ref, toRef
 } from 'vue';
-import { useRoute } from 'vue-router';
-import { FileApiService } from '@/api.service';
-import { NlpApiService } from '@/api.service/nlp.api.service';
-import CodeIcon from '@/components/icons/code.icon.vue';
-import FindIcon from '@/components/icons/find.icon.vue';
-import H1Icon from '@/components/icons/h1.icon.vue';
-import H2Icon from '@/components/icons/h2.icon.vue';
-import H3Icon from '@/components/icons/h3.icon.vue';
-import Quote from '@/components/icons/quote.vue';
-import SaveIcon from '@/components/icons/save.icon.vue';
-import UploadIcon from '@/components/icons/upload.icon.vue';
+import {
+  isShowOperationButton,
+  SectionArticleControl,
+  keywords,
+  textParsingStatus,
+  articleText,
+  wordTitle,
+  uploadButtonText
+} from '@/views/editable.repository/section.article/section.article.control';
+import { repositoryEntityIdKey } from '@/views/editable.repository/provide.type';
+import CreateBindKnowledgeModal from '@/views/editable.repository/toolbar/create.bind.knowledge.modal.vue'
+import {
+  CodeIcon, FindIcon, H1Icon, H2Icon, H3Icon,
+  Quote, SaveIcon, UploadIcon, ImageIcon
+} from '@/components/icons';
 
 export default defineComponent({
   name: 'section.article.control',
@@ -212,6 +279,9 @@ export default defineComponent({
     OrderedListOutlined,
     UnorderedListOutlined,
     RedoOutlined,
+    UploadOutlined,
+    CloseOutlined,
+    ImageIcon,
     UploadIcon,
     Quote,
     H1Icon,
@@ -219,12 +289,22 @@ export default defineComponent({
     H3Icon,
     CodeIcon,
     SaveIcon,
-    FindIcon
+    FindIcon,
+    CreateBindKnowledgeModal
   },
   emits: ['save'],
   setup(props, { emit }) {
     const editor = toRef(props, 'editor');
-    const route = useRoute();
+    const fileNameInput = ref<HTMLInputElement>();
+    const searchingKeyword = ref('');
+    const sectionArticleControl = new SectionArticleControl();
+    const isCreateBindKnowledgeModalVisible = ref<boolean>(false);
+    const handleCreateBindKnowledgeModalClose = () => {
+      isCreateBindKnowledgeModalVisible.value = false;
+    };
+    const handleCreateBindKnowledgeModalOpen = () => {
+      isCreateBindKnowledgeModalVisible.value = true;
+    };
     // 保存文章
     const saveSectionArticle = () => {
       emit('save');
@@ -241,18 +321,20 @@ export default defineComponent({
       if (editor.value?.state?.selection?.ranges === undefined) {
         return;
       }
-      editor.value?.chain()
-        .focus().insertContentAt({ from, to } as any, [
-          {
-            type: 'mention',
-            attrs: { id: 'test', name: selectionContent }
-          },
-          {
-            type: 'text',
-            text: ' ',
-          },
-        ])
-        .run();
+      searchingKeyword.value = selectionContent;
+      handleCreateBindKnowledgeModalOpen();
+      // editor.value?.chain()
+      //   .focus().insertContentAt({ from, to } as any, [
+      //     {
+      //       type: 'mention',
+      //       attrs: { id: 'test', name: selectionContent }
+      //     },
+      //     {
+      //       type: 'text',
+      //       text: ' ',
+      //     },
+      //   ])
+      //   .run();
     };
     const handleUpload = () => {
       isUploadModalShown.value = true;
@@ -260,66 +342,46 @@ export default defineComponent({
     const handleCreateArticle = () => {
 
     };
-
-    const fileUrl = ref<undefined | string>(undefined);
-    const text = ref('');
-    const words = ref<{ word: string; weight: number; }[]>([]);
-
-    const customRequestUploadHandler = async (params: {
-      file: File,
-      name: string;
-      type: FileEnum
-    }) => {
-      const result: {
-        data?: {
-          key: string;
-          uploadToken: string;
-        };
-        message?: string;
-      } = await FileApiService.getCredential({
-        name: params.name,
-        type: params.type
-      });
-      const tokenForUploading = result.data;
-      console.log(tokenForUploading);
-      if (tokenForUploading === undefined) {
-        return;
-      }
-      const observer = {
-        complete(response: { key: string; url: string; }) {
-          console.log(response);
-          fileUrl.value = response.url;
-          NlpApiService.parseWord({
-            url: fileUrl.value!,
-            repositoryEntityId: route.query.repositoryEntityId as string
-          }).then((data) => {
-            if (data.data) {
-              text.value = data.data.text;
-              words.value = data.data.list;
-            }
-          });
-        }
-      };
-      await qiniu
-        .upload(
-          params.file,
-          tokenForUploading.key,
-          tokenForUploading.uploadToken
-        )
-        .subscribe(observer);
-    };
-    const uploadWord = async (event: InputEvent) => {
-      console.log(event);
+    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+    const activeTab = ref('1');
+    const currentFile = ref<File | undefined>();
+    const handleFileChange = (event: InputEvent) => {
       const target = event.target as HTMLInputElement;
       if (target.files === null) {
         return;
       }
-      const file = target.files[0];
-      await customRequestUploadHandler({
-        file,
-        name: file.name,
+      currentFile.value = target.files[0];
+      wordTitle.value = target.files[0].name;
+      fileNameInput.value?.focus();
+    };
+    const confirmUploadWord = async () => {
+      if (!currentFile.value) {
+        return;
+      }
+      await sectionArticleControl.customRequestUploadHandler({
+        repositoryEntityId: repositoryEntityId.value,
+        file: currentFile.value,
+        name: currentFile.value.name,
         type: FileEnum.Text
       });
+    };
+    const clearCurrentUploadingValue = (event: InputEvent) => {
+      const target = event.target as HTMLInputElement;
+      target.value = '';
+    };
+    const uploadImage = async () => {
+      editor.value?.chain().focus().setImage({ src: 'http://file.songxiwen.com.cn/icon1.jpeg' }).run();
+    };
+    const createWordTextSection = async () => {
+      await sectionArticleControl.createWordTextSection(repositoryEntityId.value);
+      isUploadModalShown.value = false;
+    };
+    const createAlternativeKnowledgeList = async () => {
+      await sectionArticleControl.createAlternativeKnowledgeList(repositoryEntityId.value);
+      isUploadModalShown.value = false;
+    };
+    const removeKeyword = (index: number) => {
+      keywords.target.splice(index, 1);
     };
     return {
       saveSectionArticle,
@@ -327,9 +389,26 @@ export default defineComponent({
       handleUpload,
       isUploadModalShown,
       handleCreateArticle,
-      uploadWord,
-      text,
-      words
+      confirmUploadWord,
+      uploadImage,
+      articleText,
+      keywords,
+      activeTab,
+      wordTitle,
+      textParsingStatus,
+      clearCurrentUploadingValue,
+      handleFileChange,
+      uploadButtonText,
+      fileNameInput,
+      createWordTextSection,
+      createAlternativeKnowledgeList,
+      isShowOperationButton,
+      currentFile,
+      removeKeyword,
+      handleCreateBindKnowledgeModalClose,
+      isCreateBindKnowledgeModalVisible,
+      handleCreateBindKnowledgeModalOpen,
+      searchingKeyword
     };
   }
 });
@@ -375,6 +454,85 @@ export default defineComponent({
         margin-top: 1px;
         line-height: 18px;
       }
+    }
+  }
+}
+
+.upload-banner {
+  .top {
+    height: 40px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    //gap: 15px;
+    justify-content: space-between;
+
+    .upload-button {
+      position: relative;
+
+      input {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 140px;
+      }
+    }
+
+    //.loading {
+    //  height: 40px;
+    //  display: flex;
+    //  align-items: center;
+    //
+    //  .spin {
+    //    margin-right: 5px;
+    //  }
+    //}
+  }
+
+  .file-name {
+    &::v-deep(.ant-input-suffix) {
+      color: #cccccc;
+    }
+  }
+}
+
+.tab-content {
+  min-height: 400px;
+  max-height: 500px;
+  overflow: scroll;
+  width: 100%;
+}
+
+.doc-text {
+  padding: 20px;
+  line-height: 24px;
+  font-size: 16px;
+}
+
+.doc-keyword {
+  min-height: 400px;
+
+  .custom-list-item {
+    &:hover {
+      background: #f3f3f3;
+    }
+
+    justify-content: space-between;
+
+    .left {
+      display: flex;
+      gap: 20px;
+
+      .text {
+        min-width: 120px;
+      }
+    }
+
+    .remove-icon {
+      width: 30px;
     }
   }
 }

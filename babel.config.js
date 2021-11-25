@@ -1,7 +1,6 @@
 module.exports = {
   presets: [
-    '@vue/cli-plugin-babel/preset',
-    ['env', { modules: false }]
+    '@vue/cli-plugin-babel/preset'
   ],
   plugins: [
     ['import', {
@@ -10,10 +9,5 @@ module.exports = {
       style: 'css'
     }],
     '@vue/babel-plugin-jsx'
-  ],
-  env: {
-    test: {
-      presets: [['env', { targets: { node: 'current' } }]]
-    }
-  }
+  ]
 };
