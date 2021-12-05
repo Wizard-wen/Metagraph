@@ -24,7 +24,7 @@ type AlternativeType = {
   createdAt: Date;
 }
 
-export interface EditableRepositoryInterface {
+export interface RepositoryEditorInterface {
   getRepositoryByEntityId(repositoryEntityId: string): Promise<void>
 }
 
@@ -48,8 +48,8 @@ export const sectionEntityId = computed(() => {
 });
 
 export const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
-
-export class EditableRepositoryService implements EditableRepositoryInterface {
+const userModel = computed(() => store.state.user.user);
+export class RepositoryEditor implements RepositoryEditorInterface {
 
   async getRepositoryByEntityId(repositoryEntityId: string): Promise<void> {
     const response = await RepositoryNoAuthApiService.getById({
@@ -58,13 +58,11 @@ export class EditableRepositoryService implements EditableRepositoryInterface {
     if (response.data) {
       repositoryModel.target = response.data;
       let status = false;
-      if (localStorage.getItem('user')) {
-        const user = localStorage.getItem('user')!;
+      if (userModel.value) {
         const content = response.data.content as RepositoryModelType;
-        status = content.userId === JSON.parse(user).id;
+        status = content.userId === userModel.value.id;
         isEditable.value = status;
       }
-      console.log('before commit ', status);
       store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
         status
       });
@@ -101,7 +99,6 @@ export class EditableRepositoryService implements EditableRepositoryInterface {
       },
       async onCancel() {
         const json = params.fail();
-        console.log(json);
         await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
           content: json,
           contentHtml: params.contentHtml

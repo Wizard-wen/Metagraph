@@ -1,11 +1,13 @@
 <template>
-  <ant-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol"
-            class="knowledge-form-content">
-    <ant-form-item :wrapper-col="{ span: 24, offset: 1 }">
-      <ant-button type="primary" @click="handlePullRequest">认证</ant-button>
-      <ant-button style="margin-left: 10px" type="primary" @click="onSubmit">保存</ant-button>
-      <ant-button style="margin-left: 10px" @click="goBack">返回</ant-button>
-    </ant-form-item>
+  <div>
+<!--    <ant-button type="primary" @click="handlePullRequest">认证</ant-button>-->
+
+  </div>
+  <ant-form
+    :model="formState"
+    layout="vertical"
+    :label-col="labelCol" :wrapper-col="wrapperCol"
+    class="knowledge-form-content">
     <ant-form-item label="名称">
       <ant-input v-model:value="formState.name"/>
     </ant-form-item>
@@ -27,12 +29,19 @@
         </ant-select-option>
       </ant-select>
     </ant-form-item>
+
+    <ant-form-item label="作者">
+      <ant-input :value="'songxiwen'" disabled />
+    </ant-form-item>
     <ant-form-item label="标签">
       <ant-tag>Tag 1</ant-tag>
       <ant-tag>Tag 2</ant-tag>
       <ant-tag>Tag 3</ant-tag>
       <ant-button size="small" @click="handleOpenModal">+</ant-button>
     </ant-form-item>
+    <div class="control">
+<!--      <ant-button type="primary" @click="onSubmit">保存</ant-button>-->
+    </div>
   </ant-form>
   <ant-modal
     v-if="isModalVisible"
@@ -197,8 +206,13 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .knowledge-form-content {
+  padding: 0 15px;
   &::v-deep(.ant-form-item) {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
+  }
+  .control {
+    display: flex;
+    justify-content: flex-start;
   }
 }
 </style>

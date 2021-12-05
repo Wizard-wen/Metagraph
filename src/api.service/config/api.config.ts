@@ -22,10 +22,12 @@ export enum ApiPathEnum {
   GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
   GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
   CreateAlternativeKnowledgeList = '/knowledge/createAlternativeKnowledgeList',
+  RemoveAlternativeKnowledge = '/knowledge/removeAlternativeKnowledge',
   /**
    * edge
    */
   CreateKnowledgeEdge = 'knowledge/edge/create',
+  RemoveKnowledgeEdge = 'knowledge/edge/remove',
   GetNoAuthKnowledgeEdgeList = '/public/knowledge/edge/getList',
   GetNoAuthKnowledgeEdgeListByRepositoryEntityId = '/public/knowledge/edge/getList/repositoryEntityId',
   /**
@@ -57,7 +59,8 @@ export enum ApiPathEnum {
   CreateStar = '/star/create',
   CancelStar = '/star/cancel',
   GetMyStarList = '/star/getList/my',
-  GetEntityStarList = '/star/getEntityStarList',
+  GetEntityStaredUserList = '/star/getEntityStaredUserList',
+  // GetEntityStarDetailList = '/public/star/getEntityStarDetailList',
   /**
    * entity
    */
@@ -69,13 +72,17 @@ export enum ApiPathEnum {
   LoginByName = '/account/loginByName',
   GetById = '/account/getById',
   GetUserProfileById = '/public/user/profile',
+  GetPublicUserById = '/public/user/getById',
+  SendRegisterEmailCode = '/public/user/sendEmailCode',
   RegisterByName = '/account/registerByName',
+  UpdatePassword = '/account/updatePassword',
   /**
    * repository
    */
   CreateRepository = '/repository/create',
+  UpdateRepository = '/repository/update',
   // GetRepositoryList = '/repository/getList',
-  // GetRepositoryById = '/repository/get/id',
+  GetRepositoryByEntityId = '/repository/getRepositoryByEntityId',
   GetOwnRepositoryList = '/repository/getOwnList',
   getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
   CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
@@ -95,7 +102,7 @@ export enum ApiPathEnum {
   ParseWord = '/nlp/parse/word',
   // domain
   GetDomainList = '/public/domain/getList',
-
+  GetDomainTree = '/public/domain/get/tree',
   /**
    * follow
    */

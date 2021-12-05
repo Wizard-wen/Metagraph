@@ -22,6 +22,16 @@ export class KnowledgeApiService {
     });
   }
 
+  static async removeAlternativeKnowledge(params: {
+    repositoryEntityId: string,
+    id: string
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{ repositoryEntityId: string, id: string }, void>({
+      apiPath: ApiPathEnum.RemoveAlternativeKnowledge,
+      requestBody: params
+    });
+  }
+
   static async createAlternativeKnowledgeList(params: {
     article: {
       name: string;

@@ -1,12 +1,12 @@
-# Graph Designer
+# Metagraph
 
 > 让不同知识背景的人站在同一起跑线
 
 __[点击体验](http://edu.songxiwen.com.cn)__
 
 # Introduce
-Graph Designer是一款知识创作分享工具，不同于以往的知识创作平台，Graph Designer提供了强大的内容关联能力。
-你可以在Graph Designer中构建自己的仓库(Repository)，创作你的内容。
+Metagraph是一款知识创作分享工具，不同于以往的知识创作平台，Metagraph提供了强大的内容关联能力。
+你可以在Metagraph中构建自己的仓库(Repository)，创作你的内容。
 当你遇到一些想要着重表述的词条，你可以创建或绑定一个知识点。
 在创建知识点时，如果遇到一些较为复杂的知识点，可能需要更多的词条来解释当前知识点。
 此时，可以在知识点编辑界面中继续引用额外的知识点，我们还会同时为您在图中创建一个从额外知识点到当前知识点的关联。

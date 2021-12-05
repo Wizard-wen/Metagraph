@@ -1,116 +1,83 @@
 <template>
-  <div class="user-profile">
-    <div class="sidebar">
-      <div class="avatar">
-        <img
-          v-if="userProfile?.avatar" [src]="userProfile.avatar"
-          height="296"
-          width="296"
-          alt="">
-      </div>
-      <div class="nickname">
-        {{ userProfile?.name || '' }}
-      </div>
-      <div v-if="isMySelf" class="control" @click="goSettingPage">
-        Edit Profile
-      </div>
-      <div v-if="!isMySelf && !isFollowed" class="control" @click="handleFollow">
-        Follow
-      </div>
-      <div v-if="!isMySelf && isFollowed" class="control" @click="handleUnFollow">
-        Unfollow
-      </div>
-      <div class="basic-message">
-        <div class="followers">
-          <follower-icon></follower-icon>
-          6 followers ·
+  <ant-tabs v-model:activeKey="activeKey" class="custom-ant-tab">
+    <ant-tab-pane key="1">
+      <template #tab>
+        <span>
+          overview
+        </span>
+      </template>
+      <div class="tab-content">
+        <profile-sidebar></profile-sidebar>
+        <div class="profile-content">
+          <profile-overview></profile-overview>
         </div>
-        <div class="following">6 following · </div>
-        <div class="star">
+      </div>
+    </ant-tab-pane>
+    <ant-tab-pane key="2">
+      <template #tab>
+        <span>
+          <repository-list-icon></repository-list-icon>
+          仓库
+        </span>
+      </template>
+      <div class="tab-content">
+        <profile-sidebar></profile-sidebar>
+        <div class="profile-content"></div>
+      </div>
+    </ant-tab-pane>
+    <ant-tab-pane key="3">
+      <template #tab>
+        <span>
           <star-icon></star-icon>
-          152
-        </div>
+          点赞
+        </span>
+      </template>
+      <div class="tab-content">
+        <profile-sidebar></profile-sidebar>
+        <div class="profile-content"></div>
       </div>
-      <div class="email">
-        <email-icon></email-icon>
-        {{ userProfile?.email || '' }}
-      </div>
-      <div class="line-1px-border"></div>
-    </div>
-  </div>
+    </ant-tab-pane>
+  </ant-tabs>
 </template>
 
 <script lang="ts">
-import type { UserModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, computed, ref
+  defineComponent, ref, provide, onMounted
 } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { FollowApiService } from '@/api.service/follow.api.service';
-import { UserNoAuthApiService } from '@/api.service/no.auth/user.no.auth.api.service';
-import { useStore } from '@/store';
-import { StarIcon, FollowerIcon, EmailIcon } from '@/components/icons';
+import { useRoute } from 'vue-router';
+import { UserModelType } from 'edu-graph-constant';
+import ProfileOverview from '@/views/personal-profile/profile-overview.vue';
+import { userIdKey, userProfileKey } from '@/views/personal-profile/personal.profile.provide';
+import { UserApiService } from '@/api.service';
+import ProfileSidebar from './personal-profile/profile-sidebar.vue';
+import { RepositoryListIcon, StarIcon } from '@/components/icons';
 
 export default defineComponent({
-  name: 'profile.vue',
-  components: { FollowerIcon, StarIcon, EmailIcon },
+  name: 'personal-profile',
+  components: {
+    ProfileOverview, ProfileSidebar, RepositoryListIcon, StarIcon
+  },
   setup() {
-    const router = useRouter();
     const route = useRoute();
-    const store = useStore();
-    const userModel = computed(() => store.state.user.user);
+    const userId = ref(route.query.id as string);
+    const activeKey = ref('1');
     const userProfile = ref<UserModelType>();
-    const isMySelf = computed(() => route.query?.id === userModel.value?.id);
-    const isFollowed = ref<boolean>(false);
-    const getUserProfile = async () => {
-      const result = await UserNoAuthApiService.getUserProfileById({ userId: route.query.id as string });
+    provide(userIdKey, userId);
+    provide(userProfileKey, userProfile);
+
+    async function getUserModelById() {
+      const result = await UserApiService.getPublicUserById({ userId: userId.value });
       if (result.data) {
         userProfile.value = result.data;
       }
-    };
-    const followUser = async () => {
-      const result = await FollowApiService.follow({
-        toFollowUser: route.query.id as string
-      });
-    };
-    const handleUnFollow = async () => {
-      const result = await FollowApiService.unFollow({
-        followedUser: route.query.id as string
-      });
-    };
-    const checkIfFollowed = async () => {
-      const result = await FollowApiService.checkIfFollowed({
-        followedUser: route.query.id as string
-      });
-      if (result.data) {
-        isFollowed.value = result.data.status;
-      }
-    };
+    }
+
     onMounted(async () => {
-      if (userModel.value) {
-        await checkIfFollowed();
-      }
-      await getUserProfile();
+      await getUserModelById();
     });
 
-    const goSettingPage = () => {
-      router.push('/setting/profile');
-    };
-    const handleFollow = async () => {
-      if (userModel.value === undefined) {
-        await router.push('/login');
-      } else {
-        await followUser();
-      }
-    };
     return {
-      isMySelf,
-      userModel,
-      userProfile,
-      isFollowed,
-      goSettingPage,
-      handleFollow,
-      handleUnFollow
+      activeKey
     };
   }
 });
@@ -132,6 +99,10 @@ export default defineComponent({
       width: 296px;
       background: #0969DC;
       border-radius: 50%;
+
+      img {
+        border-radius: 50%;
+      }
     }
 
     .nickname {
@@ -172,5 +143,26 @@ export default defineComponent({
     }
   }
 
+  .profile-content {
+    flex: 1;
+  }
+}
+
+.custom-ant-tab {
+  &::v-deep(.ant-tabs-tab) {
+    padding: 17px 16px;
+  }
+}
+
+.tab-content {
+  width: 1200px;
+  margin: 0 auto;
+  height: 600px;
+  display: flex;
+  gap: 20px;
+
+  .profile-content {
+    flex: 1;
+  }
 }
 </style>

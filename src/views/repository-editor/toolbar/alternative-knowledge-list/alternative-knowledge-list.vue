@@ -45,7 +45,7 @@ import {
 import { Modal } from 'ant-design-vue';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'edu-graph-constant';
-import { repositoryEntityIdKey } from '@/views/editable.repository/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { CreateIcon, DeleteIcon, UploadIcon } from '@/components/icons';
 import {
   activeKey,

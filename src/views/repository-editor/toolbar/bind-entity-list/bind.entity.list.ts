@@ -6,11 +6,12 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { EntityCompletelyListItemType } from 'edu-graph-constant';
 
-const router = useRouter();
+
 export const selectedTreeNodeEntityId = ref('');
 export const isDrawerShown = ref(false);
 
 export class BindEntityList {
+  router = useRouter();
   handleClickEntityItem(
     item: EntityCompletelyListItemType,
     type: 'view' | 'edit',
@@ -21,7 +22,7 @@ export class BindEntityList {
       isDrawerShown.value = true;
       console.log(item, type);
     } else {
-      router.push({
+      this.router.push({
         name: 'KnowledgeEdit',
         query: {
           knowledgeEntityId: item.entity.id,

@@ -1,13 +1,13 @@
 <template>
   <div class="explore-box">
-    <h2 class="explore-header">Explore repositories</h2>
+    <h2 class="explore-header">热门仓库</h2>
     <div class="explore-item">
-      <div class="title">Deja-vuuu/vue-ele</div>
-      <div class="description">Idiomatic Session Module for NestJS. </div>
+      <div class="title">songxiwen / 会计科目</div>
+      <div class="description">整理现行会计准则下的会计科目. </div>
       <div class="action">
         <div class="action-item">
           <StarOutlined style="margin-right: 8px"/>
-          <span>233</span>
+          <span>2</span>
         </div>
       </div>
     </div>
@@ -38,8 +38,8 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .explore-box {
-  width: 350px;
-  padding: 0 24px;
+  width: 300px;
+  padding-left: 24px;
   margin-top: 32px;
 
   .explore-header {
@@ -60,7 +60,7 @@ export default defineComponent({
 
     .description {
       margin-bottom: 8px;
-      max-width: 70%;
+      padding-right: 30px;
     }
 
     .action {

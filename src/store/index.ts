@@ -1,6 +1,6 @@
 /**
  * @author wizard.song
- * @date 2021/07/10 15:13
+ * @date 2021/07/10 21:13
  */
 
 import { createStore, useStore as baseUseStore } from 'vuex';
@@ -20,6 +20,11 @@ export { MutationEnum } from './constant/mutation.enum';
 // 定义 injection key
 export const key: InjectionKey<Store<RootStateType>> = Symbol('store');
 
+// 持久化来自userModule中的user token isLogin
+const dataState = createPersistedState({
+  paths: ['user', 'token', 'isLogin']
+});
+
 export const store = createStore({
   modules: {
     repositoryEditor: repositoryEditorModule,
@@ -27,9 +32,7 @@ export const store = createStore({
     user: userModule,
     global: globalModule
   },
-  plugins: [createPersistedState({
-    paths: []
-  })],
+  plugins: [dataState],
 });
 
 // 定义自己的 `useStore` 组合式函数

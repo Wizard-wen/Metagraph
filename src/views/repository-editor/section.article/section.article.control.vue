@@ -194,7 +194,7 @@
           v-model:value="wordTitle" suffix="上传前可修改默认文件名"></ant-input>
       </div>
     </div>
-    <ant-tab v-model:activeKey="activeTab">
+    <ant-tabs v-model:activeKey="activeTab">
       <ant-tab-pane key="1" tab="文本" class="tab-content">
         <div
           class="doc-text"
@@ -215,7 +215,7 @@
           </template>
         </ant-list>
       </ant-tab-pane>
-    </ant-tab>
+    </ant-tabs>
     <template #footer>
       <ant-button @click="isUploadModalShown = false">关闭</ant-button>
       <ant-button
@@ -235,6 +235,11 @@
     v-if="isCreateBindKnowledgeModalVisible"
     @close="handleCreateBindKnowledgeModalClose"
     :is-modal-visible="isCreateBindKnowledgeModalVisible"></CreateBindKnowledgeModal>
+  <upload-cropper-modal
+    v-if="isUploadModalShow"
+    :is-modal-visible="isUploadModalShow"
+    :title="'添加图片'"
+    @close="handleUploadModalClose($event)"></upload-cropper-modal>
 </template>
 
 <script lang="ts">
@@ -254,6 +259,7 @@ import { FileEnum } from 'edu-graph-constant';
 import {
   defineComponent, inject, PropType, reactive, ref, toRef
 } from 'vue';
+import UploadCropperModal from '@/components/upload/upload-cropper-modal.vue';
 import {
   isShowOperationButton,
   SectionArticleControl,
@@ -262,9 +268,10 @@ import {
   articleText,
   wordTitle,
   uploadButtonText
-} from '@/views/editable.repository/section.article/section.article.control';
-import { repositoryEntityIdKey } from '@/views/editable.repository/provide.type';
-import CreateBindKnowledgeModal from '@/views/editable.repository/toolbar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
+} from '@/views/repository-editor/section.article/section.article.control';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import CreateBindKnowledgeModal
+  from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 import {
   CodeIcon, FindIcon, H1Icon, H2Icon, H3Icon,
   Quote, SaveIcon, UploadIcon, ImageIcon
@@ -279,6 +286,7 @@ export default defineComponent({
     }
   },
   components: {
+    UploadCropperModal,
     BoldOutlined,
     ItalicOutlined,
     StrikethroughOutlined,
@@ -307,13 +315,20 @@ export default defineComponent({
     const sectionArticleControl = new SectionArticleControl();
     const isCreateBindKnowledgeModalVisible = ref<boolean>(false);
     const articleFontSize = ref('12');
-      const activeKey = ref('1');
+    const activeKey = ref('1');
     const fontSizeList = reactive([
       { label: '12', value: '12' },
       { label: '14', value: '14' },
       { label: '16', value: '16' },
       { label: '18', value: '18' }
     ]);
+    const isUploadModalShow = ref(false);
+    const handleUploadModalClose = (event?: { url: string }) => {
+      isUploadModalShow.value = false;
+      if (event?.url) {
+        editor.value?.chain().focus().setImage({ src: event.url }).run();
+      }
+    };
     const handleCreateBindKnowledgeModalClose = () => {
       isCreateBindKnowledgeModalVisible.value = false;
     };
@@ -385,7 +400,8 @@ export default defineComponent({
       target.value = '';
     };
     const uploadImage = async () => {
-      editor.value?.chain().focus().setImage({ src: 'http://file.songxiwen.com.cn/icon1.jpeg' }).run();
+      // editor.value?.chain().focus().setImage({ src: 'http://file.songxiwen.com.cn/icon1.jpeg' }).run();
+      isUploadModalShow.value = true;
     };
     const createWordTextSection = async () => {
       await sectionArticleControl.createWordTextSection(repositoryEntityId.value);
@@ -430,7 +446,9 @@ export default defineComponent({
       articleFontSize,
       fontSizeList,
       handleFontSizeChange,
-    activeKey
+      activeKey,
+      isUploadModalShow,
+      handleUploadModalClose
     };
   }
 });

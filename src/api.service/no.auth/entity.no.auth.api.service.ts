@@ -15,13 +15,19 @@ export class EntityNoAuthApiService {
     entityType?: string,
     pageIndex: number,
     pageSize: number
-  }): Promise<PublicApiResponseType<any>> {
+  }): Promise<PublicApiResponseType<{
+    list: EntityCompletelyListItemType[],
+    total: number
+  }>> {
     return RequestUtil.post<{
       name?: string;
       entityType?: string,
       pageIndex: number,
       pageSize: number
-    }, any>({
+    }, {
+      list: EntityCompletelyListItemType[],
+      total: number
+    }>({
       apiPath: ApiPathEnum.GetEntityList,
       requestBody: params
     });

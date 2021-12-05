@@ -4,7 +4,7 @@ import Mention from '@tiptap/extension-mention';
 import { Editor, VueRenderer } from '@tiptap/vue-3';
 import tippy, { Instance } from 'tippy.js';
 import { computed } from 'vue';
-import MentionList from '@/views/editable.repository/tiptap/mention.list.vue';
+import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
 
 /**
  * @author songxiwen

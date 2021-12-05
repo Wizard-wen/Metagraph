@@ -3,20 +3,20 @@
     <div class="headers">
       <div class="icons">
         <img
-          v-if="user.avatar"
-          :src="user.avatar"
+          v-if="user.target.avatar"
+          :src="user.target.avatar"
           class="image-border-radius" height="48" width="48" alt="">
       </div>
       <div class="user">
-        <div class="user-name">{{ user.name }}</div>
-        <div class="user-type">Your personal account</div>
+        <div class="user-name">{{ user.target.name }}</div>
+        <div class="user-type">您的个人帐户</div>
       </div>
     </div>
     <div class="profile">
       <div class="left">
         <router-menu-list
           :type="'router'"
-          :title="'Account Settings'"
+          :title="'账户设置'"
           :nav-list="routerList"></router-menu-list>
       </div>
       <div class="right">
@@ -28,7 +28,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import {
+  defineComponent, onMounted, reactive, computed
+} from 'vue';
+import { useStore } from '@/store';
 import RouterMenuList from '@/github.style.component/router-menu-list/router-menu-list.vue';
 
 export default defineComponent({
@@ -37,21 +40,34 @@ export default defineComponent({
     RouterMenuList
   },
   setup() {
-    const user = ref({
-      id: '',
-      avatar: '',
-      name: '',
-      token: '',
-      userType: ''
+    const store = useStore();
+    const user = reactive<{
+      target: {
+        id: string;
+        name: string;
+        avatar: string;
+        token: string;
+        userType: 'personal' | 'organization'
+      }
+    }>({
+      target: {
+        id: '',
+        avatar: '',
+        name: '',
+        token: '',
+        userType: 'personal'
+      }
     });
-    const routerList = ref([
-      { path: '/settings/profile', name: 'Profile' },
-      { path: '/settings/account', name: 'Account' },
-      { path: '/settings/security', name: 'Account security' }
+    const routerList = reactive([
+      { path: '/settings/profile', name: '用户信息' },
+      // { path: '/settings/account', name: 'Account' },
+      { path: '/settings/security', name: '更改密码' }
     ]);
+    const userModel = computed(() => store.state.user.user);
     onMounted(() => {
-      console.log(localStorage.getItem('user'));
-      user.value = JSON.parse(localStorage.getItem('user')!);
+      if (userModel.value) {
+        user.target = userModel.value;
+      }
       console.log(user);
     });
     return {

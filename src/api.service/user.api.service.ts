@@ -10,6 +10,7 @@ import type { PublicApiResponseType } from '@/utils';
 
 // eslint-disable-next-line import/prefer-default-export
 export class UserApiService {
+
   static async login(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
     return RequestUtil.post<{ password: string; name: string }, any>({
       apiPath: ApiPathEnum.LoginByName,
@@ -21,6 +22,26 @@ export class UserApiService {
     return RequestUtil.post<undefined, UserModelType>({
       apiPath: ApiPathEnum.GetById,
       requestBody: undefined
+    });
+  }
+
+  static async getPublicUserById(params: { userId: string }): Promise<PublicApiResponseType<UserModelType>> {
+    return RequestUtil.post<{ userId: string }, UserModelType>({
+      apiPath: ApiPathEnum.GetPublicUserById,
+      requestBody: params
+    });
+  }
+
+  static async updatePassword(params: {
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      oldPassword: string;
+      newPassword: string;
+    }, void>({
+      apiPath: ApiPathEnum.UpdatePassword,
+      requestBody: params
     });
   }
 

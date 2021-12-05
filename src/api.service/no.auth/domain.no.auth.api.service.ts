@@ -3,6 +3,7 @@
  * @date  2021/9/17 22:49
  */
 
+import type { DomainResponseType } from 'edu-graph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
@@ -21,6 +22,12 @@ export class DomainNoAuthApiService {
     }, any>({
       apiPath: ApiPathEnum.GetDomainList,
       requestBody: params
+    });
+  }
+
+  static getTree(): Promise<PublicApiResponseType<DomainResponseType[]>> {
+    return RequestUtil.get<DomainResponseType[]>({
+      apiPath: ApiPathEnum.GetDomainTree
     });
   }
 }

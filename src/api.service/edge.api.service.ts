@@ -28,4 +28,17 @@ export class EdgeApiService {
       requestBody: params
     });
   }
+
+  static async remove(params: {
+    edgeId: string,
+    edgeRepositoryEntityId: string
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      edgeId: string,
+      edgeRepositoryEntityId: string
+    }, void>({
+      apiPath: ApiPathEnum.RemoveKnowledge,
+      requestBody: params
+    });
+  }
 }

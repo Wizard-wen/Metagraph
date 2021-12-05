@@ -65,7 +65,7 @@ import { PlusOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 
 export default defineComponent({
-  name: 'edu.header',
+  name: 'metagraph-header',
   components: {
     PlusOutlined,
   },

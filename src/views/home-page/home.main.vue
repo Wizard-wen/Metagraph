@@ -1,25 +1,27 @@
 <template>
-  <div class="home-main">
-    <div class="content">
-      <repository-item
-        :repository="item"
-        v-for="item in repositoryList"></repository-item>
+  <ant-spin :spinning="isLoading">
+    <div class="home-main">
+      <div class="content">
+        <repository-item
+          :repository="item"
+          v-for="item in repositoryList"></repository-item>
+      </div>
+      <ant-pagination
+        class="pagination"
+        v-model:current="current"
+        :total="total"
+        @change="onPaginationChange"/>
     </div>
-    <ant-pagination
-      class="pagination"
-      v-model:current="current"
-      :total="total"
-      @change="onPaginationChange"/>
-  </div>
+  </ant-spin>
 </template>
 
 <script lang="ts">
+import { message } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
   defineComponent, onMounted, ref
 } from 'vue';
 import { RepositoryNoAuthApiService } from '@/api.service';
-import { useStore } from '@/store';
 import RepositoryItem from './main/repository.item.vue';
 
 export default defineComponent({
@@ -28,18 +30,23 @@ export default defineComponent({
     RepositoryItem,
   },
   setup() {
-    const store = useStore();
     const current = ref(1);
     const repositoryList = ref<EntityCompletelyListItemType[]>([]);
-    const total = ref();
+    const total = ref(0);
+    const isLoading = ref(false);
     const onPaginationChange = async (page: number) => {
-      console.log(page);
+      isLoading.value = true;
       const result = await RepositoryNoAuthApiService.getList({
         pageIndex: page - 1,
         pageSize: 10
       });
-      repositoryList.value = result.data?.list ?? [];
-      total.value = result.data?.total || 0;
+      if (result.data) {
+        repositoryList.value = result.data.list ?? [];
+        total.value = result.data.total;
+      } else {
+        message.error('获取仓库数据时失败！');
+      }
+      isLoading.value = false;
     };
     onMounted(async () => {
       await onPaginationChange(current.value);
@@ -48,7 +55,8 @@ export default defineComponent({
       repositoryList,
       total,
       current,
-      onPaginationChange
+      onPaginationChange,
+      isLoading
     };
   }
 });

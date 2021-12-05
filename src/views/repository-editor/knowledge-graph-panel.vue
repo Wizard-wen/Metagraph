@@ -11,11 +11,12 @@
         @cancel="handleModalCancel"
         @ok="handleModalOk">
         <ant-form
-          ref="knowledgeFormRef"
-          :model="knowledgeFormState">
+          :rules="knowledgeEdgeFormRules"
+          ref="knowledgeEdgeFormRef"
+          :model="knowledgeEdgeFormState">
           <ant-form-item label="所属知识点" name="knowledgeEntityId">
             <ant-select
-              v-model:value="knowledgeFormState.knowledgeEntityId"
+              v-model:value="knowledgeEdgeFormState.knowledgeEntityId"
               placeholder="input search text">
               <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
                 {{ d.content.name }}
@@ -24,7 +25,7 @@
           </ant-form-item>
           <ant-form-item label="源知识点" name="originKnowledgeEntityId">
             <ant-select
-              v-model:value="knowledgeFormState.originKnowledgeEntityId"
+              v-model:value="knowledgeEdgeFormState.originKnowledgeEntityId"
               :disabled="true"
               placeholder="input search text">
               <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
@@ -34,13 +35,19 @@
           </ant-form-item>
           <ant-form-item label="目标知识点" name="targetKnowledgeEntityId">
             <ant-select
-              v-model:value="knowledgeFormState.targetKnowledgeEntityId"
+              v-model:value="knowledgeEdgeFormState.targetKnowledgeEntityId"
               :disabled="true"
               placeholder="input search text">
               <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
                 {{ d.content.name }}
               </ant-select-option>
             </ant-select>
+          </ant-form-item>
+          <ant-form-item label="关联描述" name="description">
+            <ant-input
+              v-model:value="knowledgeEdgeFormState.description"
+              placeholder="请填写关联理由">
+            </ant-input>
           </ant-form-item>
         </ant-form>
       </ant-modal>
@@ -53,7 +60,6 @@
           <div id="container" class="graph-graph"></div>
         </div>
         <div id="mini-map-container" class="graph-mini-map"></div>
-
       </div>
       <div class="graph-bottom">
 
@@ -66,28 +72,40 @@
 import * as AntvX6 from '@antv/x6';
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, computed, reactive, ref, onUnmounted, watch
+  defineComponent, onMounted, computed, reactive, ref, onUnmounted, watch, inject, createVNode
 } from 'vue';
 import { useRoute } from 'vue-router';
+import { message, Modal } from 'ant-design-vue';
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
 import { ConfigService } from '@/config/config.service';
 import { RepositoryApiService } from '@/api.service';
-import { EdgeApiService } from '@/api.service/edge.api.service';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
 import { WebsocketService } from '@/service/websocket.service';
-import KnowledgeConnection from './knowledge.graph/knowledge.connection.vue';
+import KnowledgeConnection from './knowledge-graph-panel/knowledge.connection.vue';
+import {
+  knowledgeEdgeFormRules,
+  knowledgeEdgeFormRef,
+  knowledgeEdgeFormState,
+  KnowledgeGraphPanel
+} from './knowledge-graph-panel/knowledge.graph.panel';
 
 export default defineComponent({
   name: 'knowledge.graph',
   components: {
     KnowledgeConnection,
     ZoomInIcon,
-    ZoomOutIcon
+    ZoomOutIcon,
+    ExclamationCircleOutlined
   },
   setup() {
     const route = useRoute();
     const store = useStore();
+    const userModel = computed(() => store.state.user.user);
+    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+    const knowledgeGraphPanel = new KnowledgeGraphPanel();
     const repositoryGraphEdges = computed(() => store.state.repositoryEditor.repositoryEdgeList);
     const repositoryGraphNodes = computed(() => store.state.repositoryEditor.knowledgeList);
     const isEditable = computed(() => store.state.repositoryEditor.editable);
@@ -103,49 +121,23 @@ export default defineComponent({
     // modal
     const isModalVisible = ref<boolean>(false);
     const modalConfirmLoading = ref<boolean>(false);
-    // form
-    const knowledgeFormRef = ref();
-    const knowledgeFormState = reactive<{
-      knowledgeEntityId?: string;
-      targetKnowledgeEntity?: EntityCompletelyListItemType;
-      targetKnowledgeEntityId?: string;
-      originKnowledgeEntity?: EntityCompletelyListItemType;
-      originKnowledgeEntityId?: string;
-      temporaryEdgeId?: string;
-    }>({
-      knowledgeEntityId: undefined,
-      targetKnowledgeEntityId: undefined,
-      originKnowledgeEntityId: undefined
-    });
 
     const handleModalOk = async () => {
-      if (knowledgeFormState.originKnowledgeEntityId === undefined
-        || knowledgeFormState.targetKnowledgeEntityId === undefined
-        || knowledgeFormState.knowledgeEntityId === undefined
-        || knowledgeFormState.targetKnowledgeEntity === undefined
-        || knowledgeFormState.originKnowledgeEntity === undefined) {
+      const errorMessage = await knowledgeGraphPanel.validateEdge();
+      if (errorMessage) {
         return;
       }
-      let entity: any = knowledgeFormState.targetKnowledgeEntity;
-      if (knowledgeFormState.knowledgeEntityId === knowledgeFormState.originKnowledgeEntityId) {
-        entity = knowledgeFormState.originKnowledgeEntity;
-      }
       modalConfirmLoading.value = true;
-      await EdgeApiService.create({
-        originKnowledgeEntityId: knowledgeFormState.originKnowledgeEntityId,
-        knowledgeEntityId: knowledgeFormState.knowledgeEntityId,
-        targetKnowledgeEntityId: knowledgeFormState.targetKnowledgeEntityId,
-        edgeRepositoryEntityId: route.query.repositoryEntityId as string,
-        description: `From ${(entity.content as KnowledgeModelType).name}`
-      });
+      await knowledgeGraphPanel.createEdge(repositoryEntityId.value);
       modalConfirmLoading.value = false;
       isModalVisible.value = false;
       // todo 刷新页面，否则新创建的节点不在图数据model中
     };
     const handleModalCancel = async () => {
-      if (knowledgeFormState.temporaryEdgeId) {
-        graph.value.graph?.removeEdge(knowledgeFormState.temporaryEdgeId);
+      if (knowledgeEdgeFormState.temporaryEdgeId) {
+        graph.value.graph?.removeEdge(knowledgeEdgeFormState.temporaryEdgeId);
       }
+      message.info('取消创建关联');
     };
     const websocketService = ref<WebsocketService>();
     onUnmounted(() => {
@@ -159,22 +151,23 @@ export default defineComponent({
     });
     watch(isEditable, (newValue) => {
       if (newValue) {
+        console.log('初始化')
         websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
           {
             event: 'graph',
-            handler(message) {
-              console.log(message);
+            handler(info) {
+              console.log(info);
             }
           }
         ]);
       }
     });
     const checkIfUserOwnRepository = async () => {
-      if (localStorage.getItem('user') === null) {
+      if (!userModel.value) {
         return false;
       }
       const result = await RepositoryApiService.checkIfUserOwnRepository({
-        repositoryEntityId: route.query.repositoryEntityId as string
+        repositoryEntityId: repositoryEntityId.value
       });
       if (result.data) {
         return result.data.hasAuth;
@@ -190,42 +183,31 @@ export default defineComponent({
       // 初始化图
       store.commit(MutationEnum.INIT_GRAPH);
       await store.dispatch(ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID, {
-        repositoryEntityId: route.query.repositoryEntityId as string,
+        repositoryEntityId: repositoryEntityId.value,
         hasAuth: isUserOwnRepository.value
       });
       if (graph.value.graph === undefined) {
         return;
       }
-      // const gridLayout = new RandomLayout({
-      //   type: 'random',
-      //   width: window.innerWidth.valueOf() - 520,
-      //   height: (window.innerHeight.valueOf() - 100) * 0.6,
-      //   center: [300, 200],
-      // });
-      // const newModel = gridLayout.layout({
-      //   edges: repositoryGraphEdges.value as any,
-      //   nodes: repositoryGraphNodes.value as any
-      // });
       repositoryGraphNodes.value.forEach((item: any) => {
         console.log(item);
         graph.value.graph?.addNode(item);
       });
       repositoryGraphEdges.value.forEach((item: any) => graph.value.graph?.addEdge(item));
-      // graph.value.graph.fromJSON(newModel);
-      // graph.value.graph.centerContent();
       graph.value.graph.on('edge:connected', async ({ edge, previousView, currentView }) => {
-        console.log(edge);
-        knowledgeFormState.temporaryEdgeId = edge.id;
         if (edge.getSourceCell() === null || edge.getTargetCell() === null) {
           return;
         }
         const sourceCellData = edge.getSourceCell()?.data;
         const targetCellData = edge.getTargetCell()?.data;
         knowledgeInEdgeList.value = [sourceCellData, targetCellData];
-        knowledgeFormState.originKnowledgeEntityId = sourceCellData.entity.id;
-        knowledgeFormState.targetKnowledgeEntityId = targetCellData.entity.id;
-        knowledgeFormState.originKnowledgeEntity = sourceCellData;
-        knowledgeFormState.targetKnowledgeEntity = targetCellData;
+        knowledgeGraphPanel.setKnowledgeEdgeFormState({
+          temporaryEdgeId: edge.id,
+          originKnowledgeEntityId: sourceCellData.entity.id,
+          targetKnowledgeEntityId: targetCellData.entity.id,
+          originKnowledgeEntity: sourceCellData,
+          targetKnowledgeEntity: targetCellData
+        });
         isModalVisible.value = true;
       });
       graph.value.graph.on('edge:selected', ({ cell, edge }) => {
@@ -235,6 +217,9 @@ export default defineComponent({
             stroke: '#7c68fc', // 指定 path 元素的填充色
           },
         });
+      });
+      graph.value.graph.on('edge:change:connector', ({ cell, edge }) => {
+        console.log(edge, cell, '------edge:change:connector');
       });
       graph.value.graph.on('edge:unselected', ({ cell, edge }) => {
         console.log(edge, cell);
@@ -247,7 +232,7 @@ export default defineComponent({
       graph.value.graph.on('node:click', async ({ cell }) => {
         store.commit(MutationEnum.SET_SELECTED_ENTITY_ID, { id: cell.id });
         await store.dispatch(ActionEnum.GET_PRE_EXTEND_KNOWLEDGE_LIST, {
-          repositoryEntityId: route.query.repositoryEntityId as string,
+          repositoryEntityId: repositoryEntityId.value,
           knowledgeEntityId: cell.id
         });
       });
@@ -264,9 +249,24 @@ export default defineComponent({
       });
       graph.value.graph.on('edge:removed', ({ edge, options }) => {
         console.log(edge, options);
+        // Modal.confirm({
+        //   title: '确定删除知识关联?',
+        //   icon: createVNode(ExclamationCircleOutlined),
+        //   content: '删除关系操作不可恢复，请谨慎操作',
+        //   async onOk() {
+        //     await knowledgeGraphPanel.removeEdge({
+        //       id: edge.id,
+        //       repositoryEntityId: repositoryEntityId.value
+        //     });
+        //   },
+        //   onCancel() {
+        //     message.info('放弃删除关联');
+        //   },
+        // });
       });
       graph.value.graph.on('edge:mouseenter', ({ edge }) => {
-        if (localStorage.getItem('user') && isUserOwnRepository.value) {
+        if (userModel.value && isUserOwnRepository.value) {
+          // hover展示删除按钮
           edge.addTools([
             'source-arrowhead',
             'target-arrowhead',
@@ -301,12 +301,14 @@ export default defineComponent({
       handleModalOk,
       handleModalCancel,
       // form
-      knowledgeFormRef,
-      knowledgeFormState,
+      // knowledgeFormRef,
+      // knowledgeFormState,
       knowledgeInEdgeList,
       handleZoomInGraph,
       handleZoomOutGraph,
-
+      knowledgeEdgeFormRules,
+      knowledgeEdgeFormRef,
+      knowledgeEdgeFormState
     };
   },
 });

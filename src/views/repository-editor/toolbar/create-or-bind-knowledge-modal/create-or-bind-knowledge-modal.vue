@@ -1,6 +1,6 @@
 <template>
   <ant-modal
-    :width="'100%'"
+    :width="1200"
     wrapClassName="full-modal"
     v-if="isModalVisible"
     title="绑定知识点"
@@ -62,7 +62,7 @@ import { debounce } from 'lodash';
 import {
   defineComponent, toRef, watch, ref, onMounted, inject
 } from 'vue';
-import { repositoryEntityIdKey } from '@/views/editable.repository/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import {
   CreateOrBindKnowledgeModal,
   searchText,
@@ -71,7 +71,7 @@ import {
   total,
   totalPage,
   currentPage
-} from '@/views/editable.repository/toolbar/create-or-bind-knowledge-modal/create.or.bind.knowledge.modal';
+} from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create.or.bind.knowledge.modal';
 import { StarIcon, CommentIcon, BindIcon } from '@/components/icons';
 
 export default defineComponent({

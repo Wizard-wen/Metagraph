@@ -1,11 +1,13 @@
 <template>
-$END$
+  <div class="article-container">
+
+  </div>
 </template>
 
 <script>
 export default {
-name: "article-container"
-}
+  name: 'article-container'
+};
 </script>
 
 <style scoped>

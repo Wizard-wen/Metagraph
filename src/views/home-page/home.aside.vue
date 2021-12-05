@@ -1,119 +1,112 @@
 <template>
-  <div class="home-aside">
-    <div class="user">
-      <ant-avatar :src="user?.content?.avatar || ''"></ant-avatar>
-      <div class="name">{{ user?.content?.name || '-' }}</div>
-    </div>
-    <div class=repo-content>
-      <div class="repo-list">
-        <div class="repo-header">
-          Repositories
-          <ant-button style="border-radius: 4px;" :size="'small'" @click="goCreateRepositoryPage">
-            <template #icon>
-              <PlusOutlined/>
-            </template>
-            创建
-          </ant-button>
-        </div>
-        <div class="search">
-          <ant-input
-            v-model:value="searchText"
-            type="text"
-            @change="handleFilterRepositoryList($event)"
-            placeholder="Find a repository..."
-            class="search-input"></ant-input>
-        </div>
-        <div>
-          <ant-list size="small" :data-source="filteredRepositoryList">
-            <template #renderItem="{ item }">
-              <ant-list-item>
-                <div class="repo-item" @click="goRepoPage(item)">
-                  <div class="icon">
-                    <repository-list-icon style="font-size: 16px;"></repository-list-icon>
+  <ant-spin :spinning="isLoading">
+    <div class="home-aside">
+      <div class="user">
+        <ant-avatar :src="userModel?.avatar || ''"></ant-avatar>
+        <div class="name">{{ userModel?.name || '-' }}</div>
+      </div>
+      <div class=repo-content>
+        <div class="repo-list">
+          <div class="repo-header">
+            仓库列表
+            <ant-button class="new-btn" :size="'small'" @click="goCreateRepositoryPage">
+              <template #icon>
+                <PlusOutlined/>
+              </template>
+              创建
+            </ant-button>
+          </div>
+          <div class="search">
+            <ant-input
+              v-model:value="searchText"
+              type="text"
+              placeholder="查找您的仓库..."
+              class="search-input"></ant-input>
+          </div>
+          <div>
+            <ant-list size="small" :data-source="filteredRepositoryList">
+              <template #renderItem="{ item }">
+                <ant-list-item>
+                  <div class="repo-item" @click="goRepositoryEditorPage(item)">
+                    <div class="icon">
+                      <img :src="item.author.avatar" height="20" width="20" alt="">
+                    </div>
+                    <span class="user-name">{{ item.author.name }}</span>
+                    &nbsp;/&nbsp;
+                    <span class="repository-name">{{ item.content.name }}</span>
                   </div>
-                  <span class="text" style="max-width: 125px">{{ item.author.name }}</span>
-                  /
-                  <span class="" style="max-width: 260px">{{ item.entity.name }}</span>
-                </div>
-              </ant-list-item>
-            </template>
-          </ant-list>
+                </ant-list-item>
+              </template>
+            </ant-list>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </ant-spin>
 </template>
 
 <script lang="ts">
+import { message } from 'ant-design-vue';
 import { RepositoryModelType } from 'edu-graph-constant';
 import {
-  defineComponent, onMounted, reactive, ref
+  computed,
+  defineComponent, onMounted, ref, reactive,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType } from 'edu-graph-constant';
 import { useStore } from '@/store';
 import { RepositoryApiService } from '@/api.service';
-import RepositoryListIcon from '@/components/icons/repository.list.icon.vue';
 
 export default defineComponent({
   name: 'home-aside',
   components: {
-    PlusOutlined,
-    RepositoryListIcon
+    PlusOutlined
   },
   setup() {
     const router = useRouter();
     const store = useStore();
+    const userModel = computed(() => store.state.user.user);
     const searchText = ref<string>('');
-    const ownRepositoryList = ref<EntityCompletelyListItemType[]>();
-    const filteredRepositoryList = ref<EntityCompletelyListItemType[]>();
-    const user = reactive<{ content?: any }>({
-      content: undefined
-    });
+    const isLoading = ref(false);
+    const ownRepositoryList = reactive<{ target: EntityCompletelyListItemType[] }>({ target: [] });
+    const filteredRepositoryList = computed(() => ownRepositoryList.target?.filter(
+      (item) => (item.content as RepositoryModelType).name.includes(searchText.value)
+    ) || []);
     const getOwnRepositoryList = async () => {
+      isLoading.value = true;
       const result = await RepositoryApiService.getOwnRepositoryList();
       if (result.data) {
-        ownRepositoryList.value = result.data;
+        ownRepositoryList.target = result.data;
+      } else {
+        message.error('获取仓库数据时失败！');
       }
+      isLoading.value = false;
     };
     const goCreateRepositoryPage = async () => {
       await router.push('/repository/edit');
     };
     onMounted(async () => {
-      if (localStorage.getItem('user') !== null) {
-        console.log(localStorage.getItem('user'));
-        user.content = JSON.parse(localStorage.getItem('user')!);
+      if (userModel.value) {
         await getOwnRepositoryList();
-        filteredRepositoryList.value = ownRepositoryList.value;
       }
     });
-    const goRepoPage = async (item: EntityCompletelyListItemType) => {
+    const goRepositoryEditorPage = async (item: EntityCompletelyListItemType) => {
       await router.push({
-        name: 'EditableRepository',
+        name: 'RepositoryEditor',
         query: {
           repositoryEntityId: item.entity.id
         }
       });
     };
-    const handleFilterRepositoryList = () => {
-      console.log(searchText.value);
-      if (searchText.value === '') {
-        filteredRepositoryList.value = ownRepositoryList.value;
-      }
-      filteredRepositoryList.value = ownRepositoryList
-        .value?.filter(
-          (item: EntityCompletelyListItemType) => (item.content as RepositoryModelType).name.includes(searchText.value)
-        );
-    };
     return {
       goCreateRepositoryPage,
+      goRepositoryEditorPage,
       ownRepositoryList,
-      goRepoPage,
-      handleFilterRepositoryList,
       filteredRepositoryList,
-      user,
-      searchText
+      userModel,
+      searchText,
+      isLoading
     };
   }
 });
@@ -123,16 +116,15 @@ export default defineComponent({
 @import '../../style/common.scss';
 
 .home-aside {
-  height: 100%;
-  width: 350px;
-  padding: 0 32px;
+  height: calc(100vh - 55px);
+  width: 300px;
+  padding: 0 18px;
   background: #fff;
 
   .user {
     display: flex;
     padding: 16px 0;
     margin-bottom: 24px;
-    //margin-top: 16px;
     border-bottom: 1px solid #eaecef;
 
     .name {
@@ -159,14 +151,17 @@ export default defineComponent({
         justify-content: space-between;
 
         .new-btn {
-          color: #fff;
-          padding: 3px 12px;
-          font-size: 12px;
-          line-height: 20px;
-          background: #2ea44f;
-          border-radius: 6px;
-          cursor: pointer;
-          border: 1px solid;
+          border-radius: 4px;
+          height: 28px;
+          line-height: 28px;
+          //color: #fff;
+          //padding: 3px 12px;
+          //font-size: 12px;
+          //line-height: 20px;
+          //background: #2ea44f;
+          //border-radius: 6px;
+          //cursor: pointer;
+          //border: 1px solid;
         }
       }
 
@@ -192,6 +187,7 @@ export default defineComponent({
 
       .repo-item {
         display: flex;
+        align-items: center;
         font-weight: 600;
         width: 100%;
         font-size: 14px;
@@ -200,6 +196,18 @@ export default defineComponent({
 
         .icon {
           margin-right: 8px;
+
+          img {
+            border-radius: 50%;
+          }
+        }
+
+        .user-name {
+          max-width: 125px
+        }
+
+        .repository-name {
+          max-width: 260px
         }
       }
 

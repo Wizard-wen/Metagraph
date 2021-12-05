@@ -26,10 +26,11 @@ export const bindEntityIdList = reactive<{ target: string[] }>({
 export const total = ref(0);
 export const totalPage = computed(() => Math.ceil((total.value / 10)));
 export const currentPage = ref(1);
-const router = useRouter();
 
 export class CreateOrBindKnowledgeModal {
-  async createNewEntity(repositoryEntityId: string) {
+  router = useRouter();
+
+  async createNewEntity(repositoryEntityId: string): Promise<void> {
     if (searchText.value === undefined) {
       return;
     }
@@ -41,7 +42,7 @@ export class CreateOrBindKnowledgeModal {
     if (!result.data) {
       throw new Error('');
     }
-    await router.push({
+    await this.router.push({
       name: 'KnowledgeEdit',
       query: {
         knowledgeEntityId: result.data.entity.id,

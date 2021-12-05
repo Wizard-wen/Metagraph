@@ -6,7 +6,7 @@
       @click="openCreateSectionModal({
         type: 'Section', isRoot: true
       })">
-      创建Section
+      创建单元
     </ant-button>
     <div class="tree-content">
       <ant-tree

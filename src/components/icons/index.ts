@@ -25,6 +25,11 @@ import ZoomOutIcon from './zoom.out.icon.vue';
 import RepositoryListIcon from './repository.list.icon.vue';
 import FollowerIcon from './follower.icon.vue';
 import EmailIcon from './email.icon.vue';
+import CommentIcon from './comment.icon.vue';
+import BindIcon from './bind.icon.vue';
+import CreateIcon from './create.icon.vue';
+import DeleteIcon from './delete.icon.vue';
+import GoBackIcon from './go-back-icon.vue';
 
 export {
   ArrowDownIcon,
@@ -48,5 +53,10 @@ export {
   ZoomOutIcon,
   RepositoryListIcon,
   FollowerIcon,
-  EmailIcon
+  EmailIcon,
+  CommentIcon,
+  BindIcon,
+  CreateIcon,
+  DeleteIcon,
+  GoBackIcon
 };

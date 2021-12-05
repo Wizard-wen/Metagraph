@@ -1,50 +1,10 @@
 <template>
   <ant-spin :spinning="spinning" class="repository-page">
-    <div class="repo-header" v-if="repository.target">
-      <div class="left">
-        <div class="logo" @click="goHomePage">
-          <img src="/hogwarts-logo.webp" height="32" width="32" alt="">
-        </div>
-        <div class="title">
-          <div class="name">{{ repository.target.author.name }}</div>
-          &nbsp;/&nbsp;
-          <div class="name">{{ repository.target.content.name }}</div>
-          <ant-tag class="repository-tag">
-            {{ isPublicRepository ? 'public' : 'private' }}
-          </ant-tag>
-        </div>
-      </div>
-      <div class="right">
-        <social-action-button
-          :title="repository.target.hasStared ? 'UnStar' : 'Star'"
-          :total="repository.target.star">
-          <template #icon>
-            <star-icon></star-icon>
-          </template>
-        </social-action-button>
-        <social-action-button
-          @total="isCommentDrawerShow = true"
-          :title="'Comment'"
-          :total="repository.target.comment">
-          <template #icon>
-            <comment-icon></comment-icon>
-          </template>
-        </social-action-button>
-        <div class="view-switch">
-          <ant-switch
-            @click="handleSwitchClick"
-            @change="handleSwitchChange"
-            checked-children="Graph"
-            un-checked-children="Section"
-            v-model:checked="viewStatus"/>
-        </div>
-      </div>
-      <comment-drawer
-        :is-show="isCommentDrawerShow"
-        :entityId="repository.target.entity.id"
-        @showChange="isCommentDrawerShow=false"
-      ></comment-drawer>
-    </div>
+    <repository-editor-header
+      @viewChange="viewStatus = !viewStatus"
+      v-if="repositoryModel.target"
+      :repository-model="repositoryModel.target"
+    ></repository-editor-header>
     <div class="editable">
       <div class="section-view" v-if="!viewStatus">
         <section-tree></section-tree>
@@ -55,9 +15,6 @@
             :editable="isEditable"
             @mention="handleMention($event)"
             @saveSectionArticle="saveSectionArticle($event)">
-            <template #comment="{entityId}">
-              <Comment :entityId="entityId" :entity-type="'Repository'"></Comment>
-            </template>
           </section-article-tip-tap>
           <ant-empty v-else :image="simpleImage"/>
         </div>
@@ -77,28 +34,24 @@
 
 <script lang="ts">
 import {
-  defineComponent, onMounted, ref, computed, onBeforeMount, onUnmounted, provide
+  defineComponent, ref, computed, onBeforeMount, onUnmounted, provide
 } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { Empty } from 'ant-design-vue';
 import {
-  EditableRepositoryService,
-  alternative,
+  RepositoryEditor,
   isEditable,
   repositoryModel,
   sectionEntityId,
   isPublicRepository
-} from '@/views/editable.repository/editable.repository.service';
+} from '@/views/repository-editor/repository-editor';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
-import Toolbar from './editable.repository/toolbar.vue';
-import SectionTree from './editable.repository/section.tree.vue';
-import SectionArticleTipTap from './editable.repository/section.article.vue';
-import KnowledgeGraph from './editable.repository/knowledge.graph.vue';
-import Comment from './editable.repository/comment.vue';
-import { repositoryEntityIdKey } from './editable.repository/provide.type';
-import { StarIcon, CommentIcon } from '@/components/icons';
-import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
-import CommentDrawer from './editable.repository/comment-drawer.vue';
+import Toolbar from './repository-editor/toolbar.vue';
+import SectionTree from './repository-editor/section-tree.vue';
+import SectionArticleTipTap from './repository-editor/section-article.vue';
+import KnowledgeGraph from './repository-editor/knowledge-graph-panel.vue';
+import { repositoryEntityIdKey } from './repository-editor/provide.type';
+import RepositoryEditorHeader from './repository-editor/repository-editor-header/repository-editor-header.vue';
 
 export default defineComponent({
   name: 'editable.repository',
@@ -107,25 +60,19 @@ export default defineComponent({
     SectionTree,
     SectionArticleTipTap,
     KnowledgeGraph,
-    Comment,
-    StarIcon,
-    CommentIcon,
-    SocialActionButton,
-    CommentDrawer
+    RepositoryEditorHeader
   },
   setup() {
     const route = useRoute();
-    const router = useRouter();
     const store = useStore();
     const spinning = computed(() => store.state.global.isSpinning);
     const repositoryEntityId = ref<string>(route.query.repositoryEntityId as string);
     provide(repositoryEntityIdKey, repositoryEntityId);
     const viewStatus = ref(false);
-    const isCommentDrawerShow = ref(false);
-    const editableRepositoryService = new EditableRepositoryService();
+    const repositoryEditorService = new RepositoryEditor();
     const {
       getRepositoryByEntityId
-    } = editableRepositoryService;
+    } = repositoryEditorService;
     const preventContextmenu = (event: MouseEvent) => {
       event.preventDefault();
     };
@@ -135,8 +82,6 @@ export default defineComponent({
       });
       await getRepositoryByEntityId(repositoryEntityId.value);
       document.addEventListener('contextmenu', preventContextmenu);
-    });
-    onMounted(async () => {
     });
     onUnmounted(() => {
       document.removeEventListener('contextmenu', preventContextmenu);
@@ -155,36 +100,22 @@ export default defineComponent({
       content: Record<string, any>,
       contentHtml: string
     }) => {
-      editableRepositoryService.handleMention({
+      repositoryEditorService.handleMention({
         ...params,
         repositoryEntityId: repositoryEntityId.value
       });
     };
-    const handleSwitchClick = () => {
-      console.log('click');
-    };
-    const handleSwitchChange = () => {
-      console.log('change');
-    };
-    const goHomePage = async () => {
-      await router.push('/');
-    };
     return {
-      alternative,
-      repository: repositoryModel,
+      repositoryModel,
       viewStatus,
       saveSectionArticle,
       isEditable,
       sectionEntityId,
       repositoryEntityId,
       handleMention,
-      goHomePage,
       spinning,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      handleSwitchClick,
-      handleSwitchChange,
       isPublicRepository,
-      isCommentDrawerShow
     };
   }
 });
@@ -196,53 +127,6 @@ export default defineComponent({
 .repository-page {
   height: 100vh;
   overflow-y: auto;
-}
-
-.repo-header {
-  background: #fafbfc;
-  height: 56px;
-  padding: 0 24px;
-  border-bottom: 1px solid $borderColor;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .left {
-    display: flex;
-    gap: 15px;
-
-    .logo {
-      cursor: pointer;
-    }
-
-    .title {
-      margin-right: 16px;
-      display: flex;
-      height: 32px;
-      line-height: 32px;
-      font-size: 18px;
-      align-items: center;
-
-      .name {
-        font-weight: 400;
-      }
-
-      .repository-tag {
-        height: 24px;
-        border-radius: 4px;
-        margin-left: 10px;
-      }
-    }
-  }
-
-  .right {
-    display: flex;
-    gap: 20px;
-
-    .view-switch {
-      line-height: 32px;
-    }
-  }
 }
 
 .editable {

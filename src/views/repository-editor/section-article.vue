@@ -52,7 +52,7 @@ import {
   defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, PropType, toRefs, toRef, reactive
 } from 'vue';
 import {
-  useEditor, EditorContent, VueRenderer, Editor
+  useEditor, EditorContent, VueRenderer, Editor, VueNodeViewRenderer
 } from '@tiptap/vue-3';
 import { mergeAttributes } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
@@ -67,6 +67,7 @@ import { ActionEnum, useStore } from '@/store';
 import MentionList from './tiptap/mention.list.vue';
 import SectionArticleControl from './section.article/section.article.control.vue';
 import ArticleLimit from './section.article/article.limit.vue';
+import MentionView from './section.article/mention-view.vue';
 
 export default defineComponent({
   name: 'section.article',
@@ -99,7 +100,7 @@ export default defineComponent({
     const paddingValue = ref<number[]>([0, 816]);
     const paddingFormatter = (value: number) => {
       console.log(value);
-      return `${ value }px`;
+      return `${value}px`;
     };
     const paddingMarks = ref<Record<number, any>>({
       0: { style: { left: '-20px' }, label: '0px' },
@@ -107,11 +108,14 @@ export default defineComponent({
     });
     const articleContent = computed(() => store.state.repositoryEditor.sectionArticleContent);
     const CustomMention = Mention.extend({
+      // addNodeView() {
+      //   return VueNodeViewRenderer(MentionView);
+      // },
       renderHTML({ node, HTMLAttributes }) {
         return [
           'span',
           mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-          `@${ node.attrs.name }`
+          `@${node.attrs.name}`
         ];
       },
       addAttributes() {
@@ -215,7 +219,7 @@ export default defineComponent({
             },
             // eslint-disable-next-line no-shadow
             command: ({ editor, range, props }) => {
-              console.log(editor.getJSON());
+              // console.log(editor.getJSON());
               context.emit('mention', {
                 name: props.name,
                 id: props.id,
@@ -268,7 +272,7 @@ export default defineComponent({
           content: editor.value?.getJSON(),
           contentHtml: editor.value?.getHTML()
         });
-        editor.value?.commands.focus();
+        // editor.value?.commands.focus();
       }, 10000);
     });
     onUnmounted(() => {

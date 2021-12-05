@@ -21,7 +21,7 @@ export enum ActionEnum {
    */
   LOGIN_BY_NAME = 'loginByName',
   /**
-   * home
+   * home-page
    */
   GET_REPOSITORY_LIST = 'getRepositoryList',
   GET_OWN_REPOSITORY_LIST = 'getOwnRepositoryList',

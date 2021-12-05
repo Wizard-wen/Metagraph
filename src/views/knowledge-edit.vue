@@ -2,13 +2,21 @@
   <ant-spin :spinning="spinning">
     <div class="knowledge-edit">
       <div class="knowledge-header">
-        <div class="title-box">
-          <div class="title">
-            <div class="name"></div>
-          </div>
+        <div class="left">
+          <go-back-icon class="back-icon"></go-back-icon>
+          <div class="title">知识点名称</div>
+          <ant-tag class="status-tag">未认证</ant-tag>
+        </div>
+        <div class="right">
+          <ant-tag>引用 23</ant-tag>
+          <ant-tag>被引 23</ant-tag>
+          <ant-tag>点赞 23</ant-tag>
+          <ant-tag>评论 23</ant-tag>
+          <ant-button type="primary" class="pull-request-button">提交认证</ant-button>
         </div>
       </div>
       <div class="knowledge-content">
+        <knowledge-bind-panel class="panel"></knowledge-bind-panel>
         <div class="knowledge-editor">
           <section-article-tip-tap
             :editable="true"
@@ -18,9 +26,32 @@
             @mention="handleMention"></section-article-tip-tap>
         </div>
         <div class="knowledge-form">
-          <KnowledgeEditForm :knowledge="knowledgeForm"></KnowledgeEditForm>
-          <h3>评论</h3>
-          <Comment :entityType="'Knowledge'" :entityId="knowledgeEntityId"></Comment>
+          <ant-tabs v-model:activeKey="activeKey" class="custom-ant-tab">
+            <ant-tab-pane key="1">
+              <template #tab>
+                <span>
+                  知识点
+                </span>
+              </template>
+              <KnowledgeEditForm :knowledge="knowledgeForm"></KnowledgeEditForm>
+            </ant-tab-pane>
+            <ant-tab-pane key="2">
+              <template #tab>
+                <span>
+                  评论
+                </span>
+              </template>
+              <h3>评论</h3>
+              <Comment :entityType="'Knowledge'" :entityId="knowledgeEntityId"></Comment>
+            </ant-tab-pane>
+            <ant-tab-pane key="3">
+              <template #tab>
+                <span>
+                  知识关联
+                </span>
+              </template>
+            </ant-tab-pane>
+          </ant-tabs>
         </div>
       </div>
     </div>
@@ -28,24 +59,27 @@
 </template>
 
 <script lang="ts">
+import GoBackIcon from "@/components/icons/go-back-icon.vue";
 import { useStore } from "@/store";
+import KnowledgeBindPanel from "@/views/knowledge-edit/knowledge-bind-panel.vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { Modal } from "ant-design-vue";
 import {
   computed, createVNode,
-  defineComponent, onMounted, reactive, ref, toRefs
+  defineComponent, onMounted, ref
 } from 'vue';
 import { useRoute } from 'vue-router';
-import KnowledgeEditForm from '@/views/knowledge.edit/knowledge.edit.form.vue';
-import { EntityCompletelyListItemType, KnowledgeModelType } from "edu-graph-constant";
-import { EdgeApiService, EntityNoAuthApiService, KnowledgeApiService } from '../api.service';
+import KnowledgeEditForm from '@/views/knowledge-edit/knowledge.edit.form.vue';
+import { KnowledgeModelType } from "edu-graph-constant";
 import SectionArticleTipTap from './repository-editor/section-article.vue';
-import { tiptapInitData } from '@/store/constant/tiptap.init.data';
 import Comment from './repository-editor/comment.vue';
+import { KnowledgeEdit, knowledge, knowledgeDescription } from './knowledge-edit/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge.edit',
   components: {
+    GoBackIcon,
+    KnowledgeBindPanel,
     KnowledgeEditForm,
     SectionArticleTipTap,
     Comment
@@ -54,42 +88,19 @@ export default defineComponent({
     const route = useRoute();
     const store = useStore();
     const spinning = computed(() => store.state.global.isSpinning);
-    // const { knowledgeEntityId, repositoryEntityId } = toRefs(route.query);
-    const knowledgeEntityId = ref(route.query.knowledgeEntityId);
-    const repositoryEntityId = ref(route.query.repositoryEntityId);
-    const knowledge: {
-      list?: any
-    } = reactive<{ list?: any }>({ list: undefined });
+    const knowledgeEntityId = ref(route.query.knowledgeEntityId as string);
+    const repositoryEntityId = ref(route.query.repositoryEntityId as string);
+    const activeKey = ref('1');
+    const knowledgeEdit = new KnowledgeEdit();
     const knowledgeForm = computed(() => ({
       repositoryEntityId: repositoryEntityId.value,
-      name: (<KnowledgeModelType> knowledge.list?.content).name,
-      knowledgeBaseTypeId: (<KnowledgeModelType> knowledge.list?.content).knowledgeBaseTypeId,
-      domainId: (<KnowledgeModelType> knowledge.list?.content).domainId,
+      name: (<KnowledgeModelType> knowledge.target?.content).name,
+      knowledgeBaseTypeId: (<KnowledgeModelType> knowledge.target?.content).knowledgeBaseTypeId,
+      domainId: (<KnowledgeModelType> knowledge.target?.content).domainId,
     }));
-    const knowledgeDescription = ref(tiptapInitData);
     onMounted(async () => {
-      const result = await EntityNoAuthApiService.getEntityById({
-        entityId: <string> knowledgeEntityId.value
-      });
-      if (result.data) {
-        knowledge.list = result.data;
-        let description = (<KnowledgeModelType> result.data.content)?.description;
-        if (!description) {
-          knowledgeDescription.value = tiptapInitData;
-        } else {
-          knowledgeDescription.value = JSON.parse(description);
-        }
-      }});
-    const handleSaveSectionArticle = async (params: {
-      content: Record<string, any>,
-      contentHtml: any
-    }) => {
-      await KnowledgeApiService.saveDescription({
-        description: JSON.stringify(params.content),
-        descriptionHTML: params.contentHtml,
-        entityId: <string> knowledgeEntityId.value
-      })
-    }
+      await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
+    });
     const handleMention = (params: {
       name: string, id: string, success: Function, fail: Function,
       content: Record<string, any>,
@@ -101,23 +112,24 @@ export default defineComponent({
         content: '',
         async onOk() {
           params.success()
-          await EdgeApiService.create({
-            originKnowledgeEntityId: params.id,
-            knowledgeEntityId: knowledgeEntityId.value as string,
-            targetKnowledgeEntityId: knowledgeEntityId.value as string,
-            edgeRepositoryEntityId: repositoryEntityId.value as string,
-            description: `From ${ knowledgeForm.value.name }`
-          });
-          await handleSaveSectionArticle({
+          await knowledgeEdit.createEdge({
+            id: params.id,
+            repositoryEntityId: repositoryEntityId.value,
+            knowledgeEntityId: knowledgeEntityId.value,
+            name: knowledgeForm.value.name
+          })
+          await knowledgeEdit.handleSaveSectionArticle({
             content: params.content,
-            contentHtml: params.contentHtml
+            contentHtml: params.contentHtml,
+            knowledgeEntityId: knowledgeEntityId.value
           })
         },
         async onCancel() {
           params.fail();
-          await handleSaveSectionArticle({
+          await knowledgeEdit.handleSaveSectionArticle({
             content: params.content,
-            contentHtml: params.contentHtml
+            contentHtml: params.contentHtml,
+            knowledgeEntityId: knowledgeEntityId.value
           })
         },
       });
@@ -125,12 +137,13 @@ export default defineComponent({
     return {
       knowledgeForm,
       knowledge,
-      handleSaveSectionArticle,
+      handleSaveSectionArticle: knowledgeEdit.handleSaveSectionArticle,
       knowledgeDescription,
       handleMention,
       knowledgeEntityId,
       repositoryEntityId,
-      spinning
+      spinning,
+      activeKey
     }
   }
 });
@@ -145,27 +158,46 @@ export default defineComponent({
   overflow: hidden;
 
   .knowledge-header {
-    padding: 12px 0;
     background: #fafbfc;
     height: 56px;
     border-bottom: 1px solid $borderColor;
+    display: flex;
+    justify-content: space-between;
 
-    .title-box {
+    .left {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 0 32px;
-      height: 32px;
+      height: 56px;
+      gap: 15px;
+
+      .back-icon {
+        cursor: pointer;
+        font-size: 18px;
+      }
 
       .title {
-        margin-right: 16px;
-        display: flex;
         height: 32px;
         line-height: 32px;
         font-size: 18px;
+      }
 
-        .name {
-          font-weight: 400;
-        }
+      .status-tag {
+        height: 24px;
+        line-height: 24px;
+        border-radius: 4px;
+      }
+    }
+
+    .right {
+      padding-right: 30px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+
+      .pull-request-button {
+        margin-left: 20px;
       }
     }
   }
@@ -175,13 +207,16 @@ export default defineComponent({
     width: 100%;
     display: flex;
 
+    .panel {
+      width: 220px;
+    }
+
     .knowledge-editor {
       flex: 1;
     }
 
     .knowledge-form {
-      width: 400px;
-      padding: 30px;
+      width: 300px;
     }
   }
 }

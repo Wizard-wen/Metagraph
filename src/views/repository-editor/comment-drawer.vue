@@ -7,7 +7,6 @@
     v-model:visible="visible"
     :after-visible-change="afterVisibleChange"
   >
-    <h3>评论</h3>
     <Comment :entityType="'Repository'" :entityId="entityId"></Comment>
   </ant-drawer>
 </template>

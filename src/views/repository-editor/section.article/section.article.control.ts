@@ -2,6 +2,7 @@
  * @author songxiwen
  * @date  2021/11/24 23:45
  */
+import { message } from 'ant-design-vue';
 import * as qiniu from 'qiniu-js';
 import {
   reactive, ref, computed
@@ -25,7 +26,7 @@ export const uploadButtonText = computed(() => {
   }
   return '确认上传';
 });
-export const fileUrl = ref<undefined | string>(undefined);
+export const fileUrl = ref<string>();
 export const keywords = reactive<{ target: { word: string; weight: number; index: number; }[] }>({
   target: []
 });
@@ -41,7 +42,7 @@ export class SectionArticleControl {
     file: File,
     name: string;
     type: FileEnum
-  }) {
+  }): Promise<void> {
     textParsingStatus.isDoing = true;
     textParsingStatus.text = '上传中...';
     const result: {
@@ -55,7 +56,7 @@ export class SectionArticleControl {
       type: params.type
     });
     const tokenForUploading = result.data;
-    console.log(tokenForUploading);
+
     if (tokenForUploading === undefined) {
       return;
     }
@@ -65,14 +66,16 @@ export class SectionArticleControl {
         fileUrl.value = response.url;
         textParsingStatus.isDoing = true;
         textParsingStatus.text = '解析中...';
-        console.log(params.repositoryEntityId, 'repositoryEntityId');
         NlpApiService.parseWord({
           url: fileUrl.value!,
           repositoryEntityId: params.repositoryEntityId
         }).then((data) => {
           if (data.data) {
             articleText.value = data.data.text;
-            keywords.target = data.data.list.map((item, index) => ({
+            keywords.target = data.data.list.map((item: {
+              weight: number,
+              word: string
+            }, index: number) => ({
               index,
               word: item.word,
               weight: Number(item.weight.toFixed(2))
@@ -92,22 +95,27 @@ export class SectionArticleControl {
       .subscribe(observer);
   }
 
-  async createWordTextSection(repositoryEntityId: string) {
+  async createWordTextSection(repositoryEntityId: string): Promise<void> {
     if (!wordTitle.value || !wordTitle.value) {
       return;
     }
-    await SectionApiService.createSectionTree({
+    const result = await SectionApiService.createSectionTree({
       text: articleText.value,
       name: wordTitle.value,
       repositoryEntityId
     });
+    if (result.message) {
+      message.error(result.message);
+    } else {
+      message.success('创建成功!');
+    }
   }
 
-  async createAlternativeKnowledgeList(repositoryEntityId: string) {
+  async createAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
     if (!wordTitle.value || !fileUrl.value) {
       return;
     }
-    await KnowledgeApiService.createAlternativeKnowledgeList({
+    const result = await KnowledgeApiService.createAlternativeKnowledgeList({
       article: {
         name: wordTitle.value,
         url: fileUrl.value,
@@ -119,5 +127,10 @@ export class SectionArticleControl {
         weight: item.weight
       }))
     });
+    if (result.message) {
+      message.error(result.message);
+    } else {
+      message.success('创建成功!');
+    }
   }
 }

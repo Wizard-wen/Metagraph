@@ -113,7 +113,7 @@ export class StarApiService {
           KnowledgeEdgeResponseType
       }
     } | undefined>({
-      apiPath: ApiPathEnum.GetEntityStarList,
+      apiPath: ApiPathEnum.GetEntityStaredUserList,
       requestBody: params
     });
   }

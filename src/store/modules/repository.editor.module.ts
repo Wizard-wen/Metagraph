@@ -9,7 +9,6 @@ import type {
   SectionCreateRequestType
 } from 'edu-graph-constant';
 import { Module } from 'vuex';
-import { store } from '@/store';
 import {
   SectionApiService,
   RepositoryApiService,
@@ -89,9 +88,6 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     [MutationEnum.SET_REPOSITORY_BIND_ENTITY_LIST](state, { list }) {
       state.repositoryEntityList = list.data;
     },
-    // [MutationEnum.SET_SELECTED_ENTITY_ID](state, { id }) {
-    //   state.selectedEntityId = id;
-    // },
     [MutationEnum.SET_SELECTED_ENTITY_DETAIL](state, { detail }) {
       state.selectedEntityDetail = detail;
     },

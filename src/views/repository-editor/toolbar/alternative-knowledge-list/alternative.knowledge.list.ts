@@ -3,7 +3,7 @@
  * @date  2021/11/28 16:14
  */
 import { reactive, ref } from 'vue';
-import { AlternativeKnowledgeListType } from 'edu-graph-constant';
+import type { AlternativeKnowledgeListType } from 'edu-graph-constant';
 import { KnowledgeApiService } from '@/api.service';
 
 export const activeKey = ref('');

@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
-        component: () => import('@/views/home.page.vue')
+        component: () => import('@/views/home-page.vue')
       },
       {
         path: 'repo',
@@ -29,14 +29,14 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/repository.list.vue')
       },
       {
-        path: '/repository/create',
+        path: '/repository/edit',
         name: 'CreateRepository',
-        component: () => import('@/views/create.repository.vue')
+        component: () => import('@/views/repository-edit.vue')
       },
       {
         path: 'profile',
         name: 'UserProfile',
-        component: () => import('@/views/profile.vue')
+        component: () => import('@/views/personal-profile.vue')
       },
       {
         path: 'settings',
@@ -63,19 +63,19 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: '/repo/editable',
-    name: 'EditableRepository',
-    component: () => import('@/views/editable.repository.vue')
+    path: '/repository/editor',
+    name: 'RepositoryEditor',
+    component: () => import('@/views/repository-editor.vue')
   },
   {
     path: '/knowledge/map',
     name: 'KnowledgeMap',
-    component: () => import('@/views/knowledge.map.vue')
+    component: () => import('@/views/knowledge-map.vue')
   },
   {
     path: '/knowledge/edit',
     name: 'KnowledgeEdit',
-    component: () => import('@/views/knowledge.edit.vue')
+    component: () => import('@/views/knowledge-edit.vue')
   },
   {
     path: '/login',
@@ -86,11 +86,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/signup',
     name: 'SignUp',
     component: () => import('@/views/sign.up.vue')
-  },
-  {
-    path: '/user/edit/:userId',
-    name: 'UserEdit',
-    component: () => import('@/views/user/user.edit.vue')
   },
   {
     path: '/user/star/:userId',

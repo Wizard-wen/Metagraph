@@ -37,10 +37,11 @@
   </ant-list>
 </template>
 <script lang="ts">
+import { CommonUtil } from "@/utils";
 import {
   defineComponent, onMounted, PropType, ref, toRef, watch
 } from 'vue';
-import { CommentEntityType } from 'edu-graph-constant';
+import { CommentEntityType, CommentListItemType } from 'edu-graph-constant';
 import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
 
 type Comment = Record<string, string>;
@@ -73,7 +74,11 @@ export default defineComponent({
         pageSize: 10
       });
       if (result.data) {
-        commentList.value = result.data.list;
+        commentList.value = result.data.list.map((item) => ({
+          ...item,
+          createdAt: CommonUtil.formatDate(new Date(item.createdAt),
+            'yyyy-MM-dd hh:mm:ss')
+        }));
       }
     };
     const handleSubmitComment = async () => {
@@ -87,6 +92,7 @@ export default defineComponent({
         content: commentContent.value
       });
       await getCommentList();
+      commentContent.value = '';
       submitting.value = false;
     };
     onMounted(async () => {

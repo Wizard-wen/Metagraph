@@ -1,19 +1,21 @@
 <template>
   <div class="create-repo-page">
     <div class="repo-description">
-      <h3>创建仓库</h3>
+      <h3>{{ pageTitle }}仓库</h3>
       <span>仓库是一个包含单元、知识点的独立单元。你的仓库只有自己可以编辑。</span>
     </div>
     <div class="repo-create-form">
       <ant-form
+        ref="repositoryFormRef"
         layout="vertical"
+        :rules="repositoryFormRules"
         :model="repositoryFormState"
         :label-col="labelCol"
         :wrapper-col="wrapperCol">
-        <ant-form-item label="仓库名称">
+        <ant-form-item label="仓库名称" name="name">
           <ant-input v-model:value="repositoryFormState.name"/>
         </ant-form-item>
-        <ant-form-item label="仓库类型">
+        <ant-form-item label="仓库类型" name="type">
           <ant-radio-group v-model:value="repositoryFormState.type">
             <ant-radio class="radio" value="private">
               <div class="radio-box">
@@ -39,16 +41,25 @@
             </ant-radio>
           </ant-radio-group>
         </ant-form-item>
-        <ant-form-item label="封面" name="image">
-          <upload-qiniu v-model="repositoryFormState.image"></upload-qiniu>
+        <ant-form-item label="仓库领域" name="domainId">
+          <ant-select
+            v-model:value="repositoryFormState.domainId"
+            placeholder="请选择领域">
+            <ant-select-option
+              v-for="item in domainList.target"
+              :value="item.id">{{ item.name }}
+            </ant-select-option>
+          </ant-select>
         </ant-form-item>
-        <ant-form-item label="仓库描述">
+        <ant-form-item label="封面" name="avatar">
+          <upload-form-item v-model="repositoryFormState.avatar"></upload-form-item>
+        </ant-form-item>
+        <ant-form-item label="仓库描述" name="description">
           <ant-text-area v-model:value="repositoryFormState.description"/>
         </ant-form-item>
-<!--        <upload-crop></upload-crop>-->
       </ant-form>
       <div class="control-button">
-        <ant-button type="primary" @click="onSubmit">创建</ant-button>
+        <ant-button type="primary" @click="onSubmit">{{ pageTitle }}</ant-button>
         <ant-button style="margin-left: 10px" @click="goBack">返回</ant-button>
       </div>
     </div>
@@ -57,12 +68,18 @@
 </template>
 <script lang="ts">
 import {
-  defineComponent, reactive, UnwrapRef
+  defineComponent, onMounted, ref, computed, toRaw
 } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { LockOutlined, BookOutlined } from '@ant-design/icons-vue';
-import { RepositoryApiService } from '@/api.service';
-import UploadQiniu from '../components/upload/upload.qiniu.vue';
+import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
+import {
+  domainList,
+  repositoryFormState,
+  RepositoryEdit,
+  repositoryFormRules, repositoryFormRef
+} from '@/views/repository-edit/repository.edit';
+import UploadFormItem from '@/components/upload/upload-form-item.vue';
 
 interface RepositoryFormStateType {
   name: string;
@@ -73,40 +90,53 @@ interface RepositoryFormStateType {
 
 export default defineComponent({
   components: {
-    UploadQiniu,
     LockOutlined,
-    BookOutlined
+    BookOutlined,
+    UploadFormItem
   },
   setup() {
-    const repositoryFormState: UnwrapRef<RepositoryFormStateType> = reactive({
-      name: '',
-      type: 'public',
-      description: '',
-      image: ''
-    });
+    const route = useRoute();
     const router = useRouter();
-    const onSubmit = async () => {
-      const response = await RepositoryApiService.createRepository({
-        name: repositoryFormState.name,
-        description: repositoryFormState.description,
-        type: repositoryFormState.type,
-      });
-      if (response.data) {
-        await router.push({
-          name: 'EditableRepository',
-          query: {
-            repositoryEntityId: response.data.entity.id
-          }
-        });
+    const repositoryEntityId = ref(route.query.repositoryEntityId as (string | undefined));
+    const repositoryEdit = new RepositoryEdit();
+    const pageTitle = computed(() => {
+      if (repositoryEntityId.value) {
+        return '编辑';
       }
+      return '创建';
+    });
+    onMounted(async () => {
+      await repositoryEdit.getDomainTree();
+      if (repositoryEntityId.value) {
+        await repositoryEdit.getRepository(repositoryEntityId.value);
+      }
+    });
+    const onSubmit = async () => {
+      repositoryFormRef.value
+        .validate()
+        .then(() => {
+          console.log('values', repositoryFormState, toRaw(repositoryFormState));
+          if (repositoryEntityId.value) {
+            repositoryEdit.updateRepository(repositoryEntityId.value).then();
+          } else {
+            repositoryEdit.createRepository().then();
+          }
+        })
+        .catch((error: ValidateErrorEntity<RepositoryFormStateType>) => {
+          console.log('error', error);
+        });
     };
     const goBack = () => {
       router.back();
     };
     return {
       repositoryFormState,
+      repositoryFormRules,
+      repositoryFormRef,
       onSubmit,
       goBack,
+      domainList,
+      pageTitle,
       labelCol: { span: 4 },
       wrapperCol: { span: 24 },
     };

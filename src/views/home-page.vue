@@ -6,7 +6,7 @@
     <div class="content">
       <home-main></home-main>
     </div>
-    <div class="explore" v-hide>
+    <div class="explore">
       <home-explore></home-explore>
     </div>
   </div>
@@ -54,7 +54,7 @@ export default defineComponent({
   }
 
   .explore {
-    width: 350px;
+    width: 300px;
   }
 }
 </style>

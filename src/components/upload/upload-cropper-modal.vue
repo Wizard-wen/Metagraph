@@ -2,15 +2,13 @@
   <ant-modal
     :width="800"
     wrapClassName="cropper-modal"
-    v-if="isModalVisible"
     :title="title"
     :maskClosable="false"
     :footer="null"
     :visible="isModalVisible"
     :confirm-loading="modalConfirmLoading"
     :zIndex="9999"
-    @cancel="handleModalCancel"
-    @ok="handleModalOk">
+    @cancel="handleModalCancel">
     <vueCropper
       style="height: 400px"
       ref="cropperRef"
@@ -47,20 +45,22 @@
 
     </ant-button>
     <ant-button @click="handleUpload">上传图片</ant-button>
+    <ant-button @click="handleModalCancel">关闭</ant-button>
   </ant-modal>
 </template>
 
 <script lang="ts">
 import { QiniuUploadService } from '@/service/qiniu.upload.service';
+import { message } from 'ant-design-vue';
 import {
-  defineComponent, reactive, ref, toRef, PropType
+  defineComponent, reactive, ref, PropType
 } from 'vue';
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
 import { FileEnum } from 'edu-graph-constant';
 
 export default defineComponent({
-  name: 'upload-cropper',
+  name: 'upload-cropper-modal',
   components: {
     VueCropper
   },
@@ -78,6 +78,7 @@ export default defineComponent({
       default: [1, 1]
     }
   },
+  emits: ['close'],
   setup(props, { emit }) {
     // const isModalVisible = toRef(props, 'isModalVisible');
     const modalConfirmLoading = ref(false);
@@ -133,11 +134,11 @@ export default defineComponent({
     };
     // 实时预览事件
     const handleRealTime = (data: { w: number, h: number }) => {
-      console.log(data);
+      // console.log(data);
     };
     // 图片加载的回调, 返回结果 success, error
     const handleImgLoad = (value: string) => {
-      console.log(value);
+      // console.log(value);
     };
     // 截图框移动回调函数
     const handleCropMoving = (params: {
@@ -149,7 +150,7 @@ export default defineComponent({
         y2: number // 右下角
       }
     }) => {
-      console.log(params);
+      // console.log(params);
     };
     const inputRef = ref<HTMLInputElement>();
     const cropperRef = ref<any>();
@@ -187,11 +188,18 @@ export default defineComponent({
     async function handleUpload() {
       cropperRef.value.getCropData(async (data: string) => {
         const qiniuUploadService = new QiniuUploadService();
-        await qiniuUploadService.customRequestUploadHandler({
+        const result = await qiniuUploadService.customRequestUploadHandler({
           base64: data,
           type: FileEnum.Image,
           name: ''
         });
+        if (result) {
+          emit('close', {
+            ...result
+          });
+        } else {
+          message.error('上传失败');
+        }
         console.log(data);
       });
     }

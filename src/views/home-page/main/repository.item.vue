@@ -11,15 +11,17 @@
         </div>
         <div class="des">{{ repository.content.description }}</div>
         <div class="others">
-          <div class="tag"> domain</div>
+          <div class="tag">
+            <ant-tag>Domain</ant-tag>
+          </div>
           <div class="star">
             <StarOutlined style="margin-right: 8px"/>
-            <span>{{ repository.star }}</span>
+            <div>{{ repository.star }}</div>
           </div>
           <div class="updatedAt">更新于 {{ date }}</div>
         </div>
         <ant-button
-          v-if="hasToken"
+          v-if="isLogin"
           class="star-btn"
           @click="addStar($event, repository.hasStared)"
           :type="repository.hasStared ? 'primary': 'default'"
@@ -33,10 +35,11 @@
 <script lang="ts">
 import { EntityCompletelyListItemType } from 'edu-graph-constant';
 import {
-  defineComponent, toRefs, PropType, ref, onMounted, computed
+  defineComponent, toRef, PropType, ref, onMounted, computed
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarOutlined } from '@ant-design/icons-vue';
+import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';
 
@@ -51,17 +54,19 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props, context) {
-    const { repository } = toRefs<{ repository: any }>(props);
+  setup(props) {
+    const store = useStore();
+    const router = useRouter();
+    const repository = toRef(props, 'repository');
+    const userModel = computed(() => store.state.user.user);
+    const isLogin = computed(() => store.state.user.isLogin);
     const date = computed(() => CommonUtil.formatDate(
       new Date(repository.value.content.updatedAt),
       'yyyy-MM-dd hh:mm:ss'
     ));
-    const router = useRouter();
-    const hasToken = ref(false);
     const goRepositoryPage = () => {
       router.push({
-        name: 'EditableRepository',
+        name: 'RepositoryEditor',
         query: {
           repositoryEntityId: repository.value.entity.id
         }
@@ -89,16 +94,10 @@ export default defineComponent({
         }
       }).then();
     };
-    onMounted(() => {
-      const user = localStorage.getItem('user');
-      if (user) {
-        hasToken.value = true;
-      }
-    });
     return {
       goRepositoryPage,
       addStar,
-      hasToken,
+      isLogin,
       date,
       goUserProfilePage
     };
@@ -123,10 +122,16 @@ export default defineComponent({
     width: 100%;
 
     .title {
+      font-weight: bold;
       height: 32px;
       line-height: 32px;
       text-align: left;
       cursor: pointer;
+      width: max-content;
+
+      &:hover {
+        color: #1790ff;
+      }
     }
 
     .box {
@@ -146,41 +151,45 @@ export default defineComponent({
 
       .des {
         margin-top: 4px;
+        min-height: 20px;
       }
 
       .others {
         margin-top: 8px;
         display: flex;
+        align-items: center;
 
         .tag {
-          margin-right: 16px;
+          line-height: 22px;
         }
 
         .star {
           margin-right: 16px;
+          display: flex;
+          align-items: center;
+          line-height: 22px;
         }
 
         .updatedAt {
           margin-right: 16px;
+          line-height: 22px;
         }
       }
 
       .star-btn {
         position: absolute;
-        padding: 3px 12px;
+        padding: 2px 12px;
         font-size: 12px;
-        line-height: 20px;
+        line-height: 18px;
         top: 16px;
         right: 16px;
         border: 1px solid #1b1f2326;
         border-radius: 6px;
         cursor: pointer;
-        //color: var(--color-btn-string);
-        //background-color: var(--color-btn-bg);
-        //border-color: var(--color-btn-border);
-        //box-shadow: var(--color-btn-shadow),var(--color-btn-inset-shadow);
-        //transition: .2s cubic-bezier(.3,0,.5,1);
-        //transition-property: color,background-color,border-color;
+
+        &::v-deep(.ant-btn) {
+          height: 28px;
+        }
       }
     }
   }

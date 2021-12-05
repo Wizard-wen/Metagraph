@@ -50,11 +50,11 @@ import {
   BindEntityList,
   isDrawerShown,
   selectedTreeNodeEntityId
-} from '@/views/editable.repository/toolbar/bind-entity-list/bind.entity.list';
-import { repositoryEntityIdKey } from '@/views/editable.repository/provide.type';
+} from '@/views/repository-editor/toolbar/bind-entity-list/bind.entity.list';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { ActionEnum, useStore } from '@/store';
 import { ViewIcon, EditIcon } from '@/components/icons';
-import KnowledgeDrawer from '@/views/editable.repository/knowledge.drawer.vue';
+import KnowledgeDrawer from '@/views/repository-editor/knowledge-drawer.vue';
 import CreateBindKnowledgeModal from '../create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 
 export default defineComponent({
