@@ -3,25 +3,30 @@
  * @date 2021/09/12 23:35
  */
 
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class EntityNoAuthApiService {
   static getEntityList(params: {
     name?: string;
     entityType?: string,
     pageIndex: number,
     pageSize: number
-  }): Promise<PublicApiResponseType<any>> {
+  }): Promise<PublicApiResponseType<{
+    list: EntityCompletelyListItemType[],
+    total: number
+  }>> {
     return RequestUtil.post<{
       name?: string;
       entityType?: string,
       pageIndex: number,
       pageSize: number
-    }, any>({
+    }, {
+      list: EntityCompletelyListItemType[],
+      total: number
+    }>({
       apiPath: ApiPathEnum.GetEntityList,
       requestBody: params
     });

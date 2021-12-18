@@ -6,12 +6,11 @@
 import type {
   EntityCompletelyListItemType,
   KnowledgeResponseType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class KnowledgeNoAuthApiService {
   static async get(params: { id: string; }): Promise<PublicApiResponseType<KnowledgeResponseType>> {
     return RequestUtil.post<{ id: string; }, KnowledgeResponseType>({

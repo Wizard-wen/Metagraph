@@ -11,12 +11,11 @@ import type {
   StarResponseType,
   UserResponseType,
   DomainResponseType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class StarApiService {
   static async create(params: {
     entityType: PublicEntityType;
@@ -113,7 +112,7 @@ export class StarApiService {
           KnowledgeEdgeResponseType
       }
     } | undefined>({
-      apiPath: ApiPathEnum.GetEntityStarList,
+      apiPath: ApiPathEnum.GetEntityStaredUserList,
       requestBody: params
     });
   }

@@ -9,7 +9,7 @@
     :custom-request="handleCustomRequest"
   >
     <div class="div1" v-if="imageUrl">
-      <img :src="imageUrl" alt="avatar"/>
+      <img :src="imageUrl" height="120" width="120" alt="avatar"/>
     </div>
     <div v-else>
       <LoadingOutlined v-if="loading"/>
@@ -19,13 +19,13 @@
 </template>
 
 <script lang="ts">
-import { FileApiService } from '@/api.service';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import * as qiniu from 'qiniu-js';
 import {
   defineComponent, ref, toRefs, watch
 } from 'vue';
+import { FileApiService } from '@/api.service';
 import { FileEnum } from '../../../../edu-graph-constant';
 
 interface FileItem {
@@ -157,18 +157,18 @@ export default defineComponent({
   color: #666;
 }
 
-.div1 {
-  width: 300px;
-  height: 300px;
-  border: 1px solid black;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.div1 img {
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
-  margin: auto;
-}
+//.div1 {
+//  width: 300px;
+//  height: 300px;
+//  //border: 1px solid black;
+//  display: table-cell;
+//  vertical-align: middle;
+//}
+//
+//.div1 img {
+//  max-width: 100%;
+//  max-height: 100%;
+//  display: block;
+//  margin: auto;
+//}
 </style>

@@ -6,21 +6,28 @@
 import {
   RepositoryEntityType,
   RepositoryCreateType,
-  RepositoryEntityModelType
-} from 'edu-graph-constant';
+  RepositoryEntityModelType, RepositoryModelType, RepositoryUpdateType
+} from 'metagraph-constant';
 import type {
   EntityCompletelyListItemType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class RepositoryApiService {
   // 创建仓库
   static async createRepository(params: RepositoryCreateType): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
     return RequestUtil.post<RepositoryCreateType, EntityCompletelyListItemType>({
       apiPath: ApiPathEnum.CreateRepository,
+      requestBody: params
+    });
+  }
+
+  // 编辑仓库
+  static async updateRepository(params: RepositoryUpdateType): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<RepositoryUpdateType, void>({
+      apiPath: ApiPathEnum.UpdateRepository,
       requestBody: params
     });
   }
@@ -46,12 +53,12 @@ export class RepositoryApiService {
     });
   }
 
-  // static async getRepositoryById(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
-  //   return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType>({
-  //     apiPath: ApiPathEnum.GetRepositoryById,
-  //     requestBody: params
-  //   });
-  // }
+  static async getRepositoryByEntityId(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<RepositoryModelType>> {
+    return RequestUtil.post<{ repositoryEntityId: string }, RepositoryModelType>({
+      apiPath: ApiPathEnum.GetRepositoryByEntityId,
+      requestBody: params
+    });
+  }
 
   // static async getRepositoryBindEntityList(repositoryEntityId: string): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
   //   return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType[]>({

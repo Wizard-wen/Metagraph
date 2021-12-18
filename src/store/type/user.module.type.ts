@@ -7,6 +7,9 @@ export type UserStateType = {
   user?: {
     id: string;
     name: string;
+    avatar: string;
+    token: string;
+    userType: 'personal' | 'organization'
   };
   isLogin?: boolean;
   token?: string;

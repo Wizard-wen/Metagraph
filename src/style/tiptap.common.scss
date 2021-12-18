@@ -1,0 +1,23 @@
+.tip-tap-editor {
+  & ::v-deep(.ProseMirror) {
+    text-indent: 10px;
+    outline: none;
+    padding: 20px;
+
+    > * + * {
+      margin-top: 0.75em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.1;
+    }
+
+    .mention {
+      color: #A975FF;
+      cursor: pointer;
+      background-color: rgba(#A975FF, 0.1);
+      border-radius: 0.3rem;
+      padding: 0.1rem 0.3rem;
+    }
+  }
+}

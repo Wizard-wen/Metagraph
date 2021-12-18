@@ -1,19 +1,19 @@
 <template>
   <ant-spin :spinning="spinning">
-    <edu-header></edu-header>
+    <metagraph-header></metagraph-header>
     <router-view></router-view>
   </ant-spin>
 </template>
 
 <script lang="ts">
-import { useStore } from '@/store';
 import { defineComponent, computed } from 'vue';
-import EduHeader from './main/edu.header.vue';
+import { useStore } from '@/store';
+import MetagraphHeader from './main/metagraph-header.vue';
 
 export default defineComponent({
   name: 'Main',
   components: {
-    EduHeader
+    MetagraphHeader
   },
   setup() {
     const store = useStore();

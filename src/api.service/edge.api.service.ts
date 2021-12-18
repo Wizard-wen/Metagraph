@@ -3,12 +3,11 @@
  * @date 2021/03/13 16:29
  */
 
-import type { KnowledgeEdgeResponseType } from 'edu-graph-constant';
+import type { KnowledgeEdgeResponseType } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class EdgeApiService {
   static async create(params: {
     originKnowledgeEntityId: string;
@@ -25,6 +24,19 @@ export class EdgeApiService {
       description?: string;
     }, KnowledgeEdgeResponseType>({
       apiPath: ApiPathEnum.CreateKnowledgeEdge,
+      requestBody: params
+    });
+  }
+
+  static async remove(params: {
+    edgeId: string,
+    edgeRepositoryEntityId: string
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      edgeId: string,
+      edgeRepositoryEntityId: string
+    }, void>({
+      apiPath: ApiPathEnum.RemoveKnowledgeEdge,
       requestBody: params
     });
   }

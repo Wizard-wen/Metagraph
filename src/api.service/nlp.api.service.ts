@@ -7,7 +7,6 @@ import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class NlpApiService {
   // 创建仓库
   static async parseWord(params: {

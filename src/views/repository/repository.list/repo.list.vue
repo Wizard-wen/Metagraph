@@ -52,12 +52,12 @@
   </div>
 </template>
 <script lang="ts">
-import { RepositoryNoAuthApiService } from '@/api.service';
 import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import {
   defineComponent, onMounted, ref, watch
 } from 'vue';
 import { useRoute } from 'vue-router';
+import { RepositoryNoAuthApiService } from '@/api.service';
 
 export default defineComponent({
   components: {

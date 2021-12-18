@@ -3,6 +3,7 @@
  * @date 2021/04/10 23:52
  */
 
+// todo 用ts类型约束接口文档，建立一个仓库
 // authed api
 export { FileApiService } from './file.api.service';
 export { EntityNoAuthApiService } from './no.auth/entity.no.auth.api.service';
@@ -19,3 +20,5 @@ export { RepositoryNoAuthApiService } from './no.auth/repository.no.auth.api.ser
 export { EdgeNoAuthApiService } from './no.auth/edge.no.auth.api.service';
 export { KnowledgeNoAuthApiService } from './no.auth/knowledge.no.auth.api.service';
 export { CommentNoAuthApiService } from './no.auth/comment.no.auth.api.service';
+export { SectionNoAuthApiService } from './no.auth/section.no.auth.api.service';
+export { DomainNoAuthApiService } from './no.auth/domain.no.auth.api.service';

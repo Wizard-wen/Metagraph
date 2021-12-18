@@ -2,9 +2,8 @@
  * @author songxiwen
  * @date  2021/9/14 23:29
  */
-import {
-  Addon, Graph, Node, Shape
-} from '@antv/x6';
+import * as AntvX6 from '@antv/x6';
+import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
 import type {
   EntityCompletelyListItemType, ExerciseModelType, KnowledgeModelType,
   SectionCreateRequestType
@@ -15,10 +14,9 @@ import {
   RepositoryApiService,
   EdgeNoAuthApiService,
   KnowledgeNoAuthApiService,
-  RepositoryNoAuthApiService
+  RepositoryNoAuthApiService,
+  SectionNoAuthApiService
 } from '@/api.service';
-import { SectionNoAuthApiService } from '@/api.service/no.auth/section.no.auth.api.service';
-import { magnetAvailabilityHighlighter } from '@/components/graph/my.shape';
 import { ActionEnum, MutationEnum, tiptapInitData } from '@/store/constant';
 import { RepositoryEditorStateType, RootStateType } from '@/store/type';
 
@@ -89,9 +87,6 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     },
     [MutationEnum.SET_REPOSITORY_BIND_ENTITY_LIST](state, { list }) {
       state.repositoryEntityList = list.data;
-    },
-    [MutationEnum.SET_SELECTED_ENTITY_ID](state, { id }) {
-      state.selectedEntityId = id;
     },
     [MutationEnum.SET_SELECTED_ENTITY_DETAIL](state, { detail }) {
       state.selectedEntityDetail = detail;
@@ -228,7 +223,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     },
     // 初始化 antV Graph
     [MutationEnum.INIT_GRAPH](state) {
-      state.graph.graph = new Graph({
+      state.graph.graph = new AntvX6.Graph({
         autoResize: true,
         selecting: {
           enabled: true,
@@ -249,7 +244,15 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
           visible: true, // 渲染网格背景
         },
         highlighting: {
-          magnetAvailable: magnetAvailabilityHighlighter,
+          magnetAvailable: {
+            name: 'stroke',
+            args: {
+              attrs: {
+                fill: '#fff',
+                stroke: '#47C769',
+              },
+            },
+          },
           magnetAdsorbed: {
             name: 'stroke',
             args: {
@@ -275,7 +278,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
             },
           },
           createEdge() {
-            return new Shape.Edge({
+            return new AntvX6.Shape.Edge({
               attrs: {
                 line: {
                   stroke: '#a0a0a0',
@@ -318,7 +321,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
         },
       });
       // 初始化可拖拽节点框
-      state.graph.dnd = new Addon.Dnd({
+      state.graph.dnd = new AntvX6.Addon.Dnd({
         // 目标画布。
         target: state.graph.graph,
         // 是否根据目标画布的缩放比例缩放拖拽的节点。
@@ -326,15 +329,18 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
         // 拖拽结束时，而且目标节点不能添加到目标画布时，是否使用动画将代理画布移动到开始拖动的位置。
         animation: true,
         // 拖拽结束时，获取放置到目标画布的节点，默认克隆代理节点。
-        getDropNode(draggingNode: Node, options: Addon.Dnd.GetDropNodeOptions) {
+        getDropNode(draggingNode: AntvX6.Node, options: AntvX6.Addon.Dnd.GetDropNodeOptions) {
           console.log(draggingNode, options);
           return draggingNode.clone();
         },
         // 拖拽结束时，验证节点是否可以放置到目标画布中。
-        async validateNode(droppingNode: Node, options: Addon.Dnd.ValidateNodeOptions) {
+        async validateNode(
+          droppingNode: AntvX6.Node,
+          options: AntvX6.Addon.Dnd.ValidateNodeOptions
+        ) {
           // 绑定节点到当前仓库
           await RepositoryApiService.BindEntityToRepository({
-            entityId: droppingNode.data.entity.entity.id,
+            entityId: droppingNode.data.entity.id,
             entityType: 'Knowledge',
             repositoryEntityId: droppingNode.data.repositoryEntityId
           });
@@ -350,7 +356,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
       if (response.data) {
         if (response.data.length) {
           // 如果section存在，那么选中第一个
-          dispatch(ActionEnum.GET_SECTION_CONTENT, {
+          await dispatch(ActionEnum.GET_SECTION_CONTENT, {
             sectionId: response.data[0].key
           });
           commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, { keys: [response.data[0].key] });
@@ -364,27 +370,63 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
         commit(MutationEnum.SET_SECTION_TREE, { tree: response.data });
       }
     },
+    // 切换section tree node
+    async [ActionEnum.SELECTED_SECTION_TREE_NODE](
+      { commit, dispatch },
+      params: { selectedKeys: string[], info: SelectEvent }
+    ) {
+      // 提交commit改变当前选中的 tree node
+      commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, {
+        keys: params.selectedKeys
+      });
+      commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      // 上次选中的key
+      // const lastSelectedKey = selectedTreeNodeSectionKeys.value[0];
+      if (params.info.node.dataRef.section) {
+        // 如果点击的是section
+        // await sectionTreeService.getSectionContentByKey(params.selectedKeys[0]);
+        await dispatch(ActionEnum.GET_SECTION_CONTENT, {
+          sectionId: params.selectedKeys[0]
+        });
+        // 将当前选中的key赋值给section list
+        commit(MutationEnum.SET_SELECTED_TREE_NODE_SECTION_KEYS, {
+          sectionKeys: params.selectedKeys
+        });
+        // 清空当前选中的entity list
+        commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, {
+          entityKeys: []
+        });
+      } else {
+        // 如果点击的是entity
+        // isDrawerShown.value = true;
+        commit(MutationEnum.SET_SELECTED_TREE_NODE_ENTITY_KEYS, {
+          entityKeys: params.selectedKeys
+        });
+      }
+      commit(MutationEnum.SET_IS_SPINNING, { status: false });
+    },
     // 获取section article
     async [ActionEnum.GET_SECTION_CONTENT]({ commit }, { sectionId }) {
       const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
+      console.log(result.data?.article, sectionId, 'set article dispatch');
       commit(MutationEnum.SET_SECTION_ARTICLE_CONTENT, { content: result.data?.article.content });
       commit(MutationEnum.SET_SECTION_ARTICLE_TITLE, { content: result.data?.article.title });
     },
     // 保存section article
     async [ActionEnum.SAVE_SECTION_CONTENT]({ dispatch, state }, { content, contentHtml }) {
-      if (!state.selectedTreeNode || state.selectedTreeNode.length === 0) {
+      if (state.selectedTreeNodeSectionKeys.length === 0) {
         console.log('当前没有选中的单元');
         return;
       }
       await SectionApiService.saveSectionArticle({
-        sectionId: state.selectedTreeNode[0],
+        sectionId: state.selectedTreeNodeSectionKeys[0],
         content,
         contentHtml
       });
       // 刷新页面
-      if (state.selectedTreeNode.length) {
-        await dispatch(ActionEnum.GET_SECTION_CONTENT, { sectionId: state.selectedTreeNode[0] });
-      }
+      // if (state.selectedTreeNode.length) {
+      //   await dispatch(ActionEnum.GET_SECTION_CONTENT, { sectionId: state.selectedTreeNode[0] });
+      // }
     },
     // 创建section item
     async [ActionEnum.CREAT_SECTION_ITEM](context, params: SectionCreateRequestType) {

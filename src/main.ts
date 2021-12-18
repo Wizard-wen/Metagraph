@@ -1,20 +1,18 @@
 /**
- * @author waizrd.song
+ * @author wizard.song
  * @date 2021/03/31
  */
 
 import { createApp } from 'vue';
-import axios, { AxiosResponse } from 'axios';
-import type { AxiosRequestConfig } from 'axios';
 import {
   Button, Input, Modal, Tree, Select, Form,
   PageHeader, Switch, Spin, Card, Steps, Comment,
   DatePicker, Checkbox, Radio, Dropdown, Menu,
   Avatar, Pagination, Upload, List, Tag, Drawer,
-  Descriptions, Col, Row, Empty
+  Descriptions, Col, Row, Empty, Tabs, Timeline,
+  Collapse, Image, Slider
 } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
-import { ConfigService } from '@/config/config.service';
 import App from './App.vue';
 import router from './router';
 import { store, key } from './store';
@@ -24,30 +22,25 @@ import './style/hide.style.scss';
 // 自定义指令
 import Contextmenu from './directives/contextmenu';
 import Hide from './directives/hide';
+import { clickOutside } from '@/directives/click.outside';
 
-axios.interceptors.request.use((config: AxiosRequestConfig) => {
-  config.baseURL = ConfigService.apiBaseURL;
-  config.headers = {
-    ...config.headers,
-    'edu-user-token': JSON.parse(localStorage.getItem('user') || '{}')?.token || ''
-  };
-  return config;
-});
-
-axios.interceptors.response.use((response: AxiosResponse) =>
-// 对响应数据做点什么
-// response 是请求回来的数据
-  response,
-(error) =>
-// 对响应错误做点什么
-  Promise.reject(error));
+import './api.service/config/request.intercepter';
 
 const app = createApp(App);
 //
 // 引入全局directive
 app.directive('contextmenu', Contextmenu);
 app.directive('hide', Hide);
+app.directive('clickOutside', clickOutside);
 // 引入全局component
+app.component('AntImage', Image);
+app.component('AntSlider', Slider);
+app.component('AntCollapse', Collapse);
+app.component('AntCollapsePanel', Collapse.Panel);
+app.component('AntTimeline', Timeline);
+app.component('AntTimelineItem', Timeline.Item);
+app.component('AntTabs', Tabs);
+app.component('AntTabPane', Tabs.TabPane);
 app.component('AntCol', Col);
 app.component('AntRow', Row);
 app.component('AntTree', Tree);

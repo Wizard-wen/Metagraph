@@ -5,6 +5,7 @@
 
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Main from '../views/main.vue';
+import Settings from '../views/settings.vue';
 import Repository from '../views/repository.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -16,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
-        component: () => import('@/views/home.page.vue')
+        component: () => import('@/views/home-page.vue')
       },
       {
         path: 'repo',
@@ -28,26 +29,53 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/repository.list.vue')
       },
       {
-        path: '/repository/create',
+        path: '/repository/edit',
         name: 'CreateRepository',
-        component: () => import('@/views/create.repository.vue')
+        component: () => import('@/views/repository-edit.vue')
+      },
+      {
+        path: 'profile',
+        name: 'UserProfile',
+        component: () => import('@/views/personal-profile.vue')
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: Settings,
+        children: [
+          {
+            path: 'profile',
+            name: 'Profile',
+            component: () => import('@/views/settings/profile.vue')
+          },
+          {
+            path: 'account',
+            name: 'account',
+            component: () => import('@/views/settings/account.vue')
+          },
+          {
+            path: 'security',
+            name: 'security',
+            component: () => import('@/views/settings/security.vue')
+          }
+        ]
       }
     ]
   },
   {
-    path: '/repo/editable',
-    name: 'EditableRepository',
-    component: () => import('@/views/editable.repository.vue')
+    path: '/repository/editor',
+    name: 'RepositoryEditor',
+    component: () => import('@/views/repository-editor.vue')
   },
   {
     path: '/knowledge/map',
     name: 'KnowledgeMap',
-    component: () => import('@/views/knowledge.map.vue')
+    component: () => import('@/views/knowledge-map.vue')
   },
   {
     path: '/knowledge/edit',
     name: 'KnowledgeEdit',
-    component: () => import('@/views/knowledge.edit.vue')
+    component: () => import('@/views/knowledge-edit.vue')
   },
   {
     path: '/login',
@@ -57,18 +85,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/signup',
     name: 'SignUp',
-    component: () => import('@/views/sign.up.vue')
-  },
-  {
-    path: '/user/edit/:userId',
-    name: 'UserEdit',
-    component: () => import('@/views/user/user.edit.vue')
+    component: () => import('@/views/sign-up.vue')
   },
   {
     path: '/user/star/:userId',
     name: 'UserStar',
     component: () => import('@/views/user/user.star.vue')
-  }
+  },
+  {
+    path: '/test',
+    name: 'ComponentTest',
+    component: () => import('@/views/component-test.vue')
+  },
 ];
 
 const router = createRouter({

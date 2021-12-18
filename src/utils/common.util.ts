@@ -1,8 +1,8 @@
 /**
  * @author songxiwen
- * @date  2021/9/12 17:38
+ * @date  2021/9/12 21:38
  */
-// eslint-disable-next-line import/prefer-default-export
+
 export class CommonUtil {
   /**
    * 时间戳格式转换

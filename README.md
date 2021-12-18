@@ -1,12 +1,12 @@
-# Graph Designer
+# Metagraph
 
 > 让不同知识背景的人站在同一起跑线
 
 __[点击体验](http://edu.songxiwen.com.cn)__
 
 # Introduce
-Graph Designer是一款知识创作分享工具，不同于以往的知识创作平台，Graph Designer提供了强大的内容关联能力。
-你可以在Graph Designer中构建自己的仓库(Repository)，创作你的内容。
+Metagraph是一款知识创作分享工具，不同于以往的知识创作平台，Metagraph提供了强大的内容关联能力。
+你可以在Metagraph中构建自己的仓库(Repository)，创作你的内容。
 当你遇到一些想要着重表述的词条，你可以创建或绑定一个知识点。
 在创建知识点时，如果遇到一些较为复杂的知识点，可能需要更多的词条来解释当前知识点。
 此时，可以在知识点编辑界面中继续引用额外的知识点，我们还会同时为您在图中创建一个从额外知识点到当前知识点的关联。
@@ -71,7 +71,7 @@ Graph Designer的核心思想是帮助您在创作内容的同时思考和整理
     - [ ] 我的pr
     - [ ] 我的消息列表
 
-#Quick Start
+# Quick Start
 
 ## 创建仓库
 
@@ -91,7 +91,7 @@ Graph Designer的核心思想是帮助您在创作内容的同时思考和整理
 - 图编辑时记录下位置信息，存储在RepositoryEntity表中
 
 
-#Roadmap
+# Roadmap
 ## Feature
 - 知识地图页面，支持知识路径搜索，基于Neo4j图数据库
 - 知识地图页面，支持输入Cypher语句，回显搜索结果
@@ -115,3 +115,38 @@ Graph Designer的核心思想是帮助您在创作内容的同时思考和整理
 - 优化预览模式下的图谱
 
 ## Fixed
+
+
+
+## 技术点
+
+- WebSocket超时重连
+- vuex持久化
+- 图片裁切
+- 文本编辑器
+- 图编辑器
+- 右键菜单
+- 树组件
+- dom to image （知识点卡片）
+- 下拉刷新
+- 文本解析（扩充）
+
+
+## 踩坑 
+- 父子组件生命周期执行顺序
+- inject provide只能在setup中使用
+
+  
+## 性能优化
+- 图片压缩
+- 字体图标
+- Gzip压缩
+- 减少静态资源请求
+
+
+
+
+
+
+
+

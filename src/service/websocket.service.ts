@@ -1,21 +1,22 @@
 /**
  * @author songxiwen
- * @date  2021/9/13 11:45
+ * @date  2021/9/13 21:45
+ * 补充并发测试模拟大量用户创建webSocket情况下的性能
  */
 
-// eslint-disable-next-line import/prefer-default-export
 export class WebsocketService {
   ws!: WebSocket;
 
   lockReconnect = false;
 
-  reconnectTimer?: number;
-
   timeout = 3000;
 
-  heartCheckBrowserTimer?: number;
+  // 计时器
+  private reconnectTimer?: number;
 
-  heartCheckServerTimer?: number;
+  private heartCheckBrowserTimer?: number;
+
+  private heartCheckServerTimer?: number;
 
   isDestroy?: boolean;
 

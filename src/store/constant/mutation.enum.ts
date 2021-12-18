@@ -3,7 +3,6 @@
  * @date 2021/09/14 23:35
  */
 
-// eslint-disable-next-line no-shadow
 export enum MutationEnum {
   SET_IS_SPINNING = 'setIsSpinning',
 
@@ -40,7 +39,7 @@ export enum MutationEnum {
   INIT_GRAPH = 'initGraph',
   // user
   SET_USER_MODEL = 'setUserModel',
-  // home
+  // home-page
   SET_REPOSITORY_LIST = 'setRepositoryList',
   SET_OWN_REPOSITORY_LIST = 'setOwnRepositoryList',
   SET_QUERY_REPOSITORY_LIST = 'setQueryRepositoryList'

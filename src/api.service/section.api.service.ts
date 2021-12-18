@@ -6,15 +6,14 @@
 import type {
   SectionResponseType,
   SectionEntityType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class SectionApiService {
-
   static createSectionTree(params: {
+    text?: string;
     name: string;
     repositoryEntityId: string;
     parentId?: string;

@@ -4,14 +4,62 @@
  */
 
 import {
+  AlternativeKnowledgeListType,
   EntityCompletelyListItemType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class KnowledgeApiService {
+  static async getAlternativeKnowledgeList(params: {
+    repositoryEntityId: string
+  }): Promise<PublicApiResponseType<AlternativeKnowledgeListType>> {
+    return RequestUtil.post<{ repositoryEntityId: string }, AlternativeKnowledgeListType>({
+      apiPath: ApiPathEnum.GetAlternativeKnowledgeList,
+      requestBody: params
+    });
+  }
+
+  static async removeAlternativeKnowledge(params: {
+    repositoryEntityId: string,
+    id: string
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{ repositoryEntityId: string, id: string }, void>({
+      apiPath: ApiPathEnum.RemoveAlternativeKnowledge,
+      requestBody: params
+    });
+  }
+
+  static async createAlternativeKnowledgeList(params: {
+    article: {
+      name: string;
+      url: string;
+      type: 'word'
+    },
+    repositoryEntityId: string,
+    entityList: {
+      name: string,
+      weight: number,
+    }[]
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      article: {
+        name: string;
+        url: string;
+        type: 'word'
+      },
+      repositoryEntityId: string,
+      entityList: {
+        name: string,
+        weight: number,
+      }[]
+    }, void>({
+      apiPath: ApiPathEnum.CreateAlternativeKnowledgeList,
+      requestBody: params
+    });
+  }
+
   static async remove(id: string): Promise<PublicApiResponseType<void>> {
     return RequestUtil.post<{ id: string }, void>({
       apiPath: ApiPathEnum.RemoveKnowledge,
@@ -41,6 +89,23 @@ export class KnowledgeApiService {
       repositoryEntityId: string;
     }, EntityCompletelyListItemType>({
       apiPath: ApiPathEnum.CreateKnowledge,
+      requestBody: params
+    });
+  }
+
+  static async update(params: {
+    knowledgeEntityId: string;
+    name: string;
+    knowledgeBaseTypeId: string;
+    domainId?: string;
+  }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
+    return RequestUtil.post<{
+      knowledgeEntityId: string;
+      name: string;
+      knowledgeBaseTypeId: string;
+      domainId?: string;
+    }, EntityCompletelyListItemType>({
+      apiPath: ApiPathEnum.UpdateKnowledge,
       requestBody: params
     });
   }

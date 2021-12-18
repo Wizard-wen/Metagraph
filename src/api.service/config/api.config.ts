@@ -3,12 +3,12 @@
  * @date 2021/09/12 23:36
  */
 
-// eslint-disable-next-line no-shadow,import/prefer-default-export
 export enum ApiPathEnum {
   /**
    * knowledge
    */
   CreateKnowledge = '/knowledge/create',
+  UpdateKnowledge = '/knowledge/update',
   RemoveKnowledge = '/knowledge/remove/id',
   SaveKnowledgeDescription = '/knowledge/save/description',
   // 获取知识点
@@ -19,10 +19,14 @@ export enum ApiPathEnum {
   GetNoAuthEdgesByKnowledgeEntityId = '/public/knowledge/findEdgesByKnowledgeEntityId',
   // 仓库绑定的知识点
   GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
+  GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
+  CreateAlternativeKnowledgeList = '/knowledge/createAlternativeKnowledgeList',
+  RemoveAlternativeKnowledge = '/knowledge/removeAlternativeKnowledge',
   /**
    * edge
    */
   CreateKnowledgeEdge = 'knowledge/edge/create',
+  RemoveKnowledgeEdge = 'knowledge/edge/remove',
   GetNoAuthKnowledgeEdgeList = '/public/knowledge/edge/getList',
   GetNoAuthKnowledgeEdgeListByRepositoryEntityId = '/public/knowledge/edge/getList/repositoryEntityId',
   /**
@@ -54,7 +58,8 @@ export enum ApiPathEnum {
   CreateStar = '/star/create',
   CancelStar = '/star/cancel',
   GetMyStarList = '/star/getList/my',
-  GetEntityStarList = '/star/getEntityStarList',
+  GetEntityStaredUserList = '/star/getEntityStaredUserList',
+  // GetEntityStarDetailList = '/public/star/getEntityStarDetailList',
   /**
    * entity
    */
@@ -64,13 +69,19 @@ export enum ApiPathEnum {
    * user
    */
   LoginByName = '/account/loginByName',
+  GetById = '/account/getById',
+  GetUserProfileById = '/public/user/profile',
+  GetPublicUserById = '/public/user/getById',
+  SendRegisterEmailCode = '/public/user/sendEmailCode',
   RegisterByName = '/account/registerByName',
+  UpdatePassword = '/account/updatePassword',
   /**
    * repository
    */
   CreateRepository = '/repository/create',
+  UpdateRepository = '/repository/update',
   // GetRepositoryList = '/repository/getList',
-  // GetRepositoryById = '/repository/get/id',
+  GetRepositoryByEntityId = '/repository/getRepositoryByEntityId',
   GetOwnRepositoryList = '/repository/getOwnList',
   getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
   CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
@@ -87,5 +98,16 @@ export enum ApiPathEnum {
   /**
    * nlp
    */
-  ParseWord = '/nlp/parse/word'
+  ParseWord = '/nlp/parse/word',
+  /**
+   * domain
+   */
+  GetDomainList = '/public/domain/getList',
+  GetDomainTree = '/public/domain/get/tree',
+  /**
+   * follow
+   */
+  CheckIfFollowed = '/follow/checkIfFollowed',
+  Follow = '/follow/create',
+  UnFollow = '/follow/stop'
 }

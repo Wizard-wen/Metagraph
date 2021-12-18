@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-box">
       <div class="login-image">
-        <img src="../../public/Hogwartscrest.png" alt="" height="300" width="300">
+        <img :src="'./hogwarts-logo.webp'" alt="" height="300" width="300">
       </div>
       <ant-form
         id="components-form-demo-normal-login"
@@ -34,13 +34,13 @@
   </div>
 </template>
 <script lang="ts">
-import { UserApiService } from '@/api.service';
 import {
   defineComponent, reactive, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore, MutationEnum } from '@/store';
 import { LockOutlined, UserOutlined } from '@ant-design/icons-vue';
+import { useStore, MutationEnum } from '@/store';
+import { UserApiService } from '@/api.service';
 
 export default defineComponent({
   components: {
@@ -115,7 +115,7 @@ export default defineComponent({
 .login-page {
   height: 100vh;
   width: 100%;
-  background: url('../assets/bg.png') no-repeat center center fixed;
+  background: url('../assets/login-bg.webp') no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

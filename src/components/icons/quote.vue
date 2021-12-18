@@ -1,4 +1,3 @@
-
 <template>
   <Icon>
     <template #component>

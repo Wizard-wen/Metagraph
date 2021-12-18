@@ -3,7 +3,7 @@
  * @date  2021/9/14 23:29
  */
 
-import { Addon, Graph } from '@antv/x6';
+import * as AntvX6 from '@antv/x6';
 import type { EntityCompletelyListItemType, SectionResponseType } from 'edu-graph-constant';
 import { ToolbarState } from '@/types/toolbar';
 
@@ -43,8 +43,8 @@ export type RepositoryEditorStateType = {
   extendOuterKnowledgeList?: KnowledgePreExtendEntityTreeNodeType[],
   // antV graph实例
   graph: {
-    graph?: Graph,
-    dnd?: Addon.Dnd
+    graph?: AntvX6.Graph,
+    dnd?: AntvX6.Addon.Dnd
   }
   // 仓库内知识边列表，graph
   repositoryEdgeList: any[];

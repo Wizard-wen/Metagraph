@@ -12,7 +12,6 @@ export interface PublicApiResponseType<T> {
   code?: number;
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export class RequestUtil {
   static post<RequestType, ResponseType>(params: {
     requestBody: RequestType,

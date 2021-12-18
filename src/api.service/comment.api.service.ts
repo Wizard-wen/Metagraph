@@ -9,12 +9,11 @@ import type {
   CommentRemoveRequestType,
   CommentPageListRequestType,
   CommentListItemType,
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class CommentApiService {
   static async create(params: CommentCreateRequestType): Promise<PublicApiResponseType<CommentResponseType>> {
     return RequestUtil.post<CommentCreateRequestType, CommentResponseType>({
