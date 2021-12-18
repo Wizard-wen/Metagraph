@@ -111,29 +111,125 @@ export default defineComponent({
       if (repositoryEntityIdList.value.includes(entity.entity.id)) {
         return;
       }
+      // const node = graph.value.graph.createNode({
+      //   id: entity.entity.id,
+      //   height: 30,
+      //   width: 100,
+      //   label: (entity.content as KnowledgeModelType).name,
+      //   data: {
+      //     entity,
+      //     repositoryEntityId: route.query.repositoryEntityId
+      //   },
+      //   ports: [
+      //     {
+      //       id: entity.entity.id,
+      //       attrs: {
+      //         circle: {
+      //           r: 6,
+      //           magnet: true,
+      //           stroke: '#31d0c6',
+      //           strokeWidth: 2,
+      //           fill: '#fff',
+      //         },
+      //       },
+      //     },
+      //   ]
+      // });
+
+      console.log(entity);
       const node = graph.value.graph.createNode({
         id: entity.entity.id,
         height: 30,
-        width: 100,
-        label: (entity.content as KnowledgeModelType).name,
+        width: 150,
+        label: (entity.content as KnowledgeModelType)?.name || '',
         data: {
-          entity,
+          ...entity,
           repositoryEntityId: route.query.repositoryEntityId
         },
-        ports: [
+        attrs: {
+          root: {
+            magnet: false,
+          },
+          body: {
+            fill: '#f5f5f5',
+            stroke: '#d9d9d9',
+            strokeWidth: 1,
+          },
+        },
+        portMarkup: [
           {
-            id: entity.entity.id,
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: '#31d0c6',
-                strokeWidth: 2,
-                fill: '#fff',
+            tagName: 'circle',
+            selector: 'portBody',
+          },
+        ],
+        ports: {
+          items: [
+            {
+              id: `${entity.entity.id}-in`,
+              group: 'in',
+              attrs: {
+                text: { text: 'in' },
+              },
+            },
+            {
+              id: `${entity.entity.id}-out`,
+              group: 'out',
+              attrs: {
+                text: { text: 'out' },
+              },
+            },
+          ],
+          groups: {
+            in: {
+              position: {
+                name: 'left',
+              },
+              label: {
+                position: 'left', // 标签位置
+              },
+              attrs: {
+                portBody: {
+                  magnet: 'passive',
+                  r: 6,
+                  stroke: '#ffa940',
+                  fill: '#fff',
+                  strokeWidth: 2,
+                },
+              },
+            },
+            out: {
+              position: {
+                name: 'right',
+              },
+              label: {
+                position: 'outside', // 标签位置
+              },
+              attrs: {
+                portBody: {
+                  magnet: true,
+                  r: 6,
+                  fill: '#fff',
+                  stroke: '#3199FF',
+                  strokeWidth: 2,
+                },
               },
             },
           },
-        ]
+        },
+        // ports: [
+        //   {
+        //     id: entity.entity.id,
+        //     attrs: {
+        //       circle: {
+        //         r: 6,
+        //         magnet: true,
+        //         stroke: '#31d0c6',
+        //         strokeWidth: 2,
+        //         fill: '#fff',
+        //       },
+        //     },
+        //   },
+        // ]
       });
       graph.value.dnd.start(node, event);
     };
@@ -228,7 +324,7 @@ export default defineComponent({
       }
 
       .is-active {
-        border: 1px solid #31d0c6;
+        border: 1px solid #1890FF;
       }
     }
   }

@@ -6,12 +6,11 @@
 import {
   AlternativeKnowledgeListType,
   EntityCompletelyListItemType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class KnowledgeApiService {
   static async getAlternativeKnowledgeList(params: {
     repositoryEntityId: string

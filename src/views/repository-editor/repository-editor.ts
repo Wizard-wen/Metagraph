@@ -77,7 +77,7 @@ export class RepositoryEditor implements RepositoryEditorInterface {
     fail: () => string,
     content: Record<string, any>,
     contentHtml: string
-  }) {
+  }): Promise<void> {
     Modal.confirm({
       title: '是否绑定知识点至当前单元?',
       icon: createVNode(ExclamationCircleOutlined),

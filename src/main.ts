@@ -22,6 +22,7 @@ import './style/hide.style.scss';
 // 自定义指令
 import Contextmenu from './directives/contextmenu';
 import Hide from './directives/hide';
+import { clickOutside } from '@/directives/click.outside';
 
 import './api.service/config/request.intercepter';
 
@@ -30,6 +31,7 @@ const app = createApp(App);
 // 引入全局directive
 app.directive('contextmenu', Contextmenu);
 app.directive('hide', Hide);
+app.directive('clickOutside', clickOutside);
 // 引入全局component
 app.component('AntImage', Image);
 app.component('AntSlider', Slider);

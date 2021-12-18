@@ -13,7 +13,6 @@
     :is-modal-visible="isModalShow"
     :title="'上传仓库封面'"
     @close="handleModalClose($event)"></upload-cropper-modal>
-
 </template>
 
 <script lang="ts">

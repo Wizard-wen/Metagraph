@@ -7,15 +7,14 @@ import {
   RepositoryEntityType,
   RepositoryCreateType,
   RepositoryEntityModelType, RepositoryModelType, RepositoryUpdateType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import type {
   EntityCompletelyListItemType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class RepositoryApiService {
   // 创建仓库
   static async createRepository(params: RepositoryCreateType): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {

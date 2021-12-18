@@ -1,9 +1,9 @@
 <template>
-  <ant-spin :spinning="spinning">
+  <ant-spin :spinning="isLoading">
     <div class="knowledge-edit">
-      <div class="knowledge-header">
+<!--      <div class="knowledge-header">
         <div class="left">
-          <go-back-icon class="back-icon"></go-back-icon>
+          <go-back-icon class="back-icon" @click="goBack"></go-back-icon>
           <div class="title">知识点名称</div>
           <ant-tag class="status-tag">未认证</ant-tag>
         </div>
@@ -14,16 +14,14 @@
           <ant-tag>评论 23</ant-tag>
           <ant-button type="primary" class="pull-request-button">提交认证</ant-button>
         </div>
-      </div>
+      </div>-->
+      <knowledge-edit-header></knowledge-edit-header>
       <div class="knowledge-content">
-        <knowledge-bind-panel class="panel"></knowledge-bind-panel>
+        <knowledge-bind-panel class="panel" :edges="edges.target"></knowledge-bind-panel>
         <div class="knowledge-editor">
-          <section-article-tip-tap
-            :editable="true"
-            :entity-id="knowledgeEntityId"
-            :article-content="knowledgeDescription"
-            @saveSectionArticle="handleSaveSectionArticle"
-            @mention="handleMention"></section-article-tip-tap>
+          <tiptap-editor-container>
+            <editor-content #tiptap class="tip-tap-editor" :editor="editor"/>
+          </tiptap-editor-container>
         </div>
         <div class="knowledge-form">
           <ant-tabs v-model:activeKey="activeKey" class="custom-ant-tab">
@@ -60,24 +58,39 @@
 
 <script lang="ts">
 import GoBackIcon from "@/components/icons/go-back-icon.vue";
+import { KnowledgeTiptapTextEditor } from "@/components/tiptap-text-editor/knowledge.tiptap.text.editor";
+import TiptapEditorContainer from "@/components/tiptap-text-editor/tiptap-editor-container.vue";
 import { useStore } from "@/store";
 import KnowledgeBindPanel from "@/views/knowledge-edit/knowledge-bind-panel.vue";
-import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
-import { Modal } from "ant-design-vue";
+import KnowledgeEditHeader from "@/views/knowledge-edit/knowledge-edit-header.vue";
+import TiptapEditable from "@/views/repository-editor/section.article/tiptap-editable.vue";
+import {
+  EditorContent
+} from '@tiptap/vue-3';
 import {
   computed, createVNode,
-  defineComponent, onMounted, ref
+  defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import KnowledgeEditForm from '@/views/knowledge-edit/knowledge.edit.form.vue';
 import { KnowledgeModelType } from "edu-graph-constant";
 import SectionArticleTipTap from './repository-editor/section-article.vue';
 import Comment from './repository-editor/comment.vue';
-import { KnowledgeEdit, knowledge, knowledgeDescription } from './knowledge-edit/knowledge.edit';
+import {
+  KnowledgeEdit,
+  knowledge,
+  knowledgeDescription,
+  repositoryEntityList,
+  edges
+} from './knowledge-edit/model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge.edit',
   components: {
+    KnowledgeEditHeader,
+    TiptapEditorContainer,
+    EditorContent,
+    TiptapEditable,
     GoBackIcon,
     KnowledgeBindPanel,
     KnowledgeEditForm,
@@ -86,8 +99,9 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const store = useStore();
-    const spinning = computed(() => store.state.global.isSpinning);
+    const isLoading = ref(false);
     const knowledgeEntityId = ref(route.query.knowledgeEntityId as string);
     const repositoryEntityId = ref(route.query.repositoryEntityId as string);
     const activeKey = ref('1');
@@ -98,52 +112,46 @@ export default defineComponent({
       knowledgeBaseTypeId: (<KnowledgeModelType> knowledge.target?.content).knowledgeBaseTypeId,
       domainId: (<KnowledgeModelType> knowledge.target?.content).domainId,
     }));
+    const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor(
+      repositoryEntityId.value,
+      knowledgeEntityId.value
+    )
+    knowledgeTiptapTextEditor.initEditor();
+    const editor = knowledgeTiptapTextEditor.editor;
+    console.log(editor);
     onMounted(async () => {
+      isLoading.value = true;
       await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
-    });
-    const handleMention = (params: {
-      name: string, id: string, success: Function, fail: Function,
-      content: Record<string, any>,
-      contentHtml: any
-    }) => {
-      Modal.confirm({
-        title: '是否设置知识点为前置知识点?',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: '',
-        async onOk() {
-          params.success()
-          await knowledgeEdit.createEdge({
-            id: params.id,
-            repositoryEntityId: repositoryEntityId.value,
-            knowledgeEntityId: knowledgeEntityId.value,
-            name: knowledgeForm.value.name
-          })
-          await knowledgeEdit.handleSaveSectionArticle({
-            content: params.content,
-            contentHtml: params.contentHtml,
-            knowledgeEntityId: knowledgeEntityId.value
-          })
-        },
-        async onCancel() {
-          params.fail();
-          await knowledgeEdit.handleSaveSectionArticle({
-            content: params.content,
-            contentHtml: params.contentHtml,
-            knowledgeEntityId: knowledgeEntityId.value
-          })
-        },
+      console.log('get knowledge')
+      await knowledgeEdit.getRepositoryBindList(repositoryEntityId.value);
+      await knowledgeEdit.findEdgesByKnowledgeEntityId({
+        knowledgeEntityId: knowledgeEntityId.value,
+        repositoryEntityId: repositoryEntityId.value
       });
-    }
+      knowledgeTiptapTextEditor.setContent(knowledgeDescription.value);
+      await knowledgeTiptapTextEditor.initData();
+      isLoading.value = false;
+    });
+    onUnmounted(() => {
+      knowledgeTiptapTextEditor.destroy();
+    })
+    const goBack = () => {
+      router.go(-1);
+    };
+    const a = ref();
     return {
+      a,
+      editor,
       knowledgeForm,
       knowledge,
-      handleSaveSectionArticle: knowledgeEdit.handleSaveSectionArticle,
       knowledgeDescription,
-      handleMention,
+      isLoading,
       knowledgeEntityId,
       repositoryEntityId,
-      spinning,
-      activeKey
+      activeKey,
+      edges,
+      repositoryEntityList,
+      goBack
     }
   }
 });
@@ -151,56 +159,12 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "../style/common.scss";
+@import "../style/tiptap.common.scss";
 
 .knowledge-edit {
   height: 100vh;
   width: 100%;
   overflow: hidden;
-
-  .knowledge-header {
-    background: #fafbfc;
-    height: 56px;
-    border-bottom: 1px solid $borderColor;
-    display: flex;
-    justify-content: space-between;
-
-    .left {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 32px;
-      height: 56px;
-      gap: 15px;
-
-      .back-icon {
-        cursor: pointer;
-        font-size: 18px;
-      }
-
-      .title {
-        height: 32px;
-        line-height: 32px;
-        font-size: 18px;
-      }
-
-      .status-tag {
-        height: 24px;
-        line-height: 24px;
-        border-radius: 4px;
-      }
-    }
-
-    .right {
-      padding-right: 30px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-
-      .pull-request-button {
-        margin-left: 20px;
-      }
-    }
-  }
 
   .knowledge-content {
     height: calc(100vh - 56px);

@@ -94,7 +94,7 @@ export default defineComponent({
   overflow: hidden;
   font-size: 0.9rem;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1),
-  0px 10px 20px rgba(0, 0, 0, 0.1),;
+  0px 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .item {

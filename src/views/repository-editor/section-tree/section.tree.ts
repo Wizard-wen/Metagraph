@@ -3,7 +3,6 @@
  * @date  2021/11/22 00:04
  */
 
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
 import { computed, reactive } from 'vue';
 import { EntityNoAuthApiService, SectionApiService } from '@/api.service';
 import { ActionEnum, MutationEnum, store } from '@/store';

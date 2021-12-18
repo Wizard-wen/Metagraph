@@ -92,9 +92,10 @@ export class KnowledgeGraphPanel {
       knowledgeEntityId: knowledgeEdgeFormState.knowledgeEntityId,
       targetKnowledgeEntityId: knowledgeEdgeFormState.targetKnowledgeEntityId,
       edgeRepositoryEntityId: repositoryEntityId,
-      description: `From ${(knowledgeEdgeFormState.originKnowledgeEntity.content as KnowledgeModelType).name}
-      ,to ${(knowledgeEdgeFormState.targetKnowledgeEntity.content as KnowledgeModelType).name}
-      ,belongs to ${(edgeOwner.content as KnowledgeModelType).name}`
+      // description: `From ${(knowledgeEdgeFormState.originKnowledgeEntity.content as KnowledgeModelType).name}
+      // ,to ${(knowledgeEdgeFormState.targetKnowledgeEntity.content as KnowledgeModelType).name}
+      // ,belongs to ${(edgeOwner.content as KnowledgeModelType).name}`
+      description: `From ${(knowledgeEdgeFormState.originKnowledgeEntity.content as KnowledgeModelType).name}`
     });
     if (result.data) {
       message.success('关联创建成功');

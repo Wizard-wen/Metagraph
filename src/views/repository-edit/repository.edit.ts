@@ -49,7 +49,7 @@ export const repositoryFormRules = {
 export class RepositoryEdit {
   router = useRouter();
 
-  async getRepository(repositoryEntityId: string) {
+  async getRepository(repositoryEntityId: string): Promise<void> {
     const result = await RepositoryApiService.getRepositoryByEntityId({ repositoryEntityId });
     if (result.data) {
       repositoryFormState.name = result.data.name;
@@ -58,7 +58,7 @@ export class RepositoryEdit {
     }
   }
 
-  async createRepository() {
+  async createRepository(): Promise<void> {
     const response = await RepositoryApiService.createRepository({
       ...repositoryFormState
     });
@@ -73,7 +73,7 @@ export class RepositoryEdit {
     }
   }
 
-  async updateRepository(repositoryEntityId: string) {
+  async updateRepository(repositoryEntityId: string): Promise<void> {
     const response = await RepositoryApiService.updateRepository({
       repositoryEntityId,
       ...repositoryFormState
@@ -84,7 +84,7 @@ export class RepositoryEdit {
     }
   }
 
-  async getDomainTree() {
+  async getDomainTree(): Promise<void> {
     const response = await DomainNoAuthApiService.getTree();
     if (response.data) {
       console.log(response.data);

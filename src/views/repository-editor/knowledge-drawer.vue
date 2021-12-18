@@ -21,8 +21,9 @@
       </ant-descriptions-item>
     </ant-descriptions>
     <h3>概述</h3>
-    <div v-if="knowledge?.content?.descriptionHTML">
-      <div v-html="knowledge.content.descriptionHTML"></div>
+    <div v-if="knowledge?.content?.description">
+<!--      <div v-html="knowledge.content.descriptionHTML"></div>-->
+      <tiptap-readonly :articleContent="knowledge.content.description"></tiptap-readonly>
     </div>
     <h3>评论</h3>
     <Comment :entityType="'Knowledge'" :entityId="entityId"></Comment>
@@ -30,6 +31,7 @@
 </template>
 
 <script lang="ts">
+import TiptapReadonly from "@/views/repository-editor/section.article/tiptap-readonly.vue";
 import {
   defineComponent, onMounted, ref, toRefs, watch
 } from 'vue';
@@ -39,6 +41,7 @@ import Comment from './comment.vue';
 export default defineComponent({
   name: 'knowledge.drawer',
   components: {
+    TiptapReadonly,
     Comment
   },
   props: {

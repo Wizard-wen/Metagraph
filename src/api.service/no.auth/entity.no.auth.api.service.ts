@@ -3,12 +3,11 @@
  * @date 2021/09/12 23:35
  */
 
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class EntityNoAuthApiService {
   static getEntityList(params: {
     name?: string;

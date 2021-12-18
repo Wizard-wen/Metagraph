@@ -129,6 +129,10 @@ export default defineComponent({
       }
       modalConfirmLoading.value = true;
       await knowledgeGraphPanel.createEdge(repositoryEntityId.value);
+      await store.dispatch(ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID, {
+        repositoryEntityId: repositoryEntityId.value,
+        hasAuth: isUserOwnRepository.value
+      });
       modalConfirmLoading.value = false;
       isModalVisible.value = false;
       // todo 刷新页面，否则新创建的节点不在图数据model中
@@ -149,19 +153,19 @@ export default defineComponent({
       graph.value.graph?.dispose();
       store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
     });
-    watch(isEditable, (newValue) => {
-      if (newValue) {
-        console.log('初始化')
-        websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
-          {
-            event: 'graph',
-            handler(info) {
-              console.log(info);
-            }
-          }
-        ]);
-      }
-    });
+    // watch(isEditable, (newValue) => {
+    //   if (newValue) {
+    //     console.log('初始化');
+    //     websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
+    //       {
+    //         event: 'graph',
+    //         handler(info) {
+    //           console.log(info);
+    //         }
+    //       }
+    //     ]);
+    //   }
+    // });
     const checkIfUserOwnRepository = async () => {
       if (!userModel.value) {
         return false;
@@ -176,6 +180,16 @@ export default defineComponent({
     };
     onMounted(async () => {
       store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      if (isEditable.value) {
+        websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
+          {
+            event: 'graph',
+            handler(info) {
+              console.log(info);
+            }
+          }
+        ]);
+      }
       isUserOwnRepository.value = await checkIfUserOwnRepository();
       store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
         status: isUserOwnRepository.value
@@ -198,8 +212,10 @@ export default defineComponent({
         if (edge.getSourceCell() === null || edge.getTargetCell() === null) {
           return;
         }
+
         const sourceCellData = edge.getSourceCell()?.data;
         const targetCellData = edge.getTargetCell()?.data;
+        console.log(sourceCellData, targetCellData)
         knowledgeInEdgeList.value = [sourceCellData, targetCellData];
         knowledgeGraphPanel.setKnowledgeEdgeFormState({
           temporaryEdgeId: edge.id,
@@ -242,27 +258,35 @@ export default defineComponent({
           event: 'graph',
           data: {
             entityId: node.data.entity.id,
+            repositoryEntityId: repositoryEntityId.value,
             x,
             y
           }
         });
       });
-      graph.value.graph.on('edge:removed', ({ edge, options }) => {
+      graph.value.graph.on('edge:removed', async ({ edge, options }) => {
         console.log(edge, options);
-        // Modal.confirm({
-        //   title: '确定删除知识关联?',
-        //   icon: createVNode(ExclamationCircleOutlined),
-        //   content: '删除关系操作不可恢复，请谨慎操作',
-        //   async onOk() {
-        //     await knowledgeGraphPanel.removeEdge({
-        //       id: edge.id,
-        //       repositoryEntityId: repositoryEntityId.value
-        //     });
-        //   },
-        //   onCancel() {
-        //     message.info('放弃删除关联');
-        //   },
-        // });
+        await knowledgeGraphPanel.removeEdge({
+          id: edge.id,
+          repositoryEntityId: repositoryEntityId.value
+        });
+
+        // if (options.triggerByFunction) {
+        //   Modal.confirm({
+        //     title: '确定删除知识关联?',
+        //     icon: createVNode(ExclamationCircleOutlined),
+        //     content: '删除关系操作不可恢复，请谨慎操作',
+        //     async onOk() {
+        //       await knowledgeGraphPanel.removeEdge({
+        //         id: edge.id,
+        //         repositoryEntityId: repositoryEntityId.value
+        //       });
+        //     },
+        //     onCancel() {
+        //       message.info('放弃删除关联');
+        //     },
+        //   });
+        // }
       });
       graph.value.graph.on('edge:mouseenter', ({ edge }) => {
         if (userModel.value && isUserOwnRepository.value) {

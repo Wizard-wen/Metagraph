@@ -5,12 +5,11 @@
 import type {
   EntityCompletelyListItemType,
   RepositoryListRequestFilterType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class RepositoryNoAuthApiService {
   // 创建仓库
   // 查询仓库列表 模糊搜索

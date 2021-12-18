@@ -3,7 +3,6 @@
  * @date 2021/09/12 23:36
  */
 
-// eslint-disable-next-line no-shadow,import/prefer-default-export
 export enum ApiPathEnum {
   /**
    * knowledge
@@ -100,7 +99,9 @@ export enum ApiPathEnum {
    * nlp
    */
   ParseWord = '/nlp/parse/word',
-  // domain
+  /**
+   * domain
+   */
   GetDomainList = '/public/domain/getList',
   GetDomainTree = '/public/domain/get/tree',
   /**

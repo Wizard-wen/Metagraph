@@ -1,3 +1,8 @@
+/**
+ * @author songxiwen
+ * @date  2021/11/8 15:32
+ */
+
 import { store } from "@/store";
 import { mergeAttributes } from '@tiptap/core';
 import Mention from '@tiptap/extension-mention';
@@ -5,11 +10,6 @@ import { Editor, VueRenderer } from '@tiptap/vue-3';
 import tippy, { Instance } from 'tippy.js';
 import { computed } from 'vue';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
-
-/**
- * @author songxiwen
- * @date  2021/11/8 15:32
- */
 
 const knowledgeList = computed(() => store.state.repositoryEditor.repositoryEntityList);
 const CustomMention = Mention.extend({

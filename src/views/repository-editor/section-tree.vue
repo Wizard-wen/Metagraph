@@ -76,7 +76,7 @@ import {
   sectionModalData,
   SectionTreeService,
   selectedTreeNode
-} from '@/views/repository-editor/section.tree/section.tree';
+} from '@/views/repository-editor/section-tree/section.tree';
 
 export default defineComponent({
   name: 'section.tree',

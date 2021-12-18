@@ -8,7 +8,9 @@
       <ant-input-search
         @search="handleSearch"
         style="width: 260px"></ant-input-search>
-      <ant-button @click="goKnowledgeMap" type="link" :ghost="true">Knowledge Map</ant-button>
+      <ant-button
+        style="font-weight: 600"
+        @click="goKnowledgeMap" type="link" :ghost="true">知识地图</ant-button>
     </div>
     <div class="right">
       <div style="margin-right: 20px;" v-if="isLogin">

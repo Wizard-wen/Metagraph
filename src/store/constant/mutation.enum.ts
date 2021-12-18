@@ -3,7 +3,6 @@
  * @date 2021/09/14 23:35
  */
 
-// eslint-disable-next-line no-shadow
 export enum MutationEnum {
   SET_IS_SPINNING = 'setIsSpinning',
 

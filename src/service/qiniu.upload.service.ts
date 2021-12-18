@@ -1,12 +1,12 @@
-import axios, { AxiosResponse } from 'axios';
-import * as qiniu from 'qiniu-js';
-import { FileApiService } from '@/api.service';
-import { FileEnum } from '../../../edu-graph-constant';
-
 /**
  * @author songxiwen
  * @date  2021/11/28 00:25
  */
+
+import axios, { AxiosResponse } from 'axios';
+import { FileEnum } from 'edu-graph-constant';
+import * as qiniu from 'qiniu-js';
+import { FileApiService } from '@/api.service';
 
 export class QiniuUploadService {
   async customRequestUploadHandler(params: {
@@ -65,18 +65,21 @@ export class QiniuUploadService {
     });
   }
 
-  formatPicBase64(picBase64: string) {
+  formatPicBase64(pictureInBase64: string): string {
     // 去掉逗号之前的所有字符包括逗号
-    const arr = picBase64.split(',');
-    return picBase64.substring(arr[0].length + 1);
+    const arr = pictureInBase64.split(',');
+    return pictureInBase64.substring(arr[0].length + 1);
   }
 
-  genFileSize(str: string) {
-    if (str.indexOf('=') > 0) {
-      const indexOf = str.indexOf('=');
-      str = str.substring(0, indexOf);
+  /**
+   * 根据base64生成文件大小
+   * @param base64String
+   */
+  generateFileSize(base64String: string): number {
+    if (base64String.indexOf('=') > 0) {
+      const indexOf = base64String.indexOf('=');
+      base64String = base64String.substring(0, indexOf);
     }
-    const fileSize = parseInt(String(str.length - (str.length / 8) * 2), 10);
-    return fileSize;
+    return parseInt(String(base64String.length - (base64String.length / 8) * 2), 10);
   }
 }

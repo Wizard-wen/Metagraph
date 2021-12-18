@@ -25,7 +25,6 @@
     <!--      v-model:value="paddingValue"-->
     <!--      :disabled="false"/>-->
     <div class="article-container">
-
       <div class="editor-range">
         <div class="editor-container"
              :style="{
@@ -49,10 +48,10 @@
 <script lang="ts">
 import tippy, { Instance } from 'tippy.js';
 import {
-  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, PropType, toRefs, toRef, reactive
+  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, toRef
 } from 'vue';
 import {
-  useEditor, EditorContent, VueRenderer, Editor, VueNodeViewRenderer
+  useEditor, EditorContent, VueRenderer, Editor
 } from '@tiptap/vue-3';
 import { mergeAttributes } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
@@ -65,12 +64,11 @@ import { useRoute } from 'vue-router';
 import Image from '@tiptap/extension-image';
 import { ActionEnum, useStore } from '@/store';
 import MentionList from './tiptap/mention.list.vue';
-import SectionArticleControl from './section.article/section.article.control.vue';
+import SectionArticleControl from './section.article/section-article-control.vue';
 import ArticleLimit from './section.article/article.limit.vue';
-import MentionView from './section.article/mention-view.vue';
 
 export default defineComponent({
-  name: 'section.article',
+  name: 'section-article',
   components: {
     EditorContent,
     SectionArticleControl,

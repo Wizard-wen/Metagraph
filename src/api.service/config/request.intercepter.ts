@@ -20,10 +20,12 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
 });
 // 响应拦截
 axios.interceptors.response.use((response: AxiosResponse<PublicApiResponseType<any>>) => {
+  // 捕捉业务级错误
   if (response.config.url?.includes(ConfigService.apiBaseURL) && response.data.code !== 0) {
-    console.log('error', response.config.baseURL);
     message.error(response.data?.message ?? 'server unknown error');
   }
+  // 对于http错误，返回错误码
+  // todo 增加一个report error接口
   if (response.status >= 400) {
     message.error(response.statusText);
   }

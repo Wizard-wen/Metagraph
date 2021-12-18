@@ -85,7 +85,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/signup',
     name: 'SignUp',
-    component: () => import('@/views/sign.up.vue')
+    component: () => import('@/views/sign-up.vue')
   },
   {
     path: '/user/star/:userId',
@@ -95,7 +95,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/test',
     name: 'ComponentTest',
-    component: () => import('@/views/component.test.vue')
+    component: () => import('@/views/component-test.vue')
   },
 ];
 

@@ -8,9 +8,7 @@ import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
-// eslint-disable-next-line import/prefer-default-export
 export class UserApiService {
-
   static async login(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
     return RequestUtil.post<{ password: string; name: string }, any>({
       apiPath: ApiPathEnum.LoginByName,

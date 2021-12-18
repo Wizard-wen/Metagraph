@@ -6,7 +6,9 @@
         <div class="sub-item sub-title-active">前置</div>
         <div class="sub-item">导出</div>
       </div>
-      <div class="content"></div>
+      <div class="content">
+        <div v-for="item in edges.preInnerList">{{item.content.name}}</div>
+      </div>
     </div>
 
     <div class="knowledge-connection">
@@ -20,11 +22,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { defineComponent, defineProps, PropType } from 'vue';
+import { EntityCompletelyListItemType } from 'edu-graph-constant';
 
-export default defineComponent({
-  name: 'knowledge-bind-panel'
+const props = defineProps({
+  edges: {
+    type: Object as PropType<{
+      entity: EntityCompletelyListItemType,
+      preInnerList: EntityCompletelyListItemType[],
+      preOuterList: EntityCompletelyListItemType[],
+      extendInnerList: EntityCompletelyListItemType[],
+      extendOuterList: EntityCompletelyListItemType[]
+    }>,
+    default: {
+      preInnerList: [],
+      preOuterList: [],
+      extendInnerList: [],
+      extendOuterList: []
+    }
+  }
 });
 </script>
 
@@ -37,7 +54,8 @@ export default defineComponent({
 .knowledge-connection {
   width: 100%;
   height: 50%;
-border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+
   .title {
     height: 32px;
     line-height: 32px;

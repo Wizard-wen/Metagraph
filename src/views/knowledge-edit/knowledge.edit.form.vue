@@ -1,8 +1,4 @@
 <template>
-  <div>
-<!--    <ant-button type="primary" @click="handlePullRequest">认证</ant-button>-->
-
-  </div>
   <ant-form
     :model="formState"
     layout="vertical"
@@ -19,17 +15,20 @@
     </ant-form-item>
     <ant-form-item label="领域">
       <ant-select v-model:value="formState.domainId" placeholder="请指定知识点领域">
-        <ant-select-option v-for="item in domainList" :value="item.id">{{ item.name }}</ant-select-option>
+        <ant-select-option
+          v-for="item in domainList"
+          :value="item.id">{{ item.name }}</ant-select-option>
       </ant-select>
     </ant-form-item>
-    <ant-form-item label="仓库">
+    <ant-form-item label="知识库">
       <ant-select disabled v-model:value="formState.repositoryEntityId">
-        <ant-select-option :value="item.entity.id" v-for="item in repositoryList.list">
+        <ant-select-option
+          :value="item.entity.id"
+          v-for="item in repositoryList.list">
           {{ item.content.name }}
         </ant-select-option>
       </ant-select>
     </ant-form-item>
-
     <ant-form-item label="作者">
       <ant-input :value="'songxiwen'" disabled />
     </ant-form-item>
@@ -40,7 +39,6 @@
       <ant-button size="small" @click="handleOpenModal">+</ant-button>
     </ant-form-item>
     <div class="control">
-<!--      <ant-button type="primary" @click="onSubmit">保存</ant-button>-->
     </div>
   </ant-form>
   <ant-modal

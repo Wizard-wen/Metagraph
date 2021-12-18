@@ -340,7 +340,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
         ) {
           // 绑定节点到当前仓库
           await RepositoryApiService.BindEntityToRepository({
-            entityId: droppingNode.data.entity.entity.id,
+            entityId: droppingNode.data.entity.id,
             entityType: 'Knowledge',
             repositoryEntityId: droppingNode.data.repositoryEntityId
           });
