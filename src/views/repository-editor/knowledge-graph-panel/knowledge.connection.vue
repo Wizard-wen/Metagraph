@@ -74,7 +74,7 @@ import {
   computed, defineComponent, ref
 } from 'vue';
 import { useRoute } from 'vue-router';
-import type { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import { useStore } from '@/store';
 
 export default defineComponent({

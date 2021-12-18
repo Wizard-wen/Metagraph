@@ -4,7 +4,7 @@
  */
 
 import { InjectionKey, Ref } from 'vue';
-import type { UserModelType } from 'edu-graph-constant';
+import type { UserModelType } from 'metagraph-constant';
 
 export const userProfileKey: InjectionKey<Ref<UserModelType>> = Symbol('userProfileKey');
 export const userIdKey: InjectionKey<Ref<string>> = Symbol('userIdKey');

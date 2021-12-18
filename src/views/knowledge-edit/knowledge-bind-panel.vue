@@ -24,7 +24,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineProps, PropType } from 'vue';
-import { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 
 const props = defineProps({
   edges: {

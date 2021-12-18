@@ -61,7 +61,7 @@
 import {
   defineComponent, onMounted, PropType, reactive, toRaw, toRef, ref
 } from 'vue';
-import { TagModelType, EntityCompletelyListItemType } from 'edu-graph-constant';
+import { TagModelType, EntityCompletelyListItemType } from 'metagraph-constant';
 import { useRoute, useRouter } from 'vue-router';
 import { RepositoryApiService, TagApiService, KnowledgeApiService } from '@/api.service';
 import { DomainNoAuthApiService } from '@/api.service/no.auth/domain.no.auth.api.service';

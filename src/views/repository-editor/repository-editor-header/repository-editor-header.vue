@@ -56,7 +56,7 @@ import {
   computed,
   defineComponent, inject, PropType, ref, toRef, watch
 } from 'vue';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import { useRouter } from 'vue-router';
 import StarDrawer from '@/views/repository-editor/star-drawer.vue';
 import CommentDrawer from '@/views/repository-editor/comment-drawer.vue';

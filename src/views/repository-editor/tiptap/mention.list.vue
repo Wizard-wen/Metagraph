@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   defineComponent, watch, ref, toRefs, PropType
 } from 'vue';

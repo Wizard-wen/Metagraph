@@ -4,7 +4,7 @@
  */
 
 import { reactive, ref } from 'vue';
-import { EntityCompletelyListItemType, KnowledgeModelType, TagModelType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType, KnowledgeModelType, TagModelType } from 'metagraph-constant';
 import {
   DomainNoAuthApiService,
   EdgeApiService,

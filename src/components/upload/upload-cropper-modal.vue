@@ -57,7 +57,7 @@ import {
 } from 'vue';
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
-import { FileEnum } from 'edu-graph-constant';
+import { FileEnum } from 'metagraph-constant';
 
 export default defineComponent({
   name: 'upload-cropper-modal',

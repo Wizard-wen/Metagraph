@@ -4,7 +4,7 @@
  */
 
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { EditorView } from 'prosemirror-view';
 import { Range } from '@tiptap/core';
 import { message, Modal } from 'ant-design-vue';

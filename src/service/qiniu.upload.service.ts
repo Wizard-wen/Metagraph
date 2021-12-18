@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosResponse } from 'axios';
-import { FileEnum } from 'edu-graph-constant';
+import { FileEnum } from 'metagraph-constant';
 import * as qiniu from 'qiniu-js';
 import { FileApiService } from '@/api.service';
 

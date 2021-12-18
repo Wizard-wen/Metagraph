@@ -5,7 +5,7 @@
 import { reactive, UnwrapRef, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import { DomainResponseType } from 'edu-graph-constant';
+import { DomainResponseType } from 'metagraph-constant';
 import { RepositoryApiService, DomainNoAuthApiService } from '@/api.service';
 
 export const domainList = reactive<{

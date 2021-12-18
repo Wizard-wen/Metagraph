@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import * as AntvX6 from '@antv/x6';
-import { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, computed, reactive, ref, onUnmounted, watch, inject, createVNode
 } from 'vue';

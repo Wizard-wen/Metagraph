@@ -45,7 +45,7 @@ import {
   defineComponent, ref, provide, onMounted
 } from 'vue';
 import { useRoute } from 'vue-router';
-import { UserModelType } from 'edu-graph-constant';
+import { UserModelType } from 'metagraph-constant';
 import ProfileOverview from '@/views/personal-profile/profile-overview.vue';
 import { userIdKey, userProfileKey } from '@/views/personal-profile/personal.profile.provide';
 import { UserApiService } from '@/api.service';

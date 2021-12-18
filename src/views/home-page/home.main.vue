@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { message } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, ref
 } from 'vue';

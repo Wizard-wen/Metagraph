@@ -4,7 +4,7 @@
  */
 
 import { Range, Editor as CoreEditor } from '@tiptap/core';
-import { EntityCompletelyListItemType, KnowledgeModelType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import { EditorView } from 'prosemirror-view';
 import CharacterCount from '@tiptap/extension-character-count';
 import Document from '@tiptap/extension-document';

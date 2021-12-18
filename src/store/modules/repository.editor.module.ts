@@ -7,7 +7,7 @@ import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
 import type {
   EntityCompletelyListItemType, ExerciseModelType, KnowledgeModelType,
   SectionCreateRequestType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { Module } from 'vuex';
 import {
   SectionApiService,

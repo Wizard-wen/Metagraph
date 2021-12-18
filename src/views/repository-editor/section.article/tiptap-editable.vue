@@ -19,7 +19,7 @@ import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
 import StarterKit from '@tiptap/starter-kit';
 import tippy, { Instance } from 'tippy.js';
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import MentionList from '../tiptap/mention.list.vue';
 
 const emit = defineEmits(['saveArticle', 'clickMentionElement', 'mention']);

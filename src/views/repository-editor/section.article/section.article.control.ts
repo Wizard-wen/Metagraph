@@ -7,7 +7,7 @@ import * as qiniu from 'qiniu-js';
 import {
   reactive, ref, computed
 } from 'vue';
-import { FileEnum } from 'edu-graph-constant';
+import { FileEnum } from 'metagraph-constant';
 import { FileApiService, KnowledgeApiService, SectionApiService } from '@/api.service';
 import { NlpApiService } from '@/api.service/nlp.api.service';
 

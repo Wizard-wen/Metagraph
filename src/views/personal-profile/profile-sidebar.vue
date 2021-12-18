@@ -43,7 +43,7 @@ import { useRoute, useRouter } from 'vue-router';
 import {
   computed, onMounted, ref, defineComponent, inject
 } from 'vue';
-import { UserModelType } from 'edu-graph-constant';
+import { UserModelType } from 'metagraph-constant';
 import { userProfileKey } from '@/views/personal-profile/personal.profile.provide';
 import { EmailIcon, FollowerIcon, StarIcon } from '@/components/icons';
 import { useStore } from '@/store';

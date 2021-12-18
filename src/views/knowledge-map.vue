@@ -16,7 +16,7 @@ import {
   KnowledgeEdgeModelType,
   KnowledgeModelType,
   KnowledgeResponseType, RepositoryModelType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import { EdgeNoAuthApiService, RepositoryApiService, RepositoryNoAuthApiService } from '@/api.service';
 
 insertCss(`

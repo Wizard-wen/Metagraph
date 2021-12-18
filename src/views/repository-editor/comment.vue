@@ -41,7 +41,7 @@ import { CommonUtil } from "@/utils";
 import {
   defineComponent, onMounted, PropType, ref, toRef, watch
 } from 'vue';
-import { CommentEntityType, CommentListItemType } from 'edu-graph-constant';
+import { CommentEntityType, CommentListItemType } from 'metagraph-constant';
 import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
 
 type Comment = Record<string, string>;

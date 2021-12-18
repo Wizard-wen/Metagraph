@@ -4,7 +4,7 @@
  */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
 
 
 export const selectedTreeNodeEntityId = ref('');

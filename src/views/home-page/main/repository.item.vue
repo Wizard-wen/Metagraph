@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   defineComponent, toRef, PropType, ref, onMounted, computed
 } from 'vue';

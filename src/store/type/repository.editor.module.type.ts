@@ -4,7 +4,7 @@
  */
 
 import * as AntvX6 from '@antv/x6';
-import type { EntityCompletelyListItemType, SectionResponseType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType, SectionResponseType } from 'metagraph-constant';
 import { ToolbarState } from '@/types/toolbar';
 
 type KnowledgePreExtendEntityTreeNodeType = {

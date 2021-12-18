@@ -45,7 +45,7 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   BindEntityList,
   isDrawerShown,

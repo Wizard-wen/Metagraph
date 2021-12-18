@@ -26,7 +26,7 @@
 import {
   defineComponent, onMounted, reactive, ref, inject
 } from 'vue';
-import { EntityCompletelyListItemType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { userIdKey } from '@/views/personal-profile/personal.profile.provide';
 import { RepositoryNoAuthApiService } from '@/api.service';
 import { StarIcon } from '@/components/icons';

@@ -3,7 +3,7 @@
  * @date 2021/09/12 16:29
  */
 
-import type { UserModelType } from 'edu-graph-constant';
+import type { UserModelType } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';

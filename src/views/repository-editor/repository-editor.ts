@@ -5,7 +5,7 @@
 
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'edu-graph-constant';
+import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import {
   ref, reactive, createVNode, computed
 } from 'vue';

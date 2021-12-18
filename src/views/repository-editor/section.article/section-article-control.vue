@@ -255,7 +255,7 @@ import {
   CloseOutlined
 } from '@ant-design/icons-vue';
 import { Editor } from '@tiptap/vue-3';
-import { FileEnum } from 'edu-graph-constant';
+import { FileEnum } from 'metagraph-constant';
 import {
   defineComponent, inject, PropType, reactive, ref, toRef
 } from 'vue';

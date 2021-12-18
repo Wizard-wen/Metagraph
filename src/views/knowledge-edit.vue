@@ -73,7 +73,7 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import KnowledgeEditForm from '@/views/knowledge-edit/knowledge.edit.form.vue';
-import { KnowledgeModelType } from "edu-graph-constant";
+import { KnowledgeModelType } from "metagraph-constant";
 import SectionArticleTipTap from './repository-editor/section-article.vue';
 import Comment from './repository-editor/comment.vue';
 import {

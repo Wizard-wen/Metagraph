@@ -8,7 +8,7 @@ import { useRouter } from 'vue-router';
 import type {
   EntityCompletelyListItemType,
   KnowledgeModelType
-} from 'edu-graph-constant';
+} from 'metagraph-constant';
 import {
   EntityNoAuthApiService,
   KnowledgeApiService,

@@ -47,14 +47,14 @@
 
 <script lang="ts">
 import { message } from 'ant-design-vue';
-import { RepositoryModelType } from 'edu-graph-constant';
+import { RepositoryModelType } from 'metagraph-constant';
 import {
   computed,
   defineComponent, onMounted, ref, reactive,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import type { EntityCompletelyListItemType } from 'edu-graph-constant';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { useStore } from '@/store';
 import { RepositoryApiService } from '@/api.service';
 
