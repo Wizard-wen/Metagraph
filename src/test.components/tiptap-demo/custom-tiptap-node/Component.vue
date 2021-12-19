@@ -22,7 +22,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .vue-component {
   background: #FAF594;
   border: 3px solid #0D0D0D;

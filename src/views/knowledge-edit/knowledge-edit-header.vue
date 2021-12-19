@@ -2,29 +2,42 @@
   <div class="knowledge-header">
     <div class="left">
       <go-back-icon class="back-icon" @click="goBack"></go-back-icon>
-      <div class="title">知识点名称</div>
-      <ant-tag class="status-tag">未认证</ant-tag>
+      <div class="title">{{ knowledgeName }}</div>
+      <ant-tag class="status-tag">{{ knowledgeAuthStatus }}</ant-tag>
     </div>
     <div class="right">
-      <ant-tag>引用 23</ant-tag>
-      <ant-tag>被引 23</ant-tag>
-      <ant-tag>点赞 23</ant-tag>
-      <ant-tag>评论 23</ant-tag>
+      <social-action-button
+        :title="'引用数量'" :total="mentionCount"></social-action-button>
+      <social-action-button
+        :title="'被引次数'" :total="mentionedCount"></social-action-button>
+      <social-action-button
+        :title="'点赞'" :total="knowledgeStarCount"></social-action-button>
+      <social-action-button
+        :title="'评论'" :total="knowledgeCommentCount"></social-action-button>
       <ant-button type="primary" class="pull-request-button">提交认证</ant-button>
     </div>
   </div>
 </template>
-
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
+import { GoBackIcon } from '@/components/icons';
+import {
+  knowledgeName,
+  knowledgeAuthStatus,
+  knowledgeStarCount,
+  knowledgeCommentCount
+} from './model/knowledge.edit';
 
+const mentionCount = ref(23);
+const mentionedCount = ref(23);
 const router = useRouter();
 
 async function goBack() {
   router.go(-1);
 }
 </script>
-
 <style scoped lang="scss">
 @import "../../style/common.scss";
 
@@ -66,6 +79,7 @@ async function goBack() {
     height: 56px;
     display: flex;
     align-items: center;
+    gap: 15px;
 
     .pull-request-button {
       margin-left: 20px;

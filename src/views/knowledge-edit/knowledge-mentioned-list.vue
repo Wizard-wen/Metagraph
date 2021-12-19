@@ -1,10 +1,22 @@
 <template>
-
+  <div class="bind-panel">
+    <div class="knowledge-connection">
+      <div class="title">引用的知识点</div>
+      <div class="content" v-if="edges?.target?.preInnerList.length">
+        <div
+          class="content-item"
+          v-for="item in edges.target.preInnerList">
+          {{ item.content.name }}
+          <EyeOutlined/>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { EyeOutlined } from '@ant-design/icons-vue';
 import { edges } from './model/knowledge.edit';
-
 /**
  * 功能需求
  * 1.获取知识点引用的知识点
@@ -19,11 +31,46 @@ import { edges } from './model/knowledge.edit';
  * 10.可以选择一段文本，直接标记为引用
  * 11.可以考虑展示一下，同一个知识点之间的循环引用关系
  */
-export default {
-  name: 'knowledge-mentioned-list'
-};
+
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.bind-panel {
+  width: 100%;
+  height: calc(100vh - 55px);
+}
 
+.knowledge-connection {
+  width: 100%;
+  height: 100%;
+
+  .title {
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    font-size: 16px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .content {
+    padding: 10px 0;
+
+    .content-item {
+      padding: 0 10px;
+      text-align: left;
+      height: 35px;
+      line-height: 35px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &:hover {
+        cursor: pointer;
+        background: #50bfff;
+        color: #FFFFFF;
+      }
+    }
+  }
+}
 </style>

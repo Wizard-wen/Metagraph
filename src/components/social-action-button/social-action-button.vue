@@ -44,7 +44,7 @@ export default defineComponent({
     cursor: pointer;
   }
 
-  height: 32px;
+  height: 28px;
   width: max-content;
   display: flex;
   align-items: center;
@@ -52,8 +52,8 @@ export default defineComponent({
   font-weight: 500;
 
   .action {
-    height: 32px;
-    padding: 0 12px;
+    height: 28px;
+    padding: 0 8px;
     display: flex;
     gap: 5px;
     align-items: center;
@@ -64,9 +64,9 @@ export default defineComponent({
   }
 
   .total {
-    height: 32px;
-    padding: 0 12px;
-    line-height: 32px;
+    height: 28px;
+    padding: 0 8px;
+    line-height: 28px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     border: 1px solid rgba(27, 31, 36, 0.15);

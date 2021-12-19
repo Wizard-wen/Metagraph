@@ -3,21 +3,39 @@
  * @date  2021/12/4 14:50
  */
 
-import { reactive, ref } from 'vue';
+import {
+  computed, InjectionKey, reactive, Ref, ref
+} from 'vue';
 import { EntityCompletelyListItemType, KnowledgeModelType, TagModelType } from 'metagraph-constant';
 import {
   DomainNoAuthApiService,
   EdgeApiService,
   EntityNoAuthApiService,
-  KnowledgeApiService, KnowledgeNoAuthApiService,
+  KnowledgeApiService, KnowledgeNoAuthApiService, RepositoryApiService,
   RepositoryNoAuthApiService, TagApiService
 } from '@/api.service';
 import { tiptapInitData } from '@/store/constant';
 
+export const knowledgeEntityIdInjectKey: InjectionKey<Ref<string>> = Symbol('knowledgeEntityId');
+export const repositoryEntityIdInjectKey: InjectionKey<Ref<string>> = Symbol('repositoryEntityId');
 export const knowledge = reactive<{
   target?: EntityCompletelyListItemType
 }>({ target: undefined });
+// 知识点名称
+export const knowledgeName = computed(
+  () => (knowledge.target?.content as KnowledgeModelType).name || '知识点名称'
+);
+// 知识点认证状态
+export const knowledgeAuthStatus = computed(
+  () => ((knowledge.target?.content as KnowledgeModelType).isCertificated ? '已认证' : '未认证')
+);
+// 知识点点赞数量
+export const knowledgeStarCount = computed(() => knowledge.target?.star || 0);
+// 知识点评论数量
+export const knowledgeCommentCount = computed(() => knowledge.target?.comment || 0);
+// 知识点文本
 export const knowledgeDescription = ref();
+// 仓库已绑定知识点
 export const repositoryEntityList = reactive<{
   target: EntityCompletelyListItemType[]
 }>({
@@ -35,6 +53,24 @@ export const edges = reactive<{
   target: undefined
 });
 
+interface KnowledgeFormType {
+  name: string;
+  knowledgeBaseTypeId: string;
+  domainId?: '';
+  repositoryEntityId: string;
+  author: string;
+  tagList: { label: string, value: string }[];
+}
+
+export const knowledgeForm = reactive<KnowledgeFormType>({
+  repositoryEntityId: '',
+  name: '',
+  knowledgeBaseTypeId: '',
+  domainId: '',
+  author: '',
+  tagList: []
+});
+
 export const tag = reactive<{
   currentPage: number,
   total: number,
@@ -47,7 +83,9 @@ export const tag = reactive<{
   list: []
 });
 
-const domainList = ref([]);
+export const domainList = ref([]);
+
+export const ownRepositoryList = ref<EntityCompletelyListItemType[]>([]);
 
 export class KnowledgeEdit {
   async getKnowledge(knowledgeEntityId: string): Promise<void> {
@@ -56,7 +94,12 @@ export class KnowledgeEdit {
     });
     if (result.data) {
       knowledge.target = result.data;
-      const description = (<KnowledgeModelType> result.data.content)?.description;
+      const knowledgeContent = result.data.content as KnowledgeModelType;
+      const knowledgeAuthor = result.data.author;
+      knowledgeForm.name = knowledgeContent.name;
+      knowledgeForm.knowledgeBaseTypeId = knowledgeContent.knowledgeBaseTypeId;
+      knowledgeForm.author = knowledgeAuthor.name;
+      const description = (<KnowledgeModelType>result.data.content)?.description;
       if (!description) {
         knowledgeDescription.value = tiptapInitData;
       } else {
@@ -130,13 +173,29 @@ export class KnowledgeEdit {
     }
   }
 
+  async getOwnRepositoryList(): Promise<void> {
+    const result = await RepositoryApiService.getOwnRepositoryList();
+    if (result.data) {
+      ownRepositoryList.value = result.data;
+    }
+  }
+
   async getDomainList(): Promise<void> {
     const result = await DomainNoAuthApiService.getList({
       pageIndex: 0,
       pageSize: 10
     });
-    if (!result.data) {
+    if (result.data) {
       domainList.value = result.data.list;
     }
+  }
+
+  async updateKnowledge(knowledgeEntityId: string): Promise<void> {
+    await KnowledgeApiService.update({
+      knowledgeEntityId,
+      domainId: knowledgeForm.domainId,
+      knowledgeBaseTypeId: knowledgeForm.knowledgeBaseTypeId,
+      name: knowledgeForm.name,
+    });
   }
 }

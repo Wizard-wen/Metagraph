@@ -1,5 +1,6 @@
 .tip-tap-editor {
   & ::v-deep(.ProseMirror) {
+    text-align: left;
     text-indent: 10px;
     outline: none;
     padding: 20px;
@@ -19,5 +20,35 @@
       border-radius: 0.3rem;
       padding: 0.1rem 0.3rem;
     }
+  }
+}
+
+
+.operation-icon {
+  padding: 0 5px;
+  height: 42px;
+  cursor: pointer;
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    margin: 4px auto 0;
+
+    .is-active {
+      color: #000;
+    }
+
+    .icon-svg {
+      font-size: 20px;
+    }
+
+    color: #b5b5bb;
+  }
+
+  .name {
+    font-size: 12px;
+    //width: 24px;
+    margin-top: 1px;
+    line-height: 18px;
   }
 }

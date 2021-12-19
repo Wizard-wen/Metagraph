@@ -7,7 +7,7 @@
         <div class="sub-item">导出</div>
       </div>
       <div class="content">
-        <div v-for="item in edges.preInnerList">{{item.content.name}}</div>
+        <div v-for="item in edges.preInnerList">{{ item.content.name }}</div>
       </div>
     </div>
 
@@ -23,26 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineProps, PropType } from 'vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
-
-const props = defineProps({
-  edges: {
-    type: Object as PropType<{
-      entity: EntityCompletelyListItemType,
-      preInnerList: EntityCompletelyListItemType[],
-      preOuterList: EntityCompletelyListItemType[],
-      extendInnerList: EntityCompletelyListItemType[],
-      extendOuterList: EntityCompletelyListItemType[]
-    }>,
-    default: {
-      preInnerList: [],
-      preOuterList: [],
-      extendInnerList: [],
-      extendOuterList: []
-    }
-  }
-});
+import { edges } from './model/knowledge.edit';
 </script>
 
 <style scoped lang="scss">

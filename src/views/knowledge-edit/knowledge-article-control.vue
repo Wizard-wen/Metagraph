@@ -14,8 +14,7 @@
       <toggle-heading-control :editor="editor" :level="2"></toggle-heading-control>
       <toggle-heading-control :editor="editor" :level="3"></toggle-heading-control>
       <toggle-code-control :editor="editor"></toggle-code-control>
-      <find-control :editor="editor"></find-control>
-      <parse-text-control></parse-text-control>
+<!--      <find-control :editor="editor"></find-control>-->
       <upload-image-control :editor="editor"></upload-image-control>
       <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>
     </div>
@@ -28,9 +27,8 @@ import {
   defineComponent, PropType
 } from 'vue';
 import {
-  FindControl,
+  // FindControl,
   FontSizeControl,
-  ParseTextControl,
   RedoControl,
   UndoControl,
   SaveControl,
@@ -46,7 +44,7 @@ import {
 } from '@/components/tiptap-text-editor/controls';
 
 export default defineComponent({
-  name: 'section.article.control',
+  name: 'knowledge-article-control',
   props: {
     editor: {
       type: Object as PropType<Editor>,
@@ -57,8 +55,7 @@ export default defineComponent({
     SaveControl,
     FontSizeControl,
     UploadImageControl,
-    ParseTextControl,
-    FindControl,
+    // FindControl,
     ToggleCodeControl,
     ToggleHeadingControl,
     ToggleBlockquoteControl,
@@ -93,6 +90,8 @@ export default defineComponent({
   padding: 2px 0;
   height: 46px;
   width: 100%;
+  background: #FFFFFF;
+  margin-bottom: 15px;
 
   .operator-container {
     display: flex;
