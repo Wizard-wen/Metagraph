@@ -5,8 +5,7 @@
     placement="right"
     :closable="false"
     v-model:visible="visible"
-    :after-visible-change="afterVisibleChange"
-  >
+    :after-visible-change="afterVisibleChange">
     <ant-descriptions title="基本信息" :column="1">
       <ant-descriptions-item label="名称">{{ knowledge.content.name }}</ant-descriptions-item>
       <ant-descriptions-item label="类型">{{ knowledge.content.knowledgeBaseTypeId }}</ant-descriptions-item>
@@ -36,7 +35,7 @@ import {
   defineComponent, onMounted, ref, toRefs, watch
 } from 'vue';
 import { EntityNoAuthApiService } from '@/api.service';
-import Comment from './comment.vue';
+import Comment from '../entity-comment/entity-comment.vue';
 
 export default defineComponent({
   name: 'knowledge.drawer',

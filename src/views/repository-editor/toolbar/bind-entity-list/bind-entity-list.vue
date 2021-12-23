@@ -54,7 +54,7 @@ import {
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { ActionEnum, useStore } from '@/store';
 import { ViewIcon, EditIcon } from '@/components/icons';
-import KnowledgeDrawer from '@/views/repository-editor/knowledge-drawer.vue';
+import KnowledgeDrawer from '@/business/knowledge-drawer/knowledge-drawer.vue';
 import CreateBindKnowledgeModal from '../create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 
 export default defineComponent({

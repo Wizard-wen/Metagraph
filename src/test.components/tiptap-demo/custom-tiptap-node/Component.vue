@@ -1,8 +1,10 @@
 <template>
   <node-view-wrapper class="vue-component">
-    <span class="label" contenteditable="false">Vue Component</span>
-    <node-view-content class="content"/>
+    <!--      <span class="label" contenteditable="false">Vue Component</span>-->
+    <!--      <node-view-content class="content"/>-->
+    <div class="text" @click="handleClick">{{ 66666 }}</div>
   </node-view-wrapper>
+
 </template>
 
 <script lang="ts">
@@ -12,23 +14,32 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   components: {
     NodeViewWrapper,
-    NodeViewContent,
+    // NodeViewContent,
   },
 
   props: nodeViewProps,
   setup(props) {
     console.log(props);
+
+    function handleClick() {
+      console.log('ssss');
+    }
+
+    return {
+      handleClick
+    };
   }
 });
 </script>
 
 <style lang="scss" scoped>
 .vue-component {
-  background: #FAF594;
-  border: 3px solid #0D0D0D;
-  border-radius: 0.5rem;
-  margin: 1rem 0;
-  position: relative;
+  user-select: none;
+  //background: #FAF594;
+  //border: 3px solid #0D0D0D;
+  //border-radius: 0.5rem;
+  //margin: 1rem 0;
+  //position: relative;
 }
 
 .label {
@@ -50,5 +61,14 @@ export default defineComponent({
   padding: 0.5rem;
   border: 2px dashed #0D0D0D20;
   border-radius: 0.5rem;
+}
+
+.text {
+  height: 30px;
+  width: 120px;
+  background: #50bfff;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #FFF!important;
 }
 </style>

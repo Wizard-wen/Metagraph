@@ -109,4 +109,72 @@ export class KnowledgeApiService {
       requestBody: params
     });
   }
+
+  static async checkField(params: {
+    knowledgeEntityId: string;
+    customField: {
+      label: string;
+    };
+  }): Promise<PublicApiResponseType<{ isExists: boolean }>> {
+    return RequestUtil.post<{
+      knowledgeEntityId: string;
+      customField: {
+        label: string;
+      };
+    }, { isExists: boolean }>({
+      apiPath: ApiPathEnum.CheckCustomKnowledgeFormField,
+      requestBody: params
+    });
+  }
+
+  static async addField(params: {
+    knowledgeEntityId: string;
+    customField: {
+      label: string;
+    };
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      knowledgeEntityId: string;
+      customField: {
+        label: string;
+      };
+    }, void>({
+      apiPath: ApiPathEnum.AddCustomKnowledgeFormField,
+      requestBody: params
+    });
+  }
+
+  static async removeField(params: {
+    knowledgeEntityId: string;
+    customFieldKey: string;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      knowledgeEntityId: string;
+      customFieldKey: string;
+    }, void>({
+      apiPath: ApiPathEnum.RemoveCustomKnowledgeFormField,
+      requestBody: params
+    });
+  }
+
+  static async saveFields(params: {
+    knowledgeEntityId: string;
+    customFields: {
+      label: string;
+      key: string;
+      value: string;
+    }[];
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      knowledgeEntityId: string;
+      customFields: {
+        label: string;
+        key: string;
+        value: string;
+      }[];
+    }, void>({
+      apiPath: ApiPathEnum.SaveCustomKnowledgeFormFields,
+      requestBody: params
+    });
+  }
 }

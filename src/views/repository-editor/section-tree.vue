@@ -71,7 +71,7 @@ import {
 import { useRoute } from 'vue-router';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
 import { ActionEnum, MutationEnum, useStore } from '@/store';
-import KnowledgeDrawer from './knowledge-drawer.vue';
+import KnowledgeDrawer from '../../business/knowledge-drawer/knowledge-drawer.vue';
 import {
   sectionModalData,
   SectionTreeService,

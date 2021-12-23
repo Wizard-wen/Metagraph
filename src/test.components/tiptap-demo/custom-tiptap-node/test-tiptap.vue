@@ -1,6 +1,6 @@
 <template>
   <button @click="addComponent">add</button>
-  <editor-content :editor="editor"/>
+  <editor-content :editor="editor" class="tip-tap-editor"/>
 </template>
 
 <script lang="ts">
@@ -31,9 +31,7 @@ export default defineComponent({
         <p>
           This is still the text editor you’re used to, but enriched with node views.
         </p>
-        <vue-component>
-          <p>This is editable.</p>
-        </vue-component>
+        <vue-component count="2222"></vue-component>
         <p>
           Did you see that? That’s a Vue component. We are really living in the future.
         </p>
@@ -55,10 +53,5 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-/* Basic editor styles */
-.ProseMirror {
-  > * + * {
-    margin-top: 0.75em;
-  }
-}
+@import '../../../style/tiptap.common.scss';
 </style>

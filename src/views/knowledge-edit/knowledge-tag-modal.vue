@@ -28,10 +28,12 @@
 
 <script setup lang="ts">
 import {
-  defineProps, defineEmits, ref, computed, toRef, PropType
+  defineProps, defineEmits, ref, computed, toRef, PropType, inject
 } from 'vue';
-import { tag, KnowledgeEdit } from './model/knowledge.edit';
+import { TagApiService } from '@/api.service';
+import { tag, KnowledgeEdit, knowledgeEntityIdInjectKey } from './model/knowledge.edit';
 
+const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
 const props = defineProps({
   isModalVisible: {
     type: Boolean,
@@ -57,7 +59,12 @@ function handleModalCancel() {
   emit('close');
 }
 
-function handleModalOk() {
+async function handleModalOk() {
+  await TagApiService.update({
+    entityId: knowledgeEntityId?.value || '',
+    tagIds: selectedTagIds.value || [],
+    entityType: 'Knowledge'
+  });
   emit('close', {
     selectedTagList: selectedTagList.value
   });

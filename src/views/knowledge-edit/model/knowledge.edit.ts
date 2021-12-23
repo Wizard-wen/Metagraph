@@ -7,6 +7,7 @@ import {
   computed, InjectionKey, reactive, Ref, ref
 } from 'vue';
 import { EntityCompletelyListItemType, KnowledgeModelType, TagModelType } from 'metagraph-constant';
+import { Form } from 'ant-design-vue';
 import {
   DomainNoAuthApiService,
   EdgeApiService,
@@ -41,6 +42,33 @@ export const repositoryEntityList = reactive<{
 }>({
   target: []
 });
+// 知识点自定义字段
+// export const customFields = computed(
+//   () => (knowledge.target?.content as KnowledgeModelType).customField || []
+// );
+export interface CustomFieldType {
+  value: string;
+  label: string;
+  key: string;
+}
+
+export const customFields = reactive<{
+  target: CustomFieldType[]
+}>({
+  target: []
+});
+export const customFieldsModelRef = reactive<{
+  [key: string]: any
+}>({});
+export const customFieldsRulesRef = reactive<{
+  [key: string]: {
+    required: boolean;
+    message: string;
+    trigger: string;
+  }[]
+}>({});
+export const customFieldsValidateInfo = ref();
+export const customFieldsValidate = ref();
 export const edges = reactive<{
   target?: {
     entity: EntityCompletelyListItemType,
@@ -56,7 +84,7 @@ export const edges = reactive<{
 interface KnowledgeFormType {
   name: string;
   knowledgeBaseTypeId: string;
-  domainId?: '';
+  domainId?: string;
   repositoryEntityId: string;
   author: string;
   tagList: { label: string, value: string }[];
@@ -99,6 +127,28 @@ export class KnowledgeEdit {
       knowledgeForm.name = knowledgeContent.name;
       knowledgeForm.knowledgeBaseTypeId = knowledgeContent.knowledgeBaseTypeId;
       knowledgeForm.author = knowledgeAuthor.name;
+      knowledgeForm.domainId = knowledgeContent?.domainId || '';
+      knowledgeForm.tagList = result.data.tag.map((item: TagModelType) => ({
+        label: item.name,
+        value: item.id
+      }));
+      customFields.target = knowledgeContent.customField || [];
+      const customFieldsKeys = customFields.target.map((item) => item.key);
+      customFields.target.forEach((item) => {
+        customFieldsModelRef[item.key] = item.value;
+        customFieldsRulesRef[item.key] = [{
+          required: true,
+          message: `请输入${item.label}`,
+          trigger: 'blur'
+        }];
+      });
+      const {
+        resetFields,
+        validate,
+        validateInfos
+      } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
+      customFieldsValidateInfo.value = validateInfos;
+      customFieldsValidate.value = validate;
       const description = (<KnowledgeModelType>result.data.content)?.description;
       if (!description) {
         knowledgeDescription.value = tiptapInitData;

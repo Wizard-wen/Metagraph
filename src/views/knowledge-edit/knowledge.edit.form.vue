@@ -39,9 +39,9 @@
       </div>
       <ant-button style="display: block" type="primary" size="default" @click="handleOpenModal">
         <template #icon>
-          <PlusOutlined/>
+          <EditOutlined/>
         </template>
-        添加标签
+        修改标签
       </ant-button>
     </ant-form-item>
     <div class="control">
@@ -57,7 +57,7 @@
 import {
   defineComponent, onMounted, ref, inject
 } from 'vue';
-import { PlusOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons-vue';
 import KnowledgeTagModal from '@/views/knowledge-edit/knowledge-tag-modal.vue';
 import {
   KnowledgeEdit,
@@ -78,6 +78,7 @@ interface FormState {
 
 export default defineComponent({
   components: {
+    EditOutlined,
     KnowledgeTagModal,
     PlusOutlined
   },
@@ -108,12 +109,13 @@ export default defineComponent({
       isModalVisible.value = true;
     };
 
-    function handleKnowledgeTagModalClose(event?: {
+    async function handleKnowledgeTagModalClose(event?: {
       selectedTagList: { label: string, value: string }[]
     }) {
       isModalVisible.value = false;
-      if (event) {
-        knowledgeForm.tagList = event.selectedTagList;
+      if (event && knowledgeEntityId?.value) {
+        // knowledgeForm.tagList = event.selectedTagList;
+        await knowledgeEdit.getKnowledge(knowledgeEntityId?.value);
       }
     }
 

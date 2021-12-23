@@ -11,6 +11,10 @@ export enum ApiPathEnum {
   UpdateKnowledge = '/knowledge/update',
   RemoveKnowledge = '/knowledge/remove/id',
   SaveKnowledgeDescription = '/knowledge/save/description',
+  CheckCustomKnowledgeFormField = '/knowledge/checkField',
+  AddCustomKnowledgeFormField = '/knowledge/addField',
+  RemoveCustomKnowledgeFormField = '/knowledge/removeField',
+  SaveCustomKnowledgeFormFields = '/knowledge/saveFields',
   // 获取知识点
   GetNoAuthKnowledgeById = '/public/knowledge/get',
   // 带分页的知识点列表
@@ -95,6 +99,7 @@ export enum ApiPathEnum {
    * tag
    */
   GetTagList = '/tag/getList',
+  UpdateTag = '/tag/update',
   /**
    * nlp
    */

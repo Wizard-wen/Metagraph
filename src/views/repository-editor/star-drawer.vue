@@ -24,7 +24,6 @@
       </ant-list-item>
     </ant-list>
     <div>
-
     </div>
   </ant-drawer>
 </template>
@@ -35,7 +34,7 @@ import {
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarApiService } from '@/api.service';
-import Comment from './comment.vue';
+import Comment from '../../business/entity-comment/entity-comment.vue';
 
 export default defineComponent({
   name: 'star-drawer',

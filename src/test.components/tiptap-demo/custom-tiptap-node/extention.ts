@@ -11,7 +11,15 @@ export default Node.create({
 
   group: 'block',
 
-  content: 'inline*',
+  atom: true,
+
+  addAttributes() {
+    return {
+      count: {
+        default: 0,
+      },
+    };
+  },
 
   parseHTML() {
     return [
@@ -22,7 +30,7 @@ export default Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['vue-component', mergeAttributes(HTMLAttributes), 0];
+    return ['vue-component', mergeAttributes(HTMLAttributes)];
   },
 
   addNodeView() {

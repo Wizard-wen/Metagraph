@@ -30,6 +30,7 @@ import BindIcon from './bind.icon.vue';
 import CreateIcon from './create.icon.vue';
 import DeleteIcon from './delete.icon.vue';
 import GoBackIcon from './go-back-icon.vue';
+import LinkIcon from './link.icon.vue';
 
 export {
   ArrowDownIcon,
@@ -58,5 +59,6 @@ export {
   BindIcon,
   CreateIcon,
   DeleteIcon,
-  GoBackIcon
+  GoBackIcon,
+  LinkIcon
 };

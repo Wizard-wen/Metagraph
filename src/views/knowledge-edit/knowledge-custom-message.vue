@@ -2,32 +2,38 @@
   <div class="custom-field-box">
     <div class="header">
       <div class="title">信息栏</div>
-      <ant-button @click="handleOpenAddFieldModal">
-        <PlusOutlined/>
-        添加字段
-      </ant-button>
+      <div class="right">
+        <ant-button @click="handleOpenAddFieldModal">
+          <PlusOutlined/>
+          添加字段
+        </ant-button>
+        <ant-button type="primary" @click="handleSaveCustomField">
+          保存
+        </ant-button>
+      </div>
     </div>
     <div class="content">
       <ant-form
         class="custom-form"
         ref="formRef"
-        :model="dynamicValidateForm"
         :label-col="labelCol"
         :wrapper-col="wrapperCol">
         <ant-form-item
           class="form-item-custom"
-          v-for="domain in dynamicValidateForm.domains"
-          :key="domain.key"
-          :label="domain.label"
-          :name="domain.key">
+          v-bind="customFieldsValidateInfo[item.key]"
+          v-for="item in customFields.target"
+          :key="item.key"
+          :label="item.label"
+          :name="item.key">
           <ant-input
-            :ref="domain.key"
-            v-model:value="domain.value"
-            :placeholder="`请输入 ${domain.label}`"
+            :ref="item.key"
+            v-model:value="customFieldsModelRef[item.key]"
+            @blur="customFieldsValidate(item.key, { trigger: 'blur' }).catch(() => {})"
+            :placeholder="`请输入${item.label}`"
             style="width: 80%; margin-right: 8px"/>
           <MinusCircleOutlined
             class="dynamic-delete-button"
-            @click="removeField(domain)"/>
+            @click="removeField(item)"/>
         </ant-form-item>
       </ant-form>
     </div>
@@ -39,59 +45,81 @@
 </template>
 <script lang="ts">
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { message, Form } from 'ant-design-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  defineComponent, reactive, ref, UnwrapRef
+  defineComponent, reactive, ref, UnwrapRef, inject
 } from 'vue';
+import {
+  KnowledgeEdit,
+  knowledgeEntityIdInjectKey,
+  customFields,
+  CustomFieldType, customFieldsModelRef, customFieldsRulesRef, customFieldsValidateInfo,
+  customFieldsValidate
+} from './model/knowledge.edit';
+import { KnowledgeApiService } from '@/api.service';
 import AddFieldModal from '@/views/knowledge-edit/add-field-modal.vue';
 
-interface Domain {
-  value: string;
-  label: string;
-  key: number;
-}
-
+const { useForm } = Form;
 export default defineComponent({
   name: 'knowledge-custom-message',
   setup() {
+    const knowledgeEdit = new KnowledgeEdit();
+    const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
     const formRef = ref();
-    const dynamicValidateForm: UnwrapRef<{ domains: Domain[] }> = reactive({
-      domains: [],
-    });
-    const removeField = (item: Domain) => {
-      const index = dynamicValidateForm.domains.indexOf(item);
-      if (index !== -1) {
-        dynamicValidateForm.domains.splice(index, 1);
+
+    async function removeField(item: CustomFieldType) {
+      const result = await KnowledgeApiService.removeField({
+        knowledgeEntityId: knowledgeEntityId?.value || '',
+        customFieldKey: item.key
+      });
+      if (result.data) {
+        await knowledgeEdit.getKnowledge(knowledgeEntityId?.value || '');
+        message.success('删除成功！');
       }
-    };
+    }
+
     const isFieldModalVisible = ref(false);
 
     function handleOpenAddFieldModal() {
       isFieldModalVisible.value = true;
     }
 
-    function handleAddFieldModalClose(event?: {
-      name: string;
-    }) {
+    async function handleAddFieldModalClose() {
       isFieldModalVisible.value = false;
-      if (event) {
-        dynamicValidateForm.domains.push({
-          value: '',
-          label: event.name,
-          key: Date.now(),
+      await knowledgeEdit.getKnowledge(knowledgeEntityId?.value || '');
+    }
+
+    async function handleSaveCustomField() {
+      Object.keys(customFieldsModelRef)
+        .forEach((item) => {
+          const customFieldItem = customFields.target.find(
+            (customFieldItem) => customFieldItem.key === item
+          )!;
+          customFieldItem.value = customFieldsModelRef[item];
         });
+      const result = await KnowledgeApiService.saveFields({
+        knowledgeEntityId: knowledgeEntityId?.value || '',
+        customFields: customFields.target
+      });
+      if (result.data) {
+        message.success('保存成功！');
       }
     }
 
     return {
       formRef,
-      dynamicValidateForm,
       removeField,
       handleOpenAddFieldModal,
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
       isFieldModalVisible,
-      handleAddFieldModalClose
+      handleAddFieldModalClose,
+      handleSaveCustomField,
+      customFields,
+      customFieldsValidateInfo,
+      customFieldsModelRef,
+      customFieldsValidate
     };
   },
   components: {
@@ -121,6 +149,10 @@ export default defineComponent({
 
     .title {
       font-size: 20px;
+    }
+    .right {
+      display: flex;
+      gap: 10px;
     }
   }
 

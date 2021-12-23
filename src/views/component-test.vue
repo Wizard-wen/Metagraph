@@ -20,9 +20,13 @@
   <!--  <upload-form-item v-model="imageUrl"></upload-form-item>-->
   <!--  <tiptap-readonly></tiptap-readonly>-->
   <test-tiptap></test-tiptap>
+<!--  <knowledge-plan></knowledge-plan>-->
+<!--  <knowledge-preview-card></knowledge-preview-card>-->
 </template>
 
 <script lang="ts">
+import KnowledgePlan from '@/test.components/plan/knowledge-plan.vue';
+import KnowledgePreviewCard from '@/views/knowledge-edit/knowledge-preview-card.vue';
 import { defineComponent, ref } from 'vue';
 import TestTiptap from '@/test.components/tiptap-demo/custom-tiptap-node/test-tiptap.vue';
 import KnowledgeMap from '@/views/knowledge-map.vue';
@@ -40,6 +44,8 @@ import UploadFormItem from '@/components/upload/upload-form-item.vue';
 export default defineComponent({
   name: 'component.test',
   components: {
+    KnowledgePreviewCard,
+    KnowledgePlan,
     TestTiptap,
     KnowledgeMap,
     TiptapReadonly,

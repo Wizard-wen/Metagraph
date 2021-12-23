@@ -15,7 +15,7 @@
 import {
   defineComponent, ref, toRefs, watch,
 } from 'vue';
-import Comment from './comment.vue';
+import Comment from '../entity-comment/entity-comment.vue';
 
 export default defineComponent({
   name: 'knowledge.drawer',

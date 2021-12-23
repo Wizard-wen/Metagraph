@@ -278,6 +278,7 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
             },
           },
           createEdge() {
+
             return new AntvX6.Shape.Edge({
               attrs: {
                 line: {
