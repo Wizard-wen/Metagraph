@@ -1,22 +1,17 @@
 <template>
-  <node-view-wrapper class="vue-component">
-    <!--      <span class="label" contenteditable="false">Vue Component</span>-->
-    <!--      <node-view-content class="content"/>-->
-    <div class="text" @click="handleClick">{{ 66666 }}</div>
+  <node-view-wrapper class="text" @click="handleClick" as="span">
+    {{node.attrs.name}}
   </node-view-wrapper>
-
 </template>
 
 <script lang="ts">
-import { NodeViewWrapper, NodeViewContent, nodeViewProps } from '@tiptap/vue-3';
+import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   components: {
-    NodeViewWrapper,
-    // NodeViewContent,
+    NodeViewWrapper
   },
-
   props: nodeViewProps,
   setup(props) {
     console.log(props);
@@ -34,7 +29,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .vue-component {
-  user-select: none;
+  //user-select: none;
+  //width: max-content;
+  //padding: 0 5px;
+  //display: inline-block;
   //background: #FAF594;
   //border: 3px solid #0D0D0D;
   //border-radius: 0.5rem;

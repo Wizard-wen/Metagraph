@@ -7,7 +7,7 @@ import {
   computed, InjectionKey, reactive, Ref, ref
 } from 'vue';
 import { EntityCompletelyListItemType, KnowledgeModelType, TagModelType } from 'metagraph-constant';
-import { Form } from 'ant-design-vue';
+import { Form, message } from 'ant-design-vue';
 import {
   DomainNoAuthApiService,
   EdgeApiService,
@@ -42,6 +42,7 @@ export const repositoryEntityList = reactive<{
 }>({
   target: []
 });
+
 // 知识点自定义字段
 // export const customFields = computed(
 //   () => (knowledge.target?.content as KnowledgeModelType).customField || []
@@ -79,6 +80,20 @@ export const edges = reactive<{
   }
 }>({
   target: undefined
+});
+
+// 引用次数
+export const knowledgeMentionCount = computed(
+  () => edges.target?.preInnerList.length || 0
+);
+
+// 知识点被引用次数
+export const mentionedKnowledge = reactive<{
+  count: number;
+  list: EntityCompletelyListItemType[]
+}>({
+  count: 0,
+  list: []
 });
 
 interface KnowledgeFormType {
@@ -133,7 +148,6 @@ export class KnowledgeEdit {
         value: item.id
       }));
       customFields.target = knowledgeContent.customField || [];
-      const customFieldsKeys = customFields.target.map((item) => item.key);
       customFields.target.forEach((item) => {
         customFieldsModelRef[item.key] = item.value;
         customFieldsRulesRef[item.key] = [{
@@ -143,7 +157,6 @@ export class KnowledgeEdit {
         }];
       });
       const {
-        resetFields,
         validate,
         validateInfos
       } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
@@ -158,6 +171,14 @@ export class KnowledgeEdit {
     }
   }
 
+  async getMentionedList(entityId: string): Promise<void> {
+    const result = await KnowledgeNoAuthApiService.getMentionedList(entityId);
+    if (result.data) {
+      mentionedKnowledge.count = result.data.count;
+      mentionedKnowledge.list = result.data.list;
+    }
+  }
+
   async handleSaveSectionArticle(params: {
     content: Record<string, any>,
     contentHtml: any,
@@ -169,7 +190,7 @@ export class KnowledgeEdit {
       entityId: params.knowledgeEntityId
     });
     if (!result.message) {
-      console.log('success');
+      message.success('保存成功！');
     }
   }
 

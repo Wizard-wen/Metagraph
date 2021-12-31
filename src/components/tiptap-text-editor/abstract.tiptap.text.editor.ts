@@ -18,6 +18,7 @@ import {
 } from '@tiptap/vue-3';
 import tippy, { Instance } from 'tippy.js';
 import { Ref } from 'vue';
+import { CustomTestMention } from '@/test.components/tiptap-demo/custom-tiptap-node/custom.mention';
 import { tiptapInitData } from '@/store/constant';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
 import { CustomMention } from './tiptap.custom.mention';
@@ -96,7 +97,12 @@ export abstract class AbstractTiptapTextEditor {
       .insertContentAt(range, [
         {
           type: 'mention',
-          attrs: { name: customCommandProps.name, id: customCommandProps.id }
+          attrs: {
+            name: customCommandProps.name,
+            id: customCommandProps.id,
+            count: 12,
+            label: customCommandProps.name
+          }
         },
         {
           type: 'text',
@@ -159,12 +165,12 @@ export abstract class AbstractTiptapTextEditor {
         }
       },
       extensions: [
-        Document,
-        Paragraph,
+        // Document,
+        // Paragraph,
         StarterKit,
         Image,
-        Text,
-        VueComponent,
+        // Text,
+        // VueComponent,
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
         }),

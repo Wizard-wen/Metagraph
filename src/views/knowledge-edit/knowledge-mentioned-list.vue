@@ -35,7 +35,10 @@ import { edges } from './model/knowledge.edit';
 </script>
 
 <style scoped lang="scss">
+@import '../../style/common.scss';
 .bind-panel {
+  background: #FFFFFF;
+  border-right: solid 1px $borderColor;
   width: 100%;
   height: calc(100vh - 55px);
 }
@@ -43,13 +46,13 @@ import { edges } from './model/knowledge.edit';
 .knowledge-connection {
   width: 100%;
   height: 100%;
-
   .title {
-    height: 35px;
-    line-height: 35px;
+    height: 46px;
+    line-height: 46px;
     text-align: center;
-    font-size: 16px;
-    border-bottom: 1px solid #ccc;
+    font-size: 14px;
+    //background: $lightGray;
+    border-bottom: 1px solid $borderColor;
   }
 
   .content {
@@ -66,9 +69,7 @@ import { edges } from './model/knowledge.edit';
       align-items: center;
 
       &:hover {
-        cursor: pointer;
-        background: #50bfff;
-        color: #FFFFFF;
+        @include list-item-highlight;
       }
     }
   }

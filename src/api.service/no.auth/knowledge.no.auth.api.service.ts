@@ -12,6 +12,19 @@ import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
 export class KnowledgeNoAuthApiService {
+  static async getMentionedList(entityId: string): Promise<PublicApiResponseType<{
+    count: number;
+    list: EntityCompletelyListItemType[]
+  }>> {
+    return RequestUtil.post<{ knowledgeEntityId: string; }, {
+      count: number;
+      list: EntityCompletelyListItemType[]
+    }>({
+      apiPath: ApiPathEnum.GetNoAuthKnowledgeMentionedList,
+      requestBody: { knowledgeEntityId: entityId }
+    });
+  }
+
   static async get(params: { id: string; }): Promise<PublicApiResponseType<KnowledgeResponseType>> {
     return RequestUtil.post<{ id: string; }, KnowledgeResponseType>({
       apiPath: ApiPathEnum.GetNoAuthKnowledgeById,

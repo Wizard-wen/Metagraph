@@ -16,7 +16,7 @@ import {
 } from 'vue';
 
 export default defineComponent({
-  name: 'knowledge.drawer',
+  name: 'metagraph-drawer',
   props: {
     isDrawerVisible: {
       type: Boolean,

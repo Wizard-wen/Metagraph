@@ -4,7 +4,7 @@
       <div class="limit-container">
         <article-limit
           v-if="editor"
-          :current="editor.getCharacterCount()"
+          :current="editor.storage.characterCount.characters()"
           :limit="limit"></article-limit>
       </div>
     </div>
@@ -261,9 +261,9 @@ export default defineComponent({
       ]
     });
     onMounted(async () => {
-      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
-        repositoryEntityId: route.query.repositoryEntityId
-      });
+      // await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
+      //   repositoryEntityId: route.query.repositoryEntityId
+      // });
       // 定时存储文章
       timer.value = window.setInterval(() => {
         context.emit('saveSectionArticle', {

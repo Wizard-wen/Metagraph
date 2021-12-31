@@ -192,7 +192,7 @@ export default defineComponent({
       await getCommentList();
     }
 
-    const handleSubmitComment = async () => {
+    async function handleSubmitComment() {
       if (!commentContent.value) {
         return;
       }
@@ -205,7 +205,7 @@ export default defineComponent({
       await getCommentList();
       commentContent.value = '';
       submitting.value = false;
-    };
+    }
 
     async function handleSubmitReply() {
       if (!replyContent.value) {

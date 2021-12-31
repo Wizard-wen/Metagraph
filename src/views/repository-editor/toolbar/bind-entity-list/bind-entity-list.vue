@@ -26,7 +26,6 @@
           <ViewIcon @click="handleClickEntityItem(item, 'view')"></ViewIcon>
         </div>
       </div>
-
     </div>
   </div>
   <CreateBindKnowledgeModal
@@ -112,7 +111,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-
+@import '../../../../style/common.scss';
 .entity-list {
   .add-control {
     padding: 10px 15px 0 15px;
@@ -136,10 +135,8 @@ export default defineComponent({
       justify-content: space-between;
 
       &:hover {
-        background: #1790ff;
-        color: #fff;
+        @include list-item-highlight;
         text-indent: 5px;
-        cursor: pointer;
       }
 
       .text {
@@ -159,8 +156,7 @@ export default defineComponent({
     }
 
     .list-item-active {
-      background: #1790ff;
-      color: #fff;
+      @include list-item-highlight;
     }
   }
 

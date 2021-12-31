@@ -19,7 +19,7 @@ import {
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
-  limit = 30000;
+  limit = 300;
 
   constructor(
     private readonly repositoryEntityId: string,
@@ -93,7 +93,7 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
       entityId: this.knowledgeEntityId
     });
     if (!result.message) {
-      console.log('success');
+      console.log('save article success');
     }
   }
 

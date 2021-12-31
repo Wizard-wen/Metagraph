@@ -3,7 +3,7 @@
     <div class="knowledge-connection">
       <div class="title">仓库内</div>
       <div class="sub-title">
-        <div class="sub-item sub-title-active">前置</div>
+        <div class="sub-item" :class="{'sub-title-active': isInnerPre}">前置</div>
         <div class="sub-item">导出</div>
       </div>
       <div class="content">
@@ -23,7 +23,11 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
 import { edges } from './model/knowledge.edit';
+
+const isInnerPre = ref(false);
+const isOuterPre = ref(false);
 </script>
 
 <style scoped lang="scss">

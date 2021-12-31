@@ -9,34 +9,41 @@
             @fontSizeChange="changeArticleFontSize($event)"
             @save="saveKnowledgeArticle"
             v-if="editor" :editor="editor"></knowledge-article-control>
-          <div class="text-content">
-            <editor-content
-              #tiptap
-              :style="{fontSize: articleFontSize + 'px'}"
-              class="tip-tap-editor" :editor="editor"/>
+          <div class="knowledge-editor-content">
+            <div class="text-content">
+              <div v-if="editor" class="limit-count">
+                {{ editor.storage.characterCount.characters() }}/ 600 个字
+              </div>
+              <div class="upload-image">
+                <div class="icon">
+                  <FileImageOutlined style="color: #dedede; font-size: 40px"/>
+                </div>
+                <div class="message">
+                  图片格式png/jpg
+                  <br/>
+                  高宽像素不低于320px*320px
+                </div>
+                <button class="add-button">添加概念图册</button>
+              </div>
+              <editor-content
+                #tiptap
+                :style="{fontSize: articleFontSize + 'px'}"
+                class="tip-tap-editor custom-editor-style" :editor="editor"/>
+            </div>
+            <knowledge-custom-message></knowledge-custom-message>
+            <knowledge-pictures></knowledge-pictures>
           </div>
-
-          <knowledge-custom-message></knowledge-custom-message>
         </div>
         <div class="knowledge-form">
-          <ant-tabs v-model:activeKey="activeKey" class="custom-ant-tab">
-            <ant-tab-pane key="1">
-              <template #tab>
-                <span>
-                  知识点
-                </span>
-              </template>
-              <KnowledgeEditForm :knowledge="knowledgeForm"></KnowledgeEditForm>
-            </ant-tab-pane>
-            <ant-tab-pane key="3">
-              <template #tab>
-                <span>
-                  知识关联
-                </span>
-              </template>
-              <knowledge-bind-panel></knowledge-bind-panel>
-            </ant-tab-pane>
-          </ant-tabs>
+          <knowledge-sidebar
+            :element-list="sidebarElementList">
+            <template v-slot:content="{item}">
+              <KnowledgeEditForm
+                v-if="item.index === 0"
+                :knowledge="knowledgeForm"></KnowledgeEditForm>
+              <knowledge-bind-panel v-if="item.index === 1"></knowledge-bind-panel>
+            </template>
+          </knowledge-sidebar>
         </div>
       </div>
     </div>
@@ -45,6 +52,8 @@
 
 <script lang="ts">
 import GoBackIcon from '@/components/icons/go-back-icon.vue';
+import KnowledgePictures from '@/views/knowledge-edit/knowledge-pictures.vue';
+import { FileImageOutlined } from '@ant-design/icons-vue';
 import { KnowledgeTiptapTextEditor } from '@/components/tiptap-text-editor/knowledge.tiptap.text.editor';
 import TiptapEditorContainer from '@/components/tiptap-text-editor/tiptap-editor-container.vue';
 import { useStore } from '@/store';
@@ -53,6 +62,7 @@ import KnowledgeBindPanel from '@/views/knowledge-edit/knowledge-bind-panel.vue'
 import KnowledgeEditHeader from '@/views/knowledge-edit/knowledge-edit-header.vue';
 import KnowledgeMentionedList from '@/views/knowledge-edit/knowledge-mentioned-list.vue';
 import KnowledgeCustomMessage from '@/views/knowledge-edit/knowledge-custom-message.vue';
+import KnowledgeSidebar from '@/views/knowledge-edit/knowledge-sidebar.vue';
 import TiptapEditable from '@/views/repository-editor/section.article/tiptap-editable.vue';
 import {
   EditorContent
@@ -78,6 +88,9 @@ import {
 export default defineComponent({
   name: 'knowledge.edit',
   components: {
+    KnowledgePictures,
+    FileImageOutlined,
+    KnowledgeSidebar,
     KnowledgeArticleControl,
     KnowledgeMentionedList,
     KnowledgeEditHeader,
@@ -100,7 +113,7 @@ export default defineComponent({
     const repositoryEntityId = ref(route.query.repositoryEntityId as string);
     provide(knowledgeEntityIdInjectKey, knowledgeEntityId);
     provide(repositoryEntityIdInjectKey, repositoryEntityId);
-    const articleFontSize = ref('12');
+    const articleFontSize = ref('14');
     const changeArticleFontSize = (event: { value: string }) => {
       articleFontSize.value = event.value;
     };
@@ -112,6 +125,14 @@ export default defineComponent({
         knowledgeEntityId: knowledgeEntityId.value
       });
     };
+
+    const sidebarElementList = [{
+      label: '知识点',
+      value: 'knowledge'
+    }, {
+      label: '知识关联',
+      value: 'edge'
+    }];
 
     const activeKey = ref('1');
     const knowledgeEdit = new KnowledgeEdit();
@@ -137,6 +158,7 @@ export default defineComponent({
         knowledgeEntityId: knowledgeEntityId.value,
         repositoryEntityId: repositoryEntityId.value
       });
+      await knowledgeEdit.getMentionedList(knowledgeEntityId.value);
       knowledgeTiptapTextEditor.setContent(knowledgeDescription.value);
       await knowledgeTiptapTextEditor.initData();
       isLoading.value = false;
@@ -163,7 +185,8 @@ export default defineComponent({
       goBack,
       changeArticleFontSize,
       saveKnowledgeArticle,
-      articleFontSize
+      articleFontSize,
+      sidebarElementList
     };
   }
 });
@@ -191,12 +214,58 @@ export default defineComponent({
     .knowledge-editor {
       flex: 1;
 
-      .text-content {
-        width: 900px;
-        height: 500px;
-        background: #FFFFFF;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
-        margin: 0 auto 15px;
+      .knowledge-editor-content {
+        padding-top: 15px;
+        height: calc(100vh - 112px);
+        overflow-y: auto;
+
+        .text-content {
+          position: relative;
+          width: 850px;
+          height: 420px;
+          background: #FFFFFF;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
+          margin: 0 auto 15px;
+
+          .upload-image {
+            position: absolute;
+            right: 30px;
+            top: 75px;
+            height: 270px;
+            width: 200px;
+            background: #fbfbfb;
+
+            .icon {
+              height: 100px;
+              padding-top: 60px;
+            }
+
+            .message {
+              margin-top: 26px;
+              font-size: 12px;
+              line-height: 24px;
+              color: #999;
+            }
+
+            .add-button {
+              margin-top: 40px;
+              padding: 0 12px;
+              height: 30px;
+              background-color: #fff;
+              color: #333;
+              font-size: 14px;
+              line-height: 28px;
+              border: 1px solid #d5d5d5;
+              border-radius: 2px;
+            }
+          }
+
+          .limit-count {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+          }
+        }
       }
     }
 
@@ -204,6 +273,10 @@ export default defineComponent({
       width: 300px;
     }
   }
+}
+
+.custom-editor-style {
+  width: 620px;
 }
 
 </style>

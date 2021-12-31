@@ -12,6 +12,7 @@ input {
 .position-relative {
   position: relative;
 }
+
 .position-absolute {
   position: absolute;
 }
@@ -22,10 +23,17 @@ $textColor: #41464b;
 $borderColor: #eee;
 $lightGray: #f9f9f9;
 $backgroundColor: #f5f6f7;
+$highlightBackgroundColor: #1790ff;
 $boxShadow: 3px 3px 3px rgba(#000, 0.15);
 $borderRadius: 2px;
 
-.custom-tip-tap-image{
+.custom-tip-tap-image {
   display: block;
   margin: 0 auto;
+}
+
+@mixin list-item-highlight {
+  background: $highlightBackgroundColor;
+  color: #FFFFFF;
+  cursor: pointer;
 }

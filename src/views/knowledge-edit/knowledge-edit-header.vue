@@ -5,31 +5,49 @@
       <div class="title">{{ knowledgeName }}</div>
       <ant-tag class="status-tag">{{ knowledgeAuthStatus }}</ant-tag>
     </div>
-    <div class="right">
+    <div class="right" v-if="knowledge.target">
       <social-action-button
-        :title="'引用数量'" :total="mentionCount"></social-action-button>
-      <social-action-button
-        :title="'被引次数'" :total="mentionedCount"></social-action-button>
-      <social-action-button
-        :title="'点赞'" :total="knowledgeStarCount"></social-action-button>
-      <social-action-button
-        :title="'评论'" :total="knowledgeCommentCount"></social-action-button>
-      <ant-button type="primary" class="pull-request-button">提交认证</ant-button>
+        :title="'引用'" :total="knowledgeMentionCount"></social-action-button>
+      <mentioned-control-button></mentioned-control-button>
+      <star-control-button
+        :count="knowledge.target?.star"
+        :entity-id="knowledge.target?.entity.id"
+        :entity-type="knowledge.target?.entity.entityType"></star-control-button>
+      <comment-control-button
+        :count="knowledge.target?.comment"
+        :entity-id="knowledge.target?.entity.id"
+        :entity-type="knowledge.target?.entity.entityType"></comment-control-button>
+      <ant-button type="primary" class="pull-request-button"
+                  @click="isPreviewVisible = true">预览
+      </ant-button>
+      <!--      <ant-button type="primary" class="pull-request-button">提交认证</ant-button>-->
     </div>
   </div>
+  <knowledge-drawer-content
+    :knowledge="knowledge.target"
+    v-if="isPreviewVisible"
+    :isVisible="isPreviewVisible"
+    @close="isPreviewVisible = false"></knowledge-drawer-content>
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import MentionedControlButton from '@/views/knowledge-edit/mentioned-control-button/mentioned-control-button.vue';
+import KnowledgeDrawerContent from '@/views/knowledge-edit/knowledge-drawer-content.vue';
 import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
 import { GoBackIcon } from '@/components/icons';
+import StarControlButton from '@/business/star-control-button/star-control-button.vue';
+import CommentControlButton from '@/business/comment-control-button/comment-control-button.vue';
 import {
   knowledgeName,
   knowledgeAuthStatus,
   knowledgeStarCount,
-  knowledgeCommentCount
+  knowledgeCommentCount,
+  knowledge,
+  knowledgeMentionCount
 } from './model/knowledge.edit';
 
+const isPreviewVisible = ref(false);
 const mentionCount = ref(23);
 const mentionedCount = ref(23);
 const router = useRouter();
@@ -82,7 +100,7 @@ async function goBack() {
     gap: 15px;
 
     .pull-request-button {
-      margin-left: 20px;
+      //margin-left: 20px;
     }
   }
 }

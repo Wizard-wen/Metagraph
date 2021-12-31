@@ -21,7 +21,6 @@
     </ant-descriptions>
     <h3>概述</h3>
     <div v-if="knowledge?.content?.description">
-<!--      <div v-html="knowledge.content.descriptionHTML"></div>-->
       <tiptap-readonly :articleContent="knowledge.content.description"></tiptap-readonly>
     </div>
     <h3>评论</h3>
@@ -30,10 +29,10 @@
 </template>
 
 <script lang="ts">
-import TiptapReadonly from "@/views/repository-editor/section.article/tiptap-readonly.vue";
 import {
-  defineComponent, onMounted, ref, toRefs, watch
+  defineComponent, ref, toRefs, watch
 } from 'vue';
+import TiptapReadonly from '@/views/repository-editor/section.article/tiptap-readonly.vue';
 import { EntityNoAuthApiService } from '@/api.service';
 import Comment from '../entity-comment/entity-comment.vue';
 
@@ -54,9 +53,19 @@ export default defineComponent({
     }
   },
   setup(props, context) {
-    const { entityId, isShow } = toRefs(props);
+    const {
+      entityId,
+      isShow
+    } = toRefs(props);
     const visible = ref<boolean>(false);
     const knowledge = ref({});
+    // const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor(
+    //   repositoryEntityId.value,
+    //   knowledgeEntityId.value
+    // );
+    // knowledgeTiptapTextEditor.initEditor();
+    // const editor = knowledgeTiptapTextEditor.editor;
+
     watch(isShow, async (newValue, oldValue) => {
       if (newValue) {
         const result = await EntityNoAuthApiService.getEntityById({ entityId: entityId.value });

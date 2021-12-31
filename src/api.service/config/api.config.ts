@@ -17,6 +17,8 @@ export enum ApiPathEnum {
   SaveCustomKnowledgeFormFields = '/knowledge/saveFields',
   // 获取知识点
   GetNoAuthKnowledgeById = '/public/knowledge/get',
+  // 获取引用当前知识点的知识点列表
+  GetNoAuthKnowledgeMentionedList = '/public/knowledge/getMentionedList',
   // 带分页的知识点列表
   GetNoAuthKnowledgeList = '/public/knowledge/getList',
   // 获取某个知识点的前置、导出知识点

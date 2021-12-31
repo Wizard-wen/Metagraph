@@ -142,7 +142,7 @@ export default defineComponent({
   padding: 0 15px;
 
   &::v-deep(.ant-form-item) {
-    margin-bottom: 0px;
+    margin-bottom: 10px;
   }
 
   .control {

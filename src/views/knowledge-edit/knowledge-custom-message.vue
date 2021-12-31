@@ -130,11 +130,13 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+@import '../../style/common.scss';
+
 .custom-field-box {
-  padding: 15px;
+  padding: 0 15px 15px 15px;
   background: #FFFFFF;
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 850px;
+  margin: 0 auto 15px;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
 
   .header {
@@ -145,11 +147,12 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid $borderColor;
 
     .title {
       font-size: 20px;
     }
+
     .right {
       display: flex;
       gap: 10px;

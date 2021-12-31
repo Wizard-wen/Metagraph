@@ -42,12 +42,12 @@ const handleCreateMention = () => {
   const {
     from,
     to
-  } = props.editor.value?.state.selection;
+  } = props.editor?.state.selection;
   if (!from || !to) {
     return;
   }
-  const selectionContent = props.editor.value?.state.doc.textBetween(from, to, ' ');
-  if (props.editor.value?.state?.selection?.ranges === undefined) {
+  const selectionContent = props.editor?.state.doc.textBetween(from, to, ' ');
+  if (props.editor?.state?.selection?.ranges === undefined) {
     return;
   }
   searchingKeyword.value = selectionContent;

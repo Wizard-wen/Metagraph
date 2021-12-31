@@ -15,22 +15,10 @@
       </div>
     </div>
     <div class="right">
-      <social-action-button
-        :title="repositoryModel.hasStared ? '取消点赞' : '点赞'"
-        :total="repositoryModel.star"
-        @total="isStarDrawerShow = true">
-        <template #icon>
-          <star-icon></star-icon>
-        </template>
-      </social-action-button>
-      <!--      <social-action-button-->
-      <!--        @total="isCommentDrawerShow = true"-->
-      <!--        :title="'评论'"-->
-      <!--        :total="repositoryModel.comment">-->
-      <!--        <template #icon>-->
-      <!--          <comment-icon></comment-icon>-->
-      <!--        </template>-->
-      <!--      </social-action-button>-->
+      <star-control-button
+        :count="repositoryModel.star"
+        :entity-id="repositoryModel.entity.id"
+        :entity-type="repositoryModel.entity.entityType"></star-control-button>
       <comment-control-button
         :count="repositoryModel.comment"
         :entity-id="repositoryModel.entity.id"
@@ -42,16 +30,6 @@
           v-model:checked="viewStatus"/>
       </div>
     </div>
-    <!--    <comment-drawer-->
-    <!--      :is-show="isCommentDrawerShow"-->
-    <!--      :entityId="repositoryModel.entity.id"-->
-    <!--      @showChange="isCommentDrawerShow=false"-->
-    <!--    ></comment-drawer>-->
-    <star-drawer
-      :is-show="isStarDrawerShow"
-      :entityId="repositoryModel.entity.id"
-      @showChange="isStarDrawerShow=false"
-    ></star-drawer>
   </div>
 </template>
 
@@ -60,14 +38,11 @@ import {
   computed,
   defineComponent, inject, PropType, ref, toRef, watch
 } from 'vue';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import { useRouter } from 'vue-router';
-import CommentControlButton from '@/business/comment-control-button/comment-control-button.vue';
-import StarDrawer from '@/views/repository-editor/star-drawer.vue';
-// import CommentDrawer from '@/business/comment-drawer/comment-drawer.vue';
+import { StarControlButton, CommentControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
-import { StarIcon, CommentIcon, EditIcon } from '@/components/icons';
-import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
+import { EditIcon } from '@/components/icons';
 
 export default defineComponent({
   name: 'repository-editor-header',
@@ -78,13 +53,9 @@ export default defineComponent({
     }
   },
   components: {
+    StarControlButton,
     CommentControlButton,
-    StarDrawer,
-    StarIcon,
-    EditIcon,
-    // CommentIcon,
-    SocialActionButton,
-    // CommentDrawer,
+    EditIcon
   },
   emits: ['viewChange'],
   setup(props, { emit }) {
@@ -92,8 +63,6 @@ export default defineComponent({
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const viewStatus = ref(false);
     const repositoryProp = toRef(props, 'repositoryModel');
-    // const isCommentDrawerShow = ref(false);
-    const isStarDrawerShow = ref(false);
     const isPublicRepository = computed(() => ((repositoryProp.value?.content as RepositoryModelType).type === 'public'));
     watch(viewStatus, (newValue, oldValue) => {
       if (newValue !== oldValue) {
@@ -115,8 +84,6 @@ export default defineComponent({
       viewStatus,
       repositoryEntityId,
       isPublicRepository,
-      // isCommentDrawerShow,
-      isStarDrawerShow,
       goHomePage,
       goRepositoryEditPage
     };

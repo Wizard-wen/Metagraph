@@ -13,10 +13,10 @@
       <toggle-heading-control :editor="editor" :level="1"></toggle-heading-control>
       <toggle-heading-control :editor="editor" :level="2"></toggle-heading-control>
       <toggle-heading-control :editor="editor" :level="3"></toggle-heading-control>
-      <toggle-code-control :editor="editor"></toggle-code-control>
+<!--      <toggle-code-control :editor="editor"></toggle-code-control>-->
 <!--      <find-control :editor="editor"></find-control>-->
-      <upload-image-control :editor="editor"></upload-image-control>
-      <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>
+<!--      <upload-image-control :editor="editor"></upload-image-control>-->
+<!--      <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>-->
     </div>
   </div>
 </template>
@@ -28,7 +28,7 @@ import {
 } from 'vue';
 import {
   // FindControl,
-  FontSizeControl,
+  // FontSizeControl,
   RedoControl,
   UndoControl,
   SaveControl,
@@ -38,8 +38,8 @@ import {
   ToggleHeadingControl,
   ToggleBulletListControl,
   ToggleOrderedListControl,
-  ToggleCodeControl,
-  UploadImageControl,
+  // ToggleCodeControl,
+  // UploadImageControl,
   ToggleStrikeControl
 } from '@/components/tiptap-text-editor/controls';
 
@@ -53,10 +53,10 @@ export default defineComponent({
   },
   components: {
     SaveControl,
-    FontSizeControl,
-    UploadImageControl,
+    // FontSizeControl,
+    // UploadImageControl,
     // FindControl,
-    ToggleCodeControl,
+    // ToggleCodeControl,
     ToggleHeadingControl,
     ToggleBlockquoteControl,
     ToggleOrderedListControl,
@@ -86,17 +86,19 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import '../../style/common.scss';
 .operator {
   padding: 2px 0;
   height: 46px;
   width: 100%;
   background: #FFFFFF;
-  margin-bottom: 15px;
+  border-bottom: 1px solid $borderColor;
 
   .operator-container {
     display: flex;
-    max-width: 900px;
+    max-width: 700px;
     justify-content: space-between;
+    //gap: 10px;
     margin: 0 auto;
     align-items: center;
   }

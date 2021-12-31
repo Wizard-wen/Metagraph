@@ -39,6 +39,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "../../style/common.scss";
 .action-button {
   &:hover {
     cursor: pointer;
@@ -59,7 +60,7 @@ export default defineComponent({
     align-items: center;
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
-    border: 1px solid rgba(27, 31, 36, 0.15);
+    border: 1px solid $borderColor;
 
   }
 
@@ -69,7 +70,7 @@ export default defineComponent({
     line-height: 28px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-    border: 1px solid rgba(27, 31, 36, 0.15);
+    border: 1px solid $borderColor;
   }
 }
 
