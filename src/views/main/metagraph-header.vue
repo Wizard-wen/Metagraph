@@ -81,7 +81,7 @@ export default defineComponent({
       await router.push('/login');
     };
     const goCreateRepoPage = async () => {
-      await router.push('/repository/create');
+      await router.push('/repository/edit');
     };
     const goUserEditPage = async () => {
       if (userModel.value === undefined) return;
