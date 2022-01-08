@@ -11,47 +11,69 @@
       {{ userProfile?.name || '' }}
     </div>
     <div v-if="isMySelf" class="control" @click="goSettingPage">
-      Edit Profile
+      修改个人信息
     </div>
     <div v-if="!isMySelf && !isFollowed" class="control" @click="handleFollow">
-      Follow
+      关注
     </div>
     <div v-if="!isMySelf && isFollowed" class="control" @click="handleUnFollow">
-      Unfollow
+      停止关注
     </div>
     <div class="basic-message">
-      <div class="followers">
-        <follower-icon></follower-icon>
-        6 followers ·
+      <follower-icon></follower-icon>
+      <div class="follow">
+        <span class="follow-count">6</span> 被关注
       </div>
-      <div class="following">6 following · </div>
-      <div class="star">
-        <star-icon></star-icon>
-        152
+      <span>·</span>
+      <div class="follow">
+        <span class="follow-count">6</span> 关注
       </div>
     </div>
     <div class="email">
       <email-icon></email-icon>
       {{ userProfile?.email || '' }}
     </div>
+
+    <div class="email">
+      <location-icon></location-icon>
+      {{ userProfile?.location || '' }}
+    </div>
+    <div class="email">
+      <link-icon></link-icon>
+      {{ userProfile?.personalWebsite || '' }}
+    </div>
+    <div class="email">
+      <wechat-icon></wechat-icon>
+      {{ userProfile?.wechat || '' }}
+    </div>
     <div class="line-1px-border"></div>
   </div>
 </template>
 
 <script lang="ts">
+import { message } from 'ant-design-vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   computed, onMounted, ref, defineComponent, inject
 } from 'vue';
 import { UserModelType } from 'metagraph-constant';
 import { userProfileKey } from '@/views/personal-profile/personal.profile.provide';
-import { EmailIcon, FollowerIcon, StarIcon } from '@/components/icons';
+import {
+  EmailIcon, FollowerIcon, StarIcon, LocationIcon, LinkIcon, WechatIcon
+} from '@/components/icons';
 import { useStore } from '@/store';
 import { FollowApiService } from '@/api.service/follow.api.service';
 
 export default defineComponent({
   name: 'profile-sidebar',
-  components: { FollowerIcon, StarIcon, EmailIcon },
+  components: {
+    FollowerIcon,
+    StarIcon,
+    EmailIcon,
+    LocationIcon,
+    LinkIcon,
+    WechatIcon
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -65,11 +87,17 @@ export default defineComponent({
       const result = await FollowApiService.follow({
         toFollowUser: userId.value
       });
+      if (result.code === 0) {
+        message.success('关注成功！');
+      }
     };
     const handleUnFollow = async () => {
       const result = await FollowApiService.unFollow({
         followedUser: userId.value
       });
+      if (result.code === 0) {
+        message.success('取消关注成功！');
+      }
     };
     const checkIfFollowed = async () => {
       const result = await FollowApiService.checkIfFollowed({
@@ -116,6 +144,7 @@ export default defineComponent({
 <style scoped lang="scss">
 .sidebar {
   width: 296px;
+  color: #24292f;
 
   .avatar {
     height: 296px;
@@ -133,6 +162,8 @@ export default defineComponent({
     line-height: 24px;
     font-size: 20px;
     text-align: left;
+    color: #24292f;
+    font-weight: bold;
   }
 
   .control {
@@ -151,11 +182,17 @@ export default defineComponent({
     align-items: center;
     gap: 5px;
     margin-bottom: 16px;
+
+    .follow {
+      .follow-count {
+        color: #24292f;
+      }
+    }
   }
 
   .email {
     line-height: 24px;
-    margin-bottom: 16px;
+    margin-bottom: 6px;
     text-align: left;
   }
 

@@ -31,6 +31,10 @@ import CreateIcon from './create.icon.vue';
 import DeleteIcon from './delete.icon.vue';
 import GoBackIcon from './go-back-icon.vue';
 import LinkIcon from './link.icon.vue';
+import LocationIcon from './location-icon.vue';
+import WechatIcon from './wechat-icon.vue';
+import OverviewIcon from './overview-icon.vue';
+import KnowledgeIcon from './knowledge-icon.vue';
 
 export {
   ArrowDownIcon,
@@ -60,5 +64,9 @@ export {
   CreateIcon,
   DeleteIcon,
   GoBackIcon,
-  LinkIcon
+  LinkIcon,
+  LocationIcon,
+  WechatIcon,
+  OverviewIcon,
+  KnowledgeIcon
 };

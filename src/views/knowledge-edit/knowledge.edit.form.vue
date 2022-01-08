@@ -57,7 +57,7 @@
 import {
   defineComponent, onMounted, ref, inject
 } from 'vue';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons-vue';
+import { EditOutlined } from '@ant-design/icons-vue';
 import KnowledgeTagModal from '@/views/knowledge-edit/knowledge-tag-modal.vue';
 import {
   KnowledgeEdit,
@@ -79,8 +79,7 @@ interface FormState {
 export default defineComponent({
   components: {
     EditOutlined,
-    KnowledgeTagModal,
-    PlusOutlined
+    KnowledgeTagModal
   },
   setup() {
     const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);

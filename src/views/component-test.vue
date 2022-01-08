@@ -19,19 +19,21 @@
   <!--  </social-action-button>-->
   <!--  <upload-form-item v-model="imageUrl"></upload-form-item>-->
   <!--  <tiptap-readonly></tiptap-readonly>-->
-  <test-tiptap></test-tiptap>
+<!--  <test-tiptap></test-tiptap>-->
+  <login-in></login-in>
 <!--  <knowledge-plan></knowledge-plan>-->
 <!--  <knowledge-preview-card></knowledge-preview-card>-->
 </template>
 
 <script lang="ts">
+import LoginIn from '@/github.style.component/login.vue';
 import KnowledgePlan from '@/test.components/plan/knowledge-plan.vue';
 import KnowledgePreviewCard from '@/views/knowledge-edit/knowledge-preview-card.vue';
 import { defineComponent, ref } from 'vue';
 import TestTiptap from '@/test.components/tiptap-demo/custom-tiptap-node/test-tiptap.vue';
 import KnowledgeMap from '@/views/knowledge-map.vue';
 import TiptapReadonly from '@/views/repository-editor/section.article/tiptap-readonly.vue';
-import RepositoryListItem from '@/github.style.component/repository.list.item/repository-list-item.vue';
+import RepositoryListItem from '@/github.style.component/repository-list-item/repository-list-item.vue';
 import SearchInput from '@/github.style.component/search-input/git-style-input-search.vue';
 import { clickOutside } from '@/directives/click.outside';
 import AnimationInput from '@/github.style.component/search-input/input-animation.vue';
@@ -44,6 +46,7 @@ import UploadFormItem from '@/components/upload/upload-form-item.vue';
 export default defineComponent({
   name: 'component.test',
   components: {
+    LoginIn,
     KnowledgePreviewCard,
     KnowledgePlan,
     TestTiptap,

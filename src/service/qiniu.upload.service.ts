@@ -48,7 +48,7 @@ export class QiniuUploadService {
         const formattedPicBase64 = this.formatPicBase64(params.base64);
         const EncodedKey = window.btoa(tokenForUploading.key).replace(/\+/g, '-').replace(/\//g, '_');
         axios.post<string, AxiosResponse<{ key: string; url: string; }>>(
-          'http://upload-z2.qiniup.com/putb64/-1',
+          'https://upload-z2.qiniup.com/putb64/-1',
           formattedPicBase64,
           {
             headers: {

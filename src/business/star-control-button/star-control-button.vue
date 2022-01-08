@@ -1,7 +1,8 @@
 <template>
   <social-action-button
+    @action="handleAction"
     @total="isStarDrawerShow = true"
-    :title="'点赞'"
+    :title="hasStar ? '取消' : '点赞'"
     :total="count">
     <template #icon>
       <star-icon></star-icon>
@@ -19,7 +20,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import type { PublicEntityType } from 'metagraph-constant';
+import {
+  defineComponent, PropType, ref, toRef
+} from 'vue';
+import { message } from 'ant-design-vue';
+import { StarApiService } from '@/api.service';
 import EntityStar from '@/business/entity-star/entity-star.vue';
 import { StarIcon, MetagraphDrawer, SocialActionButton } from '../../components';
 
@@ -36,8 +42,12 @@ export default defineComponent({
       type: Number,
       required: true
     },
+    hasStar: {
+      type: Boolean,
+      required: true
+    },
     entityType: {
-      type: String,
+      type: String as PropType<PublicEntityType>,
       required: true
     },
     entityId: {
@@ -45,10 +55,39 @@ export default defineComponent({
       required: true
     },
   },
-  setup() {
+  emits: ['update'],
+  setup(props, {emit}) {
+    const entityId = toRef(props, 'entityId');
+    const entityType = toRef(props, 'entityType');
+    const hasStar = toRef(props, 'hasStar');
     const isStarDrawerShow = ref(false);
+
+    async function handleAction() {
+      let result;
+      let type;
+      if (hasStar.value) {
+        result = await StarApiService.cancel({
+          entityId: entityId.value,
+          entityType: entityType.value
+        });
+        type = '取消点赞成功';
+        emit('update', 'cancel');
+      } else {
+        result = await StarApiService.create({
+          entityId: entityId.value,
+          entityType: entityType.value
+        });
+        type = '点赞成功';
+        emit('update', 'add');
+      }
+      if (result.code === 0) {
+        message.success(type);
+      }
+    }
+
     return {
-      isStarDrawerShow
+      isStarDrawerShow,
+      handleAction
     };
   }
 });

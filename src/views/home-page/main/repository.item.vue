@@ -10,13 +10,19 @@
           {{ repository.content.name }}
         </div>
         <div class="des">{{ repository.content.description }}</div>
+        <div class="tag" v-if="repository.content.domain.length">
+          <ant-tag v-for="item in repository.content.domain">
+            {{ item.domainBaseTypeName }}-{{ item.domainName }}
+          </ant-tag>
+        </div>
         <div class="others">
-          <div class="tag">
-            <ant-tag>Domain</ant-tag>
-          </div>
           <div class="star">
             <StarOutlined style="margin-right: 8px"/>
             <div>{{ repository.star }}</div>
+          </div>
+          <div class="star">
+            <CommentIcon style="margin-right: 8px"/>
+            <div>{{ repository.comment }}</div>
           </div>
           <div class="updatedAt">更新于 {{ date }}</div>
         </div>
@@ -35,18 +41,20 @@
 <script lang="ts">
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
-  defineComponent, toRef, PropType, ref, onMounted, computed
+  defineComponent, toRef, PropType, computed
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';
+import { CommentIcon } from '@/components/icons';
 
 export default defineComponent({
   name: 'repository-item',
   components: {
-    StarOutlined
+    StarOutlined,
+    CommentIcon
   },
   props: {
     repository: {
@@ -58,7 +66,6 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const repository = toRef(props, 'repository');
-    const userModel = computed(() => store.state.user.user);
     const isLogin = computed(() => store.state.user.isLogin);
     const date = computed(() => CommonUtil.formatDate(
       new Date(repository.value.content.updatedAt),
@@ -92,7 +99,8 @@ export default defineComponent({
         query: {
           id: repository.value.author.id
         }
-      }).then();
+      })
+        .then();
     };
     return {
       goRepositoryPage,
@@ -154,14 +162,15 @@ export default defineComponent({
         min-height: 20px;
       }
 
+      .tag {
+        line-height: 22px;
+        padding: 5px 0;
+      }
+
       .others {
         margin-top: 8px;
         display: flex;
         align-items: center;
-
-        .tag {
-          line-height: 22px;
-        }
 
         .star {
           margin-right: 16px;
@@ -186,6 +195,7 @@ export default defineComponent({
         border: 1px solid #1b1f2326;
         border-radius: 6px;
         cursor: pointer;
+        font-weight: bold;
 
         &::v-deep(.ant-btn) {
           height: 28px;

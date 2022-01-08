@@ -6,9 +6,9 @@
 
 <script lang="ts">
 // import { RepositoryApiService } from "@/api.service";
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import RepoList from './repository/repository.list/repo.list.vue';
+import RepoList from './repository-list/repo.list.vue';
 
 export default defineComponent({
   name: 'repository-list',

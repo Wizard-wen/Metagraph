@@ -8,7 +8,7 @@
       <div class=repo-content>
         <div class="repo-list">
           <div class="repo-header">
-            仓库列表
+            知识库库列表
             <ant-button class="new-btn" :size="'small'" @click="goCreateRepositoryPage">
               <template #icon>
                 <PlusOutlined/>

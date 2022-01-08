@@ -1,8 +1,8 @@
 <template>
   <div class="create-repo-page">
     <div class="repo-description">
-      <h3>{{ pageTitle }}仓库</h3>
-      <span>仓库是一个包含单元、知识点的独立单元。你的仓库只有自己可以编辑。</span>
+      <h3>{{ pageTitle }}知识库</h3>
+      <span>知识库是一个包含单元、知识点的独立个体。你的知识库只有自己可以编辑。</span>
     </div>
     <div class="repo-create-form">
       <ant-form
@@ -12,10 +12,10 @@
         :model="repositoryFormState"
         :label-col="labelCol"
         :wrapper-col="wrapperCol">
-        <ant-form-item label="仓库名称" name="name">
+        <ant-form-item label="知识库名称" name="name">
           <ant-input v-model:value="repositoryFormState.name"/>
         </ant-form-item>
-        <ant-form-item label="仓库类型" name="type">
+        <ant-form-item label="知识库类型" name="type">
           <ant-radio-group v-model:value="repositoryFormState.type">
             <ant-radio class="radio" value="private">
               <div class="radio-box">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="radio-content">
                   <div class="text-title">私有</div>
-                  <div class="text">只有你自己才能看到、编辑仓库。</div>
+                  <div class="text">只有你自己才能看到、编辑知识库。</div>
                 </div>
               </div>
             </ant-radio>
@@ -35,26 +35,19 @@
                 </div>
                 <div class="radio-content">
                   <div class="text-title">公开</div>
-                  <div class="text">大家都可以看到你的仓库，但是只有你自己可以编辑。</div>
+                  <div class="text">大家都可以看到你的知识库，但是只有你自己可以编辑。</div>
                 </div>
               </div>
             </ant-radio>
           </ant-radio-group>
         </ant-form-item>
-        <ant-form-item label="仓库领域" name="domainId">
-          <ant-select
-            v-model:value="repositoryFormState.domainId"
-            placeholder="请选择领域">
-            <ant-select-option
-              v-for="item in domainList.target"
-              :value="item.id">{{ item.name }}
-            </ant-select-option>
-          </ant-select>
+        <ant-form-item label="知识库领域" name="domain">
+          <domain-select v-model="repositoryFormState.domain"></domain-select>
         </ant-form-item>
-        <ant-form-item label="封面" name="avatar">
+        <ant-form-item label="知识库封面" name="avatar">
           <upload-form-item v-model="repositoryFormState.avatar"></upload-form-item>
         </ant-form-item>
-        <ant-form-item label="仓库描述" name="description">
+        <ant-form-item label="知识库描述" name="description">
           <ant-text-area v-model:value="repositoryFormState.description"/>
         </ant-form-item>
       </ant-form>
@@ -63,7 +56,6 @@
         <ant-button style="margin-left: 10px" @click="goBack">返回</ant-button>
       </div>
     </div>
-
   </div>
 </template>
 <script lang="ts">
@@ -74,25 +66,20 @@ import { useRoute, useRouter } from 'vue-router';
 import { LockOutlined, BookOutlined } from '@ant-design/icons-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  domainList,
   repositoryFormState,
+  RepositoryFormStateType,
   RepositoryEdit,
   repositoryFormRules, repositoryFormRef
 } from '@/views/repository-edit/repository.edit';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
-
-interface RepositoryFormStateType {
-  name: string;
-  type: 'public' | 'private';
-  description: string;
-  image: string;
-}
+import { DomainSelect } from '@/business';
 
 export default defineComponent({
   components: {
     LockOutlined,
     BookOutlined,
-    UploadFormItem
+    UploadFormItem,
+    DomainSelect
   },
   setup() {
     const route = useRoute();
@@ -105,21 +92,29 @@ export default defineComponent({
       }
       return '创建';
     });
+
     onMounted(async () => {
-      await repositoryEdit.getDomainTree();
       if (repositoryEntityId.value) {
         await repositoryEdit.getRepository(repositoryEntityId.value);
       }
     });
+
+    const fieldNames = {
+      label: 'name',
+      value: 'key',
+      children: 'children'
+    };
+
     const onSubmit = async () => {
       repositoryFormRef.value
         .validate()
         .then(() => {
-          console.log('values', repositoryFormState, toRaw(repositoryFormState));
           if (repositoryEntityId.value) {
-            repositoryEdit.updateRepository(repositoryEntityId.value).then();
+            repositoryEdit.updateRepository(repositoryEntityId.value)
+              .then();
           } else {
-            repositoryEdit.createRepository().then();
+            repositoryEdit.createRepository()
+              .then();
           }
         })
         .catch((error: ValidateErrorEntity<RepositoryFormStateType>) => {
@@ -135,8 +130,16 @@ export default defineComponent({
       repositoryFormRef,
       onSubmit,
       goBack,
-      domainList,
+      // domainList,
+      // domainBaseTypeList,
+      // domainBaseTypeId,
+      // handleDomainBaseTypeChange,
+      // domainTree,
+      // domainIdList,
+      fieldNames,
       pageTitle,
+      // addDomain,
+      // handleDeleteDomainTag,
       labelCol: { span: 4 },
       wrapperCol: { span: 24 },
     };
@@ -159,7 +162,7 @@ export default defineComponent({
   }
 
   .repo-create-form {
-    padding-top: 50px;
+    padding: 50px 0;
 
     .radio {
       display: block;
@@ -204,7 +207,7 @@ export default defineComponent({
     }
 
     .control-button {
-      margin: 0;
+      margin: 0 0 100px;
     }
   }
 }

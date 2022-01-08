@@ -60,9 +60,11 @@ module.exports = {
           return args;
         });
     }
-    config
-      .plugin('webpack-bundle-analyzer')
-      .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin);
+    if (process.env.NODE_ENV !== 'production') {
+      config
+        .plugin('webpack-bundle-analyzer')
+        .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin);
+    }
   },
   // 是否启用eslint
   lintOnSave: false,

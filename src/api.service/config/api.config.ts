@@ -47,10 +47,10 @@ export enum ApiPathEnum {
   /**
    * file
    */
-  GetQiniuFileCredential = '/file/getCredential',
-  RemoveFile = '/file/remove',
-  GetFileList = '/file/getList',
-  GetFileByKey = '/file/get/key',
+  GetQiniuFileCredential = '/public/file/getCredential',
+  RemoveFile = '/public/file/remove',
+  GetFileList = '/public/file/getList',
+  GetFileByKey = '/public/file/get/key',
   /**
    * comment
    */
@@ -81,6 +81,7 @@ export enum ApiPathEnum {
   SendRegisterEmailCode = '/public/user/sendEmailCode',
   RegisterByName = '/account/registerByName',
   UpdatePassword = '/account/updatePassword',
+  UpdateUser = '/account/updateUser',
   /**
    * repository
    */
@@ -96,6 +97,7 @@ export enum ApiPathEnum {
   // no.auth repository
   GetNoAuthRepositoryBindEntityList = '/public/repository/getBindEntityList',
   GetNoAuthRepositoryEntityList = '/public/repository/getList',
+  GetNoAuthHotRepositoryEntityList = '/public/repository/get/hotList',
   GetNoAuthRepositoryById = '/public/repository/get/id',
   /**
    * tag
@@ -111,10 +113,15 @@ export enum ApiPathEnum {
    */
   GetDomainList = '/public/domain/getList',
   GetDomainTree = '/public/domain/get/tree',
+  GetDomainBaseTypeList = '/public/domain/baseType/getList',
   /**
    * follow
    */
   CheckIfFollowed = '/follow/checkIfFollowed',
   Follow = '/follow/create',
-  UnFollow = '/follow/stop'
+  UnFollow = '/follow/stop',
+  /**
+   * error detail
+   */
+  CreateErrorDetail = '/system/errorDetail/create'
 }

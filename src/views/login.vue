@@ -11,15 +11,14 @@
         :rules="rules"
         :wrapper-col="wrapperCol">
         <ant-form-item name="name">
-          <ant-input v-model:value="formState.name" placeholder="用户名">
+          <ant-input class="custom-input-style" v-model:value="formState.name" placeholder="用户名">
             <template #prefix>
               <UserOutlined/>
             </template>
           </ant-input>
         </ant-form-item>
         <ant-form-item name="password">
-          <ant-input v-model:value="formState.password" placeholder="密码">
-
+          <ant-input class="custom-input-style" v-model:value="formState.password" type="password" placeholder="密码">
             <template #prefix>
               <LockOutlined/>
             </template>
@@ -34,6 +33,7 @@
   </div>
 </template>
 <script lang="ts">
+import { message } from 'ant-design-vue';
 import {
   defineComponent, reactive, ref,
 } from 'vue';
@@ -61,11 +61,11 @@ export default defineComponent({
     const rules = {
       name: {
         required: true,
-        message: 'Please input name',
+        message: '请输入用户名！',
       },
       password: {
         required: true,
-        message: 'Please input password',
+        message: '请输入密码！',
       },
     };
     const login = () => {
@@ -77,16 +77,12 @@ export default defineComponent({
             password: formState.password
           });
           if (response.data) {
-            console.log(response.data);
             store.commit(MutationEnum.SET_USER_MODEL, { userModel: response.data });
-            localStorage.setItem('isLogin', 'true');
-            localStorage.setItem('user', JSON.stringify(response.data));
-            localStorage.setItem('token', response.data.token);
             await router.push('/');
           }
         })
         .catch((error: Error) => {
-          console.log('error', error);
+          message.error(error.message);
         });
     };
     const resetForm = () => {
@@ -115,11 +111,12 @@ export default defineComponent({
 .login-page {
   height: 100vh;
   width: 100%;
-  background: url('../assets/login-bg.webp') no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+  //background: url('../assets/login-bg.webp') no-repeat center center fixed;
+  //-webkit-background-size: cover;
+  //-moz-background-size: cover;
+  //-o-background-size: cover;
+  //background-size: cover;
+  background: $backgroundColor;
 
   .login-box {
     background: rgba(255, 255, 255, .3);
@@ -143,8 +140,23 @@ export default defineComponent({
 
       .login-form-button {
         width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .ant-input {
+        background: #FFFFFF;
       }
     }
+
+    .custom-input-style {
+      //background: red;
+
+      ::v-deep(.ant-input) {
+        background: #FFFFFF !important;
+        -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+      }
+    }
+
   }
 }
 

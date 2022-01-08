@@ -43,6 +43,31 @@ export class UserApiService {
     });
   }
 
+  static async updateUser(params: {
+    userId: string;
+    name: string;
+    phone?: string;
+    email?: string;
+    avatar?: string;
+    wechat?: string;
+    company?: string;
+    location?: string;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      userId: string;
+      name: string;
+      phone?: string;
+      email?: string;
+      avatar?: string;
+      wechat?: string;
+      company?: string;
+      location?: string;
+    }, void>({
+      apiPath: ApiPathEnum.UpdateUser,
+      requestBody: params
+    });
+  }
+
   static async register(params: {
     name: string;
     password: string;

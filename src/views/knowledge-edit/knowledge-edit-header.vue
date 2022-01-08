@@ -10,6 +10,8 @@
         :title="'引用'" :total="knowledgeMentionCount"></social-action-button>
       <mentioned-control-button></mentioned-control-button>
       <star-control-button
+        @update="handleStarStatusUpdate"
+        :hasStar="knowledge.target?.hasStared"
         :count="knowledge.target?.star"
         :entity-id="knowledge.target?.entity.id"
         :entity-type="knowledge.target?.entity.entityType"></star-control-button>
@@ -44,7 +46,8 @@ import {
   knowledgeStarCount,
   knowledgeCommentCount,
   knowledge,
-  knowledgeMentionCount
+  knowledgeMentionCount,
+  KnowledgeEdit
 } from './model/knowledge.edit';
 
 const isPreviewVisible = ref(false);
@@ -54,6 +57,11 @@ const router = useRouter();
 
 async function goBack() {
   router.go(-1);
+}
+
+async function handleStarStatusUpdate() {
+  const knowledgeEdit = new KnowledgeEdit();
+  await knowledgeEdit.getKnowledge(knowledge.target.entity.id);
 }
 </script>
 <style scoped lang="scss">

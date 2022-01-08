@@ -24,9 +24,9 @@ const routes: Array<RouteRecordRaw> = [
         component: Repository
       },
       {
-        path: 'repo/list/:name',
+        path: 'repository/list/:name',
         name: 'RepositoryList',
-        component: () => import('@/views/repository.list.vue')
+        component: () => import('@/views/repository-list.vue')
       },
       {
         path: '/repository/edit',

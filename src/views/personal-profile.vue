@@ -3,7 +3,8 @@
     <ant-tab-pane key="1">
       <template #tab>
         <span>
-          overview
+          <overview-icon class="tab-icon"></overview-icon>
+          概览
         </span>
       </template>
       <div class="tab-content">
@@ -16,25 +17,31 @@
     <ant-tab-pane key="2">
       <template #tab>
         <span>
-          <repository-list-icon></repository-list-icon>
-          仓库
+          <repository-list-icon class="tab-icon"></repository-list-icon>
+          知识库
+          <ant-tag class="count-tag-style">{{ myRepositoryEntityList.target.length }}</ant-tag>
         </span>
       </template>
       <div class="tab-content">
         <profile-sidebar></profile-sidebar>
-        <div class="profile-content"></div>
+        <div class="profile-content">
+          <profile-repository-list></profile-repository-list>
+        </div>
       </div>
     </ant-tab-pane>
     <ant-tab-pane key="3">
       <template #tab>
         <span>
-          <star-icon></star-icon>
+          <star-icon class="tab-icon"></star-icon>
           点赞
+          <ant-tag class="count-tag-style">{{ myStaredEntityList.target.length }}</ant-tag>
         </span>
       </template>
       <div class="tab-content">
         <profile-sidebar></profile-sidebar>
-        <div class="profile-content"></div>
+        <div class="profile-content">
+          <profile-star-entity-list></profile-star-entity-list>
+        </div>
       </div>
     </ant-tab-pane>
   </ant-tabs>
@@ -44,26 +51,44 @@
 import {
   defineComponent, ref, provide, onMounted
 } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, onBeforeRouteUpdate } from 'vue-router';
 import { UserModelType } from 'metagraph-constant';
+import OverviewIcon from '@/components/icons/overview-icon.vue';
+import ProfileStarEntityList from '@/views/personal-profile/profile-star-entity-list.vue';
+import ProfileRepositoryList from '@/views/personal-profile/profile-repository-list.vue';
 import ProfileOverview from '@/views/personal-profile/profile-overview.vue';
 import { userIdKey, userProfileKey } from '@/views/personal-profile/personal.profile.provide';
 import { UserApiService } from '@/api.service';
 import ProfileSidebar from './personal-profile/profile-sidebar.vue';
 import { RepositoryListIcon, StarIcon } from '@/components/icons';
+import { myStaredEntityList, myRepositoryEntityList, PersonalProfile } from './personal-profile/personal.profile';
 
 export default defineComponent({
   name: 'personal-profile',
   components: {
-    ProfileOverview, ProfileSidebar, RepositoryListIcon, StarIcon
+    OverviewIcon,
+    ProfileStarEntityList,
+    ProfileRepositoryList,
+    ProfileOverview,
+    ProfileSidebar,
+    RepositoryListIcon,
+    StarIcon
   },
   setup() {
     const route = useRoute();
     const userId = ref(route.query.id as string);
-    const activeKey = ref('1');
+    const tabKey = ref(route.query.tabKey as string);
+    const activeKey = ref(tabKey.value || '1');
     const userProfile = ref<UserModelType>();
     provide(userIdKey, userId);
     provide(userProfileKey, userProfile);
+
+    onBeforeRouteUpdate((to, from) => {
+      console.log(to, from);
+      if (to.query.tabKey) {
+        activeKey.value = to.query.tabKey as string;
+      }
+    });
 
     async function getUserModelById() {
       const result = await UserApiService.getPublicUserById({ userId: userId.value });
@@ -72,12 +97,17 @@ export default defineComponent({
       }
     }
 
+    const personalProfile = new PersonalProfile();
     onMounted(async () => {
       await getUserModelById();
+      await personalProfile.getOwnRepositoryEntityList(userId.value);
+      await personalProfile.getOwnStaredEntityList();
     });
 
     return {
-      activeKey
+      activeKey,
+      myStaredEntityList,
+      myRepositoryEntityList
     };
   }
 });
@@ -152,14 +182,24 @@ export default defineComponent({
   &::v-deep(.ant-tabs-tab) {
     padding: 17px 16px;
   }
+
+  .tab-icon {
+    margin-right: 0;
+  }
+
+  .count-tag-style {
+    border-radius: 10px;
+    padding: 0 10px;
+  }
 }
 
 .tab-content {
+  padding-bottom: 150px;
   width: 1200px;
   margin: 0 auto;
-  height: 600px;
+  min-height: 600px;
   display: flex;
-  gap: 20px;
+  gap: 50px;
 
   .profile-content {
     flex: 1;

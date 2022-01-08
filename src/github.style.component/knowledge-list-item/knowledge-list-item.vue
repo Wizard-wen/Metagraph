@@ -1,24 +1,26 @@
 <template>
   <div class="repository-list-item">
-    <repo-item-icon class="repo-icon"></repo-item-icon>
+    <knowledge-icon class="repo-icon"></knowledge-icon>
     <div class="content">
-      <div class="title">angular/<em>angular</em></div>
-      <div class="description">
-        The modern web developer’s platform
+      <div class="title">
+        <span>{{ repository.author.name }}</span>
+        <span>/</span>
+        <span>{{ repository.content.name }}</span>
+        <ant-tag class="type-tag">知识点</ant-tag>
+      </div>
+      <div class="description" v-html="repository.content.descriptionHTML">
       </div>
       <div class="tag-list">
-        <div class="tag">angular</div>
-        <div class="tag">typescript</div>
-        <div class="tag">javascript</div>
+
       </div>
       <div class="banner">
         <div class="banner-item">
           <star-icon class="icon"></star-icon>
-          77k typescript
+          <div class="text">{{ repository.star }}</div>
         </div>
         <div class="banner-item">
-          <span class="span-color"></span>
-          typescript
+          <comment-icon class="icon"></comment-icon>
+          <div class="text">{{ repository.comment }}</div>
         </div>
       </div>
     </div>
@@ -26,20 +28,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import RepoItemIcon from './icons/repo-item-icon.vue';
-import StarIcon from '@/components/icons/star.icon.vue';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { defineComponent, PropType } from 'vue';
+import { StarIcon, CommentIcon, KnowledgeIcon } from '@/components/icons';
 
 export default defineComponent({
-  name: 'repository-list-item',
+  name: 'knowledge-list-item',
+  props: {
+    repository: {
+      type: Object as PropType<EntityCompletelyListItemType>,
+      required: true
+    }
+  },
   components: {
-    RepoItemIcon,
-    StarIcon
+    KnowledgeIcon,
+    StarIcon,
+    CommentIcon
+  },
+  setup() {
+
   }
 });
 </script>
-
 <style scoped lang="scss">
+@import '../../style/tiptap.common.scss';
 .repository-list-item {
   width: 100%;
   padding: 24px 0;
@@ -60,12 +72,20 @@ export default defineComponent({
       font-size: 18px;
       color: #0969DC;
       font-weight: 700;
+      margin-bottom: 5px;
+      display: flex;
+      gap: 5px;
+
+      .type-tag {
+        display: inline-block;
+        height: 22px;
+        border-radius: 4px;
+      }
     }
 
     .description {
-      font-size: 14px;
-      margin-bottom: 4px;
-      line-height: 21px;
+      @include tiptap-style;
+      padding: 5px 10px;
     }
 
     .tag-list {
@@ -83,26 +103,33 @@ export default defineComponent({
     }
 
     .banner {
+      height: 25px;
       display: flex;
       justify-items: center;
-      line-height: 1;
+      align-items: center;
+      gap: 5px;
+
       .banner-item {
-        margin-right: 5px;
         font-size: 14px;
-        display: inline-flex;
+        display: flex;
+        height: 25px;
+        gap: 5px;
         align-items: center;
+
         .span-color {
           display: inline-block;
-          vertical-align: bottom;
           height: 12px;
           width: 12px;
           border-radius: 50%;
           background: #2ea44f;
           margin-right: 5px;
         }
+
         .icon {
-          vertical-align: baseline;
-          margin-right: 5px;
+          font-size: 14px;
+        }
+        .text {
+          font-size: 14px;
         }
       }
     }

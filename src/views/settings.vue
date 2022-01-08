@@ -122,6 +122,7 @@ export default defineComponent({
 
   .right {
     flex: 1;
+    padding-bottom: 50px;
   }
 }
 </style>
