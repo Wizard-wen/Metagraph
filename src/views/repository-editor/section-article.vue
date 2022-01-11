@@ -287,10 +287,12 @@ export default defineComponent({
       if (timer.value) {
         window.clearInterval(timer.value);
       }
-      context.emit('saveSectionArticle', {
-        content: editor.value?.getJSON(),
-        contentHtml: editor.value?.getHTML()
-      });
+      if (editable.value) {
+        context.emit('saveSectionArticle', {
+          content: editor.value?.getJSON(),
+          contentHtml: editor.value?.getHTML()
+        });
+      }
       editor.value?.destroy();
     });
     // 更新article
