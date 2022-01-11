@@ -3,8 +3,9 @@
  * @date  2021/11/22 00:04
  */
 
+import type { SectionTreeNodeType } from 'metagraph-constant';
 import { computed, reactive } from 'vue';
-import { EntityNoAuthApiService, SectionApiService } from '@/api.service';
+import { EntityNoAuthApiService, SectionApiService, SectionNoAuthApiService } from '@/api.service';
 import { ActionEnum, MutationEnum, store } from '@/store';
 
 export const sectionModalData = reactive<{
@@ -12,17 +13,38 @@ export const sectionModalData = reactive<{
   title: '创建Section' | '修改Section' | '绑定实体';
   sectionName: string;
   selectedEntityId: string;
-  entityOptionList: { key: string; label: string; value: string }[]
+  entityOptionList: { key: string; label: string; value: string }[];
+  isConfirmLoading: boolean;
 }>({
   entityType: 'Section',
   title: '创建Section',
   sectionName: '',
   entityOptionList: [],
-  selectedEntityId: ''
+  selectedEntityId: '',
+  isConfirmLoading: false
 });
 export const selectedTreeNode = computed(() => store.state.repositoryEditor.selectedTreeNode);
+export const sectionTree = reactive<{
+  tree: SectionTreeNodeType[],
+  selectedTreeNodes: string[],
+  selectedTreeEntityNodes: string[],
+  selectedTreeSectionNodes: string[]
+}>({
+  tree: [],
+  selectedTreeNodes: [],
+  selectedTreeEntityNodes: [],
+  selectedTreeSectionNodes: []
+});
 
 export class SectionTreeService {
+
+  async getSectionTree(repositoryEntityId: string): Promise<void> {
+    const response = await SectionNoAuthApiService.getSectionTree({ repositoryEntityId });
+    if (response.data) {
+      // todo
+    }
+  }
+
   async createSection(repositoryEntityId: string): Promise<void> {
     if (sectionModalData.entityType === 'Section') {
       await SectionApiService.createSectionTree({

@@ -4,7 +4,11 @@
  */
 
 import * as AntvX6 from '@antv/x6';
-import type { EntityCompletelyListItemType, SectionResponseType } from 'metagraph-constant';
+import type {
+  EntityCompletelyListItemType,
+  SectionResponseType,
+  SectionTreeNodeType
+} from 'metagraph-constant';
 import { ToolbarState } from '@/types/toolbar';
 
 type KnowledgePreExtendEntityTreeNodeType = {
@@ -18,11 +22,13 @@ export type RepositoryEditorStateType = {
 
   repositoryEntityList: EntityCompletelyListItemType[];
   // section tree
-  sectionTree: SectionResponseType[];
+  sectionTree: SectionTreeNodeType[];
   // section对应的文章实体
   sectionArticleContent: any;
   // section对应的文章标题
   sectionArticleTitle: string;
+  // section对应的html
+  sectionArticleHtml: string;
   // 当前选中的section key(id)
   selectedTreeNode: string[];
   // 当前选中的tree node keys中属于section的部分

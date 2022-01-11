@@ -32,8 +32,8 @@ const handleUploadImage = async () => {
 };
 const handleUploadImageModalClose = (event?: { url: string }) => {
   isUploadImageModalShow.value = false;
-  console.log(event.url);
-  if (event?.url) {
+  if (event) {
+    console.log(event.url);
     props.editor?.chain()
       .focus()
       .setImage({ src: event.url })

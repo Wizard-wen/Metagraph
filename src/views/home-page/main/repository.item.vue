@@ -71,11 +71,13 @@ export default defineComponent({
       new Date(repository.value.content.updatedAt),
       'yyyy-MM-dd hh:mm:ss'
     ));
+    const userModel = computed(() => store.state.user.user);
     const goRepositoryPage = () => {
       router.push({
         name: 'RepositoryEditor',
         query: {
-          repositoryEntityId: repository.value.entity.id
+          repositoryEntityId: repository.value.entity.id,
+          type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
         }
       });
     };

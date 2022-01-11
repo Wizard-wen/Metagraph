@@ -4,7 +4,7 @@
       <div
         class="tab"
         :class="{ 'active': tab.value === toolbarState }"
-        v-for="tab in elementTabs.target"
+        v-for="tab in elementShowTabs"
         :key="tab.value"
         @click="setToolbarState(tab.value)"
       >{{ tab.label }}
@@ -17,26 +17,44 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from 'vue';
+import {
+  computed, defineComponent, reactive, inject, ref
+} from 'vue';
+import { isEditableKey } from '@/views/repository-editor/provide.type';
 import { MutationEnum, useStore } from '@/store';
 import { ToolbarState } from '@/types/toolbar';
 import ToolbarEntityList from './toolbar/bind-entity-list/bind-entity-list.vue';
-import ToolbarKnowledgeEdge from './toolbar/toolbar.knowledge.edge.vue';
+// import ToolbarKnowledgeEdge from './toolbar/toolbar.knowledge.edge.vue';
 import AlternativeKnowledgeList from './toolbar/alternative-knowledge-list/alternative-knowledge-list.vue';
 
 export default defineComponent({
   name: 'Toolbar',
   setup() {
     const store = useStore();
+    const isEditable = inject(isEditableKey, ref(false));
     const toolbarState = computed(() => store.state.repositoryEditor.toolbarState);
     const elementTabs = reactive<{
-      target: { value: string; label: string; }[]
+      target: { value: string; label: string; isAuth: boolean }[]
     }>({
       target: [
-        { label: '实体', value: 'EntityList' },
+        {
+          label: '实体',
+          value: 'EntityList',
+          isAuth: false
+        },
         // { label: '知识链路', value: 'KnowledgeEdge' },
-        { label: '备选实体', value: 'Alternative' },
+        {
+          label: '备选实体',
+          value: 'Alternative',
+          isAuth: true
+        },
       ]
+    });
+    const elementShowTabs = computed(() => {
+      if (isEditable.value) {
+        return elementTabs.target;
+      }
+      return elementTabs.target.filter((item) => !item.isAuth);
     });
     const setToolbarState = (value: ToolbarState) => {
       store.commit(MutationEnum.SET_TOOLBAR_STATE, value);
@@ -53,6 +71,7 @@ export default defineComponent({
     return {
       toolbarState,
       elementTabs,
+      elementShowTabs,
       currentPanelComponent,
       setToolbarState
     };

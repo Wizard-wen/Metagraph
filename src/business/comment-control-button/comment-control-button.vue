@@ -11,7 +11,7 @@
     v-if="isCommentDrawerShow"
     :title="'评论详情'"
     :is-drawer-visible="isCommentDrawerShow"
-    @visibleChange="isCommentDrawerShow = false">
+    @visibleChange="handleCloseDrawer">
     <template #content>
       <entity-comment :entity-id="entityId" :entity-type="entityType"></entity-comment>
     </template>
@@ -45,10 +45,16 @@ export default defineComponent({
       required: true
     },
   },
-  setup() {
+  emits: ['update'],
+  setup(props, { emit }) {
     const isCommentDrawerShow = ref(false);
+    const handleCloseDrawer = () => {
+      isCommentDrawerShow.value = false;
+      emit('update');
+    };
     return {
-      isCommentDrawerShow
+      isCommentDrawerShow,
+      handleCloseDrawer
     };
   }
 });

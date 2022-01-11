@@ -26,7 +26,7 @@ export class WebsocketService {
   }[] = [{
     event: 'check',
     handler(message: any): void {
-      console.log(message);
+      // console.log(message);
     }
   }];
 
@@ -76,7 +76,7 @@ export class WebsocketService {
       };
       this.ws.onmessage = (event: MessageEvent) => {
         // 拿到任何消息都说明当前连接是正常的
-        console.log('接收到消息', event);
+        // console.log('接收到消息', event);
         if (event.data) {
           const result = JSON.parse(event.data);
           const eventModel = this.events.find((item) => item.event === result.event);
@@ -87,7 +87,7 @@ export class WebsocketService {
         this.heartCheck();
       };
     } catch (e) {
-      console.log('catch');
+      // console.log('catch');
       this.reconnect();
     }
   }
@@ -106,7 +106,7 @@ export class WebsocketService {
   }
 
   heartCheck(): void {
-    console.log('start');
+    // console.log('start');
     this.heartCheckBrowserTimer && clearTimeout(this.heartCheckBrowserTimer);
     this.heartCheckServerTimer && clearTimeout(this.heartCheckServerTimer);
     // 心跳检测客户端定时器

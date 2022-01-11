@@ -65,6 +65,7 @@ export enum ApiPathEnum {
   CancelStar = '/star/cancel',
   GetMyStarList = '/star/getList/my',
   GetEntityStaredUserList = '/star/getEntityStaredUserList',
+  GetUserStarList = '/public/star/getList/user',
   // GetEntityStarDetailList = '/public/star/getEntityStarDetailList',
   /**
    * entity

@@ -10,7 +10,7 @@ import {
   DatePicker, Checkbox, Radio, Dropdown, Menu,
   Avatar, Pagination, Upload, List, Tag, Drawer,
   Descriptions, Col, Row, Empty, Tabs, Timeline,
-  Collapse, Image, Slider, Divider
+  Collapse, Image, Slider, Divider, Tooltip
 } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import App from './App.vue';
@@ -33,6 +33,7 @@ app.directive('hide', Hide);
 app.directive('clickOutside', clickOutside);
 // 引入全局component
 app.component('AntDivider', Divider);
+app.component('AntTooltip', Tooltip);
 app.component('AntImage', Image);
 app.component('AntSlider', Slider);
 app.component('AntCollapse', Collapse);

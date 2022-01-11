@@ -14,7 +14,7 @@ export const alternativeKnowledgeList = reactive<{
 });
 
 export class AlternativeKnowledgeListService {
-  async createKnowledge(name: string, repositoryEntityId: string) {
+  async createKnowledge(name: string, repositoryEntityId: string): Promise<void> {
     await KnowledgeApiService.create({
       name,
       knowledgeBaseTypeId: '',
@@ -25,14 +25,14 @@ export class AlternativeKnowledgeListService {
   async removeAlternativeKnowledge(params: {
     id: string;
     repositoryEntityId: string;
-  }) {
+  }): Promise<void> {
     const result = await KnowledgeApiService.removeAlternativeKnowledge(params);
     if (result.data) {
       // todo
     }
   }
 
-  async getAlternativeKnowledgeList(repositoryEntityId: string) {
+  async getAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
     const result = await KnowledgeApiService.getAlternativeKnowledgeList({
       repositoryEntityId
     });

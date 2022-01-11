@@ -5,6 +5,7 @@
 
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { reactive } from 'vue';
+import { StarNoAuthApiService } from '@/api.service/no.auth/star.no.auth.api.service';
 import { RepositoryNoAuthApiService, StarApiService } from '@/api.service';
 
 export const myStaredEntityList = reactive<{
@@ -15,8 +16,9 @@ export const myRepositoryEntityList = reactive<{
 }>({ target: [] });
 
 export class PersonalProfile {
-  async getOwnStaredEntityList(): Promise<void> {
-    const result = await StarApiService.getMyStarList({
+  async getOwnStaredEntityList(userId: string): Promise<void> {
+    const result = await StarNoAuthApiService.getUserStarList({
+      userId,
       pageIndex: 0,
       pageSize: 8,
     });

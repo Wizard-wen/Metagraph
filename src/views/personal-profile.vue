@@ -101,7 +101,7 @@ export default defineComponent({
     onMounted(async () => {
       await getUserModelById();
       await personalProfile.getOwnRepositoryEntityList(userId.value);
-      await personalProfile.getOwnStaredEntityList();
+      await personalProfile.getOwnStaredEntityList(userId.value);
     });
 
     return {

@@ -1,26 +1,25 @@
 /**
  * @author songxiwen
- * @date  2021/11/28 15:16
+ * @date  2021/11/28 23:16
  */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
-
 
 export const selectedTreeNodeEntityId = ref('');
 export const isDrawerShown = ref(false);
 
 export class BindEntityList {
   router = useRouter();
+
   handleClickEntityItem(
     item: EntityCompletelyListItemType,
     type: 'view' | 'edit',
     repositoryEntityId: string
-  ) {
+  ): void {
     if (type === 'view') {
       selectedTreeNodeEntityId.value = item.entity.id;
       isDrawerShown.value = true;
-      console.log(item, type);
     } else {
       this.router.push({
         name: 'KnowledgeEdit',
@@ -28,7 +27,8 @@ export class BindEntityList {
           knowledgeEntityId: item.entity.id,
           repositoryEntityId
         }
-      }).then();
+      })
+        .then();
     }
   }
 }

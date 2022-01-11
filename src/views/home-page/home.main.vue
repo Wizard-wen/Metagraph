@@ -66,6 +66,7 @@ export default defineComponent({
 .home-main {
   padding: 0 32px;
   margin-top: 16px;
+  margin-bottom: 150px;
 
   .content {
     width: 100%;

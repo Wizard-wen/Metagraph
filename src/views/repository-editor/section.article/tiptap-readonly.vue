@@ -9,12 +9,9 @@ import {
   useEditor, Editor, EditorContent
 } from '@tiptap/vue-3';
 import { mergeAttributes } from '@tiptap/core';
-// import Document from '@tiptap/extension-document';
-// import Paragraph from '@tiptap/extension-paragraph';
-// import Text from '@tiptap/extension-text';
 import Mention from '@tiptap/extension-mention';
 import StarterKit from '@tiptap/starter-kit';
-import { Ref, defineProps } from 'vue';
+import { Ref, defineProps, watch } from 'vue';
 import Image from '@tiptap/extension-image';
 import { tiptapInitData } from '@/store/constant';
 
@@ -71,17 +68,20 @@ const editor: Ref<Editor | undefined> = useEditor({
   editable: false,
   content: JSON.parse(props.articleContent),
   extensions: [
-    // Document,
-    // Paragraph,
     StarterKit,
     Image,
-    // Text,
     CustomMention.configure({
       HTMLAttributes: {
         class: 'mention',
       },
     })
   ]
+});
+
+watch(() => props.articleContent, (newValue) => {
+  if (newValue) {
+    editor.value?.commands.setContent(JSON.parse(newValue));
+  }
 });
 </script>
 

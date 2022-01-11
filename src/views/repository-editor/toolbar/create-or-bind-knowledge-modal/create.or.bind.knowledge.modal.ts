@@ -79,7 +79,8 @@ export class CreateOrBindKnowledgeModal {
   async getRepositoryBindEntityList(repositoryEntityId: string) {
     const result = await RepositoryNoAuthApiService.getRepositoryBindEntityList(repositoryEntityId);
     if (result.data) {
-      bindEntityIdList.target = result.data.map((item: EntityCompletelyListItemType) => item.entity.id);
+      bindEntityIdList.target = result.data
+        .map((item: EntityCompletelyListItemType) => item.entity.id);
     }
   }
 }

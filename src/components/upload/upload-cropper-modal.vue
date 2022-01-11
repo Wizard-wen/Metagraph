@@ -37,15 +37,23 @@
       :mode="cropOption.mode"
       :limitMinSize="cropOption.limitMinSize"
     ></vueCropper>
-    <ant-button class="select-image">
-      选择图片
-      <input type="file" class="upload-input"
-             accept="image/png, image/jpeg, image/gif, image/jpg"
-             @change="handleUploadImg($event)" ref="inputRef">
-
-    </ant-button>
-    <ant-button @click="handleUpload">上传图片</ant-button>
-    <ant-button @click="handleModalCancel">关闭</ant-button>
+    <div class="control-box">
+      <ant-button
+        type="primary"
+        class="select-image button-style">
+        选择图片
+        <input
+          type="file" class="upload-input"
+          accept="image/png, image/jpeg, image/gif, image/jpg"
+          @change="handleUploadImg($event)" ref="inputRef">
+      </ant-button>
+      <ant-button
+        class="button-style"
+        type="primary"
+        :loading="isLoading" @click="handleUpload">上传图片
+      </ant-button>
+      <ant-button class="button-style" @click="handleModalCancel">关闭</ant-button>
+    </div>
   </ant-modal>
 </template>
 
@@ -80,8 +88,8 @@ export default defineComponent({
   },
   emits: ['close'],
   setup(props, { emit }) {
-    // const isModalVisible = toRef(props, 'isModalVisible');
     const modalConfirmLoading = ref(false);
+    const isLoading = ref(false);
     const cropOption = reactive({
       // 裁剪图片的地址
       img: '',
@@ -188,6 +196,7 @@ export default defineComponent({
     async function handleUpload() {
       cropperRef.value.getCropData(async (data: string) => {
         const qiniuUploadService = new QiniuUploadService();
+        isLoading.value = true;
         const result = await qiniuUploadService.customRequestUploadHandler({
           base64: data,
           type: FileEnum.Image,
@@ -200,7 +209,7 @@ export default defineComponent({
         } else {
           message.error('上传失败');
         }
-        console.log(data);
+        isLoading.value = false;
       });
     }
 
@@ -215,13 +224,22 @@ export default defineComponent({
       inputRef,
       handleUploadImg,
       handleUpload,
-      cropperRef
+      cropperRef,
+      isLoading
     };
   }
 });
 </script>
 
 <style scoped lang="scss">
+.control-box {
+  padding-top: 10px;
+}
+
+.button-style {
+  margin-right: 10px;
+}
+
 .select-image {
   position: relative;
 

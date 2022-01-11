@@ -3,8 +3,14 @@
     <ant-comment>
       <template #avatar>
         <ant-avatar
-          src="http://file.songxiwen.com.cn/icon1.jpeg"
+          v-if="userModel.avatar"
+          :src="userModel.avatar"
           alt="Han Solo"/>
+        <ant-avatar v-else>
+          <template #icon>
+            <UserOutlined/>
+          </template>
+        </ant-avatar>
       </template>
       <template #content>
         <ant-form-item class="inner-form-item">
@@ -74,8 +80,14 @@
       <ant-comment>
         <template #avatar>
           <ant-avatar
-            src="http://file.songxiwen.com.cn/icon1.jpeg"
+            v-if="userModel.avatar"
+            :src="userModel.avatar"
             alt="Han Solo"/>
+          <ant-avatar v-else>
+            <template #icon>
+              <UserOutlined/>
+            </template>
+          </ant-avatar>
         </template>
         <template #content>
           <ant-form-item class="inner-form-item">
@@ -98,9 +110,11 @@
 <script lang="ts">
 import { message } from 'ant-design-vue';
 import {
-  defineComponent, onMounted, ref, toRef, reactive
+  defineComponent, onMounted, ref, toRef, reactive, computed
 } from 'vue';
 import { CommentEntityType, CommentListItemType } from 'metagraph-constant';
+import { UserOutlined } from '@ant-design/icons-vue';
+import { useStore } from '@/store';
 import { CommonUtil } from '@/utils';
 import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
 
@@ -117,7 +131,11 @@ export default defineComponent({
       required: true
     }
   },
+  components: {
+    UserOutlined
+  },
   setup(props) {
+    const store = useStore();
     const entityType = toRef(props, 'entityType');
     const entityId = toRef(props, 'entityId');
     const commentList = ref<any[]>([]);
@@ -138,6 +156,7 @@ export default defineComponent({
       name: '',
       rootCommentId: '',
     });
+    const userModel = computed(() => store.state.user.user);
     const getCommentList = async () => {
       isLoading.value = true;
       const result = await CommentNoAuthApiService.getCommentByEntityId({
@@ -240,7 +259,8 @@ export default defineComponent({
       handleSubmitReply,
       reply,
       commentCount,
-      replyContent
+      replyContent,
+      userModel
     };
   },
 });

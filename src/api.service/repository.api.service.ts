@@ -91,7 +91,11 @@ export class RepositoryApiService {
   static async BindEntityToRepository(params: {
     entityId: string,
     entityType: RepositoryEntityType,
-    repositoryEntityId: string
+    repositoryEntityId: string,
+    position?: {
+      x: number;
+      y: number;
+    }
   }): Promise<PublicApiResponseType<void>> {
     return RequestUtil.post<{
       entityId: string,

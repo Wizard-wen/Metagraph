@@ -38,13 +38,15 @@ export default defineComponent({
     StarIcon
   },
   props: {
+    isOwner: {
+      type: Boolean
+    },
     count: {
       type: Number,
       required: true
     },
     hasStar: {
-      type: Boolean,
-      required: true
+      type: Boolean
     },
     entityType: {
       type: String as PropType<PublicEntityType>,
@@ -56,13 +58,17 @@ export default defineComponent({
     },
   },
   emits: ['update'],
-  setup(props, {emit}) {
+  setup(props, { emit }) {
     const entityId = toRef(props, 'entityId');
+    const isOwner = toRef(props, 'isOwner');
     const entityType = toRef(props, 'entityType');
     const hasStar = toRef(props, 'hasStar');
     const isStarDrawerShow = ref(false);
 
     async function handleAction() {
+      if (!isOwner.value) {
+        return;
+      }
       let result;
       let type;
       if (hasStar.value) {

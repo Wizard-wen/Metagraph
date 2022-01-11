@@ -8,7 +8,7 @@
       <div class=repo-content>
         <div class="repo-list">
           <div class="repo-header">
-            知识库库列表
+            知识库列表
             <ant-button class="new-btn" :size="'small'" @click="goCreateRepositoryPage">
               <template #icon>
                 <PlusOutlined/>
@@ -20,7 +20,7 @@
             <ant-input
               v-model:value="searchText"
               type="text"
-              placeholder="查找您的仓库..."
+              placeholder="查找您的知识库..."
               class="search-input"></ant-input>
           </div>
           <div>
@@ -79,7 +79,7 @@ export default defineComponent({
       if (result.data) {
         ownRepositoryList.target = result.data;
       } else {
-        message.error('获取仓库数据时失败！');
+        message.error('获取知识库数据时失败！');
       }
       isLoading.value = false;
     };
@@ -154,14 +154,6 @@ export default defineComponent({
           border-radius: 4px;
           height: 28px;
           line-height: 28px;
-          //color: #fff;
-          //padding: 3px 12px;
-          //font-size: 12px;
-          //line-height: 20px;
-          //background: #2ea44f;
-          //border-radius: 6px;
-          //cursor: pointer;
-          //border: 1px solid;
         }
       }
 

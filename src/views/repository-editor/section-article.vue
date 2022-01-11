@@ -1,5 +1,6 @@
 <template>
-  <div class="section-article">
+  <div class="section-article" :style="{
+    height: 'calc(100vh - 56px)' }">
     <div class="bottom-message">
       <div class="limit-container">
         <article-limit
@@ -8,9 +9,8 @@
           :limit="limit"></article-limit>
       </div>
     </div>
-    <div class="article-control">
+    <div class="article-control" v-if="editable && editor">
       <section-article-control
-        v-if="editable && editor"
         :editor="editor"
         @fontSizeChange="changeArticleFontSize($event)"
         @save="saveSectionArticle"></section-article-control>
@@ -24,8 +24,9 @@
     <!--      :marks="paddingMarks"-->
     <!--      v-model:value="paddingValue"-->
     <!--      :disabled="false"/>-->
-    <div class="article-container">
-      <div class="editor-range">
+    <div class="article-container" :style="{
+    height: editable ? 'calc(100vh - 116px)' : 'calc(100vh - 60px)' }">
+      <div class="editor-range" v-if="editable">
         <div class="editor-container"
              :style="{
               width: (paddingValue[1] - paddingValue[0]) + 'px',
@@ -39,7 +40,8 @@
         </div>
       </div>
       <div class="editor-container-view" v-if="!editable">
-        <editor-content class="tip-tap-editor" :editor="editor"/>
+        <editor-content v-if="articleContentHtml" class="tip-tap-editor" :editor="editor"/>
+        <ant-empty v-else :image="simpleImage"/>
       </div>
     </div>
   </div>
@@ -54,15 +56,15 @@ import {
   useEditor, EditorContent, VueRenderer, Editor
 } from '@tiptap/vue-3';
 import { mergeAttributes } from '@tiptap/core';
+import { Empty } from 'ant-design-vue';
 import Document from '@tiptap/extension-document';
 import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
 import CharacterCount from '@tiptap/extension-character-count';
 import Mention from '@tiptap/extension-mention';
 import StarterKit from '@tiptap/starter-kit';
-import { useRoute } from 'vue-router';
 import Image from '@tiptap/extension-image';
-import { ActionEnum, useStore } from '@/store';
+import { useStore } from '@/store';
 import MentionList from './tiptap/mention.list.vue';
 import SectionArticleControl from './section.article/section-article-control.vue';
 import ArticleLimit from './section.article/article.limit.vue';
@@ -85,7 +87,6 @@ export default defineComponent({
     }
   },
   setup(props, context) {
-    const route = useRoute();
     const store = useStore();
     const editable = toRef(props, 'editable');
     const knowledgeList = computed(() => store.state.repositoryEditor.repositoryEntityList);
@@ -97,19 +98,25 @@ export default defineComponent({
     };
     const paddingValue = ref<number[]>([0, 816]);
     const paddingFormatter = (value: number) => {
-      console.log(value);
       return `${value}px`;
     };
     const paddingMarks = ref<Record<number, any>>({
-      0: { style: { left: '-20px' }, label: '0px' },
-      816: { style: { right: '0px' }, label: '816px' }
+      0: {
+        style: { left: '-20px' },
+        label: '0px'
+      },
+      816: {
+        style: { right: '0px' },
+        label: '816px'
+      }
     });
     const articleContent = computed(() => store.state.repositoryEditor.sectionArticleContent);
+    const articleContentHtml = computed(() => store.state.repositoryEditor.sectionArticleHtml);
     const CustomMention = Mention.extend({
-      // addNodeView() {
-      //   return VueNodeViewRenderer(MentionView);
-      // },
-      renderHTML({ node, HTMLAttributes }) {
+      renderHTML({
+        node,
+        HTMLAttributes
+      }) {
         return [
           'span',
           mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
@@ -152,14 +159,10 @@ export default defineComponent({
       content: articleContent.value,
       editorProps: {
         handleClick: (view, pos, event) => {
-          console.log(view, pos, event);
+          // todo
           context.emit('clickMention');
           return true;
         },
-        // handleKeyDown(view, event) {
-        //   console.log(view, event);
-        //   return true;
-        // }
       },
       extensions: [
         Document,
@@ -216,22 +219,27 @@ export default defineComponent({
               };
             },
             // eslint-disable-next-line no-shadow
-            command: ({ editor, range, props }) => {
-              // console.log(editor.getJSON());
+            command: ({
+              editor,
+              range,
+              props
+            }) => {
               context.emit('mention', {
                 name: props.name,
                 id: props.id,
                 content: editor.getJSON(),
                 contentHtml: editor.getHTML(),
                 success() {
-                  console.log('success');
                   editor
                     .chain()
                     .focus()
                     .insertContentAt(range, [
                       {
                         type: 'mention',
-                        attrs: { name: props.name, id: props.id }
+                        attrs: {
+                          name: props.name,
+                          id: props.id
+                        }
                       },
                       {
                         type: 'text',
@@ -258,20 +266,21 @@ export default defineComponent({
             },
           },
         })
-      ]
+      ],
+      onUpdate({ editor }) {
+       // todo 内容变化之后同步到数据库
+      }
     });
     onMounted(async () => {
-      // await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
-      //   repositoryEntityId: route.query.repositoryEntityId
-      // });
-      // 定时存储文章
-      timer.value = window.setInterval(() => {
-        context.emit('saveSectionArticle', {
-          content: editor.value?.getJSON(),
-          contentHtml: editor.value?.getHTML()
-        });
-        // editor.value?.commands.focus();
-      }, 10000);
+      if (editable.value) {
+        // 编辑状态下定时存储文章
+        timer.value = window.setInterval(() => {
+          context.emit('saveSectionArticle', {
+            content: editor.value?.getJSON(),
+            contentHtml: editor.value?.getHTML()
+          });
+        }, 10000);
+      }
     });
     onUnmounted(() => {
       // 清除定时器
@@ -286,7 +295,6 @@ export default defineComponent({
     });
     // 更新article
     watch(articleContent, (newValue) => {
-      console.log(newValue, 'article changed');
       editor.value?.commands.setContent(newValue);
     });
     // 是否可编辑
@@ -309,15 +317,18 @@ export default defineComponent({
       articleFontSize,
       paddingValue,
       paddingFormatter,
-      paddingMarks
+      paddingMarks,
+      articleContent,
+      articleContentHtml,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
     };
   }
 });
 </script>
 
 <style lang="scss" scoped>
-@import "../../style/common";
-/* Basic editor styles */
+@import "../../style/common.scss";
+@import "../../style/tiptap.common.scss";
 
 .mention {
   color: #A975FF;
@@ -352,84 +363,30 @@ export default defineComponent({
   }
 
   .article-control {
-    //width: 100%;
-    //height: 46px;
-    //position: absolute;
-    //top: 0;
     padding-bottom: 15px;
   }
 
   .article-container {
-    height: calc(100vh - 116px);
     overflow-y: auto;
-    //padding-top: 15px;
 
     .editor-range {
       position: relative;
       width: 816px;
       min-height: 100%;
       margin: 0 auto;
-    }
 
-    .editor-container {
-      position: absolute;
-      width: 100%;
-      background: #fff;
-
-      .tip-tap-editor {
-        & ::v-deep(.ProseMirror) {
-          text-indent: 10px;
-          outline: none;
-          padding: 20px;
-          //min-height: 1000px;
-
-          > * + * {
-            margin-top: 0.75em;
-          }
-
-          h1, h2, h3, h4, h5, h6 {
-            line-height: 1.1;
-          }
-
-          .mention {
-            color: #A975FF;
-            cursor: pointer;
-            background-color: rgba(#A975FF, 0.1);
-            border-radius: 0.3rem;
-            padding: 0.1rem 0.3rem;
-          }
-        }
+      .editor-container {
+        position: absolute;
+        width: 100%;
+        background: #fff;
       }
     }
 
     .editor-container-view {
       width: 816px;
       margin: 0 auto;
-      background: #fff;
-
-      .tip-tap-editor {
-        & ::v-deep(.ProseMirror) {
-          text-indent: 10px;
-          outline: none;
-          padding: 20px;
-
-          > * + * {
-            margin-top: 0.75em;
-          }
-
-          h1, h2, h3, h4, h5, h6 {
-            line-height: 1.1;
-          }
-
-          .mention {
-            color: #A975FF;
-            cursor: pointer;
-            background-color: rgba(#A975FF, 0.1);
-            border-radius: 0.3rem;
-            padding: 0.1rem 0.3rem;
-          }
-        }
-      }
+      min-height: 100%;
+      //background: #fff;
     }
 
     .comment-content {

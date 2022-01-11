@@ -29,18 +29,15 @@
 </template>
 
 <script lang="ts">
+import type { UserModelType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, ref, toRefs, watch,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarApiService } from '@/api.service';
-import Comment from '../../business/entity-comment/entity-comment.vue';
 
 export default defineComponent({
   name: 'star-drawer',
-  components: {
-    // Comment
-  },
   props: {
     isShow: {
       type: Boolean,
@@ -55,15 +52,15 @@ export default defineComponent({
     const { entityId, isShow } = toRefs(props);
     const visible = ref<boolean>(false);
     const router = useRouter();
-    watch(isShow, async (newValue, oldValue) => {
+    watch(isShow, async (newValue) => {
       if (newValue) {
         visible.value = newValue;
       }
     });
-    const afterVisibleChange = (bool: boolean) => {
+    const afterVisibleChange = () => {
       context.emit('showChange', false);
     };
-    const starList = ref<any[]>([]);
+    const starList = ref<UserModelType[]>([]);
 
     async function getStarDetailList() {
       const result = await StarApiService.getEntityStarList({

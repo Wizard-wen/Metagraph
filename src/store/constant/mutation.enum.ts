@@ -26,6 +26,7 @@ export enum MutationEnum {
   SET_SECTION_ARTICLE_CONTENT = 'setSectionArticleContent',
   // 设置当前单元富文本的标题
   SET_SECTION_ARTICLE_TITLE = 'setSectionArticleTitle',
+  SET_SECTION_ARTICLE_HTML = 'setSectionArticleHtml',
   // 设置仓库中关联的实体
   SET_REPOSITORY_BIND_ENTITY_LIST = 'setRepositoryBindEntityList',
   // 设置当前选中的实体

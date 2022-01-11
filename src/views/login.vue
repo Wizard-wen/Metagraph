@@ -79,6 +79,8 @@ export default defineComponent({
           if (response.data) {
             store.commit(MutationEnum.SET_USER_MODEL, { userModel: response.data });
             await router.push('/');
+          } else {
+            message.error(response?.message || '登录时出现问题！');
           }
         })
         .catch((error: Error) => {

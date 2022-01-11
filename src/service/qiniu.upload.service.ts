@@ -58,7 +58,6 @@ export class QiniuUploadService {
             }
           }
         ).then((data: AxiosResponse<{ key: string; url: string; }>) => {
-          console.log(data);
           resolve(data.data);
         });
       }

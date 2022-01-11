@@ -1,12 +1,13 @@
 <template>
   <ant-spin :spinning="spinning" class="repository-page">
     <repository-editor-header
-      @viewChange="viewStatus = !viewStatus"
+      @viewChange="handleChangeView"
+      :view-status="viewStatus"
+      :saving-status="isSaving"
       v-if="repositoryModel.target"
-      :repository-model="repositoryModel.target"
     ></repository-editor-header>
     <div class="editable">
-      <div class="section-view" v-if="!viewStatus">
+      <div class="section-view" v-if="viewStatus === 'section'">
         <section-tree></section-tree>
         <div class="text-content">
           <section-article-tip-tap
@@ -23,7 +24,9 @@
         </div>
       </div>
       <div v-else class="section-view">
-        <knowledge-graph class="graph-content"></knowledge-graph>
+        <div class="graph-content">
+          <knowledge-graph-panel></knowledge-graph-panel>
+        </div>
         <div class="style-panel">
           <toolbar></toolbar>
         </div>
@@ -40,17 +43,16 @@ import { useRoute } from 'vue-router';
 import { Empty } from 'ant-design-vue';
 import {
   RepositoryEditor,
-  isEditable,
   repositoryModel,
   sectionEntityId,
   isPublicRepository
 } from '@/views/repository-editor/repository-editor';
-import { ActionEnum, MutationEnum, useStore } from '@/store';
+import { ActionEnum, useStore } from '@/store';
 import Toolbar from './repository-editor/toolbar.vue';
 import SectionTree from './repository-editor/section-tree.vue';
 import SectionArticleTipTap from './repository-editor/section-article.vue';
-import KnowledgeGraph from './repository-editor/knowledge-graph-panel.vue';
-import { repositoryEntityIdKey } from './repository-editor/provide.type';
+import KnowledgeGraphPanel from './repository-editor/knowledge-graph-panel.vue';
+import { isEditableKey, repositoryEntityIdKey } from './repository-editor/provide.type';
 import RepositoryEditorHeader from './repository-editor/repository-editor-header/repository-editor-header.vue';
 
 export default defineComponent({
@@ -59,28 +61,34 @@ export default defineComponent({
     Toolbar,
     SectionTree,
     SectionArticleTipTap,
-    KnowledgeGraph,
+    KnowledgeGraphPanel,
     RepositoryEditorHeader
   },
   setup() {
     const route = useRoute();
     const store = useStore();
     const spinning = computed(() => store.state.global.isSpinning);
+    // 当前知识库entityId
     const repositoryEntityId = ref<string>(route.query.repositoryEntityId as string);
+    const isEditable = ref<boolean>((route.query.type as string) === 'edit');
     provide(repositoryEntityIdKey, repositoryEntityId);
-    const viewStatus = ref(false);
+    provide(isEditableKey, isEditable);
+    // 视图状态
+    const viewStatus = ref<'section' | 'graph'>('section');
+
+    // 切换视图状态
+    function handleChangeView(view: 'section' | 'graph') {
+      viewStatus.value = view;
+    }
+
     const repositoryEditorService = new RepositoryEditor();
-    const {
-      getRepositoryByEntityId
-    } = repositoryEditorService;
     const preventContextmenu = (event: MouseEvent) => {
       event.preventDefault();
     };
+    const isSaving = ref();
     onBeforeMount(async () => {
-      store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
-        status: undefined
-      });
-      await getRepositoryByEntityId(repositoryEntityId.value);
+      await repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value);
+      await repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value);
       document.addEventListener('contextmenu', preventContextmenu);
     });
     onUnmounted(() => {
@@ -90,10 +98,15 @@ export default defineComponent({
       content: Record<string, any>,
       contentHtml: string
     }) => {
+      isSaving.value = 'saving...';
       await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
         content: params.content,
         contentHtml: params.contentHtml
       });
+      isSaving.value = 'saved';
+      setTimeout(() => {
+        isSaving.value = undefined;
+      }, 500)
     };
     const handleMention = (params: {
       name: string, id: string, success: () => string, fail: () => string,
@@ -116,6 +129,8 @@ export default defineComponent({
       spinning,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       isPublicRepository,
+      handleChangeView,
+      isSaving
     };
   }
 });

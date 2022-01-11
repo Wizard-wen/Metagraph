@@ -5,29 +5,38 @@
         <img src="/hogwarts-logo.webp" height="32" width="32" alt="">
       </div>
       <div class="title">
-        <div class="name">{{ repositoryModel.author.name }}</div>
+        <div class="name">{{ repositoryModel.target.author.name }}</div>
         &nbsp;/&nbsp;
-        <div class="name">{{ repositoryModel.content.name }}</div>
-        <edit-icon class="edit-icon" @click="goRepositoryEditPage"></edit-icon>
+        <div class="name">{{ repositoryModel.target.content.name }}</div>
+        <edit-icon
+          v-if="repositoryModel.target.author.id === currentUserModel?.id"
+          class="edit-icon"
+          @click="goRepositoryEditPage"></edit-icon>
         <ant-tag class="repository-type-tag">
           {{ isPublicRepository ? '公开' : '私有' }}
         </ant-tag>
+        <div class="saving-status">
+          <ant-spin :spinning="savingStatus === 'saving...'"></ant-spin>
+          <span>{{savingStatus}}</span>
+        </div>
       </div>
     </div>
     <div class="right">
       <star-control-button
-        :count="repositoryModel.star"
-        :entity-id="repositoryModel.entity.id"
-        :entity-type="repositoryModel.entity.entityType"></star-control-button>
+        :is-owner="repositoryModel.target.author.id === currentUserModel?.id"
+        :has-star="repositoryModel.target.hasStared"
+        :count="repositoryModel.target.star"
+        :entity-id="repositoryModel.target.entity.id"
+        :entity-type="repositoryModel.target.entity.entityType"></star-control-button>
       <comment-control-button
-        :count="repositoryModel.comment"
-        :entity-id="repositoryModel.entity.id"
-        :entity-type="repositoryModel.entity.entityType"></comment-control-button>
+        @update="handleUpdateComment"
+        :count="repositoryModel.target.comment"
+        :entity-id="repositoryModel.target.entity.id"
+        :entity-type="repositoryModel.target.entity.entityType"></comment-control-button>
       <div class="view-switch">
-        <ant-switch
-          checked-children="图谱视图"
-          un-checked-children="单元视图"
-          v-model:checked="viewStatus"/>
+        <repository-view-change
+          :view-status="viewStatus"
+          @viewChange="handleRepositoryViewChange"></repository-view-change>
       </div>
     </div>
   </div>
@@ -36,23 +45,30 @@
 <script lang="ts">
 import {
   computed,
-  defineComponent, inject, PropType, ref, toRef, watch
+  defineComponent, inject, PropType, ref, toRef
 } from 'vue';
 import type { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import { useRouter } from 'vue-router';
+import { useStore } from '@/store';
+import RepositoryViewChange from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
 import { StarControlButton, CommentControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { EditIcon } from '@/components/icons';
+import { repositoryModel, RepositoryEditor } from '../repository-editor';
 
 export default defineComponent({
   name: 'repository-editor-header',
   props: {
-    repositoryModel: {
-      type: Object as PropType<EntityCompletelyListItemType>,
+    viewStatus: {
+      type: String as PropType<'section' | 'graph'>,
       required: true
+    },
+    savingStatus: {
+      type: String as PropType<'saving' | 'saved'>,
     }
   },
   components: {
+    RepositoryViewChange,
     StarControlButton,
     CommentControlButton,
     EditIcon
@@ -60,15 +76,11 @@ export default defineComponent({
   emits: ['viewChange'],
   setup(props, { emit }) {
     const router = useRouter();
+    const store = useStore();
+    const repositoryEditor = new RepositoryEditor();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const viewStatus = ref(false);
-    const repositoryProp = toRef(props, 'repositoryModel');
-    const isPublicRepository = computed(() => ((repositoryProp.value?.content as RepositoryModelType).type === 'public'));
-    watch(viewStatus, (newValue, oldValue) => {
-      if (newValue !== oldValue) {
-        emit('viewChange');
-      }
-    });
+    const currentUserModel = computed(() => store.state.user?.user);
+    const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
     const goHomePage = async () => {
       await router.push('/');
     };
@@ -80,12 +92,21 @@ export default defineComponent({
         }
       });
     };
+    const handleUpdateComment = async () => {
+      await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
+    };
+    const handleRepositoryViewChange = (status: 'section' | 'graph') => {
+      emit('viewChange', status);
+    };
     return {
-      viewStatus,
       repositoryEntityId,
       isPublicRepository,
+      currentUserModel,
+      repositoryModel,
       goHomePage,
-      goRepositoryEditPage
+      goRepositoryEditPage,
+      handleRepositoryViewChange,
+      handleUpdateComment
     };
   }
 });
@@ -136,6 +157,10 @@ export default defineComponent({
         height: 24px;
         border-radius: 4px;
         margin-left: 10px;
+      }
+
+      .saving-status {
+        font-size: 12px;
       }
     }
   }

@@ -45,12 +45,14 @@ import {
 import { useRoute } from 'vue-router';
 import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import { repositoryBindEntityList, RepositoryEditor } from '@/views/repository-editor/repository-editor';
+import { RepositoryNoAuthApiService } from '@/api.service';
 import {
   BindEntityList,
   isDrawerShown,
   selectedTreeNodeEntityId
 } from '@/views/repository-editor/toolbar/bind-entity-list/bind.entity.list';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { ActionEnum, useStore } from '@/store';
 import { ViewIcon, EditIcon } from '@/components/icons';
 import KnowledgeDrawer from '@/business/knowledge-drawer/knowledge-drawer.vue';
@@ -66,12 +68,11 @@ export default defineComponent({
     CreateBindKnowledgeModal
   },
   setup() {
-    const route = useRoute();
     const store = useStore();
-    const repositoryEntityList = computed(() => store.state.repositoryEditor.repositoryEntityList);
-    const editable = computed(() => store.state.repositoryEditor.editable);
-    const entityList = computed(() => repositoryEntityList.value
-      .filter((item: EntityCompletelyListItemType) => item.entity.entityType === 'Knowledge'));
+    const editable = inject(isEditableKey, ref(false));
+    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+    const entityList = computed(() => repositoryBindEntityList.target
+      .filter((item) => item.entity.entityType === 'Knowledge'));
     const selectedEntityId = computed(() => store.state.repositoryEditor.selectedEntityId);
     // modal
     const isModalVisible = ref<boolean>(false);
@@ -82,18 +83,13 @@ export default defineComponent({
     const handleModalClose = () => {
       isModalVisible.value = false;
     };
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+
     const bindEntityList = new BindEntityList();
     const handleClickEntityItem = (item: EntityCompletelyListItemType, type: 'view' | 'edit') => {
       bindEntityList.handleClickEntityItem(item, type, repositoryEntityId.value);
     };
-    onMounted(async () => {
-      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
-        repositoryEntityId: route.query.repositoryEntityId as string
-      });
-    });
     return {
-      repositoryEntityList,
+      repositoryBindEntityList,
       entityList,
       selectedEntityId,
       isModalVisible,
@@ -112,9 +108,11 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import '../../../../style/common.scss';
+
 .entity-list {
   .add-control {
     padding: 10px 15px 0 15px;
+
     .add-entity-button {
       width: 100%;
     }
