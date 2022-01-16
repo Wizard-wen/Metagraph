@@ -29,6 +29,7 @@
         <ant-button
           v-if="isLogin"
           class="star-btn"
+          :loading="isStarButtonDisabled"
           @click="addStar($event, repository.hasStared)"
           :type="repository.hasStared ? 'primary': 'default'"
         >{{ repository.hasStared ? 'Stared' : 'Star' }}
@@ -39,16 +40,18 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, StarResponseType } from 'metagraph-constant';
 import {
-  defineComponent, toRef, PropType, computed
+  defineComponent, toRef, PropType, computed, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
+import { message } from 'ant-design-vue';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';
 import { CommentIcon } from '@/components/icons';
+import { PublicApiResponseType } from '@/utils';
 
 export default defineComponent({
   name: 'repository-item',
@@ -71,6 +74,7 @@ export default defineComponent({
       new Date(repository.value.content.updatedAt),
       'yyyy-MM-dd hh:mm:ss'
     ));
+    const isStarButtonDisabled = ref(false);
     const userModel = computed(() => store.state.user.user);
     const goRepositoryPage = () => {
       router.push({
@@ -83,17 +87,35 @@ export default defineComponent({
     };
     const addStar = async (event: MouseEvent, status: boolean) => {
       event.stopPropagation();
+      isStarButtonDisabled.value = true;
+      let result: PublicApiResponseType<void | StarResponseType>;
       if (status) {
-        await StarApiService.cancel({
+        result = await StarApiService.cancel({
           entityId: repository.value.entity.id,
           entityType: 'Repository'
         });
       } else {
-        await StarApiService.create({
+        result = await StarApiService.create({
           entityId: repository.value.entity.id,
           entityType: 'Repository'
         });
       }
+      if (result.code === 0) {
+        if (status) {
+          repository.value.hasStared = false;
+          if (repository.value.star > 0) {
+            repository.value.star -= 1;
+          } else {
+            repository.value.star = 0;
+          }
+        } else {
+          repository.value.hasStared = true;
+          repository.value.star += 1;
+        }
+      } else {
+        message.error(status ? '取消点赞失败' : '点赞失败');
+      }
+      isStarButtonDisabled.value = false;
     };
     const goUserProfilePage = () => {
       router.push({
@@ -109,7 +131,8 @@ export default defineComponent({
       addStar,
       isLogin,
       date,
-      goUserProfilePage
+      goUserProfilePage,
+      isStarButtonDisabled
     };
   }
 });

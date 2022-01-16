@@ -10,7 +10,7 @@ import type {
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
-
+type EdgeEntityType = EntityCompletelyListItemType & { edgeId: string };
 export class KnowledgeNoAuthApiService {
   static async getMentionedList(entityId: string): Promise<PublicApiResponseType<{
     count: number;
@@ -73,20 +73,20 @@ export class KnowledgeNoAuthApiService {
     repositoryEntityId: string;
   }): Promise<PublicApiResponseType<{
     entity: EntityCompletelyListItemType,
-    preInnerList: EntityCompletelyListItemType[],
-    preOuterList: EntityCompletelyListItemType[],
-    extendInnerList: EntityCompletelyListItemType[],
-    extendOuterList: EntityCompletelyListItemType[]
+    preInnerList: EdgeEntityType[],
+    preOuterList: EdgeEntityType[],
+    extendInnerList: EdgeEntityType[],
+    extendOuterList: EdgeEntityType[]
   }>> {
     return RequestUtil.post<{
       knowledgeEntityId: string;
       repositoryEntityId: string;
     }, {
       entity: EntityCompletelyListItemType,
-      preInnerList: EntityCompletelyListItemType[],
-      preOuterList: EntityCompletelyListItemType[],
-      extendInnerList: EntityCompletelyListItemType[],
-      extendOuterList: EntityCompletelyListItemType[]
+      preInnerList: EdgeEntityType[],
+      preOuterList: EdgeEntityType[],
+      extendInnerList: EdgeEntityType[],
+      extendOuterList: EdgeEntityType[]
     }>({
       apiPath: ApiPathEnum.GetNoAuthEdgesByKnowledgeEntityId,
       requestBody: params

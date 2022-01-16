@@ -6,18 +6,23 @@
     :visible="isVisible"
     @close="handleClose">
     <p class="h2-level-title-style h1-level-title-style">{{ knowledge.content.name }}</p>
+    <ant-divider/>
     <p class="h2-level-title-style">基本信息</p>
     <ant-row>
       <ant-col :span="24">
-        <description-item title="知识点类型" :content="knowledge.content.knowledgeBaseTypeId"/>
+        <description-item title="知识点类型" :content="knowledge.content.knowledgeBaseTypeName"/>
       </ant-col>
       <ant-col :span="24">
-        <description-item title="知识点领域" :content="knowledge.content.domainId"/>
+        <description-item title="知识点领域">
+          <template #content>
+            <ant-tag v-for="item in knowledge.domain">{{ item.domainName }}</ant-tag>
+          </template>
+        </description-item>
       </ant-col>
     </ant-row>
     <ant-row>
       <ant-col :span="12">
-        <description-item title="知识库" :content="knowledge.content.repositoryEntityId"/>
+        <description-item title="知识库" :content="knowledge.content.repositoryName"/>
       </ant-col>
       <ant-col :span="12">
         <description-item title="作者" :content="knowledge.author.name"/>
@@ -50,7 +55,7 @@
 <script lang="ts">
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { defineComponent, PropType } from 'vue';
-import TiptapReadonly from '@/views/repository-editor/section.article/tiptap-readonly.vue';
+import TiptapReadonly from '@/views/repository-editor/section-article/tiptap-readonly.vue';
 import DescriptionItem from './description-item.vue';
 
 export default defineComponent({
@@ -87,9 +92,10 @@ export default defineComponent({
   font-size: 24px;
   font-weight: bolder;
 }
+
 .h2-level-title-style {
   font-size: 18px;
-  color: rgba(0,0,0,0.85);
+  color: rgba(0, 0, 0, 0.85);
   line-height: 24px;
   display: block;
   margin-bottom: 16px;

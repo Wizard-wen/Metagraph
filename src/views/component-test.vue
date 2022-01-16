@@ -32,7 +32,7 @@ import KnowledgePreviewCard from '@/views/knowledge-edit/knowledge-preview-card.
 import { defineComponent, ref } from 'vue';
 import TestTiptap from '@/test.components/tiptap-demo/custom-tiptap-node/test-tiptap.vue';
 import KnowledgeMap from '@/views/knowledge-map.vue';
-import TiptapReadonly from '@/views/repository-editor/section.article/tiptap-readonly.vue';
+import TiptapReadonly from '@/views/repository-editor/section-article/tiptap-readonly.vue';
 import RepositoryListItem from '@/github.style.component/repository-list-item/repository-list-item.vue';
 import SearchInput from '@/github.style.component/search-input/git-style-input-search.vue';
 import { clickOutside } from '@/directives/click.outside';

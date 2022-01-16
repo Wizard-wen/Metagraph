@@ -95,15 +95,17 @@ export class KnowledgeApiService {
 
   static async update(params: {
     knowledgeEntityId: string;
-    name: string;
-    knowledgeBaseTypeId: string;
-    domainId?: string;
+    name?: string;
+    knowledgeBaseTypeId?: string;
+    domain?: any;
+    pictures?: any;
   }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
     return RequestUtil.post<{
       knowledgeEntityId: string;
-      name: string;
-      knowledgeBaseTypeId: string;
-      domainId?: string;
+      name?: string;
+      knowledgeBaseTypeId?: string;
+      domain?: any;
+      pictures?: any;
     }, EntityCompletelyListItemType>({
       apiPath: ApiPathEnum.UpdateKnowledge,
       requestBody: params

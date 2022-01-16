@@ -1,9 +1,9 @@
 <template>
   <ant-spin :spinning="isLoading">
-    <ant-comment>
+    <ant-comment v-if="userModel">
       <template #avatar>
         <ant-avatar
-          v-if="userModel.avatar"
+          v-if="userModel && userModel.avatar"
           :src="userModel.avatar"
           alt="Han Solo"/>
         <ant-avatar v-else>
@@ -41,7 +41,7 @@
             :author="item.user.name"
             :datetime="item.createdAt">
             <template #actions>
-              <div class="reply-button" @click="handleOpenReplyDrawer(item, item.id)">回复</div>
+              <div class="reply-button" v-if="userModel" @click="handleOpenReplyDrawer(item, item.id)">回复</div>
               <div
                 class="reply-button"
                 v-if="item.children.length"
@@ -61,6 +61,7 @@
                   </template>
                   <template #actions>
                     <div
+                      v-if="userModel"
                       class="reply-button"
                       @click="handleOpenReplyDrawer(childItem, item.id)">回复</div>
                   </template>

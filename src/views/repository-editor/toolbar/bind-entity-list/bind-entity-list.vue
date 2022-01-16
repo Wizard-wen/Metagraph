@@ -32,43 +32,37 @@
     v-if="isModalVisible"
     @close="handleModalClose"
     :is-modal-visible="isModalVisible"></CreateBindKnowledgeModal>
-  <KnowledgeDrawer
-    :isShow="isDrawerShown"
-    :entityId="selectedTreeNodeEntityId"
-    @showChange="isDrawerShown=false"></KnowledgeDrawer>
 </template>
 
 <script lang="ts">
 import {
-  defineComponent, ref, onMounted, computed, inject
+  defineComponent, ref, computed, inject
 } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { repositoryBindEntityList, RepositoryEditor } from '@/views/repository-editor/repository-editor';
-import { RepositoryNoAuthApiService } from '@/api.service';
 import {
-  BindEntityList,
-  isDrawerShown,
-  selectedTreeNodeEntityId
-} from '@/views/repository-editor/toolbar/bind-entity-list/bind.entity.list';
+  repositoryBindEntityList,
+  knowledgeDrawer,
+  RepositoryEditor
+} from '@/views/repository-editor/repository-editor';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
-import { ActionEnum, useStore } from '@/store';
+import { useStore } from '@/store';
 import { ViewIcon, EditIcon } from '@/components/icons';
-import KnowledgeDrawer from '@/business/knowledge-drawer/knowledge-drawer.vue';
 import CreateBindKnowledgeModal from '../create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 
 export default defineComponent({
   components: {
     PlusOutlined,
     StarOutlined,
-    KnowledgeDrawer,
     ViewIcon,
     EditIcon,
     CreateBindKnowledgeModal
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
+    const repositoryEditor = new RepositoryEditor();
     const editable = inject(isEditableKey, ref(false));
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const entityList = computed(() => repositoryBindEntityList.target
@@ -80,14 +74,30 @@ export default defineComponent({
     const handleModalShow = () => {
       isModalVisible.value = true;
     };
-    const handleModalClose = () => {
+    const handleModalClose = async () => {
       isModalVisible.value = false;
+      await repositoryEditor.getRepositoryBindEntityList(repositoryEntityId.value);
     };
 
-    const bindEntityList = new BindEntityList();
-    const handleClickEntityItem = (item: EntityCompletelyListItemType, type: 'view' | 'edit') => {
-      bindEntityList.handleClickEntityItem(item, type, repositoryEntityId.value);
-    };
+    function handleClickEntityItem(
+      item: EntityCompletelyListItemType,
+      type: 'view' | 'edit'
+    ): void {
+      if (type === 'view') {
+        knowledgeDrawer.entityId = item.entity.id;
+        knowledgeDrawer.isShow = true;
+      } else {
+        router.push({
+          name: 'KnowledgeEdit',
+          query: {
+            knowledgeEntityId: item.entity.id,
+            repositoryEntityId: repositoryEntityId.value
+          }
+        })
+          .then();
+      }
+    }
+
     return {
       repositoryBindEntityList,
       entityList,
@@ -97,8 +107,6 @@ export default defineComponent({
       handleModalShow,
       handleModalClose,
       handleClickEntityItem,
-      isDrawerShown,
-      selectedTreeNodeEntityId,
       repositoryEntityId,
       editable
     };

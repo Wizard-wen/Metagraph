@@ -2,27 +2,53 @@
   <div class="custom-field-box">
     <div class="header">
       <div class="title">概念图册</div>
-      <div class="right">
-        <ant-button>
-          <PlusOutlined/>
-          添加图片
-        </ant-button>
-      </div>
+      <div class="right"></div>
     </div>
     <div class="content">
+      <qiniu-upload-image-list
+        :modelValue="knowledgePictures.target"
+        @update:modelValue="handlePicturesChange($event)"></qiniu-upload-image-list>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { PlusOutlined } from '@ant-design/icons-vue';
+import { defineComponent, inject, ref } from 'vue';
+import QiniuUploadImageList from '@/components/upload/qiniu-upload-image-list.vue';
+import { KnowledgeEdit, knowledgePictures, knowledgeEntityIdInjectKey } from './model/knowledge.edit';
+
+interface FileItem {
+  uid: string;
+  name?: string;
+  status?: string;
+  response?: string;
+  percent?: number;
+  url?: string;
+  preview?: string;
+  originFileObj?: any;
+}
 
 export default defineComponent({
   name: 'knowledge-pictures',
   components: {
-    PlusOutlined
-  }
+    QiniuUploadImageList
+  },
+  setup() {
+    const knowledgeEdit = new KnowledgeEdit();
+    const knowledgeEntityId = inject(knowledgeEntityIdInjectKey, ref(''));
+
+    async function handlePicturesChange(events: any[]) {
+      knowledgePictures.target = events;
+      await knowledgeEdit.updateKnowledge(knowledgeEntityId.value, {
+        pictures: events
+      });
+    }
+
+    return {
+      knowledgePictures,
+      handlePicturesChange
+    };
+  },
 });
 </script>
 
@@ -60,6 +86,23 @@ export default defineComponent({
   .content {
     padding-top: 15px;
     height: 300px;
+  }
+}
+
+/* you can make up upload button and sample style by using stylesheets */
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+}
+
+.ant-upload-list-item-info {
+  &:before {
+    display: block;
   }
 }
 

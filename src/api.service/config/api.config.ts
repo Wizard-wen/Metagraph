@@ -64,14 +64,14 @@ export enum ApiPathEnum {
   CreateStar = '/star/create',
   CancelStar = '/star/cancel',
   GetMyStarList = '/star/getList/my',
-  GetEntityStaredUserList = '/star/getEntityStaredUserList',
+  GetEntityStaredUserList = '/public/star/getEntityStaredUserList',
   GetUserStarList = '/public/star/getList/user',
   // GetEntityStarDetailList = '/public/star/getEntityStarDetailList',
   /**
    * entity
    */
   GetEntityList = '/entity/getList',
-  GetEntityById = '/entity/get/id',
+  GetEntityById = '/public/entity/get/id',
   /**
    * user
    */

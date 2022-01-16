@@ -7,7 +7,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
 import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import {
-  reactive, createVNode, computed
+  reactive, createVNode, computed, ref
 } from 'vue';
 import { ActionEnum, store } from '@/store';
 import { RepositoryNoAuthApiService, SectionApiService } from '@/api.service';
@@ -23,6 +23,14 @@ type AlternativeType = {
   updatedAt: Date;
   createdAt: Date;
 }
+
+export const knowledgeDrawer = reactive<{
+  isShow: boolean,
+  entityId: string
+}>({
+  isShow: false,
+  entityId: ''
+});
 
 export interface RepositoryEditorInterface {
   getRepositoryByEntityId(repositoryEntityId: string): Promise<void>

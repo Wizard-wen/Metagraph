@@ -1,29 +1,32 @@
 <template>
-  <ant-list>
-    <template #loadMore>
-      <div class="load-more-button" v-if="total < list.length">
-        <ant-spin v-if="isLoadingMore"/>
-        <ant-button v-else @click="handleLoadMore">加载更多</ant-button>
-      </div>
-    </template>
-    <ant-list-item v-for="item in list">
-      <template #actions>
-        <ant-button @click="goProfilePage(item.id)">查看</ant-button>
+  <ant-spin :spinning="isLoading">
+    <ant-list>
+      <template #loadMore>
+        <div class="load-more-button" v-if="total < list.length">
+          <ant-spin v-if="isLoadingMore"/>
+          <ant-button v-else @click="handleLoadMore">加载更多</ant-button>
+        </div>
       </template>
-      <ant-list-item-meta :description="item.email">
-        <template #title>
-          <div class="name" @click="goProfilePage(item.id)">{{ item.name }}</div>
+      <ant-list-item v-for="item in list">
+        <template #actions>
+          <ant-button @click="goProfilePage(item.id)">查看</ant-button>
         </template>
-        <template #avatar>
-          <ant-avatar v-if="item.avatar" :src="item.avatar"/>
-          <div class="icon" v-else></div>
-        </template>
-      </ant-list-item-meta>
-    </ant-list-item>
-  </ant-list>
+        <ant-list-item-meta :description="item.email">
+          <template #title>
+            <div class="name" @click="goProfilePage(item.id)">{{ item.name }}</div>
+          </template>
+          <template #avatar>
+            <ant-avatar v-if="item.avatar" :src="item.avatar"/>
+            <div class="icon" v-else></div>
+          </template>
+        </ant-list-item-meta>
+      </ant-list-item>
+    </ant-list>
+  </ant-spin>
 </template>
 
 <script lang="ts">
+import { message } from 'ant-design-vue';
 import type { PublicEntityType, UserModelType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, reactive, ref, toRef, toRefs
@@ -47,7 +50,7 @@ export default defineComponent({
     const entityId = toRef(props, 'entityId');
     const entityType = toRef(props, 'entityType');
     const router = useRouter();
-
+    const isLoading = ref(false);
     const star = reactive<{
       list: UserModelType[],
       total: number;
@@ -63,6 +66,7 @@ export default defineComponent({
     const isLoadingMore = ref(false);
 
     async function getStarDetailList() {
+      isLoading.value = true;
       const result = await StarApiService.getEntityStarList({
         entityType: entityType.value as PublicEntityType,
         entityId: entityId.value,
@@ -70,11 +74,14 @@ export default defineComponent({
         pageSize: star.pageSize
       });
       if (result.data) {
-        console.log(result.data.user.list);
         // 加载更多 concat到最后
         star.list = star.list.concat(result.data.user.list);
         star.total = result.data?.user.total;
       }
+      if (result.code !== 0) {
+        message.error(result.message || '获取点赞列表时出错！')
+      }
+      isLoading.value = false;
     }
 
     async function handleLoadMore() {
@@ -102,7 +109,8 @@ export default defineComponent({
       ...toRefs(star),
       goProfilePage,
       isLoadingMore,
-      handleLoadMore
+      handleLoadMore,
+      isLoading
     };
   }
 });

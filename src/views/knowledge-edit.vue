@@ -11,6 +11,10 @@
             v-if="editor" :editor="editor"></knowledge-article-control>
           <div class="knowledge-editor-content">
             <div class="text-content">
+              <div class="header">
+                <div class="title">知识点描述</div>
+                <div class="right"></div>
+              </div>
               <div v-if="editor" class="limit-count">
                 {{ editor.storage.characterCount.characters() }}/ 600 个字
               </div>
@@ -23,7 +27,7 @@
                   <br/>
                   高宽像素不低于320px*320px
                 </div>
-                <button class="add-button">添加概念图册</button>
+                <button class="add-button">选择概念图册封面</button>
               </div>
               <editor-content
                 #tiptap
@@ -32,6 +36,7 @@
             </div>
             <knowledge-custom-message></knowledge-custom-message>
             <knowledge-pictures></knowledge-pictures>
+            <div style="height: 250px;width: 100%;"></div>
           </div>
         </div>
         <div class="knowledge-form">
@@ -39,8 +44,7 @@
             :element-list="sidebarElementList">
             <template v-slot:content="{item}">
               <KnowledgeEditForm
-                v-if="item.index === 0"
-                :knowledge="knowledgeForm"></KnowledgeEditForm>
+                v-if="item.index === 0"></KnowledgeEditForm>
               <knowledge-bind-panel v-if="item.index === 1"></knowledge-bind-panel>
             </template>
           </knowledge-sidebar>
@@ -48,22 +52,14 @@
       </div>
     </div>
   </ant-spin>
+  <Knowledge-drawer
+    :isShow="knowledgeDrawer.isShow"
+    :entityId="knowledgeDrawer.entityId"
+    @showChange="knowledgeDrawer.isShow"></Knowledge-drawer>
 </template>
 
 <script lang="ts">
-import GoBackIcon from '@/components/icons/go-back-icon.vue';
-import KnowledgePictures from '@/views/knowledge-edit/knowledge-pictures.vue';
 import { FileImageOutlined } from '@ant-design/icons-vue';
-import { KnowledgeTiptapTextEditor } from '@/components/tiptap-text-editor/knowledge.tiptap.text.editor';
-import TiptapEditorContainer from '@/components/tiptap-text-editor/tiptap-editor-container.vue';
-import { useStore } from '@/store';
-import KnowledgeArticleControl from '@/views/knowledge-edit/knowledge-article-control.vue';
-import KnowledgeBindPanel from '@/views/knowledge-edit/knowledge-bind-panel.vue';
-import KnowledgeEditHeader from '@/views/knowledge-edit/knowledge-edit-header.vue';
-import KnowledgeMentionedList from '@/views/knowledge-edit/knowledge-mentioned-list.vue';
-import KnowledgeCustomMessage from '@/views/knowledge-edit/knowledge-custom-message.vue';
-import KnowledgeSidebar from '@/views/knowledge-edit/knowledge-sidebar.vue';
-import TiptapEditable from '@/views/repository-editor/section.article/tiptap-editable.vue';
 import {
   EditorContent
 } from '@tiptap/vue-3';
@@ -72,14 +68,28 @@ import {
   defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+// import { KnowledgeModelType } from 'metagraph-constant';
+// import GoBackIcon from '@/components/icons/go-back-icon.vue';
+import KnowledgePictures from '@/views/knowledge-edit/knowledge-pictures.vue';
+import { KnowledgeTiptapTextEditor } from '@/components/tiptap-text-editor/knowledge.tiptap.text.editor';
+// import TiptapEditorContainer from '@/components/tiptap-text-editor/tiptap-editor-container.vue';
+import { useStore } from '@/store';
+import KnowledgeArticleControl from '@/views/knowledge-edit/knowledge-article-control.vue';
+import KnowledgeBindPanel from '@/views/knowledge-edit/knowledge-bind-panel.vue';
+import KnowledgeEditHeader from '@/views/knowledge-edit/knowledge-edit-header.vue';
+import KnowledgeMentionedList from '@/views/knowledge-edit/knowledge-mentioned-list.vue';
+import KnowledgeCustomMessage from '@/views/knowledge-edit/knowledge-custom-message.vue';
+import KnowledgeSidebar from '@/views/knowledge-edit/knowledge-sidebar.vue';
+// import TiptapEditable from '@/views/repository-editor/section-article/tiptap-editable.vue';
 import KnowledgeEditForm from '@/views/knowledge-edit/knowledge.edit.form.vue';
-import { KnowledgeModelType } from 'metagraph-constant';
-import SectionArticleTipTap from './repository-editor/section-article.vue';
-import Comment from '../business/entity-comment/entity-comment.vue';
+// import SectionArticleTipTap from './repository-editor/section-article.vue';
+// import Comment from '../business/entity-comment/entity-comment.vue';
+import { KnowledgeDrawer } from '@/business';
 import {
   KnowledgeEdit,
   knowledge,
   knowledgeDescription,
+  knowledgeDrawer,
   repositoryEntityList,
   edges,
   knowledgeEntityIdInjectKey, repositoryEntityIdInjectKey
@@ -92,16 +102,17 @@ export default defineComponent({
     FileImageOutlined,
     KnowledgeSidebar,
     KnowledgeArticleControl,
+    KnowledgeDrawer,
     KnowledgeMentionedList,
     KnowledgeEditHeader,
-    TiptapEditorContainer,
+    // TiptapEditorContainer,
     EditorContent,
-    TiptapEditable,
-    GoBackIcon,
+    // TiptapEditable,
+    // GoBackIcon,
     KnowledgeBindPanel,
     KnowledgeEditForm,
-    SectionArticleTipTap,
-    Comment,
+    // SectionArticleTipTap,
+    // Comment,
     KnowledgeCustomMessage
   },
   setup() {
@@ -117,13 +128,21 @@ export default defineComponent({
     const changeArticleFontSize = (event: { value: string }) => {
       articleFontSize.value = event.value;
     };
-
+    const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor(
+      repositoryEntityId.value,
+      knowledgeEntityId.value
+    );
+    knowledgeTiptapTextEditor.initEditor();
+    const { editor } = knowledgeTiptapTextEditor;
+    const knowledgeEdit = new KnowledgeEdit();
     const saveKnowledgeArticle = async () => {
-      await knowledgeEdit.handleSaveSectionArticle({
-        content: editor.value?.getJSON()!,
-        contentHtml: editor.value?.getHTML()!,
-        knowledgeEntityId: knowledgeEntityId.value
-      });
+      if (editor.value) {
+        await knowledgeEdit.handleSaveSectionArticle({
+          content: editor.value?.getJSON(),
+          contentHtml: editor.value?.getHTML(),
+          knowledgeEntityId: knowledgeEntityId.value
+        });
+      }
     };
 
     const sidebarElementList = [{
@@ -135,19 +154,13 @@ export default defineComponent({
     }];
 
     const activeKey = ref('1');
-    const knowledgeEdit = new KnowledgeEdit();
-    const knowledgeForm = computed(() => ({
-      repositoryEntityId: repositoryEntityId.value,
-      name: (<KnowledgeModelType>knowledge.target?.content).name,
-      knowledgeBaseTypeId: (<KnowledgeModelType>knowledge.target?.content).knowledgeBaseTypeId,
-      domainId: (<KnowledgeModelType>knowledge.target?.content).domainId,
-    }));
-    const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor(
-      repositoryEntityId.value,
-      knowledgeEntityId.value
-    );
-    knowledgeTiptapTextEditor.initEditor();
-    const editor = knowledgeTiptapTextEditor.editor;
+    // const knowledgeEdit = new KnowledgeEdit();
+    // const knowledgeForm = computed(() => ({
+    //   repositoryEntityId: repositoryEntityId.value,
+    //   name: (<KnowledgeModelType>knowledge.target?.content).name,
+    //   knowledgeBaseTypeId: (<KnowledgeModelType>knowledge.target?.content).knowledgeBaseTypeId,
+    // }));
+
     console.log(editor);
     onMounted(async () => {
       isLoading.value = true;
@@ -159,6 +172,7 @@ export default defineComponent({
         repositoryEntityId: repositoryEntityId.value
       });
       await knowledgeEdit.getMentionedList(knowledgeEntityId.value);
+      console.log(knowledgeDescription.value);
       knowledgeTiptapTextEditor.setContent(knowledgeDescription.value);
       await knowledgeTiptapTextEditor.initData();
       isLoading.value = false;
@@ -173,9 +187,10 @@ export default defineComponent({
     return {
       a,
       editor,
-      knowledgeForm,
+      // knowledgeForm,
       knowledge,
       knowledgeDescription,
+      knowledgeDrawer,
       isLoading,
       knowledgeEntityId,
       repositoryEntityId,
@@ -222,10 +237,31 @@ export default defineComponent({
         .text-content {
           position: relative;
           width: 850px;
-          height: 420px;
+          height: 470px;
           background: #FFFFFF;
           box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
           margin: 0 auto 15px;
+
+          .header {
+            height: 50px;
+            line-height: 50px;
+            padding: 0 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid $borderColor;
+
+            .title {
+              font-size: 20px;
+            }
+
+            .right {
+              display: flex;
+              gap: 10px;
+            }
+          }
 
           .upload-image {
             position: absolute;

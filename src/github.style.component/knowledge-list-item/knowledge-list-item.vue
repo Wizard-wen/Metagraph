@@ -1,17 +1,24 @@
 <template>
   <div class="repository-list-item">
-    <knowledge-icon class="repo-icon"></knowledge-icon>
+    <slot name="control"></slot>
+    <div class="left-icon">
+      <knowledge-icon class="repository-icon"></knowledge-icon>
+    </div>
     <div class="content">
       <div class="title">
         <span>{{ repository.author.name }}</span>
         <span>/</span>
+        <span>{{ repository.content.repositoryName }}</span>
+        <ant-tag class="type-tag">知识库</ant-tag>
+      </div>
+      <div class="sub-title">
         <span>{{ repository.content.name }}</span>
         <ant-tag class="type-tag">知识点</ant-tag>
       </div>
       <div class="description" v-html="repository.content.descriptionHTML">
       </div>
       <div class="tag-list">
-
+        <ant-tag v-for="item in repository.tag">{{item.name}}</ant-tag>
       </div>
       <div class="banner">
         <div class="banner-item">
@@ -19,7 +26,7 @@
           <div class="text">{{ repository.star }}</div>
         </div>
         <div class="banner-item">
-          <comment-icon class="icon"></comment-icon>
+          <comment-icon class="icon" style="margin-top: 3px"></comment-icon>
           <div class="text">{{ repository.comment }}</div>
         </div>
       </div>
@@ -52,15 +59,41 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 @import '../../style/tiptap.common.scss';
+
 .repository-list-item {
   width: 100%;
-  padding: 24px 0;
+  padding: 16px 0;
   display: flex;
   border-bottom: 1px solid #d8dee4;
+  position: relative;
 
-  .repo-icon {
-    font-size: 18px;
-    margin-right: 5px;
+  .control-btn {
+    position: absolute;
+    padding: 2px 12px;
+    font-size: 12px;
+    line-height: 18px;
+    top: 16px;
+    right: 16px;
+    border: 1px solid #1b1f2326;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &::v-deep(.ant-btn) {
+      height: 28px;
+    }
+  }
+
+  .left-icon {
+    height: 25px;
+    line-height: 25px;
+    display: flex;
+    align-items: center;
+
+    .repository-icon {
+      font-size: 18px;
+      margin-right: 5px;
+    }
   }
 
   .content {
@@ -75,12 +108,21 @@ export default defineComponent({
       margin-bottom: 5px;
       display: flex;
       gap: 5px;
+    }
 
-      .type-tag {
-        display: inline-block;
-        height: 22px;
-        border-radius: 4px;
-      }
+    .sub-title {
+      height: 40px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .type-tag {
+      display: inline-block;
+      height: 22px;
+      border-radius: 4px;
     }
 
     .description {
@@ -107,7 +149,7 @@ export default defineComponent({
       display: flex;
       justify-items: center;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
 
       .banner-item {
         font-size: 14px;
@@ -128,6 +170,7 @@ export default defineComponent({
         .icon {
           font-size: 14px;
         }
+
         .text {
           font-size: 14px;
         }

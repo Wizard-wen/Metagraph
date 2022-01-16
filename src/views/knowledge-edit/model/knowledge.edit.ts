@@ -43,10 +43,22 @@ export const repositoryEntityList = reactive<{
   target: []
 });
 
+// 知识点概念图册
+export interface KnowledgePicturesType {
+  // 非业务字段，是ant design 约定的字段
+  uid: string;
+  url: string;
+  name?: string;
+  size?: number;
+}
+
+export const knowledgePictures = reactive<{
+  target: KnowledgePicturesType[]
+}>({
+  target: []
+});
+
 // 知识点自定义字段
-// export const customFields = computed(
-//   () => (knowledge.target?.content as KnowledgeModelType).customField || []
-// );
 export interface CustomFieldType {
   value: string;
   label: string;
@@ -70,13 +82,14 @@ export const customFieldsRulesRef = reactive<{
 }>({});
 export const customFieldsValidateInfo = ref();
 export const customFieldsValidate = ref();
+type EdgeEntityType = EntityCompletelyListItemType & { edgeId: string };
 export const edges = reactive<{
   target?: {
     entity: EntityCompletelyListItemType,
-    preInnerList: EntityCompletelyListItemType[],
-    preOuterList: EntityCompletelyListItemType[],
-    extendInnerList: EntityCompletelyListItemType[],
-    extendOuterList: EntityCompletelyListItemType[]
+    preInnerList: EdgeEntityType[],
+    preOuterList: EdgeEntityType[],
+    extendInnerList: EdgeEntityType[],
+    extendOuterList: EdgeEntityType[]
   }
 }>({
   target: undefined
@@ -99,7 +112,11 @@ export const mentionedKnowledge = reactive<{
 interface KnowledgeFormType {
   name: string;
   knowledgeBaseTypeId: string;
-  domainId?: string;
+  domain: {
+    domainBaseTypeId: string;
+    domainName?: string;
+    domainId: string[];
+  }[];
   repositoryEntityId: string;
   author: string;
   tagList: { label: string, value: string }[];
@@ -109,7 +126,7 @@ export const knowledgeForm = reactive<KnowledgeFormType>({
   repositoryEntityId: '',
   name: '',
   knowledgeBaseTypeId: '',
-  domainId: '',
+  domain: [],
   author: '',
   tagList: []
 });
@@ -130,6 +147,14 @@ export const domainList = ref([]);
 
 export const ownRepositoryList = ref<EntityCompletelyListItemType[]>([]);
 
+export const knowledgeDrawer = reactive<{
+  isShow: boolean,
+  entityId: string
+}>({
+  isShow: false,
+  entityId: ''
+});
+
 export class KnowledgeEdit {
   async getKnowledge(knowledgeEntityId: string): Promise<void> {
     const result = await EntityNoAuthApiService.getEntityById({
@@ -142,7 +167,13 @@ export class KnowledgeEdit {
       knowledgeForm.name = knowledgeContent.name;
       knowledgeForm.knowledgeBaseTypeId = knowledgeContent.knowledgeBaseTypeId;
       knowledgeForm.author = knowledgeAuthor.name;
-      knowledgeForm.domainId = knowledgeContent?.domainId || '';
+      knowledgeForm.domain = knowledgeContent.domain || [];
+      // knowledgeForm.domainId = knowledgeContent?.domainId || '';
+      knowledgePictures.target = knowledgeContent.pictures ? knowledgeContent.pictures.map((item) => ({
+        ...item,
+        uid: new Date().getTime()
+          .toString()
+      })) : [];
       knowledgeForm.tagList = result.data.tag.map((item: TagModelType) => ({
         label: item.name,
         value: item.id
@@ -261,12 +292,19 @@ export class KnowledgeEdit {
     }
   }
 
-  async updateKnowledge(knowledgeEntityId: string): Promise<void> {
+  async updateKnowledge(knowledgeEntityId: string, updateDocuments: {
+    domain?: {
+      domainBaseTypeId: string;
+      domainName?: string;
+      domainId: string[];
+    }[];
+    pictures?: KnowledgePicturesType[];
+    knowledgeBaseTypeId?: string;
+    name?: string;
+  }): Promise<void> {
     await KnowledgeApiService.update({
       knowledgeEntityId,
-      domainId: knowledgeForm.domainId,
-      knowledgeBaseTypeId: knowledgeForm.knowledgeBaseTypeId,
-      name: knowledgeForm.name,
+      ...updateDocuments
     });
   }
 }

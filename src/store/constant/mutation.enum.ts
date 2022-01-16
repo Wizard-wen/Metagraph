@@ -6,6 +6,8 @@
 export enum MutationEnum {
   SET_IS_SPINNING = 'setIsSpinning',
 
+  SET_SECTION_ARTICLE = 'setSectionArticle',
+
   InitKnowledgeModelData = 'initKnowledgeModelData',
 
   SET_REPOSITORY_EDITABLE = 'setRepositoryEditable',

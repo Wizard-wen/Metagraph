@@ -15,17 +15,19 @@ import {
   RepositoryApiService,
   RepositoryNoAuthApiService
 } from '@/api.service';
+import { repositoryBindEntityList } from '../../repository-editor';
 
 export const searchText = ref<string | undefined>(undefined);
 export const searchData = reactive<{
-  target: EntityCompletelyListItemType[]
-}>({ target: [] });
+  target:(EntityCompletelyListItemType & { hasBind: boolean })[]
+    }>({ target: [] });
 export const bindEntityIdList = reactive<{ target: string[] }>({
   target: []
 });
 export const total = ref(0);
 export const totalPage = computed(() => Math.ceil((total.value / 10)));
 export const currentPage = ref(1);
+export const isLoading = ref(false);
 
 export class CreateOrBindKnowledgeModal {
   router = useRouter();
@@ -47,7 +49,7 @@ export class CreateOrBindKnowledgeModal {
       query: {
         knowledgeEntityId: result.data.entity.id,
         repositoryEntityId,
-        name: (<KnowledgeModelType> result.data.content).name
+        name: (<KnowledgeModelType>result.data.content).name
       }
     });
   }
@@ -55,7 +57,7 @@ export class CreateOrBindKnowledgeModal {
   async handleBindKnowledgeToRepository(params: {
     repositoryEntityId: string,
     entityId: string
-  }) {
+  }): Promise<void> {
     await RepositoryApiService.BindEntityToRepository({
       repositoryEntityId: params.repositoryEntityId,
       entityType: 'Knowledge',
@@ -63,20 +65,26 @@ export class CreateOrBindKnowledgeModal {
     });
   }
 
-  async getEntityList() {
+  async getEntityList(): Promise<void> {
+    isLoading.value = true;
     const result = await EntityNoAuthApiService.getEntityList({
       name: searchText.value,
       entityType: 'Knowledge',
       pageIndex: currentPage.value - 1,
       pageSize: 10
     });
+    isLoading.value = false;
     if (result.data) {
-      searchData.target = searchData.target.concat(result.data.list);
+      const list = result.data.list.map((item) => ({
+        ...item,
+        hasBind: !!repositoryBindEntityList.target.find((binItem) => binItem.entity.id === item.entity.id)
+      }));
+      searchData.target = searchData.target.concat(list);
       total.value = result.data.total;
     }
   }
 
-  async getRepositoryBindEntityList(repositoryEntityId: string) {
+  async getRepositoryBindEntityList(repositoryEntityId: string): Promise<void> {
     const result = await RepositoryNoAuthApiService.getRepositoryBindEntityList(repositoryEntityId);
     if (result.data) {
       bindEntityIdList.target = result.data

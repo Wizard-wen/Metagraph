@@ -4,6 +4,7 @@
  */
 
 import * as AntvX6 from '@antv/x6';
+import { JSONContent } from '@tiptap/vue-3';
 import type {
   EntityCompletelyListItemType,
   SectionResponseType,
@@ -19,16 +20,20 @@ type KnowledgePreExtendEntityTreeNodeType = {
 export type RepositoryEditorStateType = {
   editable?: boolean;
   toolbarState: ToolbarState;
-
+  section: {
+    title: string,
+    articleHtml: string,
+    articleContent: JSONContent
+  },
   repositoryEntityList: EntityCompletelyListItemType[];
   // section tree
-  sectionTree: SectionTreeNodeType[];
+  // sectionTree: SectionTreeNodeType[];
   // section对应的文章实体
-  sectionArticleContent: any;
+  // sectionArticleContent: any;
   // section对应的文章标题
-  sectionArticleTitle: string;
+  // sectionArticleTitle: string;
   // section对应的html
-  sectionArticleHtml: string;
+  // sectionArticleHtml: string;
   // 当前选中的section key(id)
   selectedTreeNode: string[];
   // 当前选中的tree node keys中属于section的部分

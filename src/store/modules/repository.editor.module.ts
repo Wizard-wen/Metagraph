@@ -25,18 +25,26 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     // todo 待删除
     // editable: false,
     // section
-    sectionTree: [],
+    // sectionTree: [],
     // section富文本
-    sectionArticleContent: tiptapInitData,
+    // sectionArticleContent: tiptapInitData,
+
+    section: {
+      title: '',
+      articleHtml: '',
+      articleContent: tiptapInitData
+    },
+
     // section富文本标题
-    sectionArticleTitle: 'Title',
-    sectionArticleHtml: '',
+    // sectionArticleTitle: 'Title',
+    // sectionArticleHtml: '',
     // 当前选中的tree node keys
     selectedTreeNode: [],
     // 当前选中的tree node keys中属于section的部分
     selectedTreeNodeSectionKeys: [],
     // 当前选中的tree node keys中属于entity的部分
     selectedTreeNodeEntityKeys: [],
+
     toolbarState: 'EntityList',
     repositoryEntityList: [],
     selectedEntityId: '',
@@ -67,19 +75,31 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     //   state.editable = status;
     // },
     // section
-    [MutationEnum.SET_SECTION_ARTICLE_CONTENT](state, { content }) {
-      state.sectionArticleContent = JSON.parse(content);
-    },
-    [MutationEnum.SET_SECTION_ARTICLE_TITLE](state, { content }) {
-      state.sectionArticleTitle = content;
+    [MutationEnum.SET_SECTION_ARTICLE](state, {
+      content,
+      html,
+      title
+    }) {
+      state.section = {
+        articleContent: JSON.parse(content),
+        title,
+        articleHtml: html
+      };
     },
 
-    [MutationEnum.SET_SECTION_ARTICLE_HTML](state, { content }) {
-      state.sectionArticleHtml = content;
-    },
-    [MutationEnum.SET_SECTION_TREE](state, { tree }) {
-      state.sectionTree = tree;
-    },
+    // [MutationEnum.SET_SECTION_ARTICLE_CONTENT](state, { content }) {
+    //   state.sectionArticleContent = JSON.parse(content);
+    // },
+    // [MutationEnum.SET_SECTION_ARTICLE_TITLE](state, { content }) {
+    //   state.sectionArticleTitle = content;
+    // },
+    //
+    // [MutationEnum.SET_SECTION_ARTICLE_HTML](state, { content }) {
+    //   state.sectionArticleHtml = content;
+    // },
+    // [MutationEnum.SET_SECTION_TREE](state, { tree }) {
+    //   state.sectionTree = tree;
+    // },
     [MutationEnum.SET_SELECTED_TREE_NODE_KEYS](state, { keys }) {
       state.selectedTreeNode = keys;
     },
@@ -101,11 +121,14 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
   },
   actions: {
     // 获取section tree
-    async [ActionEnum.GET_SECTION_TREE]({ commit, dispatch }, { repositoryEntityId }) {
+    async [ActionEnum.GET_SECTION_TREE]({
+      commit,
+      dispatch
+    }, { repositoryEntityId }) {
       const response = await SectionNoAuthApiService.getSectionTree({ repositoryEntityId });
       if (response.data) {
         if (response.data.length) {
-          // 如果section存在，那么选中第一个
+          // 如果section存在，那么选中第一个，获取section article
           await dispatch(ActionEnum.GET_SECTION_CONTENT, {
             sectionId: response.data[0].key
           });
@@ -122,7 +145,10 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     },
     // 切换section tree node
     async [ActionEnum.SELECTED_SECTION_TREE_NODE](
-      { commit, dispatch },
+      {
+        commit,
+        dispatch
+      },
       params: { selectedKeys: string[], info: SelectEvent }
     ) {
       // 提交commit改变当前选中的 tree node
@@ -163,7 +189,10 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
       commit(MutationEnum.SET_SECTION_ARTICLE_HTML, { content: result.data?.article.contentHtml });
     },
     // 保存section article
-    async [ActionEnum.SAVE_SECTION_CONTENT]({ state }, { content, contentHtml }) {
+    async [ActionEnum.SAVE_SECTION_CONTENT]({ state }, {
+      content,
+      contentHtml
+    }) {
       if (state.selectedTreeNodeSectionKeys.length === 0) {
         // 当前没有选中的单元
         return;
@@ -175,8 +204,8 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
       });
     },
     // 创建section item
-    async [ActionEnum.CREAT_SECTION_ITEM](context, params: SectionCreateRequestType) {
-      await SectionApiService.createSectionTree(params);
-    }
+    // async [ActionEnum.CREAT_SECTION_ITEM](context, params: SectionCreateRequestType) {
+    //   await SectionApiService.createSectionTree(params);
+    // }
   }
 };

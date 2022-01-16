@@ -8,60 +8,54 @@
     :footer="null"
     :visible="isModalVisible"
     :confirm-loading="modalConfirmLoading"
-    :zIndex="9999"
+    :zIndex="7999"
     @cancel="handleModalCancel"
     @ok="handleModalOk">
-    <div class="modal-content">
-      <div class="search">
-        <ant-input
-          class="search-input"
-          v-model:value="searchText"
-          @change="handleChange"></ant-input>
-        <ant-button @click="createNewEntity">创建</ant-button>
-      </div>
-      <div class="list-box">
-        <div v-if="searchData.target.length" class="list-content">
-          <div class="entity-card" v-for="item in searchData.target">
-            <div>
-              暂无封面
-            </div>
-            <div class="title">
-              {{ item.content?.repositoryEntityId }} / {{ item.content.name }}
-            </div>
-            <div class="statistic">
-              <div class="statistic-item">
-                <star-icon class="icon"></star-icon>
-                {{ item.star }}
-              </div>
-              <div class="statistic-item">
-                <comment-icon class="icon"></comment-icon>
-                {{ item.comment }}
-              </div>
-              <div class="statistic-item bind-item"
-                   v-if="!bindEntityIdList.target.includes(item.entity.id)">
-                <bind-icon class="icon"></bind-icon>
-                <span
-                  class="bind-button"
-                  @click="handleBindKnowledgeToRepository(item.entity.id)">绑定</span>
-              </div>
-            </div>
+    <ant-spin :spinning="isLoading">
+      <div class="modal-content">
+        <div class="search">
+          <ant-input
+            class="search-input"
+            v-model:value="searchText"
+            @change="handleChange"></ant-input>
+          <ant-button @click="createNewEntity">创建</ant-button>
+        </div>
+        <div class="list-box">
+          <div v-if="searchData.target.length" class="list-content">
+            <knowledge-list-item
+              v-for="item in searchData.target"
+              :repository="item">
+              <template #control>
+                <div class="control-btn banner-item" v-if="!item.hasBind">
+                  <bind-icon class="icon"></bind-icon>
+                  <div
+                    class="text"
+                    @click="handleBindKnowledgeToRepository(item.entity.id)">绑定
+                  </div>
+                </div>
+              </template>
+            </knowledge-list-item>
+          </div>
+          <div class="load-content" v-if="searchData.target.length && totalPage > currentPage">
+            <ant-button @click="handleLoadMore">
+              加载更多
+            </ant-button>
           </div>
         </div>
-        <div class="load-content" v-if="searchData.target.length && totalPage > currentPage">
-          <ant-button @click="handleLoadMore">
-            加载更多
-          </ant-button>
-        </div>
       </div>
-    </div>
+    </ant-spin>
+
   </ant-modal>
 </template>
 
 <script lang="ts">
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { debounce } from 'lodash';
 import {
-  defineComponent, toRef, watch, ref, onMounted, inject
+  defineComponent, toRef, watch, ref, onMounted, inject, createVNode
 } from 'vue';
+import { Modal, message } from 'ant-design-vue';
+import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import {
   CreateOrBindKnowledgeModal,
@@ -70,14 +64,16 @@ import {
   bindEntityIdList,
   total,
   totalPage,
-  currentPage
+  currentPage,
+  isLoading
 } from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create.or.bind.knowledge.modal';
-import { StarIcon, CommentIcon, BindIcon } from '@/components/icons';
+import { BindIcon } from '@/components/icons';
 
 export default defineComponent({
-  name: 'create.bind.knowledge.modal',
+  name: 'create-or-bind-knowledge-modal',
   components: {
-    StarIcon, CommentIcon, BindIcon
+    KnowledgeListItem,
+    BindIcon,
   },
   props: {
     isModalVisible: {
@@ -107,10 +103,27 @@ export default defineComponent({
       context.emit('close');
     };
     const createNewEntity = async () => {
-      modalConfirmLoading.value = true;
-      await createOrBindKnowledgeModal.createNewEntity(repositoryEntityId.value);
-      modalConfirmLoading.value = false;
-      context.emit('close');
+      if (searchText.value === '') {
+        message.error('知识点名称不能为空！');
+        return;
+      }
+      Modal.confirm({
+        title: '确定创建新知识点吗?',
+        okText: '确定',
+        cancelText: '取消',
+        zIndex: 9001,
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '',
+        async onOk() {
+          modalConfirmLoading.value = true;
+          await createOrBindKnowledgeModal.createNewEntity(repositoryEntityId.value);
+          modalConfirmLoading.value = false;
+          context.emit('close');
+        },
+        async onCancel() {
+
+        },
+      });
     };
 
     const handleBindKnowledgeToRepository = async (entityId: string) => {
@@ -145,7 +158,10 @@ export default defineComponent({
     onMounted(async () => {
       await createOrBindKnowledgeModal.getRepositoryBindEntityList(repositoryEntityId.value);
       if (searchValue.value) {
+        console.log(searchValue.value);
         searchText.value = searchValue.value;
+      } else {
+        searchText.value = '';
       }
       currentPage.value = 1;
       searchData.target = [];
@@ -165,7 +181,8 @@ export default defineComponent({
       totalPage,
       createNewEntity,
       handleBindKnowledgeToRepository,
-      bindEntityIdList
+      bindEntityIdList,
+      isLoading
     };
   }
 });
@@ -213,52 +230,45 @@ export default defineComponent({
     overflow-y: auto;
 
     .list-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 15px;
-      justify-content: flex-start;
+      .banner-item {
+        font-size: 14px;
+        display: flex;
+        height: 25px;
+        gap: 5px;
+        align-items: center;
 
-      .entity-card {
-        min-height: 150px;
-        border-radius: 4px;
-        border: 1px solid #cccccc;
-        display: grid;
-        grid-template-rows: auto 32px 32px;
-
-        .title {
-          line-height: 32px;
-          padding: 0 15px;
-          border-top: 1px solid #ccc;
+        .span-color {
+          display: inline-block;
+          height: 12px;
+          width: 12px;
+          border-radius: 50%;
+          background: #2ea44f;
+          margin-right: 5px;
         }
 
-        .statistic {
-          height: 30px;
-          line-height: 30px;
-          text-align: center;
-          box-sizing: border-box;
-          border-top: 1px solid #CCC;
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
+        .icon {
+          font-size: 14px;
+        }
 
-          .statistic-item {
-            box-sizing: border-box;
-            border-right: 1px solid #CCC;
-            font-size: 14px;
-            vertical-align: middle;
+        .text {
+          font-size: 14px;
+        }
+      }
 
-            .icon {
-              margin-right: 10px;
-            }
-          }
+      .control-btn {
+        position: absolute;
+        padding: 2px 12px;
+        font-size: 12px;
+        line-height: 18px;
+        top: 16px;
+        right: 16px;
+        border: 1px solid #1b1f2326;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
 
-          .bind-item {
-            border-right: none;
-            &:hover {
-              cursor: pointer;
-              background: #0969DC;
-              color: #FFFFFF;
-            }
-          }
+        &::v-deep(.ant-btn) {
+          height: 28px;
         }
       }
     }

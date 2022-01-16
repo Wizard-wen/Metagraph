@@ -28,6 +28,7 @@
     height: editable ? 'calc(100vh - 116px)' : 'calc(100vh - 60px)' }">
       <div class="editor-range" v-if="editable">
         <div class="editor-container"
+             ref="contentRef"
              :style="{
               width: (paddingValue[1] - paddingValue[0]) + 'px',
               left: paddingValue[0] + 'px',
@@ -40,7 +41,7 @@
         </div>
       </div>
       <div class="editor-container-view" v-if="!editable">
-        <editor-content v-if="articleContentHtml" class="tip-tap-editor" :editor="editor"/>
+        <editor-content v-if="sectionArticle.articleHtml" class="tip-tap-editor" :editor="editor"/>
         <ant-empty v-else :image="simpleImage"/>
       </div>
     </div>
@@ -50,10 +51,10 @@
 <script lang="ts">
 import tippy, { Instance } from 'tippy.js';
 import {
-  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, toRef
+  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, toRef, reactive
 } from 'vue';
 import {
-  useEditor, EditorContent, VueRenderer, Editor
+  useEditor, EditorContent, VueRenderer, Editor, JSONContent
 } from '@tiptap/vue-3';
 import { mergeAttributes } from '@tiptap/core';
 import { Empty } from 'ant-design-vue';
@@ -66,8 +67,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { useStore } from '@/store';
 import MentionList from './tiptap/mention.list.vue';
-import SectionArticleControl from './section.article/section-article-control.vue';
-import ArticleLimit from './section.article/article.limit.vue';
+import SectionArticleControl from './section-article/section-article-control.vue';
+import ArticleLimit from './section-article/article-limit.vue';
 
 export default defineComponent({
   name: 'section-article',
@@ -86,6 +87,7 @@ export default defineComponent({
       type: String
     }
   },
+  emits: ['clickMention', 'saveSectionArticle', 'mention'],
   setup(props, context) {
     const store = useStore();
     const editable = toRef(props, 'editable');
@@ -97,9 +99,7 @@ export default defineComponent({
       articleFontSize.value = event.value;
     };
     const paddingValue = ref<number[]>([0, 816]);
-    const paddingFormatter = (value: number) => {
-      return `${value}px`;
-    };
+    const paddingFormatter = (value: number) => `${value}px`;
     const paddingMarks = ref<Record<number, any>>({
       0: {
         style: { left: '-20px' },
@@ -110,8 +110,12 @@ export default defineComponent({
         label: '816px'
       }
     });
-    const articleContent = computed(() => store.state.repositoryEditor.sectionArticleContent);
-    const articleContentHtml = computed(() => store.state.repositoryEditor.sectionArticleHtml);
+
+    const sectionArticle = computed<{
+      title: string,
+      articleHtml: string,
+      articleContent: JSONContent
+    }>(() => store.state.repositoryEditor.section);
     const CustomMention = Mention.extend({
       renderHTML({
         node,
@@ -156,11 +160,10 @@ export default defineComponent({
     });
     const editor: Ref<Editor | undefined> = useEditor({
       editable: editable.value,
-      content: articleContent.value,
+      content: sectionArticle.value.articleContent,
       editorProps: {
         handleClick: (view, pos, event) => {
           // todo
-          context.emit('clickMention');
           return true;
         },
       },
@@ -268,9 +271,30 @@ export default defineComponent({
         })
       ],
       onUpdate({ editor }) {
-       // todo 内容变化之后同步到数据库
+        // todo 内容变化之后同步到数据库
       }
     });
+    const contentRef = ref<Element>();
+    const mentionKnowledge = reactive<{
+      id: string;
+      name: string;
+    }>({
+      id: '',
+      name: ''
+    });
+
+    async function handleClickMentionItem(event: Event) {
+      const target = event?.target as HTMLSpanElement;
+      if (target?.dataset?.mentionId && target?.dataset?.mentionName) {
+        mentionKnowledge.id = target.dataset.mentionId;
+        mentionKnowledge.name = target.dataset.mentionName;
+        context.emit('clickMention', {
+          id: target.dataset.mentionId,
+          name: target.dataset.mentionName
+        });
+      }
+    }
+
     onMounted(async () => {
       if (editable.value) {
         // 编辑状态下定时存储文章
@@ -280,6 +304,9 @@ export default defineComponent({
             contentHtml: editor.value?.getHTML()
           });
         }, 10000);
+      }
+      if (contentRef.value) {
+        contentRef.value?.addEventListener('click', handleClickMentionItem);
       }
     });
     onUnmounted(() => {
@@ -293,10 +320,13 @@ export default defineComponent({
           contentHtml: editor.value?.getHTML()
         });
       }
+      if (contentRef.value) {
+        contentRef.value?.removeEventListener('click', handleClickMentionItem);
+      }
       editor.value?.destroy();
     });
     // 更新article
-    watch(articleContent, (newValue) => {
+    watch(() => sectionArticle.value.articleContent, (newValue) => {
       editor.value?.commands.setContent(newValue);
     });
     // 是否可编辑
@@ -320,9 +350,11 @@ export default defineComponent({
       paddingValue,
       paddingFormatter,
       paddingMarks,
-      articleContent,
-      articleContentHtml,
+      // articleContent,
+      // articleContentHtml,
+      sectionArticle,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      contentRef
     };
   }
 });

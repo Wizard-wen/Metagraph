@@ -6,6 +6,11 @@
         height="296"
         width="296"
         alt="">
+      <ant-avatar :size="296" v-else>
+        <template #icon>
+          <UserOutlined/>
+        </template>
+      </ant-avatar>
     </div>
     <div class="nickname">
       {{ userProfile?.name || '' }}
@@ -56,10 +61,11 @@ import { useRoute, useRouter } from 'vue-router';
 import {
   computed, onMounted, ref, defineComponent, inject
 } from 'vue';
+import { UserOutlined } from '@ant-design/icons-vue';
 import { UserModelType } from 'metagraph-constant';
 import { userProfileKey } from '@/views/personal-profile/personal.profile.provide';
 import {
-  EmailIcon, FollowerIcon, StarIcon, LocationIcon, LinkIcon, WechatIcon
+  EmailIcon, FollowerIcon, LocationIcon, LinkIcon, WechatIcon
 } from '@/components/icons';
 import { useStore } from '@/store';
 import { FollowApiService } from '@/api.service/follow.api.service';
@@ -68,7 +74,7 @@ export default defineComponent({
   name: 'profile-sidebar',
   components: {
     FollowerIcon,
-    StarIcon,
+    UserOutlined,
     EmailIcon,
     LocationIcon,
     LinkIcon,

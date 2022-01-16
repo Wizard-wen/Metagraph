@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { UploadIcon } from '@/components/icons';
-import ParseWordModal from '@/views/repository-editor/section.article/parse-word-modal.vue';
+import ParseWordModal from '@/views/repository-editor/section-article/parse-word-modal.vue';
 
 const isParseWordModalShow = ref(false);
 const handleParseWord = () => {

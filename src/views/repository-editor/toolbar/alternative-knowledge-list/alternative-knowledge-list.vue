@@ -27,7 +27,7 @@
                 <ant-tag>{{ childItem.weight }}</ant-tag>
               </div>
               <div class="right">
-                <create-icon></create-icon>
+                <create-icon @click="createKnowledge(childItem)"></create-icon>
                 <delete-icon @click="deleteAlternativeKnowledge(childItem)"></delete-icon>
               </div>
             </div>
@@ -36,15 +36,22 @@
       </ant-collapse>
     </div>
   </ant-spin>
+  <create-or-bind-knowledge-modal
+    v-if="searchKnowledgeModel.isShow"
+    :search-value="searchKnowledgeModel.searchText"
+    :is-modal-visible="searchKnowledgeModel.isShow"
+    @close="searchKnowledgeModel.isShow = false"></create-or-bind-knowledge-modal>
 </template>
 
 <script lang="ts">
 import {
-  defineComponent, inject, onMounted, ref, createVNode
+  defineComponent, inject, onMounted, ref, createVNode, reactive
 } from 'vue';
 import { Modal } from 'ant-design-vue';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
+import CreateOrBindKnowledgeModal
+  from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { CreateIcon, DeleteIcon, UploadIcon } from '@/components/icons';
 import {
@@ -56,6 +63,7 @@ import {
 export default defineComponent({
   name: 'alternative-knowledge-list',
   components: {
+    CreateOrBindKnowledgeModal,
     CaretRightOutlined,
     UploadIcon,
     CreateIcon,
@@ -65,6 +73,10 @@ export default defineComponent({
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const isLoading = ref<boolean>(false);
     const alternativeKnowledgeListService = new AlternativeKnowledgeListService();
+    const searchKnowledgeModel = reactive({
+      isShow: false,
+      searchText: ''
+    });
 
     function startLoading() {
       isLoading.value = true;
@@ -74,11 +86,18 @@ export default defineComponent({
       isLoading.value = false;
     }
 
+    async function createKnowledge(childItem: AlternativeKnowledgeModelType) {
+      searchKnowledgeModel.searchText = childItem.name;
+      searchKnowledgeModel.isShow = true;
+    }
+
     async function deleteAlternativeKnowledge(childItem: AlternativeKnowledgeModelType) {
       Modal.confirm({
         title: '删除备选知识点',
         icon: createVNode(ExclamationCircleOutlined),
         content: `确定要删除备选知识点"${childItem.name}"吗?`,
+        okText: '确定',
+        cancelText: '取消',
         async onOk() {
           startLoading();
           await alternativeKnowledgeListService.removeAlternativeKnowledge({
@@ -90,7 +109,7 @@ export default defineComponent({
           stopLoading();
         },
         onCancel() {
-          console.log('Cancel');
+          // todo
         },
       });
     }
@@ -105,7 +124,9 @@ export default defineComponent({
       isLoading,
       activeKey,
       alternativeKnowledgeList,
-      deleteAlternativeKnowledge
+      deleteAlternativeKnowledge,
+      createKnowledge,
+      searchKnowledgeModel
     };
   }
 });
@@ -115,6 +136,7 @@ export default defineComponent({
 .control {
   width: 100%;
   padding: 10px 15px;
+
   .add-alternative-button {
     width: 100%;
     font-size: 14px;

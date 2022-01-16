@@ -30,7 +30,7 @@
 import {
   defineComponent, ref, toRefs, watch
 } from 'vue';
-import TiptapReadonly from '@/views/repository-editor/section.article/tiptap-readonly.vue';
+import TiptapReadonly from '@/views/repository-editor/section-article/tiptap-readonly.vue';
 import { EntityNoAuthApiService } from '@/api.service';
 import Comment from '../entity-comment/entity-comment.vue';
 

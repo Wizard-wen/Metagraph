@@ -11,13 +11,13 @@
         <section-tree></section-tree>
         <div class="text-content">
           <section-article-tip-tap
-            v-if="repositoryEntityId && sectionEntityId"
+            v-if="repositoryEntityId"
             :entityId="repositoryEntityId"
             :editable="isEditable"
+            @clickMention="handleClickMention($event)"
             @mention="handleMention($event)"
             @saveSectionArticle="saveSectionArticle($event)">
           </section-article-tip-tap>
-          <ant-empty v-else :image="simpleImage"/>
         </div>
         <div class="style-panel">
           <toolbar></toolbar>
@@ -33,6 +33,10 @@
       </div>
     </div>
   </ant-spin>
+  <Knowledge-drawer
+    :isShow="knowledgeDrawer.isShow"
+    :entityId="knowledgeDrawer.entityId"
+    @showChange="knowledgeDrawer.isShow"></Knowledge-drawer>
 </template>
 
 <script lang="ts">
@@ -45,7 +49,8 @@ import {
   RepositoryEditor,
   repositoryModel,
   sectionEntityId,
-  isPublicRepository
+  isPublicRepository,
+  knowledgeDrawer
 } from '@/views/repository-editor/repository-editor';
 import { ActionEnum, useStore } from '@/store';
 import Toolbar from './repository-editor/toolbar.vue';
@@ -54,6 +59,7 @@ import SectionArticleTipTap from './repository-editor/section-article.vue';
 import KnowledgeGraphPanel from './repository-editor/knowledge-graph-panel.vue';
 import { isEditableKey, repositoryEntityIdKey } from './repository-editor/provide.type';
 import RepositoryEditorHeader from './repository-editor/repository-editor-header/repository-editor-header.vue';
+import { KnowledgeDrawer } from '@/business';
 
 export default defineComponent({
   name: 'editable.repository',
@@ -62,7 +68,8 @@ export default defineComponent({
     SectionTree,
     SectionArticleTipTap,
     KnowledgeGraphPanel,
-    RepositoryEditorHeader
+    RepositoryEditorHeader,
+    KnowledgeDrawer
   },
   setup() {
     const route = useRoute();
@@ -94,6 +101,12 @@ export default defineComponent({
     onUnmounted(() => {
       document.removeEventListener('contextmenu', preventContextmenu);
     });
+
+    function handleClickMention(event: { id: string, name: string }) {
+      knowledgeDrawer.isShow = true;
+      knowledgeDrawer.entityId = event.id;
+    }
+
     const saveSectionArticle = async (params: {
       content: Record<string, any>,
       contentHtml: string
@@ -106,7 +119,7 @@ export default defineComponent({
       isSaving.value = 'saved';
       setTimeout(() => {
         isSaving.value = undefined;
-      }, 500)
+      }, 500);
     };
     const handleMention = (params: {
       name: string, id: string, success: () => string, fail: () => string,
@@ -130,7 +143,9 @@ export default defineComponent({
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       isPublicRepository,
       handleChangeView,
-      isSaving
+      handleClickMention,
+      isSaving,
+      knowledgeDrawer
     };
   }
 });
