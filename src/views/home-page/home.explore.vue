@@ -1,7 +1,7 @@
 <template>
   <div class="explore-box">
     <h2 class="explore-header">热门知识库</h2>
-    <div class="explore-item" v-for="item in hotList">
+    <div class="explore-item" v-for="item in hotRepositoryList">
       <div class="title">{{ item.author.name }} / {{ item.content.name }}</div>
       <div class="description">{{ item.content.description }}</div>
       <div class="action">
@@ -16,38 +16,18 @@
 </template>
 
 <script lang="ts">
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
-import { RepositoryNoAuthApiService } from '@/api.service';
+import { hotRepositoryList } from './home.page';
 
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-];
 export default defineComponent({
   name: 'home.explore',
   components: {
     StarOutlined
   },
   setup() {
-    const hotList = ref<EntityCompletelyListItemType[]>([]);
-
-    async function getHotList() {
-      const result = await RepositoryNoAuthApiService.getHotList();
-      if (result.data) {
-        hotList.value = result.data;
-      }
-    }
-
-    onMounted(async () => {
-      await getHotList();
-    });
-
     return {
-      data,
-      hotList
+      hotRepositoryList
     };
   }
 });

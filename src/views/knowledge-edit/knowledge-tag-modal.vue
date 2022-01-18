@@ -49,7 +49,6 @@ const selectedTagIdList = toRef(props, 'selectedTagIdsFromProp');
 const emit = defineEmits(['close']);
 const modalConfirmLoading = ref(false);
 const selectedTagIds = ref(selectedTagIdList.value);
-// selectedTagIds.value = selectedTagIdList.value;
 const knowledgeEdit = new KnowledgeEdit();
 const selectedTagList = computed(
   () => selectedTagIds.value.map((item) => tag.list.find((tagItem) => tagItem.value === item))

@@ -3,10 +3,14 @@
  * @date  2021/11/22 00:04
  */
 
+import { JSONContent } from '@tiptap/vue-3';
+import { message } from 'ant-design-vue';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
 import { SectionModelType } from 'metagraph-constant';
 import type { SectionTreeNodeType } from 'metagraph-constant';
-import { computed, reactive } from 'vue';
+import { reactive } from 'vue';
+import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
+import { tiptapInitData } from '@/store/constant';
 import { EntityNoAuthApiService, SectionApiService, SectionNoAuthApiService } from '@/api.service';
 import { ActionEnum, MutationEnum, store } from '@/store';
 
@@ -40,14 +44,41 @@ export const sectionTree = reactive<{
   selectedTreeSectionNodes: []
 });
 
+export const sectionArticle = reactive<{
+  title: string;
+  content: JSONContent;
+  contentHtml: string;
+  sectionId: string;
+}>({
+  title: '',
+  content: tiptapInitData,
+  contentHtml: '',
+  sectionId: ''
+});
+
+// eslint-disable-next-line import/no-mutable-exports
+export let sectionArticleTiptapTextEditor: SectionArticleTiptapTextEditor | undefined;
+
 export class SectionTreeService {
+  static initEditor(repositoryEntityId: string, editable: boolean): void {
+    sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
+      repositoryEntityId,
+      editable
+    );
+    sectionArticleTiptapTextEditor.initEditor();
+  }
+
   async getSectionTree(repositoryEntityId: string): Promise<void> {
     const response = await SectionNoAuthApiService.getSectionTree({ repositoryEntityId });
     if (response.data) {
       sectionTree.tree = response.data;
       if (response.data.length) {
+        await sectionArticleTiptapTextEditor?.initData({
+          sectionId: response.data[0].key
+        });
         // 如果section存在，那么选中第一个，获取section article
         await this.getSectionContent(response.data[0].key);
+        sectionArticleTiptapTextEditor?.setContent(sectionArticle.content);
         sectionTree.selectedTreeNodes = [response.data[0].key];
         sectionTree.selectedTreeSectionNodes = [response.data[0].key];
       } else {
@@ -64,7 +95,8 @@ export class SectionTreeService {
     sectionTree.selectedTreeNodes = params.selectedKeys;
     if (params.info.node.dataRef.section) {
       // 如果点击的是section
-      await this.getSectionContent(params.selectedKeys[0]);
+      // 切换section tree之前应该保存之前的section article
+      await sectionArticleTiptapTextEditor?.updateSection(params.selectedKeys[0]);
       // 将当前选中的key赋值给section list
       sectionTree.selectedTreeSectionNodes = params.selectedKeys;
       // 清空当前选中的entity list
@@ -78,11 +110,23 @@ export class SectionTreeService {
   private async getSectionContent(sectionId: string): Promise<void> {
     const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
     if (result.data) {
-      store.commit(MutationEnum.SET_SECTION_ARTICLE, {
-        title: result.data?.section.name,
-        content: result.data.article.content,
-        html: result.data.article.contentHtml
-      });
+      sectionArticle.content = JSON.parse(result.data.article.content);
+      sectionArticle.contentHtml = result.data.article.contentHtml;
+      sectionArticle.title = result.data.article.title;
+      sectionArticle.sectionId = sectionId;
+    }
+  }
+
+  async saveSectionArticle(params: {
+    content: JSONContent;
+    contentHtml: string;
+  }): Promise<void> {
+    const result = await SectionApiService.saveSectionArticle({
+      ...params,
+      sectionId: sectionArticle.sectionId
+    });
+    if (result.code !== 0) {
+      message.error('文章保存失败！');
     }
   }
 
@@ -130,14 +174,10 @@ export class SectionTreeService {
     sectionModalData.entityType = params.type;
     sectionModalData.selectedEntityId = '';
     sectionModalData.sectionName = '';
-    // sectionModalData.parentSectionId = undefined;
-    // sectionModalData.parentSectionName = undefined;
     sectionModalData.parentSectionId = params.section?.id;
     sectionModalData.parentSectionName = params.section?.name;
     if (sectionModalData.entityType === 'Section') {
       sectionModalData.title = '创建单元';
-      // sectionModalData.parentSectionId = params.section?.id;
-      // sectionModalData.parentSectionName = params.section?.name;
     }
     if (sectionModalData.entityType === 'ChangeSection') {
       sectionModalData.title = '修改单元';
@@ -145,8 +185,6 @@ export class SectionTreeService {
     }
     if (sectionModalData.entityType === 'Knowledge') {
       sectionModalData.title = '绑定实体';
-      // sectionModalData.parentSectionId = params.section?.id;
-      // sectionModalData.parentSectionName = params.section?.name;
       await this.initEntityOptionList();
     }
     if (params.isRoot) {

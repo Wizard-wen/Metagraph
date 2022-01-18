@@ -8,7 +8,6 @@ import Mention from '@tiptap/extension-mention';
 
 export const CustomMention = Mention.extend({
   renderHTML({ node, HTMLAttributes }) {
-    console.log('render');
     if (!node.attrs.name) {
       return [
         'span',

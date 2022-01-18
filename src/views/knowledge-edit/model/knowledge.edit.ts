@@ -302,9 +302,12 @@ export class KnowledgeEdit {
     knowledgeBaseTypeId?: string;
     name?: string;
   }): Promise<void> {
-    await KnowledgeApiService.update({
+    const result = await KnowledgeApiService.update({
       knowledgeEntityId,
       ...updateDocuments
     });
+    if (result.code === 0) {
+      message.success('更新成功！');
+    }
   }
 }

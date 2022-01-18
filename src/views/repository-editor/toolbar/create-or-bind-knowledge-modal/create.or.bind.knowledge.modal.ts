@@ -27,7 +27,7 @@ export const bindEntityIdList = reactive<{ target: string[] }>({
 export const total = ref(0);
 export const totalPage = computed(() => Math.ceil((total.value / 10)));
 export const currentPage = ref(1);
-export const isLoading = ref(false);
+export const isLoading = ref(true);
 
 export class CreateOrBindKnowledgeModal {
   router = useRouter();

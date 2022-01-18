@@ -38,13 +38,13 @@ export default defineComponent({
     }>({
       target: [
         {
-          label: '实体',
+          label: '已绑定知识点',
           value: 'EntityList',
           isAuth: false
         },
         // { label: '知识链路', value: 'KnowledgeEdge' },
         {
-          label: '备选实体',
+          label: '备选知识点',
           value: 'Alternative',
           isAuth: true
         },

@@ -23,6 +23,7 @@
     </div>
     <div class="right">
       <star-control-button
+        @update="handleStarStatusUpdate"
         :is-owner="repositoryModel.target.author.id === currentUserModel?.id"
         :has-star="repositoryModel.target.hasStared"
         :count="repositoryModel.target.star"
@@ -43,6 +44,7 @@
 </template>
 
 <script lang="ts">
+import { knowledge, KnowledgeEdit } from '@/views/knowledge-edit/model/knowledge.edit';
 import {
   computed,
   defineComponent, inject, PropType, ref, toRef
@@ -84,6 +86,12 @@ export default defineComponent({
     const goHomePage = async () => {
       await router.push('/');
     };
+
+    async function handleStarStatusUpdate() {
+      if (repositoryEntityId.value) {
+        await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value)
+      }
+    }
     const goRepositoryEditPage = async () => {
       await router.push({
         path: '/repository/edit',
@@ -106,7 +114,8 @@ export default defineComponent({
       goHomePage,
       goRepositoryEditPage,
       handleRepositoryViewChange,
-      handleUpdateComment
+      handleUpdateComment,
+      handleStarStatusUpdate
     };
   }
 });

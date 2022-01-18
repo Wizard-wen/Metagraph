@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, PropType, ref, reactive
+  defineComponent, PropType, reactive
 } from 'vue';
 
 export default defineComponent({

@@ -85,6 +85,13 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const repositoryEntityId = ref(route.query.repositoryEntityId as (string | undefined));
+    if (repositoryEntityId.value === undefined) {
+      repositoryFormState.name = '';
+      repositoryFormState.avatar = '';
+      repositoryFormState.domain = [];
+      repositoryFormState.type = 'public';
+      repositoryFormState.description = '';
+    }
     const repositoryEdit = new RepositoryEdit();
     const pageTitle = computed(() => {
       if (repositoryEntityId.value) {

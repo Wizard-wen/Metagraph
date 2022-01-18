@@ -43,22 +43,19 @@
 </template>
 
 <script lang="ts">
-import { knowledgeDrawer } from '@/views/repository-editor/repository-editor';
 import {
   FolderOutlined,
 } from '@ant-design/icons-vue';
-import type { SectionModelType, SectionTreeNodeType } from 'metagraph-constant';
+import type { SectionModelType } from 'metagraph-constant';
 import {
-  computed, defineComponent, ref, onMounted, toRefs, watch, inject
+  computed, defineComponent, ref, inject
 } from 'vue';
-import { useRoute } from 'vue-router';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
+import { isRepositoryEditorLoading, knowledgeDrawer } from '@/views/repository-editor/repository-editor';
 import { isEditableKey } from '@/views/repository-editor/provide.type';
 import SectionCreateModal from '@/views/repository-editor/section-tree/section-create-modal.vue';
 import { KnowledgeIcon } from '@/components/icons';
-import { MutationEnum, useStore } from '@/store';
 import {
-  sectionModalData,
   SectionTreeService,
   sectionTree
 } from '@/views/repository-editor/section-tree/section.tree';
@@ -71,19 +68,11 @@ export default defineComponent({
     FolderOutlined
   },
   setup() {
-    const route = useRoute();
-    const store = useStore();
     const sectionTreeService = new SectionTreeService();
     const isEditable = inject(isEditableKey, ref(false));
     const isCreateSectionModalShown = ref(false);
     const selectedTreeNodeEntityId = computed(() => (sectionTree.selectedTreeNodes[0]?.includes('-')
       ? sectionTree.selectedTreeNodes[0].split('-')[0] : ''));
-
-    onMounted(async () => {
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
-      await sectionTreeService.getSectionTree(route.query.repositoryEntityId as string);
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
-    });
 
     async function openCreateSectionModal(params: {
       type: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',
@@ -91,20 +80,21 @@ export default defineComponent({
       isRoot?: boolean
     }) {
       isCreateSectionModalShown.value = true;
-      console.log(params.section);
       await sectionTreeService.initSectionModal(params);
     }
 
     async function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      isRepositoryEditorLoading.value = true;
+      console.log(selectedKeys);
       if (!info.node.dataRef.section) {
         knowledgeDrawer.isShow = true;
+        knowledgeDrawer.entityId = selectedKeys[0].split('-')[0];
       }
       await sectionTreeService.selectTreeNode({
         selectedKeys,
         info
       });
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
+      isRepositoryEditorLoading.value = false;
     }
 
     const handleContextMenuClick = (
@@ -139,9 +129,11 @@ export default defineComponent({
 
 .ant-tree-customer {
   text-align: left;
-  ::v-deep(.ant-tree-treenode-switcher-close){
+
+  ::v-deep(.ant-tree-treenode-switcher-close) {
     height: max-content;
   }
+
   ::v-deep(.ant-tree-node-content-wrapper) {
     clear: both; /* 清除左右浮动 */
     height: max-content;
@@ -150,7 +142,8 @@ export default defineComponent({
     word-wrap: break-word; /* IE */
     white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
   }
-  ::v-deep(.ant-dropdown-trigger){
+
+  ::v-deep(.ant-dropdown-trigger) {
     padding-right: 10px;
   }
 }

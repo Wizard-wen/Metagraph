@@ -91,6 +91,7 @@ export default defineComponent({
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const isModalShow = ref(false);
     const modalConfirmLoading = ref(false);
+    isLoading.value = true;
     watch(isModalVisible, async (newValue, oldValue) => {
       if (newValue) {
         isModalShow.value = newValue;

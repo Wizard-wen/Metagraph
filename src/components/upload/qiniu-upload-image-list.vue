@@ -10,7 +10,7 @@
     >
       <div v-if="modelValue.length < 8">
         <plus-outlined/>
-        <div class="ant-upload-text">Upload</div>
+        <div class="ant-upload-text">上传</div>
       </div>
     </ant-upload>
     <ant-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
@@ -24,7 +24,9 @@ import { PlusOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { FileEnum } from 'metagraph-constant';
 import * as qiniu from 'qiniu-js';
-import { defineComponent, ref, PropType, toRef } from 'vue';
+import {
+  defineComponent, ref, PropType, toRef
+} from 'vue';
 import { FileApiService } from '@/api.service';
 
 function getBase64(file: File) {
@@ -107,17 +109,17 @@ export default defineComponent({
         type: params.type
       });
       const tokenForUploading = result.data;
-      console.log(tokenForUploading);
       if (tokenForUploading === undefined) {
         return;
       }
       const observer = {
         complete(response: { key: string; url: string; }) {
-          console.log(response);
+          message.success('上传成功！');
           context.emit('update:modelValue', [
             ...(fileList.value || []),
             {
-              uid: new Date().getTime().toString(),
+              uid: new Date().getTime()
+                .toString(),
               url: response.url
             }
           ]);

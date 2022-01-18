@@ -23,7 +23,7 @@ type AlternativeType = {
   updatedAt: Date;
   createdAt: Date;
 }
-
+export const isRepositoryEditorLoading = ref(false);
 export const knowledgeDrawer = reactive<{
   isShow: boolean,
   entityId: string

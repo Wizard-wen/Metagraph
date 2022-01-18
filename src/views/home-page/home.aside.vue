@@ -1,5 +1,5 @@
 <template>
-  <ant-spin :spinning="isLoading">
+  <ant-spin :spinning="ownRepositoryList.isLoading">
     <div class="home-aside">
       <div class="user">
         <ant-avatar :src="userModel?.avatar || ''"></ant-avatar>
@@ -46,17 +46,16 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
 import { RepositoryModelType } from 'metagraph-constant';
 import {
   computed,
-  defineComponent, onMounted, ref, reactive,
+  defineComponent, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { useStore } from '@/store';
-import { RepositoryApiService } from '@/api.service';
+import { ownRepositoryList } from './home.page';
 
 export default defineComponent({
   name: 'home-aside',
@@ -68,34 +67,18 @@ export default defineComponent({
     const store = useStore();
     const userModel = computed(() => store.state.user.user);
     const searchText = ref<string>('');
-    const isLoading = ref(false);
-    const ownRepositoryList = reactive<{ target: EntityCompletelyListItemType[] }>({ target: [] });
-    const filteredRepositoryList = computed(() => ownRepositoryList.target?.filter(
+    const filteredRepositoryList = computed(() => ownRepositoryList.list?.filter(
       (item) => (item.content as RepositoryModelType).name.includes(searchText.value)
     ) || []);
-    const getOwnRepositoryList = async () => {
-      isLoading.value = true;
-      const result = await RepositoryApiService.getOwnRepositoryList();
-      if (result.data) {
-        ownRepositoryList.target = result.data;
-      } else {
-        message.error('获取知识库数据时失败！');
-      }
-      isLoading.value = false;
-    };
     const goCreateRepositoryPage = async () => {
       await router.push('/repository/edit');
     };
-    onMounted(async () => {
-      if (userModel.value) {
-        await getOwnRepositoryList();
-      }
-    });
     const goRepositoryEditorPage = async (item: EntityCompletelyListItemType) => {
       await router.push({
         name: 'RepositoryEditor',
         query: {
-          repositoryEntityId: item.entity.id
+          repositoryEntityId: item.entity.id,
+          type: 'edit'
         }
       });
     };
@@ -106,7 +89,7 @@ export default defineComponent({
       filteredRepositoryList,
       userModel,
       searchText,
-      isLoading
+      // isLoading
     };
   }
 });

@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
+import { HomePage } from '@/views/home-page/home.page';
 import { useStore } from '@/store';
 import HomeAside from './home-page/home.aside.vue';
 import HomeMain from './home-page/home.main.vue';
@@ -28,7 +29,20 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const homePage = new HomePage();
     const isLogin = computed(() => store.state.user.isLogin);
+    if (isLogin.value) {
+      Promise.all([
+        homePage.getHotList(),
+        homePage.getOwnRepositoryList(),
+        homePage.getRepositoryList()
+      ]);
+    } else {
+      Promise.all([
+        homePage.getHotList(),
+        homePage.getRepositoryList()
+      ]);
+    }
     return {
       isLogin
     };

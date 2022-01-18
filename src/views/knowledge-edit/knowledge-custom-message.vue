@@ -44,11 +44,11 @@
     :isModalVisible="isFieldModalVisible"></add-field-modal>
 </template>
 <script lang="ts">
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { message, Form } from 'ant-design-vue';
+import { ExclamationCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { message, Form, Modal } from 'ant-design-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  defineComponent, reactive, ref, UnwrapRef, inject
+  defineComponent, reactive, ref, UnwrapRef, inject, createVNode
 } from 'vue';
 import {
   KnowledgeEdit,
@@ -69,14 +69,27 @@ export default defineComponent({
     const formRef = ref();
 
     async function removeField(item: CustomFieldType) {
-      const result = await KnowledgeApiService.removeField({
-        knowledgeEntityId: knowledgeEntityId?.value || '',
-        customFieldKey: item.key
+      Modal.confirm({
+        title: '确定删除自定义字段吗?',
+        okText: '确定',
+        cancelText: '取消',
+        zIndex: 9001,
+        icon: createVNode(ExclamationCircleOutlined),
+        content: `该操作不可逆，确定删除自定义字段${item.label}吗？`,
+        async onOk() {
+          const result = await KnowledgeApiService.removeField({
+            knowledgeEntityId: knowledgeEntityId?.value || '',
+            customFieldKey: item.key
+          });
+          if (result.code === 0) {
+            await knowledgeEdit.getKnowledge(knowledgeEntityId?.value || '');
+            message.success('删除成功！');
+          }
+        },
+        async onCancel() {
+          message.info('取消删除');
+        },
       });
-      if (result.data) {
-        await knowledgeEdit.getKnowledge(knowledgeEntityId?.value || '');
-        message.success('删除成功！');
-      }
     }
 
     const isFieldModalVisible = ref(false);
@@ -102,7 +115,7 @@ export default defineComponent({
         knowledgeEntityId: knowledgeEntityId?.value || '',
         customFields: customFields.target
       });
-      if (result.data) {
+      if (result.code === 0) {
         message.success('保存成功！');
       }
     }

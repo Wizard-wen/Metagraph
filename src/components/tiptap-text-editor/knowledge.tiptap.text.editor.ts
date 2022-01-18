@@ -19,7 +19,9 @@ import {
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
-  limit = 300;
+  limit = 600;
+
+  editable = true;
 
   constructor(
     private readonly repositoryEntityId: string,
@@ -37,8 +39,8 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   protected async save(params: {
     content: Record<string, any>,
     contentHtml: any
-  }): Promise<void> {
-    await this.handleSaveSectionArticle(params);
+  }): Promise<boolean> {
+    return await this.handleSaveSectionArticle(params);
   }
 
   private async createEdge(params: {
@@ -86,15 +88,17 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   private async handleSaveSectionArticle(params: {
     content: Record<string, any>,
     contentHtml: any
-  }): Promise<void> {
+  }): Promise<boolean> {
     const result = await KnowledgeApiService.saveDescription({
       description: JSON.stringify(params.content),
       descriptionHTML: params.contentHtml,
       entityId: this.knowledgeEntityId
     });
-    if (!result.message) {
+    if (result.code !== 0) {
       console.log('save article success');
+      return false;
     }
+    return true;
   }
 
   handleMention(params: {

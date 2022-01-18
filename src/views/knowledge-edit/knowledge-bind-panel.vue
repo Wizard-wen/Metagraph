@@ -1,24 +1,49 @@
 <template>
   <div class="bind-panel">
-    <div class="knowledge-connection">
-      <div class="title">仓库内</div>
-      <div class="sub-title">
-        <div class="sub-item" :class="{'sub-title-active': isInnerPre}">前置</div>
-        <div class="sub-item">导出</div>
-      </div>
-      <div class="content">
-        <div v-for="item in edges.preInnerList">{{ item.content.name }}</div>
-      </div>
-    </div>
-
-    <div class="knowledge-connection">
-      <div class="title">仓库外</div>
-      <div class="sub-title">
-        <div class="sub-item sub-title-active">前置</div>
-        <div class="sub-item">导出</div>
-      </div>
-      <div class="content"></div>
-    </div>
+    <ant-collapse accordion :defaultActiveKey="'1'">
+      <ant-collapse-panel key="1" header="知识库内前置知识点">
+        <div class="card-content">
+          <div
+            v-for="(item, index) in edges.target.preInnerList"
+            :key="index"
+            data-type="rect"
+            class="dnd-rect">
+            {{ item.content.name }}
+          </div>
+        </div>
+      </ant-collapse-panel>
+      <ant-collapse-panel key="2" header="知识库外前置知识点" :disabled="false">
+        <div class="card-content">
+          <div
+            v-for="(item, index) in edges.target.preOuterList"
+            :key="index"
+            data-type="rect"
+            class="dnd-rect">
+            {{ item.content.name }}
+          </div>
+        </div>
+      </ant-collapse-panel>
+      <ant-collapse-panel key="3" header="知识库内导出知识点">
+        <div class="card-content">
+          <div
+            v-for="(item, index) in edges.target.extendInnerList"
+            :key="index"
+            data-type="rect"
+            class="dnd-rect">
+            {{ item.content.name }}
+          </div>
+        </div>
+      </ant-collapse-panel>
+      <ant-collapse-panel key="4" header="知识库外导出知识点">
+        <div
+          v-for="(item, index) in edges.target.extendOuterList"
+          :key="index"
+          data-type="rect"
+          class="dnd-rect">
+          {{ item.content.name }}
+        </div>
+      </ant-collapse-panel>
+    </ant-collapse>
   </div>
 </template>
 
@@ -31,6 +56,25 @@ const isOuterPre = ref(false);
 </script>
 
 <style scoped lang="scss">
+@import '../../style/common';
+.card-content {
+  height: 100%;
+  overflow: scroll;
+}
+
+.dnd-rect {
+  width: calc(100% - 6px);
+  height: 40px;
+  border: 1px solid $borderColor;
+  text-align: center;
+  line-height: 40px;
+  margin: 3px auto;
+  cursor: pointer;
+}
+
+
+
+
 .bind-panel {
   width: 100%;
   height: calc(100vh - 55px);

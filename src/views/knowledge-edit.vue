@@ -52,10 +52,11 @@
       </div>
     </div>
   </ant-spin>
-  <Knowledge-drawer
-    :isShow="knowledgeDrawer.isShow"
-    :entityId="knowledgeDrawer.entityId"
-    @showChange="knowledgeDrawer.isShow"></Knowledge-drawer>
+  <knowledge-drawer-content
+    v-if="knowledgeDrawer.isShow"
+    :is-visible="knowledgeDrawer.isShow"
+    :knowledge-entity-id="knowledgeDrawer.entityId"
+    @close="knowledgeDrawer.isShow = false"></knowledge-drawer-content>
 </template>
 
 <script lang="ts">
@@ -64,15 +65,11 @@ import {
   EditorContent
 } from '@tiptap/vue-3';
 import {
-  computed, createVNode, provide,
-  defineComponent, onMounted, onUnmounted, ref
+  provide, defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-// import { KnowledgeModelType } from 'metagraph-constant';
-// import GoBackIcon from '@/components/icons/go-back-icon.vue';
 import KnowledgePictures from '@/views/knowledge-edit/knowledge-pictures.vue';
 import { KnowledgeTiptapTextEditor } from '@/components/tiptap-text-editor/knowledge.tiptap.text.editor';
-// import TiptapEditorContainer from '@/components/tiptap-text-editor/tiptap-editor-container.vue';
 import { useStore } from '@/store';
 import KnowledgeArticleControl from '@/views/knowledge-edit/knowledge-article-control.vue';
 import KnowledgeBindPanel from '@/views/knowledge-edit/knowledge-bind-panel.vue';
@@ -80,11 +77,8 @@ import KnowledgeEditHeader from '@/views/knowledge-edit/knowledge-edit-header.vu
 import KnowledgeMentionedList from '@/views/knowledge-edit/knowledge-mentioned-list.vue';
 import KnowledgeCustomMessage from '@/views/knowledge-edit/knowledge-custom-message.vue';
 import KnowledgeSidebar from '@/views/knowledge-edit/knowledge-sidebar.vue';
-// import TiptapEditable from '@/views/repository-editor/section-article/tiptap-editable.vue';
-import KnowledgeEditForm from '@/views/knowledge-edit/knowledge.edit.form.vue';
-// import SectionArticleTipTap from './repository-editor/section-article.vue';
-// import Comment from '../business/entity-comment/entity-comment.vue';
-import { KnowledgeDrawer } from '@/business';
+import KnowledgeEditForm from '@/views/knowledge-edit/knowledge-edit-form.vue';
+import { KnowledgeDrawerContent } from '@/business';
 import {
   KnowledgeEdit,
   knowledge,
@@ -98,27 +92,21 @@ import {
 export default defineComponent({
   name: 'knowledge.edit',
   components: {
+    KnowledgeDrawerContent,
     KnowledgePictures,
     FileImageOutlined,
     KnowledgeSidebar,
     KnowledgeArticleControl,
-    KnowledgeDrawer,
     KnowledgeMentionedList,
     KnowledgeEditHeader,
-    // TiptapEditorContainer,
     EditorContent,
-    // TiptapEditable,
-    // GoBackIcon,
     KnowledgeBindPanel,
     KnowledgeEditForm,
-    // SectionArticleTipTap,
-    // Comment,
     KnowledgeCustomMessage
   },
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const store = useStore();
     const isLoading = ref(false);
     const knowledgeEntityId = ref(route.query.knowledgeEntityId as string);
     const repositoryEntityId = ref(route.query.repositoryEntityId as string);
@@ -144,7 +132,6 @@ export default defineComponent({
         });
       }
     };
-
     const sidebarElementList = [{
       label: '知识点',
       value: 'knowledge'
@@ -152,16 +139,7 @@ export default defineComponent({
       label: '知识关联',
       value: 'edge'
     }];
-
     const activeKey = ref('1');
-    // const knowledgeEdit = new KnowledgeEdit();
-    // const knowledgeForm = computed(() => ({
-    //   repositoryEntityId: repositoryEntityId.value,
-    //   name: (<KnowledgeModelType>knowledge.target?.content).name,
-    //   knowledgeBaseTypeId: (<KnowledgeModelType>knowledge.target?.content).knowledgeBaseTypeId,
-    // }));
-
-    console.log(editor);
     onMounted(async () => {
       isLoading.value = true;
       await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
@@ -183,11 +161,8 @@ export default defineComponent({
     const goBack = () => {
       router.go(-1);
     };
-    const a = ref();
     return {
-      a,
       editor,
-      // knowledgeForm,
       knowledge,
       knowledgeDescription,
       knowledgeDrawer,

@@ -7,22 +7,17 @@ import { Range, Editor as CoreEditor } from '@tiptap/core';
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import { EditorView } from 'prosemirror-view';
 import CharacterCount from '@tiptap/extension-character-count';
-import Document from '@tiptap/extension-document';
 import Image from '@tiptap/extension-image';
-import Paragraph from '@tiptap/extension-paragraph';
-import Text from '@tiptap/extension-text';
 import StarterKit from '@tiptap/starter-kit';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import {
   Editor, JSONContent, useEditor, VueRenderer
 } from '@tiptap/vue-3';
 import tippy, { Instance } from 'tippy.js';
-import { Ref } from 'vue';
-import { CustomTestMention } from '@/test.components/tiptap-demo/custom-tiptap-node/custom.mention';
+import { Ref, isRef } from 'vue';
 import { tiptapInitData } from '@/store/constant';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
 import { CustomMention } from './tiptap.custom.mention';
-import VueComponent from '@/test.components/tiptap-demo/custom-tiptap-node/extention';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -33,15 +28,17 @@ export abstract class AbstractTiptapTextEditor {
 
   protected abstract limit?: number;
 
+  protected abstract editable: boolean;
+
   /**
    * 保存文本
    * @param params
    * @protected
    */
   protected abstract save(params: {
-    content: any,
+    content: JSONContent,
     contentHtml: string
-  }): void;
+  }): Promise<boolean>;
 
   /**
    * 响应点击事件
@@ -54,7 +51,7 @@ export abstract class AbstractTiptapTextEditor {
   /**
    * 初始化数据
    */
-  abstract initData(): void;
+  abstract initData(params?: { [key: string]: any }): void;
 
   /**
    * 引用知识点
@@ -63,7 +60,7 @@ export abstract class AbstractTiptapTextEditor {
   abstract handleMention(params: {
     name: string,
     id: string,
-    content: any,
+    content: JSONContent,
     contentHtml: string,
     range: Range
   }): void;
@@ -87,7 +84,7 @@ export abstract class AbstractTiptapTextEditor {
   success(range: Range, customCommandProps: {
     id: string,
     name: string
-  }): undefined | Record<string, any> {
+  }): undefined | JSONContent {
     if (!this.editor?.value) {
       return undefined;
     }
@@ -121,7 +118,7 @@ export abstract class AbstractTiptapTextEditor {
   fail(range: Range, customCommandProps: {
     id: string,
     name: string
-  }): undefined | Record<string, any> {
+  }): undefined | JSONContent {
     if (!this.editor?.value) {
       return undefined;
     }
@@ -155,22 +152,17 @@ export abstract class AbstractTiptapTextEditor {
     const _this = this;
 
     this.editor = useEditor({
-      editable: true,
+      editable: this.editable,
       content: articleContent ?? tiptapInitData,
       editorProps: {
         handleClick: (view: EditorView, pos: number, event: MouseEvent) => {
-          console.log(view, pos, event);
           _this.handleClick(view, pos, event);
           return true;
         }
       },
       extensions: [
-        // Document,
-        // Paragraph,
         StarterKit,
         Image,
-        // Text,
-        // VueComponent,
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
         }),
@@ -180,7 +172,6 @@ export abstract class AbstractTiptapTextEditor {
           },
           suggestion: {
             items: (params: { query: string }) => {
-              console.log(params.query);
               return _this.mentionKnowledgeList
                 .filter(
                   (item: EntityCompletelyListItemType) => (item.content as KnowledgeModelType)
@@ -218,7 +209,6 @@ export abstract class AbstractTiptapTextEditor {
                   return component.ref?.onKeyDown(suggestionProps) as boolean;
                 },
                 onExit(suggestionProps: SuggestionProps) {
-                  console.log('exits ------- ', suggestionProps);
                   popup[0].destroy();
                   component.destroy();
                 },
@@ -229,7 +219,6 @@ export abstract class AbstractTiptapTextEditor {
               range: Range,
               editor: CoreEditor,
             }) => {
-              console.log(commandProps);
               const { range } = commandProps;
               const customCommandProps = commandProps.props;
               const coreEditor = commandProps.editor;

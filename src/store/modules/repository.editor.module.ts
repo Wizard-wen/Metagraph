@@ -191,14 +191,15 @@ export const repositoryEditorModule: Module<RepositoryEditorStateType, RootState
     // 保存section article
     async [ActionEnum.SAVE_SECTION_CONTENT]({ state }, {
       content,
-      contentHtml
+      contentHtml,
+      sectionId
     }) {
-      if (state.selectedTreeNodeSectionKeys.length === 0) {
-        // 当前没有选中的单元
-        return;
-      }
+      // if (state.selectedTreeNodeSectionKeys.length === 0) {
+      //   // 当前没有选中的单元
+      //   return;
+      // }
       await SectionApiService.saveSectionArticle({
-        sectionId: state.selectedTreeNodeSectionKeys[0],
+        sectionId,
         content,
         contentHtml
       });
