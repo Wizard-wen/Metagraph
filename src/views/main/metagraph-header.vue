@@ -33,14 +33,20 @@
         </div>
         <div class="has-login" v-else>
           <ant-dropdown>
-            <ant-avatar :src="user.avatar"></ant-avatar>
+            <ant-avatar :src="user.avatar" style="cursor: pointer"></ant-avatar>
             <template #overlay>
               <ant-menu>
                 <ant-menu-item @click="goRepositoryPage">
                   我的知识库
                 </ant-menu-item>
                 <ant-menu-item @click="goStarPage">
-                  赞过的
+                  我赞过的
+                </ant-menu-item>
+                <ant-menu-item @click="goFollowedPage">
+                  我关注的人
+                </ant-menu-item>
+                <ant-menu-item @click="goFollowerPage">
+                  关注我的人
                 </ant-menu-item>
                 <ant-menu-item @click="goUserEditPage">
                   设置
@@ -59,12 +65,11 @@
 
 <script lang="ts">
 import {
-  computed,
-  defineComponent, onMounted, ref
+  computed, defineComponent
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { useStore } from '@/store';
+import { MutationEnum, useStore } from '@/store';
 
 export default defineComponent({
   name: 'metagraph-header',
@@ -76,7 +81,7 @@ export default defineComponent({
     const store = useStore();
     const isLogin = computed(() => store.state.user.isLogin);
     const userModel = computed(() => store.state.user.user);
-    const token = computed(() => store.state.user.tokenState);
+    const token = computed(() => store.state.user.token);
     const goSignInPage = async () => {
       await router.push('/login');
     };
@@ -116,6 +121,28 @@ export default defineComponent({
         }
       });
     };
+
+    const goFollowedPage = async () => {
+      if (userModel.value === undefined) return;
+      await router.push({
+        path: '/profile',
+        query: {
+          id: userModel.value.id,
+          tabKey: '4'
+        }
+      });
+    };
+
+    const goFollowerPage = async () => {
+      if (userModel.value === undefined) return;
+      await router.push({
+        path: '/profile',
+        query: {
+          id: userModel.value.id,
+          tabKey: '5'
+        }
+      });
+    };
     const goSignUpPage = async () => {
       await router.push('/signup');
     };
@@ -124,17 +151,17 @@ export default defineComponent({
     };
     const handleSearch = async (event: any) => {
       await router.push({
-        name: 'RepositoryList',
-        params: {
-          name: event
+        path: '/repository/list',
+        query: {
+          name: event ?? ''
         }
       });
     };
     const signOut = async () => {
+      store.commit(MutationEnum.CLEAR_USER_MODEL);
       await router.push({
         name: 'Login'
       });
-      localStorage.clear();
     };
     return {
       goSignInPage,
@@ -149,7 +176,9 @@ export default defineComponent({
       signOut,
       token,
       goKnowledgeMap,
-      user: userModel
+      user: userModel,
+      goFollowedPage,
+      goFollowerPage
     };
   }
 });
@@ -189,6 +218,13 @@ export default defineComponent({
   .right {
     display: flex;
     align-items: center;
+
+    .login-status {
+      .no-login {
+        display: flex;
+        gap: 10px;
+      }
+    }
   }
 
   .search {

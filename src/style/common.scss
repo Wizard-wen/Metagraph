@@ -37,3 +37,14 @@ $borderRadius: 2px;
   color: #FFFFFF;
   cursor: pointer;
 }
+
+.custom-input-style {
+  ::v-deep(.ant-input) {
+    background: #FFFFFF !important;
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    &:focus {
+      background: #FFFFFF !important;
+      -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    }
+  }
+}

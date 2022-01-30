@@ -21,8 +21,6 @@ import {
   computed, defineComponent, reactive, inject, ref
 } from 'vue';
 import { isEditableKey } from '@/views/repository-editor/provide.type';
-import { MutationEnum, useStore } from '@/store';
-import { ToolbarState } from '@/types/toolbar';
 import ToolbarEntityList from './toolbar/bind-entity-list/bind-entity-list.vue';
 // import ToolbarKnowledgeEdge from './toolbar/toolbar.knowledge.edge.vue';
 import AlternativeKnowledgeList from './toolbar/alternative-knowledge-list/alternative-knowledge-list.vue';
@@ -30,9 +28,8 @@ import AlternativeKnowledgeList from './toolbar/alternative-knowledge-list/alter
 export default defineComponent({
   name: 'Toolbar',
   setup() {
-    const store = useStore();
     const isEditable = inject(isEditableKey, ref(false));
-    const toolbarState = computed(() => store.state.repositoryEditor.toolbarState);
+    const toolbarState = ref('EntityList');
     const elementTabs = reactive<{
       target: { value: string; label: string; isAuth: boolean }[]
     }>({
@@ -56,8 +53,8 @@ export default defineComponent({
       }
       return elementTabs.target.filter((item) => !item.isAuth);
     });
-    const setToolbarState = (value: ToolbarState) => {
-      store.commit(MutationEnum.SET_TOOLBAR_STATE, value);
+    const setToolbarState = (value: 'EntityList' | 'Alternative') => {
+      toolbarState.value = value;
     };
     const currentPanelComponent = computed(() => {
       const panelMap: { [key: string]: unknown } = {

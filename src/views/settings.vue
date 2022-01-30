@@ -28,6 +28,7 @@
 </template>
 
 <script lang="ts">
+import { Settings } from '@/views/settings/settings';
 import {
   defineComponent, onMounted, reactive, computed
 } from 'vue';
@@ -60,15 +61,16 @@ export default defineComponent({
     });
     const routerList = reactive([
       { path: '/settings/profile', name: '用户信息' },
-      // { path: '/settings/account', name: 'Account' },
+      { path: '/settings/bindEmail', name: '绑定邮箱' },
       { path: '/settings/security', name: '更改密码' }
     ]);
     const userModel = computed(() => store.state.user.user);
-    onMounted(() => {
+    const settings = new Settings();
+    onMounted(async () => {
       if (userModel.value) {
         user.target = userModel.value;
       }
-      console.log(user);
+      await settings.getUserModel();
     });
     return {
       user,

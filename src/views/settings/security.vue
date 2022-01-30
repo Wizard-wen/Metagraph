@@ -8,13 +8,19 @@
     @finish="handleFinish"
     @finishFailed="handleFinishFailed"
     :label-col="labelCol" :wrapper-col="wrapperCol">
-    <ant-form-item label="旧密码" name="oldPassword" class="ant-form-item-style">
+    <ant-form-item
+      label="旧密码" name="oldPassword"
+      class="ant-form-item-style custom-input-style">
       <ant-input type="password" v-model:value="formState.oldPassword"/>
     </ant-form-item>
-    <ant-form-item label="新密码" name="newPassword" class="ant-form-item-style">
+    <ant-form-item
+      label="新密码" name="newPassword"
+      class="ant-form-item-style custom-input-style">
       <ant-input type="password" v-model:value="formState.newPassword"/>
     </ant-form-item>
-    <ant-form-item label="请确认新密码" name="confirmNewPassword" class="ant-form-item-style">
+    <ant-form-item
+      label="请确认新密码" name="confirmNewPassword"
+      class="ant-form-item-style custom-input-style">
       <ant-input type="password" v-model:value="formState.confirmNewPassword"/>
     </ant-form-item>
     <ant-form-item :wrapper-col="{ span: 8 }">
@@ -123,8 +129,5 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.ant-form-item-style {
-  //margin-bottom: 0px;
-}
-
+@import "../../style/common.scss";
 </style>

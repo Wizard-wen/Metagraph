@@ -51,7 +51,7 @@ function getBase64(img: Blob, callback: (base64Url: string) => void) {
 }
 
 export default defineComponent({
-  name: 'upload.qiniu',
+  name: 'upload-qiniu',
   props: {
     modelValue: {
       type: String,

@@ -58,11 +58,11 @@ import {
   customFieldsValidate
 } from './model/knowledge.edit';
 import { KnowledgeApiService } from '@/api.service';
-import AddFieldModal from '@/views/knowledge-edit/add-field-modal.vue';
+import AddFieldModal from '@/views/knowledge-edit/knowledge-custom-fields/add-field-modal.vue';
 
 const { useForm } = Form;
 export default defineComponent({
-  name: 'knowledge-custom-message',
+  name: 'knowledge-custom-fields',
   setup() {
     const knowledgeEdit = new KnowledgeEdit();
     const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);

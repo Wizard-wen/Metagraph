@@ -17,8 +17,7 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    const queryName = ref('');
-    queryName.value = route.params.name as string;
+    const queryName = ref(route.query.name as string);
     // const current = ref(0);
     // const total = ref(0);
     // const result = await RepositoryApiService.getRepositoryList({

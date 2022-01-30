@@ -4,7 +4,7 @@
  */
 
 import { message } from 'ant-design-vue';
-import { store } from '@/store';
+import { MutationEnum, store } from '@/store';
 import { ErrorDetailSystemApiService } from '@/api.service/system/error.detail.system.api.service';
 import router from '@/router';
 import 'ant-design-vue/dist/antd.css';
@@ -35,6 +35,8 @@ axios.interceptors.response.use((response: AxiosResponse<PublicApiResponseType<a
       type: 'business'
     })
       .then();
+    // 清空当前用户localstorage
+    store.commit(MutationEnum.CLEAR_USER_MODEL);
     router.push('/login')
       .then();
   }

@@ -1,3 +1,8 @@
+/**
+ * @author songxiwen
+ * @date  2022/1/7 18:14
+ */
+
 import {
   DomainBaseTypeModelType,
   DomainModelType,
@@ -5,11 +10,6 @@ import {
 } from 'metagraph-constant';
 import { reactive, ref } from 'vue';
 import { DomainNoAuthApiService } from '@/api.service';
-
-/**
- * @author songxiwen
- * @date  2022/1/7 18:14
- */
 
 export const domainTree = reactive<{
   target: DomainTreeNodeResponseType[]
@@ -42,7 +42,7 @@ export const domain = reactive<{
   target: []
 });
 
-export class DomainSelect {
+export class DomainSelector {
   async getDomainTree(domainBaseTypeId: string): Promise<void> {
     const response = await DomainNoAuthApiService.getTree({ domainBaseTypeId });
     if (response.data) {

@@ -3,9 +3,9 @@
     <repository-list-icon class="repo-icon"></repository-list-icon>
     <div class="content">
       <div class="title">
-        <span>{{ repository.author.name }}</span>
+        <span @click="goUserProfilePage">{{ repository.author.name }}</span>
         <span>/</span>
-        <span>{{ repository.content.name }}</span>
+        <span @click="goRepositoryPage">{{ repository.content.name }}</span>
         <ant-tag class="type-tag">知识库</ant-tag>
       </div>
       <div class="description">
@@ -32,8 +32,12 @@
 
 <script lang="ts">
 import { EntityCompletelyListItemType } from 'metagraph-constant';
-import { defineComponent, PropType } from 'vue';
+import {
+  computed, defineComponent, PropType, toRef
+} from 'vue';
+import { useRouter } from 'vue-router';
 import { StarIcon, CommentIcon, RepositoryListIcon } from '@/components/icons';
+import { useStore } from '@/store';
 
 export default defineComponent({
   name: 'repository-list-item',
@@ -48,8 +52,32 @@ export default defineComponent({
     StarIcon,
     CommentIcon
   },
-  setup() {
-
+  setup(props) {
+    const store = useStore();
+    const router = useRouter();
+    const repository = toRef(props, 'repository');
+    const userModel = computed(() => store.state.user.user);
+    const goRepositoryPage = async () => {
+      await router.push({
+        name: 'RepositoryEditor',
+        query: {
+          repositoryEntityId: repository.value.entity.id,
+          type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
+        }
+      });
+    };
+    const goUserProfilePage = async () => {
+      await router.push({
+        path: '/profile',
+        query: {
+          id: repository.value.author.id
+        }
+      });
+    };
+    return {
+      goRepositoryPage,
+      goUserProfilePage
+    };
   }
 });
 </script>
@@ -78,6 +106,8 @@ export default defineComponent({
       margin-bottom: 5px;
       display: flex;
       gap: 5px;
+      cursor: pointer;
+      align-items: center;
 
       .type-tag {
         display: inline-block;

@@ -76,8 +76,8 @@ import {
   defineComponent, onMounted, ref, inject
 } from 'vue';
 import { EditOutlined } from '@ant-design/icons-vue';
-import DomainSelectModal from '@/business/domain-select/domain-select-modal.vue';
-import KnowledgeTagModal from '@/views/knowledge-edit/knowledge-tag-modal.vue';
+import { DomainSelectModal } from '@/business';
+import KnowledgeTagModal from './knowledge-base-message-form/knowledge-tag-modal.vue';
 import {
   KnowledgeEdit,
   domainList,
@@ -87,7 +87,6 @@ import {
   knowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
 } from './model/knowledge.edit';
-import { DomainSelect } from '@/business';
 import { EditIcon, SaveIcon } from '@/components/icons';
 
 interface FormState {
@@ -144,7 +143,6 @@ export default defineComponent({
     }) {
       isModalVisible.value = false;
       if (event && knowledgeEntityId?.value) {
-        // knowledgeForm.tagList = event.selectedTagList;
         await knowledgeEdit.getKnowledge(knowledgeEntityId?.value);
       }
     }

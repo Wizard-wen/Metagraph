@@ -4,6 +4,7 @@
       <div class="login-image">
         <img :src="'./hogwarts-logo.webp'" alt="" height="300" width="300">
       </div>
+      <div class="project-name">Metagraph</div>
       <ant-form
         id="components-form-demo-normal-login"
         ref="formRef"
@@ -18,7 +19,9 @@
           </ant-input>
         </ant-form-item>
         <ant-form-item name="password">
-          <ant-input class="custom-input-style" v-model:value="formState.password" type="password" placeholder="密码">
+          <ant-input
+            class="custom-input-style"
+            v-model:value="formState.password" type="password" placeholder="密码">
             <template #prefix>
               <LockOutlined/>
             </template>
@@ -27,6 +30,9 @@
         <ant-form-item>
           <ant-button class="login-form-button" type="primary" @click="login">登录</ant-button>
           <ant-button class="login-form-button" @click="register">注册</ant-button>
+          <div class="back">
+            <ant-button type="link" @click="goHomePage">回到首页</ant-button>
+          </div>
         </ant-form-item>
       </ant-form>
     </div>
@@ -94,6 +100,13 @@ export default defineComponent({
     const register = async () => {
       await router.push('/signup');
     };
+
+    const goHomePage = async () => {
+      await router.replace({
+        path: '/',
+        force: true
+      });
+    };
     return {
       formRef,
       labelCol: { span: 0 },
@@ -102,38 +115,41 @@ export default defineComponent({
       rules,
       login,
       resetForm,
-      register
+      register,
+      goHomePage
     };
   },
 });
 </script>
 <style lang="scss" scoped>
 @import '../style/common.scss';
+@import url('https://fonts.googleapis.com/css2?family=Comforter&family=Noto+Sans+SC:wght@300;400&display=swap');
 
 .login-page {
   height: 100vh;
   width: 100%;
-  //background: url('../assets/login-bg.webp') no-repeat center center fixed;
-  //-webkit-background-size: cover;
-  //-moz-background-size: cover;
-  //-o-background-size: cover;
-  //background-size: cover;
   background: $backgroundColor;
 
   .login-box {
     background: rgba(255, 255, 255, .3);
     width: 440px;
-    height: 600px;
+    height: 660px;
     border: 1px solid $borderColor;
     border-radius: 6px;
     position: fixed;
     left: calc(50% - 220px);
-    top: calc(50% - 300px);
+    top: calc(50% - 330px);
 
     .login-image {
       height: 300px;
       width: 300px;
-      margin: 20px auto 42px;
+      margin: 20px auto 5px;
+    }
+
+    .project-name {
+      font-family: 'Comforter', cursive;
+      margin-bottom: 20px;
+      font-size: 35px;
     }
 
     #components-form-demo-normal-login {
@@ -151,8 +167,6 @@ export default defineComponent({
     }
 
     .custom-input-style {
-      //background: red;
-
       ::v-deep(.ant-input) {
         background: #FFFFFF !important;
         -webkit-box-shadow: 0 0 0 1000px #ffffff inset;

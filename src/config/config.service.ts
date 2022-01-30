@@ -8,11 +8,11 @@ export class ConfigService {
 
   private static apiTestBaseURL = 'https://www.metagraph.design/api'
 
-  static apiBaseURL = ConfigService.apiLocalBaseURL;
+  static apiBaseURL = ConfigService.apiTestBaseURL;
 
   private static websocketLocalBaseURL = 'ws://localhost:8089'
 
   private static websocketTestBaseURL = 'wss://www.metagraph.design/websocket'
 
-  static websocketBaseURL = ConfigService.websocketLocalBaseURL;
+  static websocketBaseURL = ConfigService.websocketTestBaseURL;
 }

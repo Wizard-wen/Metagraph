@@ -1,13 +1,13 @@
 <template>
   <div class="home">
     <div class="aside" v-if="isLogin">
-      <home-aside></home-aside>
+      <home-page-aside></home-page-aside>
     </div>
     <div class="content">
-      <home-main></home-main>
+      <home-page-main-list></home-page-main-list>
     </div>
     <div class="explore">
-      <home-explore></home-explore>
+      <home-page-hot-list></home-page-hot-list>
     </div>
   </div>
 </template>
@@ -16,16 +16,14 @@
 import { computed, defineComponent } from 'vue';
 import { HomePage } from '@/views/home-page/home.page';
 import { useStore } from '@/store';
-import HomeAside from './home-page/home.aside.vue';
-import HomeMain from './home-page/home.main.vue';
-import HomeExplore from './home-page/home.explore.vue';
+import { HomePageMainList, HomePageHotList, HomePageAside } from './home-page/index';
 
 export default defineComponent({
   name: 'HomePage',
   components: {
-    HomeAside,
-    HomeMain,
-    HomeExplore
+    HomePageMainList,
+    HomePageHotList,
+    HomePageAside
   },
   setup() {
     const store = useStore();
@@ -35,7 +33,8 @@ export default defineComponent({
       Promise.all([
         homePage.getHotList(),
         homePage.getOwnRepositoryList(),
-        homePage.getRepositoryList()
+        // homePage.getRepositoryList(),
+        homePage.getActivityList()
       ]);
     } else {
       Promise.all([

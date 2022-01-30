@@ -15,6 +15,7 @@ export { SectionApiService } from './section.api.service';
 export { StarApiService } from './star.api.service';
 export { TagApiService } from './tag.api.service';
 export { UserApiService } from './user.api.service';
+export { EntityApiService } from './entity.api.service';
 // no.auth api
 export { RepositoryNoAuthApiService } from './no.auth/repository.no.auth.api.service';
 export { EdgeNoAuthApiService } from './no.auth/edge.no.auth.api.service';
@@ -22,3 +23,4 @@ export { KnowledgeNoAuthApiService } from './no.auth/knowledge.no.auth.api.servi
 export { CommentNoAuthApiService } from './no.auth/comment.no.auth.api.service';
 export { SectionNoAuthApiService } from './no.auth/section.no.auth.api.service';
 export { DomainNoAuthApiService } from './no.auth/domain.no.auth.api.service';
+export { UserNoAuthApiService } from './no.auth/user.no.auth.api.service';

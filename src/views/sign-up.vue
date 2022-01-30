@@ -1,39 +1,51 @@
 <template>
   <div class="repo-description">
     <h3>用户注册</h3>
-    <span>成为注册用户，开始创作你的知识图谱！</span>
+    <span>成为注册用户，开始创作你的知识库！</span>
   </div>
   <div class="sign-up">
     <ant-form
+      autocomplete="off"
       ref="formRef"
       :model="signUpFormState"
       :rules="rules"
       :label-col="labelCol"
       :wrapper-col="wrapperCol">
-      <ant-form-item ref="name" label="用户名" name="name">
-        <ant-input v-model:value="signUpFormState.name"/>
+      <ant-form-item ref="name" label="用户名" name="name" class="custom-input-style">
+        <ant-input autocomplete="off" v-model:value="signUpFormState.name"/>
       </ant-form-item>
-      <ant-form-item ref="password" label="密码" name="password">
-        <ant-input-password v-model:value="signUpFormState.password"/>
+      <ant-form-item
+        ref="password"
+        label="密码"
+        name="password">
+        <ant-input-password
+          autocomplete="new-password"
+          class="custom-input-style"
+          v-model:value="signUpFormState.password"/>
       </ant-form-item>
-      <ant-form-item ref="confirmPassword" label="确认密码" name="confirmPassword">
-        <ant-input-password v-model:value="signUpFormState.confirmPassword"/>
+      <ant-form-item
+        ref="confirmPassword"
+        label="确认密码"
+        name="confirmPassword">
+        <ant-input-password
+          class="custom-input-style"
+          v-model:value="signUpFormState.confirmPassword"/>
       </ant-form-item>
       <ant-form-item label="头像" ref="formIconRef" name="avatar">
-        <upload-qiniu
-          v-model="signUpFormState.avatar"
-          @update:modelValue="handleIconChange"></upload-qiniu>
+        <upload-form-item
+          :image-type="'avatar'"
+          :title="'上传头像'" v-model="signUpFormState.avatar"></upload-form-item>
       </ant-form-item>
       <ant-form-item label="账号类型" ref="type" name="type">
         <ant-radio-group v-model:value="signUpFormState.type">
           <ant-radio value="personal">个人</ant-radio>
-          <ant-radio value="organization">企业</ant-radio>
+          <ant-radio disabled value="organization">企业</ant-radio>
         </ant-radio-group>
       </ant-form-item>
-      <ant-form-item ref="phone" label="手机号" name="phone">
+      <ant-form-item ref="phone" label="手机号" name="phone" class="custom-input-style">
         <ant-input v-model:value="signUpFormState.phone"/>
       </ant-form-item>
-      <ant-form-item ref="email" label="邮箱" name="email">
+      <ant-form-item ref="email" label="邮箱" name="email" class="custom-input-style">
         <ant-input v-model:value="signUpFormState.email"/>
       </ant-form-item>
       <ant-form-item :wrapper-col="{ span: 14, offset: 4 }">
@@ -46,14 +58,16 @@
 
 </template>
 <script lang="ts">
+import { customFormRules } from '@/views/settings/custom.form.rules';
 import { message } from 'ant-design-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
   defineComponent, reactive, ref, UnwrapRef
 } from 'vue';
 import { useRouter } from 'vue-router';
+import UploadFormItem from '@/components/upload/upload-form-item.vue';
+import { UserNoAuthApiService } from '@/api.service/no.auth/user.no.auth.api.service';
 import { UserApiService } from '@/api.service';
-import UploadQiniu from '@/components/upload/upload.qiniu.vue';
 
 interface SignUpFormState {
   name: string;
@@ -67,7 +81,7 @@ interface SignUpFormState {
 
 export default defineComponent({
   components: {
-    UploadQiniu
+    UploadFormItem,
   },
   setup() {
     const formRef = ref();
@@ -83,18 +97,19 @@ export default defineComponent({
       type: 'personal'
     });
     const rules = {
-      name: [
-        { required: true, message: '请输入用户名', trigger: 'blur' },
-      ],
+      name: customFormRules.name,
+      phone: customFormRules.phone,
       password: [
         {
           required: true,
           trigger: 'blur',
-          validator: (rule: any, value: string, callback: any) => {
-            if (!value) {
-              callback(new Error('请输入密码'));
-            }
-            callback();
+          validator(rule: any, value: string): Promise<void> {
+            return new Promise((resolve, reject) => {
+              if (!value) {
+                reject('请输入密码');
+              }
+              resolve();
+            });
           }
         }
       ],
@@ -102,23 +117,21 @@ export default defineComponent({
         {
           required: true,
           trigger: 'blur',
-          validator: (rule: any, value: string, callback: any) => {
-            if (!value) {
-              callback(new Error('请输入密码'));
-            }
-            if (value !== signUpFormState.password) {
-              callback(new Error('两次输入密码不一致'));
-            }
-            callback();
+          validator(rule: any, value: string): Promise<void> {
+            return new Promise((resolve, reject) => {
+              if (!value) {
+                reject('请输入密码');
+              }
+              if (value !== signUpFormState.password) {
+                reject('两次输入密码不一致');
+              }
+              resolve();
+            });
           }
         },
       ],
-      email: [
-        { required: true, message: '请输入邮箱', trigger: 'blur' },
-      ],
-      avatar: [
-        { required: true, message: '请上传头像', trigger: 'change' },
-      ]
+      email: customFormRules.email,
+      avatar: customFormRules.avatar
     };
     const handleIconChange = (event: any) => {
       signUpFormState.avatar = event;
@@ -134,9 +147,13 @@ export default defineComponent({
             message.info('注册成功，请登录！');
             await router.push('/login');
           }
+          if (result.message) {
+            message.error('注册时出现问题！');
+          }
         })
         .catch((error: ValidateErrorEntity<SignUpFormState>) => {
-          console.log('error', error);
+          console.log(error);
+          message.error('注册时出现问题！');
         });
     };
     const resetForm = () => {
@@ -150,7 +167,6 @@ export default defineComponent({
       formIconRef,
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
-      other: '',
       signUpFormState,
       rules,
       handleSignUp,
@@ -163,6 +179,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @import "../style/common.scss";
+
 .repo-description {
   width: 800px;
   margin: 0 auto;
@@ -170,6 +187,7 @@ export default defineComponent({
   text-align: left;
   border-bottom: 1px solid $borderColor;
 }
+
 .sign-up {
   padding-top: 50px;
   width: 650px;

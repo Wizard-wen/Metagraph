@@ -5,31 +5,20 @@
       选择文件
     </ant-button>
     <div class="image-box" v-if="url">
-      <img :src="url" alt="">
+      <img :src="url" alt="" :class="{'avatar-style': imageType === 'avatar'}">
     </div>
   </div>
   <upload-cropper-modal
     v-if="isModalShow"
     :is-modal-visible="isModalShow"
-    :title="'上传仓库封面'"
+    :title="title"
     @close="handleModalClose($event)"></upload-cropper-modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef } from 'vue';
+import { defineComponent, PropType, ref, toRef } from 'vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
 import UploadCropperModal from '@/components/upload/upload-cropper-modal.vue';
-
-interface FileItem {
-  uid: string;
-  name?: string;
-  status?: string;
-  response?: string;
-  url?: string;
-  preview?: string;
-  originFileObj?: any;
-  file: string | Blob;
-}
 
 export default defineComponent({
   name: 'upload-form-item',
@@ -38,6 +27,14 @@ export default defineComponent({
     UploadCropperModal
   },
   props: {
+    title: {
+      type: String,
+      required: true
+    },
+    imageType: {
+      type: String as PropType<'avatar' | 'image' | 'cover' | 'thumb'>,
+      default: 'image'
+    },
     modelValue: {
       type: String,
       required: true
@@ -87,6 +84,13 @@ export default defineComponent({
       display: inline-block;
       max-height: 300px;
     }
+  }
+
+  .avatar-style {
+    border-radius: 50%;
+    display: inline-block;
+    max-height: 150px;
+    max-width: 150px;
   }
 }
 

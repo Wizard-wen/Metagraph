@@ -79,7 +79,7 @@ export default defineComponent({
         star.total = result.data?.user.total;
       }
       if (result.code !== 0) {
-        message.error(result.message || '获取点赞列表时出错！')
+        message.error(result.message || '获取点赞列表时出错！');
       }
       isLoading.value = false;
     }

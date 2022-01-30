@@ -23,6 +23,7 @@ import ToggleStrikeControl
   from '@/components/tiptap-text-editor/controls/toggle-strike-control.vue';
 import UndoControl from '@/components/tiptap-text-editor/controls/undo-control.vue';
 import UploadImageControl from '@/components/tiptap-text-editor/controls/upload-image-control.vue';
+import ToggleTaskControl from '@/components/tiptap-text-editor/controls/toggle-task-control.vue';
 
 export {
   FindControl,
@@ -39,5 +40,6 @@ export {
   ToggleOrderedListControl,
   ToggleCodeControl,
   UploadImageControl,
-  ToggleStrikeControl
+  ToggleStrikeControl,
+  ToggleTaskControl
 };

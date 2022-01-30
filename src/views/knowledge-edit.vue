@@ -34,7 +34,7 @@
                 :style="{fontSize: articleFontSize + 'px'}"
                 class="tip-tap-editor custom-editor-style" :editor="editor"/>
             </div>
-            <knowledge-custom-message></knowledge-custom-message>
+            <knowledge-custom-fields></knowledge-custom-fields>
             <knowledge-pictures></knowledge-pictures>
             <div style="height: 250px;width: 100%;"></div>
           </div>
@@ -68,16 +68,18 @@ import {
   provide, defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import KnowledgePictures from '@/views/knowledge-edit/knowledge-pictures.vue';
 import { KnowledgeTiptapTextEditor } from '@/components/tiptap-text-editor/knowledge.tiptap.text.editor';
-import { useStore } from '@/store';
-import KnowledgeArticleControl from '@/views/knowledge-edit/knowledge-article-control.vue';
-import KnowledgeBindPanel from '@/views/knowledge-edit/knowledge-bind-panel.vue';
-import KnowledgeEditHeader from '@/views/knowledge-edit/knowledge-edit-header.vue';
-import KnowledgeMentionedList from '@/views/knowledge-edit/knowledge-mentioned-list.vue';
-import KnowledgeCustomMessage from '@/views/knowledge-edit/knowledge-custom-message.vue';
-import KnowledgeSidebar from '@/views/knowledge-edit/knowledge-sidebar.vue';
-import KnowledgeEditForm from '@/views/knowledge-edit/knowledge-edit-form.vue';
+import {
+  KnowledgeArticleControl,
+  KnowledgePictures,
+  KnowledgeBindPanel,
+  KnowledgeEditHeader,
+  KnowledgeMentionedList,
+  KnowledgeCustomFields,
+  KnowledgeSidebar,
+  KnowledgeEditForm
+} from '@/views/knowledge-edit/index';
+
 import { KnowledgeDrawerContent } from '@/business';
 import {
   KnowledgeEdit,
@@ -102,7 +104,7 @@ export default defineComponent({
     EditorContent,
     KnowledgeBindPanel,
     KnowledgeEditForm,
-    KnowledgeCustomMessage
+    KnowledgeCustomFields
   },
   setup() {
     const route = useRoute();

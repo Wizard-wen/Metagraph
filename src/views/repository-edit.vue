@@ -42,10 +42,13 @@
           </ant-radio-group>
         </ant-form-item>
         <ant-form-item label="知识库领域" name="domain">
-          <domain-select v-model="repositoryFormState.domain"></domain-select>
+          <domain-select-form-item
+            v-model="repositoryFormState.domain"></domain-select-form-item>
         </ant-form-item>
         <ant-form-item label="知识库封面" name="avatar">
-          <upload-form-item v-model="repositoryFormState.avatar"></upload-form-item>
+          <upload-form-item
+            :title="'上传仓库封面'"
+            v-model="repositoryFormState.avatar"></upload-form-item>
         </ant-form-item>
         <ant-form-item label="知识库描述" name="description">
           <ant-text-area v-model:value="repositoryFormState.description"/>
@@ -72,13 +75,14 @@ import {
   repositoryFormRules, repositoryFormRef
 } from '@/views/repository-edit/repository.edit';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
-import { DomainSelect } from '@/business';
+import { DomainSelect, DomainSelectFormItem } from '@/business';
 
 export default defineComponent({
   components: {
     LockOutlined,
     BookOutlined,
     UploadFormItem,
+    DomainSelectFormItem,
     DomainSelect
   },
   setup() {

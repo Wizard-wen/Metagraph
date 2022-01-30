@@ -32,6 +32,21 @@ export class KnowledgeNoAuthApiService {
     });
   }
 
+  static async getPath(params: {
+    originKnowledgeEntityId: string,
+    targetKnowledgeEntityId: string
+  }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{
+      originKnowledgeEntityId: string,
+      targetKnowledgeEntityId: string
+    }, any>({
+      apiPath: ApiPathEnum.GetNoAuthKnowledgePath,
+      requestBody: params
+    });
+  }
+
+
+
   static async getList(params: {
     knowledgeBaseTypeId?: string;
     repositoryId?: string;

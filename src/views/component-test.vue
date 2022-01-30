@@ -1,13 +1,13 @@
 <template>
   <!--  <repository-list-item></repository-list-item>-->
   <div style="width: 500px;">
-    <!--    <search-input></search-input>-->
+        <search-input></search-input>
   </div>
   <!--  <div v-clickoutside="'jjjjjj'" class="ele">-->
 
   <!--  </div>-->
   <div style="width: 300px;">
-    <!--    <animation-input></animation-input>-->
+        <animation-input></animation-input>
   </div>
   <!--  <vue-cropper-test :is-modal-visible="true"></vue-cropper-test>-->
   <!--    <graph-g6></graph-g6>-->
@@ -20,7 +20,7 @@
   <!--  <upload-form-item v-model="imageUrl"></upload-form-item>-->
   <!--  <tiptap-readonly></tiptap-readonly>-->
 <!--  <test-tiptap></test-tiptap>-->
-  <login-in></login-in>
+<!--  <login-in></login-in>-->
 <!--  <knowledge-plan></knowledge-plan>-->
 <!--  <knowledge-preview-card></knowledge-preview-card>-->
 </template>

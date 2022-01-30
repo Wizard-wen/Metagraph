@@ -43,11 +43,16 @@
 <script lang="ts">
 import { JSONContent } from '@tiptap/vue-3';
 import {
-  defineComponent, ref, onBeforeMount, onUnmounted, provide
+  defineComponent, ref, onBeforeMount, onUnmounted, provide, nextTick
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { Empty } from 'ant-design-vue';
-import { SectionTreeService } from '@/views/repository-editor/section-tree/section.tree';
+import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
+import {
+  sectionArticleTiptapTextEditor,
+  sectionTree,
+  SectionTreeService
+} from '@/views/repository-editor/section-tree/section.tree';
 import {
   RepositoryEditor,
   repositoryModel,
@@ -83,15 +88,22 @@ export default defineComponent({
     const sectionTreeService = new SectionTreeService();
     provide(repositoryEntityIdKey, repositoryEntityId);
     provide(isEditableKey, isEditable);
+    const repositoryEditorService = new RepositoryEditor();
+    const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
+      repositoryEntityId.value,
+      isEditable.value
+    );
     // 视图状态
     const viewStatus = ref<'section' | 'graph'>('section');
 
     // 切换视图状态
-    function handleChangeView(view: 'section' | 'graph') {
+    async function handleChangeView(view: 'section' | 'graph') {
       viewStatus.value = view;
+      if (view === 'section') {
+        await sectionTreeService.getSectionTree(repositoryEntityId.value);
+      }
     }
 
-    const repositoryEditorService = new RepositoryEditor();
     const preventContextmenu = (event: MouseEvent) => {
       event.preventDefault();
     };

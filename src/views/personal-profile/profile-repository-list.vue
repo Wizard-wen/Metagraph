@@ -2,7 +2,7 @@
   <template v-if="myRepositoryEntityList.target.length">
     <repository-list-item
       :repository="item"
-                          v-for="item in myRepositoryEntityList.target"></repository-list-item>
+      v-for="item in myRepositoryEntityList.target"></repository-list-item>
   </template>
 
 </template>

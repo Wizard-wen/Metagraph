@@ -10,7 +10,7 @@ import {
   DatePicker, Checkbox, Radio, Dropdown, Menu,
   Avatar, Pagination, Upload, List, Tag, Drawer,
   Descriptions, Col, Row, Empty, Tabs, Timeline,
-  Collapse, Image, Slider, Divider, Tooltip
+  Collapse, Image, Slider, Divider, Tooltip, Alert
 } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import App from './App.vue';
@@ -47,6 +47,7 @@ app.component('AntRow', Row);
 app.component('AntTree', Tree);
 app.component('AntDrawer', Drawer);
 app.component('AntEmpty', Empty);
+app.component('AntAlert', Alert);
 app.component('AntDescriptions', Descriptions);
 app.component('AntDescriptionsItem', Descriptions.Item);
 app.component('AntDirectoryTree', Tree.DirectoryTree);

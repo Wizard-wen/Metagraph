@@ -30,8 +30,11 @@
 import {
   defineProps, defineEmits, ref, computed, toRef, PropType, inject
 } from 'vue';
+import {
+  Modal, CheckboxGroup, Button, Tag
+} from 'ant-design-vue';
 import { TagApiService } from '@/api.service';
-import { tag, KnowledgeEdit, knowledgeEntityIdInjectKey } from './model/knowledge.edit';
+import { tag, KnowledgeEdit, knowledgeEntityIdInjectKey } from '../model/knowledge.edit';
 
 const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
 const props = defineProps({
@@ -73,7 +76,6 @@ const handleLoadMore = async () => {
   tag.currentPage += 1;
   await knowledgeEdit.getTagList();
 };
-
 </script>
 
 <style scoped lang="scss">

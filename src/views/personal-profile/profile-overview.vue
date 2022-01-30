@@ -1,6 +1,6 @@
 <template>
-  <div class="repository-list" v-if="ownRepositoryList.target.length">
-    <template v-for="item in ownRepositoryList.target">
+  <div class="repository-list" v-if="myRepositoryEntityList.target.length">
+    <template v-for="item in myRepositoryEntityList.target">
       <div class="repository-card">
         <div class="card-head">
           <div class="name">
@@ -34,13 +34,9 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, onMounted, reactive, ref, inject, computed
-} from 'vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
-import { userIdKey } from '@/views/personal-profile/personal.profile.provide';
-import { RepositoryNoAuthApiService } from '@/api.service';
+import { defineComponent } from 'vue';
 import { StarIcon, RepositoryListIcon, CommentIcon } from '@/components/icons';
+import { myRepositoryEntityList } from './personal.profile';
 
 export default defineComponent({
   name: 'profile-overview',
@@ -50,24 +46,8 @@ export default defineComponent({
     CommentIcon
   },
   setup() {
-
-    const ownRepositoryList = reactive<{ target: EntityCompletelyListItemType[] }>({ target: [] });
-    const userId = inject(userIdKey, ref(''));
-    const getOwnRepositoryList = async () => {
-      const result = await RepositoryNoAuthApiService.getList({
-        pageIndex: 0,
-        pageSize: 8,
-        userId: userId.value
-      });
-      if (result.data) {
-        ownRepositoryList.target = result.data.list.sort((a, b) => b.star - a.star).slice(0, 6);
-      }
-    };
-    onMounted(async () => {
-      await getOwnRepositoryList();
-    });
     return {
-      ownRepositoryList
+      myRepositoryEntityList
     };
   }
 });

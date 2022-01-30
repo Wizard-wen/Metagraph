@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
         component: Repository
       },
       {
-        path: 'repository/list/:name',
+        path: '/repository/list',
         name: 'RepositoryList',
         component: () => import('@/views/repository-list.vue')
       },
@@ -57,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
             path: 'security',
             name: 'security',
             component: () => import('@/views/settings/security.vue')
+          },
+          {
+            path: 'bindEmail',
+            name: 'bindEmail',
+            component: () => import('@/views/settings/bind-email.vue')
           }
         ]
       }
@@ -86,11 +91,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/signup',
     name: 'SignUp',
     component: () => import('@/views/sign-up.vue')
-  },
-  {
-    path: '/user/star/:userId',
-    name: 'UserStar',
-    component: () => import('@/views/user/user.star.vue')
   },
   {
     path: '/test',

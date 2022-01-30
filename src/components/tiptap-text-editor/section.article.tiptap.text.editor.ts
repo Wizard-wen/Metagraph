@@ -37,9 +37,9 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
    * 改变section节点
    * @param sectionId
    */
-  async updateSection(sectionId: string): Promise<void> {
-    // 更新section 之前先保存之前的section
-    if (this.editor.value?.getJSON() && this.editor.value?.getHTML()) {
+  async updateSection(sectionId: string, isEditable: boolean): Promise<void> {
+    // editable 的情况下更新section 之前先保存之前的section
+    if (isEditable && this.editor.value?.getJSON() && this.editor.value?.getHTML()) {
       await this.save({
         content: this.editor.value?.getJSON(),
         contentHtml: this.editor.value?.getHTML()

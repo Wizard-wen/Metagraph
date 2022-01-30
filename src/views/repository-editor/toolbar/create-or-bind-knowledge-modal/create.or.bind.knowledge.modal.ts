@@ -10,6 +10,7 @@ import type {
   KnowledgeModelType
 } from 'metagraph-constant';
 import {
+  EntityApiService,
   EntityNoAuthApiService,
   KnowledgeApiService,
   RepositoryApiService,
@@ -67,7 +68,7 @@ export class CreateOrBindKnowledgeModal {
 
   async getEntityList(): Promise<void> {
     isLoading.value = true;
-    const result = await EntityNoAuthApiService.getEntityList({
+    const result = await EntityApiService.getEntityList({
       name: searchText.value,
       entityType: 'Knowledge',
       pageIndex: currentPage.value - 1,
@@ -75,7 +76,7 @@ export class CreateOrBindKnowledgeModal {
     });
     isLoading.value = false;
     if (result.data) {
-      const list = result.data.list.map((item) => ({
+      const list = result.data.list.map((item: EntityCompletelyListItemType) => ({
         ...item,
         hasBind: !!repositoryBindEntityList.target.find((binItem) => binItem.entity.id === item.entity.id)
       }));

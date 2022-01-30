@@ -9,7 +9,10 @@
         <div class="repo-list">
           <div class="repo-header">
             知识库列表
-            <ant-button class="new-btn" :size="'small'" @click="goCreateRepositoryPage">
+            <ant-button
+              type="primary"
+              class="new-btn"
+              :size="'small'" @click="goCreateRepositoryPage">
               <template #icon>
                 <PlusOutlined/>
               </template>
@@ -53,14 +56,22 @@ import {
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
+import {
+  Spin, List, Input, Button
+} from 'ant-design-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { useStore } from '@/store';
 import { ownRepositoryList } from './home.page';
 
 export default defineComponent({
-  name: 'home-aside',
+  name: 'home-page-aside',
   components: {
-    PlusOutlined
+    PlusOutlined,
+    AntSpin: Spin,
+    AntList: List,
+    AntListItem: List.Item,
+    AntInput: Input,
+    AntButton: Button
   },
   setup() {
     const router = useRouter();
@@ -137,7 +148,15 @@ export default defineComponent({
           border-radius: 4px;
           height: 28px;
           line-height: 28px;
+          //background: #41B884;
+          //color: #FFF;
         }
+
+        //::v-deep(.ant-btn) {
+        //  .anticon + span {
+        //    margin-left: 3px;
+        //  }
+        //}
       }
 
       .search {

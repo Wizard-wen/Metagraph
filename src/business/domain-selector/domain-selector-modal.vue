@@ -1,7 +1,7 @@
 <template>
   <ant-modal
     :width="800"
-    title="绑定标签"
+    title="修改领域"
     okText="确定"
     cancelText="取消"
     :visible="isModalVisible"
@@ -9,32 +9,34 @@
     :zIndex="5"
     @cancel="handleModalCancel"
     @ok="handleModalOk">
-    <div class="domain-tag-list" v-if="domainList.length">
-      <ant-tag
-        closable
-        @close="handleDeleteDomainTag(index)"
-        v-for="(item, index) in domainList">
-        {{ item.domainName || '-' }}
-      </ant-tag>
-    </div>
-    <div class="domain-form-box">
-      <ant-select
-        style="width: 120px;"
-        @change="handleDomainBaseTypeChange"
-        v-model:value="domainBaseTypeId"
-        placeholder="请选择领域类型">
-        <ant-select-option
-          v-for="item in enabledDomainList"
-          :value="item.id">{{ item.name }}
-        </ant-select-option>
-      </ant-select>
-      <ant-cascader
-        :fieldNames="fieldNames"
-        :disabled="domainTree.target.length === 0"
-        v-model:value="domainIdList.target"
-        :options="domainTree.target" placeholder="请选择领域"/>
-      <ant-button v-if="domainIdList.target.length" @click="addDomain()">添加</ant-button>
-    </div>
+    <ant-spin :spinning="isLoading">
+      <div class="domain-tag-list" v-if="domainList.length">
+        <ant-tag
+          closable
+          @close="handleDeleteDomainTag(index)"
+          v-for="(item, index) in domainList">
+          {{ item.domainName || '-' }}
+        </ant-tag>
+      </div>
+      <div class="domain-form-box">
+        <ant-select
+          style="width: 120px;"
+          @change="handleDomainBaseTypeChange"
+          v-model:value="domainBaseTypeId"
+          placeholder="请选择领域类型">
+          <ant-select-option
+            v-for="item in enabledDomainList"
+            :value="item.id">{{ item.name }}
+          </ant-select-option>
+        </ant-select>
+        <ant-cascader
+          :fieldNames="fieldNames"
+          :disabled="domainTree.target.length === 0"
+          v-model:value="domainIdList.target"
+          :options="domainTree.target" placeholder="请选择领域"/>
+        <ant-button v-if="domainIdList.target.length" @click="addDomain()">添加</ant-button>
+      </div>
+    </ant-spin>
   </ant-modal>
 </template>
 
@@ -48,8 +50,8 @@ import {
   domainBaseTypeId, domainBaseTypeList,
   domainIdList,
   domainList,
-  DomainSelect, domainTree
-} from '@/business/domain-select/domain.select';
+  DomainSelector, domainTree
+} from '@/business/domain-selector/domain.selector';
 
 export default defineComponent({
   name: 'domain-select-modal',
@@ -75,7 +77,8 @@ export default defineComponent({
     const modalConfirmLoading = ref(false);
     const initDomainList = toRef(props, 'domainList');
     domain.target = initDomainList.value;
-    const domainSelect = new DomainSelect();
+    const isLoading = ref(false);
+    const domainSelect = new DomainSelector();
     const fieldNames = {
       label: 'name',
       value: 'key',
@@ -85,10 +88,7 @@ export default defineComponent({
     const enabledDomainList = computed(() => domainBaseTypeList.target.filter(
       (item) => {
         const result = domain.target.find((domainItem) => domainItem.domainBaseTypeId === item.id);
-        if (result) {
-          return false;
-        }
-        return true;
+        return !result;
       }
     ));
 
@@ -122,8 +122,9 @@ export default defineComponent({
     }
 
     async function handleDomainBaseTypeChange(event: any) {
-      console.log(event);
+      isLoading.value = true;
       await domainSelect.getDomainTree(event);
+      isLoading.value = false;
     }
 
     onMounted(async () => {
@@ -145,7 +146,8 @@ export default defineComponent({
       domain,
       handleDeleteDomainTag,
       addDomain,
-      handleDomainBaseTypeChange
+      handleDomainBaseTypeChange,
+      isLoading
     };
   }
 });

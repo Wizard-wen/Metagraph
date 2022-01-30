@@ -1,28 +1,34 @@
 <template>
   <div class="repository-item">
-    <ant-avatar class="icon" :src="repository.author.avatar"></ant-avatar>
+    <ant-avatar  :size="32" class="icon"
+                v-if="activityItem.user.avatar"
+                :src="activityItem.user.avatar"></ant-avatar>
     <div class="content">
-      <div class="title" @click="goUserProfilePage">
-        {{ repository.author.name }}
-      </div>
+      <div class="title" v-html="activityItem.content.content"></div>
       <div class="box">
-        <div class="name" @click="goRepositoryPage($event)">
-          {{ repository.content.name }}
+        <div class="name-content">
+          <div class="name" @click="goRepositoryPage($event)">
+            {{ activityItem.entity.content.name }}
+          </div>
+          <ant-tag color="#2b7489">知识点</ant-tag>
         </div>
-        <div class="des">{{ repository.content.description }}</div>
-        <div class="tag" v-if="repository.content.domain.length">
-          <ant-tag v-for="item in repository.content.domain">
+        <div class="description-content">
+          <div class="description" v-html="activityItem.entity.content.descriptionHTML"></div>
+        </div>
+
+        <div class="tag" v-if="activityItem.entity.content.domain.length">
+          <ant-tag v-for="item in activityItem.entity.content.domain">
             {{ item.domainBaseTypeName }}-{{ item.domainName }}
           </ant-tag>
         </div>
         <div class="others">
           <div class="star">
             <StarOutlined style="margin-right: 8px"/>
-            <div>{{ repository.star }}</div>
+            <div>{{ activityItem.entity.star }}</div>
           </div>
           <div class="star">
             <CommentIcon style="margin-right: 8px"/>
-            <div>{{ repository.comment }}</div>
+            <div>{{ activityItem.entity.comment }}</div>
           </div>
           <div class="updatedAt">更新于 {{ date }}</div>
         </div>
@@ -30,9 +36,9 @@
           v-if="isLogin"
           class="star-btn"
           :loading="isStarButtonDisabled"
-          @click="addStar($event, repository.hasStared)"
-          :type="repository.hasStared ? 'primary': 'default'"
-        >{{ repository.hasStared ? 'Stared' : 'Star' }}
+          @click="addStar($event, activityItem.entity.hasStared)"
+          :type="activityItem.entity.hasStared ? 'primary': 'default'"
+        >{{ activityItem.entity.hasStared ? '已点赞' : '点赞' }}
         </ant-button>
       </div>
     </div>
@@ -40,12 +46,16 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType, StarResponseType } from 'metagraph-constant';
+import {
+  ActivityModelType, EntityCompletelyListItemType, StarResponseType, UserModelType
+} from 'metagraph-constant';
 import {
   defineComponent, toRef, PropType, computed, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { message } from 'ant-design-vue';
+import {
+  message, Button, Avatar, Tag
+} from 'ant-design-vue';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
@@ -54,24 +64,32 @@ import { CommentIcon } from '@/components/icons';
 import { PublicApiResponseType } from '@/utils';
 
 export default defineComponent({
-  name: 'repository-item',
+  name: 'activity-knowledge-item',
   components: {
     StarOutlined,
-    CommentIcon
+    CommentIcon,
+    AntButton: Button,
+    AntAvatar: Avatar,
+    AntTag: Tag
   },
   props: {
-    repository: {
-      type: Object as PropType<EntityCompletelyListItemType>,
+    activityItem: {
+      type: Object as PropType<{
+        user: UserModelType,
+        entity: EntityCompletelyListItemType,
+        followedUser?: UserModelType,
+        content: ActivityModelType
+      }>,
       required: true
     }
   },
   setup(props) {
     const store = useStore();
     const router = useRouter();
-    const repository = toRef(props, 'repository');
+    const activityItem = toRef(props, 'activityItem');
     const isLogin = computed(() => store.state.user.isLogin);
     const date = computed(() => CommonUtil.formatDate(
-      new Date(repository.value.content.updatedAt),
+      new Date(activityItem.value.entity.content.updatedAt),
       'yyyy-MM-dd hh:mm:ss'
     ));
     const isStarButtonDisabled = ref(false);
@@ -80,8 +98,8 @@ export default defineComponent({
       router.push({
         name: 'RepositoryEditor',
         query: {
-          repositoryEntityId: repository.value.entity.id,
-          type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
+          repositoryEntityId: activityItem.value.entity.entity.id,
+          type: activityItem.value.entity.author.id === userModel.value?.id ? 'edit' : 'view'
         }
       });
     };
@@ -91,26 +109,26 @@ export default defineComponent({
       let result: PublicApiResponseType<void | StarResponseType>;
       if (status) {
         result = await StarApiService.cancel({
-          entityId: repository.value.entity.id,
+          entityId: activityItem.value.entity.entity.id,
           entityType: 'Repository'
         });
       } else {
         result = await StarApiService.create({
-          entityId: repository.value.entity.id,
+          entityId: activityItem.value.entity.entity.id,
           entityType: 'Repository'
         });
       }
       if (result.code === 0) {
         if (status) {
-          repository.value.hasStared = false;
-          if (repository.value.star > 0) {
-            repository.value.star -= 1;
+          activityItem.value.entity.hasStared = false;
+          if (activityItem.value.entity.star > 0) {
+            activityItem.value.entity.star -= 1;
           } else {
-            repository.value.star = 0;
+            activityItem.value.entity.star = 0;
           }
         } else {
-          repository.value.hasStared = true;
-          repository.value.star += 1;
+          activityItem.value.entity.hasStared = true;
+          activityItem.value.entity.star += 1;
         }
       } else {
         message.error(status ? '取消点赞失败' : '点赞失败');
@@ -121,7 +139,7 @@ export default defineComponent({
       router.push({
         path: '/profile',
         query: {
-          id: repository.value.author.id
+          id: activityItem.value.entity.author.id
         }
       })
         .then();
@@ -139,6 +157,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import '../../../style/tiptap.common.scss';
+
 .repository-item {
   padding: 16px 0;
   border-bottom: 1px solid #eaecef;
@@ -163,7 +183,7 @@ export default defineComponent({
       width: max-content;
 
       &:hover {
-        color: #1790ff;
+        color: #0969DA;
       }
     }
 
@@ -176,15 +196,32 @@ export default defineComponent({
       background: #fff;
       padding: 16px;
 
-      .name {
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 16px;
+      .name-content {
+        height: 30px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+
+        .name {
+          height: 30px;
+          line-height: 30px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 16px;
+        }
       }
 
-      .des {
-        margin-top: 4px;
-        min-height: 20px;
+      .description-content {
+        padding: 10px;
+        border-radius: 5px;
+        background: #ffffff;
+      }
+
+      .description {
+        @include tiptap-style;
+        padding: 5px 10px;
       }
 
       .tag {

@@ -28,8 +28,8 @@
       </template>
     </ant-comment>
     <ant-list
-      v-if="commentList.length"
-      :data-source="commentList"
+      v-if="commentList.target.length"
+      :data-source="commentList.target"
       :header="`${commentCount}条评论`"
       item-layout="horizontal">
       <template #renderItem="{ item }">
@@ -41,7 +41,10 @@
             :author="item.user.name"
             :datetime="item.createdAt">
             <template #actions>
-              <div class="reply-button" v-if="userModel" @click="handleOpenReplyDrawer(item, item.id)">回复</div>
+              <div
+                class="reply-button"
+                v-if="userModel"
+                @click="handleOpenReplyDrawer(item, item.id)">回复</div>
               <div
                 class="reply-button"
                 v-if="item.children.length"
@@ -119,8 +122,6 @@ import { useStore } from '@/store';
 import { CommonUtil } from '@/utils';
 import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
 
-type Comment = Record<string, string>;
-
 export default defineComponent({
   props: {
     entityId: {
@@ -139,7 +140,9 @@ export default defineComponent({
     const store = useStore();
     const entityType = toRef(props, 'entityType');
     const entityId = toRef(props, 'entityId');
-    const commentList = ref<any[]>([]);
+    const commentList = reactive<{
+      target: CommentListItemType[]
+    }>({ target: [] });
     const submitting = ref<boolean>(false);
     const submittingReply = ref<boolean>(false);
     const commentContent = ref<string>('');
@@ -167,12 +170,12 @@ export default defineComponent({
         pageSize: 10
       });
       if (result.data) {
-        commentList.value = result.data.list.map((item) => {
+        commentList.target = result.data.list.map((item) => {
           commentCount.value += 1;
           const result = {
             ...item,
             createdAt: CommonUtil.formatDate(new Date(item.createdAt),
-              'yyyy-MM-dd hh:mm')
+              'yyyy-MM-dd hh:mm') as any
           };
           if (item.children) {
             const children = item.children.map((childItem) => {
@@ -180,7 +183,7 @@ export default defineComponent({
               return {
                 ...childItem,
                 createdAt: CommonUtil.formatDate(new Date(childItem.createdAt),
-                  'yyyy-MM-dd hh:mm')
+                  'yyyy-MM-dd hh:mm')as any
               };
             });
             return {

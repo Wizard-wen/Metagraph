@@ -4,6 +4,13 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin');
 // const productionGzipExtensions = ['js', 'css'];
 
 module.exports = {
+  css: {
+    loaderOptions: {
+      less: {
+        javascriptEnabled: true
+      }
+    }
+  },
   configureWebpack: {
     plugins: [
       new CompressionWebpackPlugin({

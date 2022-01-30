@@ -17,6 +17,7 @@
       <find-control :editor="editor"></find-control>
       <parse-text-control></parse-text-control>
       <upload-image-control :editor="editor"></upload-image-control>
+      <toggle-task-control :editor="editor"></toggle-task-control>
       <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>
     </div>
   </div>
@@ -29,6 +30,7 @@ import {
 } from 'vue';
 import {
   FindControl,
+  ToggleTaskControl,
   FontSizeControl,
   ParseTextControl,
   RedoControl,
@@ -54,6 +56,7 @@ export default defineComponent({
     }
   },
   components: {
+    ToggleTaskControl,
     SaveControl,
     FontSizeControl,
     UploadImageControl,

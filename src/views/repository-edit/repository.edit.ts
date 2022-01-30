@@ -85,7 +85,8 @@ export class RepositoryEdit {
       this.router.push({
         path: '/repository/editor',
         query: {
-          repositoryEntityId: response.data.entity.id
+          repositoryEntityId: response.data.entity.id,
+          type: 'edit'
         }
       })
         .then();

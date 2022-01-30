@@ -48,6 +48,24 @@
         <ant-empty v-else :image="simpleImage"/>
       </div>
     </div>
+
+    <bubble-menu
+      v-if="editor"
+      class="bubble-menu"
+      :tippy-options="{ duration: 100 }"
+      :editor="editor"
+    >
+      <button @click="getFocusContent">get</button>
+      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
+        Bold
+      </button>
+      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">
+        Italic
+      </button>
+      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">
+        Strike
+      </button>
+    </bubble-menu>
   </div>
 </template>
 
@@ -57,7 +75,8 @@ import {
   defineComponent, ref, onUnmounted, onMounted, toRef, reactive, inject
 } from 'vue';
 import {
-  EditorContent
+  EditorContent,
+  BubbleMenu,
 } from '@tiptap/vue-3';
 import { Empty, message } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
@@ -73,6 +92,7 @@ export default defineComponent({
   name: 'section-article',
   components: {
     EditorContent,
+    BubbleMenu,
     SectionArticleControl,
     ArticleLimit
   },
@@ -117,6 +137,13 @@ export default defineComponent({
     });
     SectionTreeService.initEditor(repositoryEntityId.value, editable.value);
     const editor = sectionArticleTiptapTextEditor?.editor;
+
+    function getFocusContent() {
+      console.log(editor?.value?.chain()
+        .focus());
+      const node = editor?.value?.state;
+      console.log(node);
+    }
 
     async function handleClickMentionItem(event: Event) {
       const target = event?.target as HTMLSpanElement;
@@ -167,7 +194,8 @@ export default defineComponent({
       paddingMarks,
       sectionArticle,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      contentRef
+      contentRef,
+      getFocusContent
     };
   }
 });
@@ -233,6 +261,7 @@ export default defineComponent({
       width: 816px;
       margin: 0 auto;
       min-height: 100%;
+      padding-top: 50px;
       //background: #fff;
     }
 

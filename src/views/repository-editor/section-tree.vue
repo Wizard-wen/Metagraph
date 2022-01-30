@@ -6,7 +6,7 @@
       @click="openCreateSectionModal({
         type: 'Section', isRoot: true
       })">
-      创建单元
+      创建顶级章节
     </ant-button>
     <div class="tree-content">
       <ant-tree
@@ -27,9 +27,9 @@
             <template #overlay>
               <ant-menu
                 @click="({ key: menuKey }) => handleContextMenuClick(treeKey, menuKey, section)">
-                <ant-menu-item key="Section">插入单元</ant-menu-item>
+                <ant-menu-item key="Section">插入子级章节</ant-menu-item>
                 <ant-menu-item key="Knowledge">绑定知识点</ant-menu-item>
-                <ant-menu-item key="ChangeSection">修改</ant-menu-item>
+                <ant-menu-item key="ChangeSection">修改章节信息</ant-menu-item>
               </ant-menu>
             </template>
           </ant-dropdown>
@@ -85,15 +85,15 @@ export default defineComponent({
 
     async function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
       isRepositoryEditorLoading.value = true;
-      console.log(selectedKeys);
       if (!info.node.dataRef.section) {
         knowledgeDrawer.isShow = true;
+        // eslint-disable-next-line prefer-destructuring
         knowledgeDrawer.entityId = selectedKeys[0].split('-')[0];
       }
       await sectionTreeService.selectTreeNode({
         selectedKeys,
         info
-      });
+      }, isEditable.value);
       isRepositoryEditorLoading.value = false;
     }
 

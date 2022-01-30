@@ -15,6 +15,14 @@ export class UserNoAuthApiService {
       requestBody: params
     });
   }
+
+  static async checkIfUserExists(params: { name: string }): Promise<PublicApiResponseType<{ status: boolean }>> {
+    return RequestUtil.post<{ name: string }, { status: boolean }>({
+      apiPath: ApiPathEnum.CheckIfUserExists,
+      requestBody: params
+    });
+  }
+
   // 发送邮箱验证码
   // static async sendRegisterEmailCode(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
   //   return RequestUtil.post<{ password: string; name: string }, any>({

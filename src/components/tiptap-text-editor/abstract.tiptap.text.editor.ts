@@ -11,13 +11,27 @@ import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import {
-  Editor, JSONContent, useEditor, VueRenderer
+  Editor, JSONContent, useEditor, VueNodeViewRenderer, VueRenderer,
 } from '@tiptap/vue-3';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import tippy, { Instance } from 'tippy.js';
 import { Ref, isRef } from 'vue';
+import { lowlight } from 'lowlight';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
 import { tiptapInitData } from '@/store/constant';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
 import { CustomMention } from './tiptap.custom.mention';
+import CodeBlockComponent from './code-block-component.vue';
+import Document from '@tiptap/extension-document';
+
+// const CustomDocument = Document.extend({
+//   content: 'taskList',
+// });
+
+// const CustomTaskItem = TaskItem.extend({
+//   content: 'inline*',
+// });
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -166,18 +180,31 @@ export abstract class AbstractTiptapTextEditor {
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
         }),
+        // Document.extend({
+        //   content: 'taskList',
+        // }),
+        TaskList,
+        TaskItem.extend({
+          // content: 'inline*',
+          nested: true,
+        }),
+        CodeBlockLowlight
+          .extend({
+            addNodeView() {
+              return VueNodeViewRenderer(CodeBlockComponent);
+            },
+          })
+          .configure({ lowlight }),
         CustomMention.configure({
           HTMLAttributes: {
             class: 'mention',
           },
           suggestion: {
-            items: (params: { query: string }) => {
-              return _this.mentionKnowledgeList
-                .filter(
-                  (item: EntityCompletelyListItemType) => (item.content as KnowledgeModelType)
-                    .name.includes(params.query)
-                ) || [];
-            },
+            items: (params: { query: string }) => _this.mentionKnowledgeList
+              .filter(
+                (item: EntityCompletelyListItemType) => (item.content as KnowledgeModelType)
+                  .name.includes(params.query)
+              ) || [],
             render: () => {
               let component: VueRenderer;
               let popup: Instance[];
@@ -234,14 +261,16 @@ export abstract class AbstractTiptapTextEditor {
         })
       ]
     });
-    this.timer = setInterval(() => {
-      if (this.editor.value?.getHTML()) {
-        this.save({
-          content: this.editor.value?.getJSON(),
-          contentHtml: this.editor.value?.getHTML()
-        });
-      }
-    }, 10000);
+    if (this.editable) {
+      this.timer = setInterval(() => {
+        if (this.editor.value?.getHTML()) {
+          this.save({
+            content: this.editor.value?.getJSON(),
+            contentHtml: this.editor.value?.getHTML()
+          });
+        }
+      }, 10000);
+    }
   }
 
   /**

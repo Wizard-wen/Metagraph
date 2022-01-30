@@ -1,20 +1,23 @@
 <template>
-  <div class="graph-box">
-    <knowledge-connection></knowledge-connection>
-    <div class="graph-content">
-      <div class="graph-top">
-        <div style="height: 50px;" class="graph-control">
-          <zoom-in-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomInGraph"/>
-          <zoom-out-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomOutGraph"/>
+  <ant-spin :spinning="isLoading">
+    <div class="graph-box">
+      <knowledge-connection></knowledge-connection>
+      <div class="graph-content">
+        <div class="graph-top">
+          <div style="height: 50px;" class="graph-control">
+            <zoom-in-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomInGraph"/>
+            <zoom-out-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomOutGraph"/>
+          </div>
+          <div style="display: flex">
+            <div id="container" class="graph-graph"></div>
+          </div>
+          <div id="mini-map-container" class="graph-mini-map"></div>
         </div>
-        <div style="display: flex">
-          <div id="container" class="graph-graph"></div>
-        </div>
-        <div id="mini-map-container" class="graph-mini-map"></div>
+        <div class="graph-bottom"></div>
       </div>
-      <div class="graph-bottom"></div>
     </div>
-  </div>
+  </ant-spin>
+
   <edge-create-modal
     v-if="isModalVisible"
     :is-modal-visible="isModalVisible"
@@ -33,7 +36,6 @@ import {
   isModalVisible
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
-import { MutationEnum, useStore } from '@/store';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
 import KnowledgeConnection from './knowledge-graph-panel/knowledge-relation.vue';
@@ -52,40 +54,28 @@ export default defineComponent({
     ZoomOutIcon
   },
   setup() {
-    const store = useStore();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const isEditable = inject(isEditableKey, ref(false));
     const isExtendTreeGraphShow = ref(false);
     const isPreTreeGraphShow = ref(false);
+    const isLoading = ref(false);
     let knowledgeGraphData: KnowledgeGraphData;
     onUnmounted(() => {
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      isLoading.value = true;
       if (isEditable.value) {
         knowledgeGraphData.closeWebSocket();
       }
       knowledgeGraphData.destroy();
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
+      isLoading.value = false;
     });
-    // const checkIfUserOwnRepository = async () => {
-    //   if (!userModel.value) {
-    //     return false;
-    //   }
-    //   const result = await RepositoryApiService.checkIfUserOwnRepository({
-    //     repositoryEntityId: repositoryEntityId.value
-    //   });
-    //   if (result.data) {
-    //     return result.data.hasAuth;
-    //   }
-    //   return false;
-    // };
     onMounted(async () => {
+      isLoading.value = true;
       knowledgeGraphData = new KnowledgeGraphData();
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
       if (isEditable.value) {
         initWebSocket();
       }
       await knowledgeGraphData.initData(repositoryEntityId.value, isEditable.value);
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
+      isLoading.value = false;
     });
 
     const handleZoomInGraph = () => {
@@ -103,7 +93,8 @@ export default defineComponent({
       handleZoomOutGraph,
       knowledgeEdgeFormRules,
       knowledgeEdgeFormRef,
-      knowledgeEdgeFormState
+      knowledgeEdgeFormState,
+      isLoading
     };
   },
 });

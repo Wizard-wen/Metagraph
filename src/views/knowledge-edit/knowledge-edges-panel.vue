@@ -47,16 +47,27 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue';
+<script lang="ts">
+import { ref, defineComponent } from 'vue';
 import { edges } from './model/knowledge.edit';
 
-const isInnerPre = ref(false);
-const isOuterPre = ref(false);
+export default defineComponent({
+  name: 'knowledge-edges-panel',
+  setup() {
+    const isInnerPre = ref(false);
+    const isOuterPre = ref(false);
+    return {
+      edges,
+      isOuterPre,
+      isInnerPre
+    };
+  }
+});
 </script>
 
 <style scoped lang="scss">
 @import '../../style/common';
+
 .card-content {
   height: 100%;
   overflow: scroll;
@@ -71,9 +82,6 @@ const isOuterPre = ref(false);
   margin: 3px auto;
   cursor: pointer;
 }
-
-
-
 
 .bind-panel {
   width: 100%;

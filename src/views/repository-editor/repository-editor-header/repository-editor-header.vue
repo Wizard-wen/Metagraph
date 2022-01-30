@@ -17,14 +17,14 @@
         </ant-tag>
         <div class="saving-status">
           <ant-spin :spinning="savingStatus === 'saving...'"></ant-spin>
-          <span>{{savingStatus}}</span>
+          <span>{{ savingStatus }}</span>
         </div>
       </div>
     </div>
     <div class="right">
       <star-control-button
         @update="handleStarStatusUpdate"
-        :is-owner="repositoryModel.target.author.id === currentUserModel?.id"
+        :is-owner="!!repositoryModel.target.author.id"
         :has-star="repositoryModel.target.hasStared"
         :count="repositoryModel.target.star"
         :entity-id="repositoryModel.target.entity.id"
@@ -44,13 +44,13 @@
 </template>
 
 <script lang="ts">
-import { knowledge, KnowledgeEdit } from '@/views/knowledge-edit/model/knowledge.edit';
 import {
   computed,
   defineComponent, inject, PropType, ref, toRef
 } from 'vue';
 import type { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import { useRouter } from 'vue-router';
+import { knowledge, KnowledgeEdit } from '@/views/knowledge-edit/model/knowledge.edit';
 import { useStore } from '@/store';
 import RepositoryViewChange from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
 import { StarControlButton, CommentControlButton } from '@/business';
@@ -89,9 +89,10 @@ export default defineComponent({
 
     async function handleStarStatusUpdate() {
       if (repositoryEntityId.value) {
-        await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value)
+        await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
       }
     }
+
     const goRepositoryEditPage = async () => {
       await router.push({
         path: '/repository/edit',

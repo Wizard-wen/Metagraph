@@ -15,18 +15,31 @@
     </div>
     <div class="detail">
       <div class="detail-item">
-        <label class="label-name">名称：  </label>维基百科目前由非营利组织维基媒体基金会负责营运。其在搜索引擎中排名亦较为靠前。
+        <label class="label-name">名称： </label>维基百科目前由非营利组织维基媒体基金会负责营运。其在搜索引擎中排名亦较为靠前。
       </div>
       <div class="detail-item">
-        <label class="label-name">名称：  </label>维基百科目前由非营利组织维基媒体基金会负责营运。其在搜索引擎中排名亦较为靠前。
+        <label class="label-name">名称： </label>维基百科目前由非营利组织维基媒体基金会负责营运。其在搜索引擎中排名亦较为靠前。
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { LinkIcon } from '@/components/icons';
-// import { knowledge } from './model/knowledge.edit';
+
+/**
+ * todo 知识点展示卡片，可下载
+ */
+export default defineComponent({
+  name: 'knowledge-preview-card',
+  components: {
+    LinkIcon
+  },
+  setup() {
+
+  }
+});
 
 </script>
 

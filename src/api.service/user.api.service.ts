@@ -9,6 +9,37 @@ import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
 export class UserApiService {
+  static async sendBindEmail(params: { email: string, type: 'bindEmail' | 'unbindEmail' }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{ email: string, type: 'bindEmail' | 'unbindEmail' }, void>({
+      apiPath: ApiPathEnum.SendBindEmailCode,
+      requestBody: params
+    });
+  }
+
+  static async getUserBindEmail(): Promise<PublicApiResponseType<{
+    isBind: boolean, email?: string
+  }>> {
+    return RequestUtil.get<{
+      isBind: boolean, email?: string
+    }>({
+      apiPath: ApiPathEnum.GetUserBindEmail
+    });
+  }
+
+  static async bindEmail(params: { email: string; code: string }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{ email: string; code: string }, void>({
+      apiPath: ApiPathEnum.BindEmail,
+      requestBody: params
+    });
+  }
+
+  static async unbindEmail(params: { email: string; code: string }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{ email: string; code: string }, void>({
+      apiPath: ApiPathEnum.UnbindEmail,
+      requestBody: params
+    });
+  }
+
   static async login(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
     return RequestUtil.post<{ password: string; name: string }, any>({
       apiPath: ApiPathEnum.LoginByName,

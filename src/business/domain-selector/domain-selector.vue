@@ -31,8 +31,8 @@ import {
 } from 'vue';
 import { Cascader } from 'ant-design-vue';
 import {
-  domain, domainList, domainBaseTypeId, domainIdList, domainTree, domainBaseTypeList, DomainSelect
-} from './domain.select';
+  domain, domainList, domainBaseTypeId, domainIdList, domainTree, domainBaseTypeList, DomainSelector
+} from './domain.selector';
 
 export default defineComponent({
   name: 'domain-select',
@@ -55,7 +55,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const initDomainList = toRef(props, 'modelValue');
     domain.target = initDomainList.value;
-    const domainSelect = new DomainSelect();
+    const domainSelect = new DomainSelector();
     const fieldNames = {
       label: 'name',
       value: 'key',
@@ -83,7 +83,6 @@ export default defineComponent({
     }
 
     async function handleDomainBaseTypeChange(event: any) {
-      console.log(event);
       await domainSelect.getDomainTree(event);
     }
 

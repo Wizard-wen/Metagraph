@@ -10,13 +10,13 @@
     @cancel="handleCloseModal">
     <div class="section-name-container" v-if="sectionModalData.parentSectionName">
       <div v-if="sectionModalData.entityType === 'Knowledge'">
-        当前单元是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前章节是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
       <div v-if="sectionModalData.entityType === 'Section'">
-        当前父级单元是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前父级章节是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
       <div v-if="sectionModalData.entityType === 'ChangeSection'">
-        当前单元名称是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前章节名称是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
     </div>
     <ant-input

@@ -42,6 +42,7 @@ export enum MutationEnum {
   INIT_GRAPH = 'initGraph',
   // user
   SET_USER_MODEL = 'setUserModel',
+  CLEAR_USER_MODEL = 'clearUserModel',
   // home-page
   SET_REPOSITORY_LIST = 'setRepositoryList',
   SET_OWN_REPOSITORY_LIST = 'setOwnRepositoryList',

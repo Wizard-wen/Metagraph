@@ -3,7 +3,7 @@
     <div class="icon">
       <CodeIcon
         class="icon-svg"
-        :class="{ 'is-active': editor.isActive('code') }"/>
+        :class="{ 'is-active': editor.isActive('codeBlock') }"/>
     </div>
     <div class="name">
       代码段
@@ -24,7 +24,7 @@ const props = defineProps({
 });
 
 function toggleCode() {
-  props.editor.chain().focus().toggleCode().run();
+  props.editor.chain().focus().toggleCodeBlock().run();
 }
 </script>
 <style scoped lang="scss">

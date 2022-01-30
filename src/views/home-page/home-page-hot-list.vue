@@ -2,7 +2,9 @@
   <div class="explore-box">
     <h2 class="explore-header">热门知识库</h2>
     <div class="explore-item" v-for="item in hotRepositoryList">
-      <div class="title">{{ item.author.name }} / {{ item.content.name }}</div>
+      <div class="title" @click="goRepositoryPage(item)">
+        {{ item.author.name }} / {{ item.content.name }}
+      </div>
       <div class="description">{{ item.content.description }}</div>
       <div class="action">
         <div class="action-item">
@@ -16,18 +18,36 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import { computed, defineComponent } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
+import { useRouter } from 'vue-router';
+import { useStore } from '@/store';
 import { hotRepositoryList } from './home.page';
 
 export default defineComponent({
-  name: 'home.explore',
+  name: 'home-page-hot-list',
   components: {
     StarOutlined
   },
   setup() {
+    const router = useRouter();
+    const store = useStore();
+    const userModel = computed(() => store.state.user.user);
+
+    async function goRepositoryPage(item: EntityCompletelyListItemType) {
+      await router.push({
+        name: 'RepositoryEditor',
+        query: {
+          repositoryEntityId: item.entity.id,
+          type: item.author.id === userModel.value?.id ? 'edit' : 'view'
+        }
+      });
+    }
+
     return {
-      hotRepositoryList
+      hotRepositoryList,
+      goRepositoryPage
     };
   }
 });

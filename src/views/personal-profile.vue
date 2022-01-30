@@ -44,6 +44,38 @@
         </div>
       </div>
     </ant-tab-pane>
+
+    <ant-tab-pane key="4">
+      <template #tab>
+        <span>
+          <star-icon class="tab-icon"></star-icon>
+          已关注
+          <ant-tag class="count-tag-style">{{ userFollow.followedCount }}</ant-tag>
+        </span>
+      </template>
+      <div class="tab-content">
+        <profile-sidebar></profile-sidebar>
+        <div class="profile-content">
+          <profile-followed-user-list></profile-followed-user-list>
+        </div>
+      </div>
+    </ant-tab-pane>
+
+    <ant-tab-pane key="5">
+      <template #tab>
+        <span>
+          <star-icon class="tab-icon"></star-icon>
+          粉丝
+          <ant-tag class="count-tag-style">{{ userFollow.followerCount }}</ant-tag>
+        </span>
+      </template>
+      <div class="tab-content">
+        <profile-sidebar></profile-sidebar>
+        <div class="profile-content">
+          <profile-follower-user-list></profile-follower-user-list>
+        </div>
+      </div>
+    </ant-tab-pane>
   </ant-tabs>
 </template>
 
@@ -52,20 +84,23 @@ import {
   defineComponent, ref, provide, onMounted
 } from 'vue';
 import { useRoute, onBeforeRouteUpdate } from 'vue-router';
-import { UserModelType } from 'metagraph-constant';
+import ProfileFollowerUserList from '@/views/personal-profile/profile-follower-user-list.vue';
+import ProfileFollowedUserList from '@/views/personal-profile/profile-followed-user-list.vue';
 import OverviewIcon from '@/components/icons/overview-icon.vue';
 import ProfileStarEntityList from '@/views/personal-profile/profile-star-entity-list.vue';
 import ProfileRepositoryList from '@/views/personal-profile/profile-repository-list.vue';
 import ProfileOverview from '@/views/personal-profile/profile-overview.vue';
-import { userIdKey, userProfileKey } from '@/views/personal-profile/personal.profile.provide';
-import { UserApiService } from '@/api.service';
+import { userIdKey, userProfileKey, userFollowKey } from '@/views/personal-profile/personal.profile.provide';
 import ProfileSidebar from './personal-profile/profile-sidebar.vue';
 import { RepositoryListIcon, StarIcon } from '@/components/icons';
-import { myStaredEntityList, myRepositoryEntityList, PersonalProfile } from './personal-profile/personal.profile';
+import { myStaredEntityList, myRepositoryEntityList,
+  PersonalProfile, userFollow, userProfile } from './personal-profile/personal.profile';
 
 export default defineComponent({
   name: 'personal-profile',
   components: {
+    ProfileFollowerUserList,
+    ProfileFollowedUserList,
     OverviewIcon,
     ProfileStarEntityList,
     ProfileRepositoryList,
@@ -79,35 +114,41 @@ export default defineComponent({
     const userId = ref(route.query.id as string);
     const tabKey = ref(route.query.tabKey as string);
     const activeKey = ref(tabKey.value || '1');
-    const userProfile = ref<UserModelType>();
     provide(userIdKey, userId);
     provide(userProfileKey, userProfile);
-
-    onBeforeRouteUpdate((to, from) => {
-      console.log(to, from);
+    provide(userFollowKey, userFollow);
+    const personalProfile = new PersonalProfile();
+    onMounted(async () => {
+      await personalProfile.getUserModelById(userId.value);
+      await Promise.all([
+        personalProfile.getFollowCount(userId.value),
+        personalProfile.getOwnRepositoryEntityList(userId.value),
+        personalProfile.getOwnStaredEntityList(userId.value),
+        personalProfile.getFollowerList(userId.value),
+        personalProfile.getFollowedUserList(userId.value)
+      ]);
+    });
+    onBeforeRouteUpdate(async (to, from) => {
+      if (to.query.id !== from.query.id) {
+        const newUserId = to.query.id as string;
+        await personalProfile.getUserModelById(newUserId);
+        await Promise.all([
+          personalProfile.getFollowCount(newUserId),
+          personalProfile.getOwnRepositoryEntityList(newUserId),
+          personalProfile.getOwnStaredEntityList(newUserId),
+          personalProfile.getFollowerList(newUserId),
+          personalProfile.getFollowedUserList(newUserId)
+        ]);
+      }
       if (to.query.tabKey) {
         activeKey.value = to.query.tabKey as string;
       }
     });
-
-    async function getUserModelById() {
-      const result = await UserApiService.getPublicUserById({ userId: userId.value });
-      if (result.data) {
-        userProfile.value = result.data;
-      }
-    }
-
-    const personalProfile = new PersonalProfile();
-    onMounted(async () => {
-      await getUserModelById();
-      await personalProfile.getOwnRepositoryEntityList(userId.value);
-      await personalProfile.getOwnStaredEntityList(userId.value);
-    });
-
     return {
       activeKey,
       myStaredEntityList,
-      myRepositoryEntityList
+      myRepositoryEntityList,
+      userFollow
     };
   }
 });

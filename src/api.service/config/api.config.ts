@@ -17,6 +17,7 @@ export enum ApiPathEnum {
   SaveCustomKnowledgeFormFields = '/knowledge/saveFields',
   // 获取知识点
   GetNoAuthKnowledgeById = '/public/knowledge/get',
+  GetNoAuthKnowledgePath = '/public/knowledge/getPath',
   // 获取引用当前知识点的知识点列表
   GetNoAuthKnowledgeMentionedList = '/public/knowledge/getMentionedList',
   // 带分页的知识点列表
@@ -72,17 +73,25 @@ export enum ApiPathEnum {
    */
   GetEntityList = '/entity/getList',
   GetEntityById = '/public/entity/get/id',
+  GetEntityListByEntityType = '/public/entity/getListByEntityType',
+  GetSearchEntityList = '/public/entity/getSearchList',
   /**
    * user
    */
-  LoginByName = '/account/loginByName',
+
+  SendBindEmailCode = '/account/sendBindMailCode',
+  BindEmail = '/account/bindEmail',
+  UnbindEmail = '/account/unbindEmail',
   GetById = '/account/getById',
+  LoginByName = '/public/user/loginByName',
+  UpdatePassword = '/account/updatePassword',
+  GetUserBindEmail = '/account/getUserBindEmail',
+  UpdateUser = '/account/updateUser',
+  RegisterByName = '/public/user/registerByName',
   GetUserProfileById = '/public/user/profile',
   GetPublicUserById = '/public/user/getById',
   SendRegisterEmailCode = '/public/user/sendEmailCode',
-  RegisterByName = '/account/registerByName',
-  UpdatePassword = '/account/updatePassword',
-  UpdateUser = '/account/updateUser',
+  CheckIfUserExists = '/public/user/check/nickname',
   /**
    * repository
    */
@@ -121,8 +130,22 @@ export enum ApiPathEnum {
   CheckIfFollowed = '/follow/checkIfFollowed',
   Follow = '/follow/create',
   UnFollow = '/follow/stop',
+  GetFollowCount = '/public/follow/getFollowCount',
+  GetFollowerList = '/public/follow/getFollowerList',
+  GetFollowedList = '/public/follow/getFollowedList',
   /**
    * error detail
    */
-  CreateErrorDetail = '/system/errorDetail/create'
+  CreateErrorDetail = '/system/errorDetail/create',
+  /**
+   * learning plan
+   */
+  AddToPlan = '/learningPlan/addToPlan',
+  GetMyPlanList = '/learningPlan/getMyPlanList',
+  ChangePlanStatus = '/learningPlan/changePlanStatus',
+  GetOneLevelNextToStudyKnowledge = '/learningPlan/getOneLevelNextToStudyKnowledge',
+  /**
+   * activity
+   */
+  GetActivityList = '/activity/getList'
 }
