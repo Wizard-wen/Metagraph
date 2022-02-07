@@ -49,23 +49,23 @@
       </div>
     </div>
 
-    <bubble-menu
-      v-if="editor"
-      class="bubble-menu"
-      :tippy-options="{ duration: 100 }"
-      :editor="editor"
-    >
-      <button @click="getFocusContent">get</button>
-      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
-        Bold
-      </button>
-      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">
-        Italic
-      </button>
-      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">
-        Strike
-      </button>
-    </bubble-menu>
+<!--    <bubble-menu-->
+<!--      v-if="editor"-->
+<!--      class="bubble-menu"-->
+<!--      :tippy-options="{ duration: 100 }"-->
+<!--      :editor="editor"-->
+<!--    >-->
+<!--      <button @click="getFocusContent">get</button>-->
+<!--      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
+<!--        Bold-->
+<!--      </button>-->
+<!--      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
+<!--        Italic-->
+<!--      </button>-->
+<!--      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
+<!--        Strike-->
+<!--      </button>-->
+<!--    </bubble-menu>-->
   </div>
 </template>
 
@@ -76,7 +76,7 @@ import {
 } from 'vue';
 import {
   EditorContent,
-  BubbleMenu,
+  // BubbleMenu,
 } from '@tiptap/vue-3';
 import { Empty, message } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
@@ -92,7 +92,7 @@ export default defineComponent({
   name: 'section-article',
   components: {
     EditorContent,
-    BubbleMenu,
+    // BubbleMenu,
     SectionArticleControl,
     ArticleLimit
   },

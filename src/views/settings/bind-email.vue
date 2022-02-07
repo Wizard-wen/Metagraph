@@ -1,4 +1,5 @@
 <template>
+  <setting-header :title="'绑定邮箱'"></setting-header>
   <div v-if="bindEmailObject.isBind">当前绑定邮箱：{{ bindEmailObject.email }}</div>
   <ant-form
     v-if="!bindEmailObject.isBind"
@@ -57,10 +58,14 @@ import {
 import { UserApiService } from '@/api.service';
 import EndTime from '@/views/settings/end-time.vue';
 import { bindEmailObject, Settings } from './settings';
+import SettingHeader from './setting.header.vue';
 
 export default defineComponent({
   name: 'bind-email',
-  components: { EndTime },
+  components: {
+    EndTime,
+    SettingHeader
+  },
   setup() {
     const endTime = ref(new Date().getTime());
     const isEnding = ref(false);

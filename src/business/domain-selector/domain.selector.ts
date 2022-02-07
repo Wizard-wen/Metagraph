@@ -46,7 +46,6 @@ export class DomainSelector {
   async getDomainTree(domainBaseTypeId: string): Promise<void> {
     const response = await DomainNoAuthApiService.getTree({ domainBaseTypeId });
     if (response.data) {
-      console.log(response.data);
       domainTree.target = response.data.tree;
       domainList.target = response.data.list;
     }
@@ -55,7 +54,6 @@ export class DomainSelector {
   async getDomainBaseTypeList(): Promise<void> {
     const response = await DomainNoAuthApiService.getDomainBaseTypeList();
     if (response.data) {
-      console.log(response.data);
       domainBaseTypeList.target = response.data;
       domainBaseTypeId.value = domainBaseTypeList.target[0].id;
     }

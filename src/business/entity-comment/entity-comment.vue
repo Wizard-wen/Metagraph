@@ -163,6 +163,7 @@ export default defineComponent({
     const userModel = computed(() => store.state.user.user);
     const getCommentList = async () => {
       isLoading.value = true;
+      commentCount.value = 0;
       const result = await CommentNoAuthApiService.getCommentByEntityId({
         entityId: entityId.value,
         entityType: entityType.value as CommentEntityType,

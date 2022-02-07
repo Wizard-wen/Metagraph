@@ -102,6 +102,7 @@ export default defineComponent({
       if (target.files === null) {
         return;
       }
+      // eslint-disable-next-line prefer-destructuring
       currentWordFile.value = target.files[0];
       wordTitle.value = target.files[0].name;
       fileNameInput.value?.focus();

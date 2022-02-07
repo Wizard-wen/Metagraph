@@ -4,7 +4,7 @@
                 v-if="activityItem.user.avatar"
                 :src="activityItem.user.avatar"></ant-avatar>
     <div class="content">
-      <div class="title" v-html="activityItem.content.content"></div>
+      <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="box">
         <div class="name-content">
           <div class="name" @click="goRepositoryPage($event)">
@@ -46,6 +46,7 @@
 </template>
 
 <script lang="ts">
+import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import {
   ActivityModelType, EntityCompletelyListItemType, StarResponseType, UserModelType
 } from 'metagraph-constant';
@@ -66,6 +67,7 @@ import { PublicApiResponseType } from '@/utils';
 export default defineComponent({
   name: 'activity-knowledge-item',
   components: {
+    ActivityItemTitle,
     StarOutlined,
     CommentIcon,
     AntButton: Button,
@@ -110,12 +112,12 @@ export default defineComponent({
       if (status) {
         result = await StarApiService.cancel({
           entityId: activityItem.value.entity.entity.id,
-          entityType: 'Repository'
+          entityType: 'Knowledge'
         });
       } else {
         result = await StarApiService.create({
           entityId: activityItem.value.entity.entity.id,
-          entityType: 'Repository'
+          entityType: 'Knowledge'
         });
       }
       if (result.code === 0) {
@@ -135,21 +137,11 @@ export default defineComponent({
       }
       isStarButtonDisabled.value = false;
     };
-    const goUserProfilePage = () => {
-      router.push({
-        path: '/profile',
-        query: {
-          id: activityItem.value.entity.author.id
-        }
-      })
-        .then();
-    };
     return {
       goRepositoryPage,
       addStar,
       isLogin,
       date,
-      goUserProfilePage,
       isStarButtonDisabled
     };
   }

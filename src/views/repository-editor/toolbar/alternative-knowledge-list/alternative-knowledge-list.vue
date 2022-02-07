@@ -47,7 +47,7 @@
 import {
   defineComponent, inject, onMounted, ref, createVNode, reactive
 } from 'vue';
-import { Modal } from 'ant-design-vue';
+import { Modal, message } from 'ant-design-vue';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import CreateOrBindKnowledgeModal
@@ -109,7 +109,7 @@ export default defineComponent({
           stopLoading();
         },
         onCancel() {
-          // todo
+          message.info('取消删除！');
         },
       });
     }

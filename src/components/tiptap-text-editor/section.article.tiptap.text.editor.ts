@@ -10,6 +10,7 @@ import { message, Modal } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { EditorView } from 'prosemirror-view';
 import { createVNode } from 'vue';
+import { SectionTreeService } from '@/views/repository-editor/section-tree/section.tree';
 import { AbstractTiptapTextEditor } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
 import {
   RepositoryNoAuthApiService, SectionApiService, SectionNoAuthApiService
@@ -133,10 +134,16 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
             repositoryEntityId: that.repositoryEntityId,
             sectionId: that.sectionId
           });
+          if (!that.editor.value?.getJSON() || !that.editor.value?.getHTML()) {
+            throw new Error('cannot get editor content');
+          }
           await that.save({
-            content: params.content,
-            contentHtml: params.contentHtml
+            content: that.editor.value?.getJSON(),
+            contentHtml: that.editor.value?.getHTML()
           });
+          const sectionTreeService = new SectionTreeService();
+          // 刷新一下section tree
+          await sectionTreeService.getSectionTree(that.repositoryEntityId, that.sectionId);
         }
       },
       async onCancel() {

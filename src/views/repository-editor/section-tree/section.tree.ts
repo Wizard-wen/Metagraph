@@ -72,19 +72,20 @@ export class SectionTreeService {
     sectionArticleTiptapTextEditor.initEditor();
   }
 
-  async getSectionTree(repositoryEntityId: string): Promise<void> {
+  async getSectionTree(repositoryEntityId: string, selectedSectionId?: string): Promise<void> {
     const response = await SectionNoAuthApiService.getSectionTree({ repositoryEntityId });
     if (response.data) {
       sectionTree.tree = response.data;
       if (response.data.length) {
+        const currentSectionId = selectedSectionId ?? response.data[0].key;
         await sectionArticleTiptapTextEditor?.initData({
-          sectionId: response.data[0].key
+          sectionId: currentSectionId
         });
         // 如果section存在，那么选中第一个，获取section article
-        await this.getSectionContent(response.data[0].key);
+        await this.getSectionContent(currentSectionId);
         sectionArticleTiptapTextEditor?.setContent(sectionArticle.content);
-        sectionTree.selectedTreeNodes = [response.data[0].key];
-        sectionTree.selectedTreeSectionNodes = [response.data[0].key];
+        sectionTree.selectedTreeNodes = [currentSectionId];
+        sectionTree.selectedTreeSectionNodes = [currentSectionId];
       } else {
         sectionTree.selectedTreeNodes = [];
         sectionTree.selectedTreeSectionNodes = [];

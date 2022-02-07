@@ -6,7 +6,7 @@
 import type {
   UserModelType,
   EntityCompletelyListItemType,
-  ActivityModelType
+  ActivityModelType, UpdateRecordType
 } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { PublicApiResponseType, RequestUtil } from '@/utils';
@@ -32,6 +32,12 @@ export class ActivityApiService {
     }>({
       apiPath: ApiPathEnum.GetActivityList,
       requestBody: params
+    });
+  }
+
+  static async getActivityBox(): Promise<PublicApiResponseType<UpdateRecordType | undefined>> {
+    return RequestUtil.get<UpdateRecordType | undefined>({
+      apiPath: ApiPathEnum.GetActivityList
     });
   }
 }

@@ -3,6 +3,7 @@
     <div class="home-main">
       <div class="content">
         <template v-if="isLogin">
+          <div class="activity-title">全部动态</div>
           <home-page-activity-list-item
             :key="index"
             :activity-item="item"
@@ -82,6 +83,13 @@ export default defineComponent({
     width: 100%;
     max-width: 1400px;
     margin: 50px auto 50px;
+    .activity-title {
+      text-align: left;
+      height: 30px;
+      line-height: 30px;
+      font-size: 16px;
+      color: #242930;
+    }
   }
 
   .pagination {

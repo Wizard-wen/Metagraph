@@ -12,7 +12,7 @@
     <ant-spin :spinning="isKnowledgeRelationLoading">
       <div class="content">
         <template v-if="toolbarState === 'pre'">
-          <ant-card class="card-header" title="仓库内">
+          <ant-card class="card-header" title="知识库内">
             <div class="card-content">
               <div
                 v-for="(item, index) in entityRelationEdges.preInnerList"
@@ -23,7 +23,7 @@
               </div>
             </div>
           </ant-card>
-          <ant-card class="card-header" title="仓库外">
+          <ant-card class="card-header" title="知识库外">
             <div class="card-content">
               <div
                 v-for="(item, index) in entityRelationEdges.preOuterList"
@@ -39,7 +39,7 @@
           </ant-card>
         </template>
         <template v-else>
-          <ant-card class="card-header" title="仓库内">
+          <ant-card class="card-header" title="知识库内">
             <div class="card-content">
               <div
                 v-for="(item, index) in entityRelationEdges.extendInnerList"
@@ -50,7 +50,7 @@
               </div>
             </div>
           </ant-card>
-          <ant-card class="card-header" title="仓库外">
+          <ant-card class="card-header" title="知识库外">
             <div class="card-content">
               <div
                 v-for="(item, index) in entityRelationEdges.extendOuterList"

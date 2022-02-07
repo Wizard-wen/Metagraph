@@ -12,7 +12,10 @@
         :rules="rules"
         :wrapper-col="wrapperCol">
         <ant-form-item name="name">
-          <ant-input class="custom-input-style" v-model:value="formState.name" placeholder="用户名">
+          <ant-input
+            class="custom-input-style"
+            v-model:value="formState.name" placeholder="用户名"
+            allow-clear>
             <template #prefix>
               <UserOutlined/>
             </template>
@@ -21,7 +24,9 @@
         <ant-form-item name="password">
           <ant-input
             class="custom-input-style"
-            v-model:value="formState.password" type="password" placeholder="密码">
+            v-model:value="formState.password"
+            type="password" placeholder="密码"
+            allow-clear>
             <template #prefix>
               <LockOutlined/>
             </template>

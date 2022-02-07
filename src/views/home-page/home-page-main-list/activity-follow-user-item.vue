@@ -6,7 +6,40 @@
       v-if="activityItem.user.avatar"
       :src="activityItem.user.avatar"></ant-avatar>
     <div class="content">
-      <div class="title" v-html="activityItem.content.content"></div>
+      <!--      <div class="title-content">-->
+      <!--        <ant-popover placement="topLeft">-->
+      <!--          <template #content>-->
+      <!--            <div class="email">-->
+      <!--              <email-icon></email-icon>-->
+      <!--              {{ activityItem.user?.email || '' }}-->
+      <!--            </div>-->
+      <!--            <div class="email">-->
+      <!--              <location-icon></location-icon>-->
+      <!--              {{ activityItem.user?.location || '' }}-->
+      <!--            </div>-->
+      <!--            <div class="email">-->
+      <!--              <link-icon></link-icon>-->
+      <!--              {{ activityItem.user?.personalWebsite || '' }}-->
+      <!--            </div>-->
+      <!--            <div class="email">-->
+      <!--              <wechat-icon></wechat-icon>-->
+      <!--              {{ activityItem.user?.wechat || '' }}-->
+      <!--            </div>-->
+      <!--          </template>-->
+      <!--          <template #title>-->
+      <!--            <div class="title-content-slot">-->
+      <!--              <ant-avatar-->
+      <!--                v-if="activityItem.user.avatar"-->
+      <!--                :src="activityItem.user.avatar"></ant-avatar>-->
+      <!--              <div class="inner-title-name">{{ activityItem.user.name }}</div>-->
+      <!--              <link-icon class="link-icon"></link-icon>-->
+      <!--            </div>-->
+      <!--          </template>-->
+      <!--          <div class="user-name">{{ activityItem.user.name }}</div>-->
+      <!--        </ant-popover>-->
+      <!--        <div class="title" v-html="activityItem.content.content"></div>-->
+      <!--      </div>-->
+      <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="box">
         <ant-list-item>
           <template #actions>
@@ -38,7 +71,12 @@ import type { ActivityModelType, EntityCompletelyListItemType, UserModelType } f
 import {
   computed, defineComponent, PropType, toRef
 } from 'vue';
+import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import { CommonUtil } from '@/utils';
+
+import {
+  EmailIcon, LocationIcon, LinkIcon, WechatIcon
+} from '@/components/icons';
 
 export default defineComponent({
   name: 'activity-follow-user-item',
@@ -52,6 +90,13 @@ export default defineComponent({
       }>,
       required: true
     }
+  },
+  components: {
+    ActivityItemTitle,
+    EmailIcon,
+    LocationIcon,
+    LinkIcon,
+    WechatIcon
   },
   setup(props) {
     const activity = toRef(props, 'activityItem');
@@ -84,6 +129,23 @@ export default defineComponent({
   .content {
     width: 100%;
 
+    .title-content {
+      display: flex;
+      align-items: center;
+
+      .email {
+        line-height: 24px;
+        margin-bottom: 6px;
+        text-align: left;
+      }
+
+      .user-name {
+        font-weight: bolder;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+    }
+
     .title {
       font-weight: bold;
       height: 32px;
@@ -106,6 +168,22 @@ export default defineComponent({
       background: #fff;
       padding: 16px;
     }
+  }
+}
+
+.title-content-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .inner-title-name {
+    margin-right: 10px;
+    padding-left: 15px;
+    flex: 1;
+  }
+
+  .link-icon {
+    cursor: pointer;
   }
 }
 </style>

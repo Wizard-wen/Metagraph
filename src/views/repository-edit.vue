@@ -47,7 +47,7 @@
         </ant-form-item>
         <ant-form-item label="知识库封面" name="avatar">
           <upload-form-item
-            :title="'上传仓库封面'"
+            :title="'上传知识库封面'"
             v-model="repositoryFormState.avatar"></upload-form-item>
         </ant-form-item>
         <ant-form-item label="知识库描述" name="description">
@@ -63,7 +63,7 @@
 </template>
 <script lang="ts">
 import {
-  defineComponent, onMounted, ref, computed, toRaw
+  defineComponent, onMounted, ref, computed
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { LockOutlined, BookOutlined } from '@ant-design/icons-vue';
@@ -75,15 +75,14 @@ import {
   repositoryFormRules, repositoryFormRef
 } from '@/views/repository-edit/repository.edit';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
-import { DomainSelect, DomainSelectFormItem } from '@/business';
+import { DomainSelectFormItem } from '@/business';
 
 export default defineComponent({
   components: {
     LockOutlined,
     BookOutlined,
     UploadFormItem,
-    DomainSelectFormItem,
-    DomainSelect
+    DomainSelectFormItem
   },
   setup() {
     const route = useRoute();
@@ -110,12 +109,6 @@ export default defineComponent({
       }
     });
 
-    const fieldNames = {
-      label: 'name',
-      value: 'key',
-      children: 'children'
-    };
-
     const onSubmit = async () => {
       repositoryFormRef.value
         .validate()
@@ -141,16 +134,7 @@ export default defineComponent({
       repositoryFormRef,
       onSubmit,
       goBack,
-      // domainList,
-      // domainBaseTypeList,
-      // domainBaseTypeId,
-      // handleDomainBaseTypeChange,
-      // domainTree,
-      // domainIdList,
-      fieldNames,
       pageTitle,
-      // addDomain,
-      // handleDeleteDomainTag,
       labelCol: { span: 4 },
       wrapperCol: { span: 24 },
     };

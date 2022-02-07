@@ -10,7 +10,11 @@ import {
   reactive, createVNode, computed, ref
 } from 'vue';
 import { ActionEnum, store } from '@/store';
-import { RepositoryNoAuthApiService, SectionApiService } from '@/api.service';
+import {
+  EntityNoAuthApiService,
+  RepositoryNoAuthApiService,
+  SectionApiService
+} from '@/api.service';
 
 type AlternativeType = {
   id: string;
@@ -63,8 +67,8 @@ export const isPublicRepository = computed(() => ((repositoryModel.target?.conte
 
 export class RepositoryEditor implements RepositoryEditorInterface {
   async getRepositoryByEntityId(repositoryEntityId: string): Promise<void> {
-    const response = await RepositoryNoAuthApiService.getById({
-      repositoryEntityId
+    const response = await EntityNoAuthApiService.getEntityById({
+      entityId: repositoryEntityId
     });
     if (response.data) {
       repositoryModel.target = response.data;

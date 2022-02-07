@@ -15,7 +15,7 @@ import {
 } from '@tiptap/vue-3';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import tippy, { Instance } from 'tippy.js';
-import { Ref, isRef } from 'vue';
+import { Ref } from 'vue';
 import { lowlight } from 'lowlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
@@ -23,15 +23,6 @@ import { tiptapInitData } from '@/store/constant';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
 import { CustomMention } from './tiptap.custom.mention';
 import CodeBlockComponent from './code-block-component.vue';
-import Document from '@tiptap/extension-document';
-
-// const CustomDocument = Document.extend({
-//   content: 'taskList',
-// });
-
-// const CustomTaskItem = TaskItem.extend({
-//   content: 'inline*',
-// });
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -180,9 +171,6 @@ export abstract class AbstractTiptapTextEditor {
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
         }),
-        // Document.extend({
-        //   content: 'taskList',
-        // }),
         TaskList,
         TaskItem.extend({
           // content: 'inline*',

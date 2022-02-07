@@ -191,6 +191,6 @@ export default defineComponent({
 .sign-up {
   padding-top: 50px;
   width: 650px;
-  margin: 0 auto;
+  margin: 0 auto 200px;
 }
 </style>

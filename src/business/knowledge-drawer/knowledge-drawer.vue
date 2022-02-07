@@ -11,7 +11,7 @@
         <ant-descriptions-item label="名称">{{ knowledge.content.name }}</ant-descriptions-item>
         <ant-descriptions-item label="类型">{{ knowledge.content.knowledgeBaseTypeName }}</ant-descriptions-item>
         <ant-descriptions-item label="作者">{{ knowledge.author.name }}</ant-descriptions-item>
-        <ant-descriptions-item label="仓库">{{ knowledge.content.repositoryName }}</ant-descriptions-item>
+        <ant-descriptions-item label="知识库">{{ knowledge.content.repositoryName }}</ant-descriptions-item>
       </ant-descriptions>
       <ant-descriptions title="热度" :column="1">
         <ant-descriptions-item label="评论">{{ knowledge.comment }}</ant-descriptions-item>
