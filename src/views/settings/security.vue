@@ -31,9 +31,11 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
 import {
-  defineComponent, reactive, toRaw, UnwrapRef, ref
+  Button, Form, Input, message
+} from 'ant-design-vue';
+import {
+  defineComponent, reactive, UnwrapRef, ref
 } from 'vue';
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import { UserApiService } from '@/api.service';
@@ -48,7 +50,11 @@ interface FormState {
 export default defineComponent({
   name: 'Profile',
   components: {
-    SettingHeader
+    SettingHeader,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntButton: Button,
+    AntInput: Input
   },
   setup() {
     const formState: UnwrapRef<FormState> = reactive({

@@ -21,7 +21,7 @@
           <ant-col :span="24">
             <description-item title="知识点领域">
               <template #content>
-                <ant-tag v-for="item in knowledgeModel.content.domain">
+                <ant-tag v-for="(item, index) in knowledgeModel.content.domain" :key="index">
                   {{ item.domainName }}
                 </ant-tag>
               </template>
@@ -40,14 +40,16 @@
           <ant-col :span="24">
             <description-item title="标签">
               <template #content>
-                <ant-tag v-for="item in knowledgeModel.tag">{{ item.name }}</ant-tag>
+                <ant-tag v-for="(item, index) in knowledgeModel.tag" :key="index">
+                  {{ item.name }}
+                </ant-tag>
               </template>
             </description-item>
           </ant-col>
         </ant-row>
         <ant-divider/>
         <p class="h2-level-title-style">信息栏</p>
-        <ant-row v-for="item in knowledgeModel.content.customField">
+        <ant-row v-for="(item, index) in knowledgeModel.content.customField" :key="index">
           <ant-col :span="24">
             <description-item
               :title="item.label"
@@ -57,8 +59,13 @@
         <ant-divider/>
         <p class="h2-level-title-style">知识点描述</p>
         <tiptap-readonly :article-content="knowledgeModel.content.description"></tiptap-readonly>
+        <ant-divider/>
         <p class="h2-level-title-style">概念图册</p>
-        <img v-for="item in knowledgeModel.content.pictures" :src="item.url"/>
+        <img
+          v-for="(item, index) in knowledgeModel.content.pictures"
+          :key="index"
+          :src="item.url"
+          alt=""/>
       </div>
     </ant-spin>
   </ant-drawer>
@@ -69,6 +76,9 @@ import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, toRef, ref
 } from 'vue';
+import {
+  Divider, Col, Row, Tag, Drawer, Spin
+} from 'ant-design-vue';
 import { EntityNoAuthApiService } from '@/api.service';
 import TiptapReadonly from '@/views/repository-editor/section-article/tiptap-readonly.vue';
 import DescriptionItem from './description-item.vue';
@@ -88,7 +98,13 @@ export default defineComponent({
   },
   components: {
     TiptapReadonly,
-    DescriptionItem
+    DescriptionItem,
+    AntDivider: Divider,
+    AntCol: Col,
+    AntRow: Row,
+    AntTag: Tag,
+    AntSpin: Spin,
+    AntDrawer: Drawer,
   },
   setup(props, { emit }) {
     const knowledgeEntityId = toRef(props, 'knowledgeEntityId');

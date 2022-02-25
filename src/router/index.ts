@@ -3,6 +3,7 @@
  * @date 2021/09/15 00:15
  */
 
+import { defineAsyncComponent } from 'vue';
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Main from '../views/main.vue';
 import Settings from '../views/settings.vue';

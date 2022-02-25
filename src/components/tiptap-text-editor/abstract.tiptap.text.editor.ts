@@ -22,7 +22,7 @@ import TaskItem from '@tiptap/extension-task-item';
 import { tiptapInitData } from '@/store/constant';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
 import { CustomMention } from './tiptap.custom.mention';
-import CodeBlockComponent from './code-block-component.vue';
+import CodeBlockContainer from './code-block-container.vue';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -179,7 +179,7 @@ export abstract class AbstractTiptapTextEditor {
         CodeBlockLowlight
           .extend({
             addNodeView() {
-              return VueNodeViewRenderer(CodeBlockComponent);
+              return VueNodeViewRenderer(CodeBlockContainer);
             },
           })
           .configure({ lowlight }),

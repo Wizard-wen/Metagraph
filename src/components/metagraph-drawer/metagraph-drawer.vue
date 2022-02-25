@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts">
+import { Drawer } from 'ant-design-vue';
 import {
   defineComponent,
 } from 'vue';
@@ -26,6 +27,9 @@ export default defineComponent({
       type: String,
       required: true
     }
+  },
+  components: {
+    AntDrawer: Drawer,
   },
   emits: ['visibleChange'],
   setup(props, context) {

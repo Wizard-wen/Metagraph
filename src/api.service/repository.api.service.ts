@@ -81,6 +81,23 @@ export class RepositoryApiService {
     });
   }
 
+  static async cloneRepository(params: {
+    repositoryEntityId: string,
+    name?: string
+  }): Promise<PublicApiResponseType<{
+    clonedRepositoryEntityId: string
+  }>> {
+    return RequestUtil.post<{
+      repositoryEntityId: string,
+      name?: string
+    }, {
+      clonedRepositoryEntityId: string
+    }>({
+      apiPath: ApiPathEnum.CloneRepository,
+      requestBody: params
+    });
+  }
+
   static async checkIfUserOwnRepository(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<{ hasAuth: boolean }>> {
     return RequestUtil.post<{ repositoryEntityId: string }, { hasAuth: boolean }>({
       apiPath: ApiPathEnum.CheckIfUserOwnRepository,

@@ -14,6 +14,7 @@
         <ant-tag
           closable
           @close="handleDeleteDomainTag(index)"
+          :key="index"
           v-for="(item, index) in domainList">
           {{ item.domainName || '-' }}
         </ant-tag>
@@ -25,7 +26,8 @@
           v-model:value="domainBaseTypeId"
           placeholder="请选择领域类型">
           <ant-select-option
-            v-for="item in enabledDomainList"
+            :key="index"
+            v-for="(item, index) in enabledDomainList"
             :value="item.id">{{ item.name }}
           </ant-select-option>
         </ant-select>
@@ -41,7 +43,9 @@
 </template>
 
 <script lang="ts">
-import { Cascader } from 'ant-design-vue';
+import {
+  Button, Cascader, Modal, Select, Spin, Tag
+} from 'ant-design-vue';
 import {
   defineComponent, onMounted, PropType, ref, toRef, computed
 } from 'vue';
@@ -56,7 +60,13 @@ import {
 export default defineComponent({
   name: 'domain-select-modal',
   components: {
-    AntCascader: Cascader
+    AntCascader: Cascader,
+    AntSpin: Spin,
+    AntButton: Button,
+    AntSelect: Select,
+    AntSelectOption: Select.Option,
+    AntTag: Tag,
+    AntModal: Modal
   },
   emits: ['close'],
   props: {

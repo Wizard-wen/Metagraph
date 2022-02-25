@@ -1,6 +1,6 @@
 <template>
   <ant-list>
-    <ant-list-item v-for="item in userList">
+    <ant-list-item v-for="(item, index) in userList" :key="index">
       <template #actions>
         <ant-button @click="goProfilePage(item.id)">查看</ant-button>
       </template>
@@ -18,6 +18,7 @@
 </template>
 
 <script lang="ts">
+import { Avatar, Button, List } from 'ant-design-vue';
 import type { UserModelType } from 'metagraph-constant';
 import {
   defineComponent, PropType
@@ -31,6 +32,13 @@ export default defineComponent({
       type: Array as PropType<UserModelType[]>,
       required: true
     },
+  },
+  components: {
+    AntButton: Button,
+    AntAvatar: Avatar,
+    AntList: List,
+    AntListItem: List.Item,
+    AntListItemMeta: List.Item.Meta
   },
   setup() {
     const router = useRouter();

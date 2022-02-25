@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts">
+import { Button, Input } from 'ant-design-vue';
 import {
   computed,
   defineComponent, reactive, toRefs, ref
@@ -33,7 +34,11 @@ import { ActionEnum, useStore } from '@/store';
 import { RepositoryApiService } from '@/api.service';
 
 export default defineComponent({
-  name: 'header.select',
+  name: 'header-select',
+  components: {
+    AntInput: Input,
+    AntButton: Button
+  },
   setup() {
     const router = useRouter();
 

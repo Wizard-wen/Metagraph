@@ -72,6 +72,7 @@
 </template>
 
 <script lang="ts">
+import { Card, Spin } from 'ant-design-vue';
 import {
   computed, defineComponent, inject, onMounted, ref
 } from 'vue';
@@ -87,7 +88,11 @@ import {
 import { repositoryBindEntityList } from '../repository-editor';
 
 export default defineComponent({
-  name: 'knowledge.connection',
+  name: 'knowledge-connection',
+  components: {
+    AntCard: Card,
+    AntSpin: Spin
+  },
   setup() {
     const repositoryEntityIdList = computed(
       () => repositoryBindEntityList.target.map((item) => item.entity.id)

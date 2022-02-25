@@ -53,7 +53,7 @@
               </div>
             </template>
             <div v-if="item.children.length && item.extend">
-              <template v-for="childItem in item.children">
+              <template v-for="(childItem, index) in item.children" :key="index">
                 <ant-comment
                   :avatar="childItem.user.avatar"
                   :author="childItem.user.name"
@@ -112,7 +112,9 @@
   </ant-spin>
 </template>
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import {
+  message, Comment, List, Avatar, Form, Button, Drawer, Spin, Input
+} from 'ant-design-vue';
 import {
   defineComponent, onMounted, ref, toRef, reactive, computed
 } from 'vue';
@@ -134,7 +136,16 @@ export default defineComponent({
     }
   },
   components: {
-    UserOutlined
+    UserOutlined,
+    AntComment: Comment,
+    AntSpin: Spin,
+    AntTextArea: Input.TextArea,
+    AntList: List,
+    AntListItem: List.Item,
+    AntAvatar: Avatar,
+    AntButton: Button,
+    AntDrawer: Drawer,
+    AntFormItem: Form.Item
   },
   setup(props) {
     const store = useStore();
@@ -184,7 +195,7 @@ export default defineComponent({
               return {
                 ...childItem,
                 createdAt: CommonUtil.formatDate(new Date(childItem.createdAt),
-                  'yyyy-MM-dd hh:mm')as any
+                  'yyyy-MM-dd hh:mm') as any
               };
             });
             return {

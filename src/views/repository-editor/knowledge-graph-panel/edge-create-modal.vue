@@ -51,7 +51,9 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import {
+  Form, Input, message, Modal, Select
+} from 'ant-design-vue';
 import { defineComponent, ref, inject } from 'vue';
 import {
   graph,
@@ -72,6 +74,14 @@ export default defineComponent({
       type: Boolean,
       required: true
     }
+  },
+  components: {
+    AntModal: Modal,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntTextArea: Input.TextArea,
+    AntSelect: Select,
+    AntSelectOption: Select.Option
   },
   setup(props, { emit }) {
     const modalConfirmLoading = ref<boolean>(false);

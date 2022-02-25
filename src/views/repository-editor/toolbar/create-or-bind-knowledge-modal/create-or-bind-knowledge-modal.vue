@@ -23,7 +23,8 @@
         <div class="list-box">
           <div v-if="searchData.target.length" class="list-content">
             <knowledge-list-item
-              v-for="item in searchData.target"
+              :key="index"
+              v-for="(item, index) in searchData.target"
               :repository="item">
               <template #control>
                 <div class="control-btn banner-item" v-if="!item.hasBind">
@@ -44,7 +45,6 @@
         </div>
       </div>
     </ant-spin>
-
   </ant-modal>
 </template>
 
@@ -54,7 +54,9 @@ import { debounce } from 'lodash';
 import {
   defineComponent, toRef, watch, ref, onMounted, inject, createVNode
 } from 'vue';
-import { Modal, message } from 'ant-design-vue';
+import {
+  Modal, message, Input, Button, Spin
+} from 'ant-design-vue';
 import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import {
@@ -74,6 +76,10 @@ export default defineComponent({
   components: {
     KnowledgeListItem,
     BindIcon,
+    AntModal: Modal,
+    AntInput: Input,
+    AntButton: Button,
+    AntSpin: Spin,
   },
   props: {
     isModalVisible: {
@@ -92,7 +98,7 @@ export default defineComponent({
     const isModalShow = ref(false);
     const modalConfirmLoading = ref(false);
     isLoading.value = true;
-    watch(isModalVisible, async (newValue, oldValue) => {
+    watch(isModalVisible, async (newValue) => {
       if (newValue) {
         isModalShow.value = newValue;
       }
@@ -122,7 +128,7 @@ export default defineComponent({
           context.emit('close');
         },
         async onCancel() {
-
+          // todo
         },
       });
     };

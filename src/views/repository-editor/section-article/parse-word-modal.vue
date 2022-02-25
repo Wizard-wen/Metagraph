@@ -30,14 +30,14 @@
       </div>
     </div>
     <ant-tabs v-model:activeKey="activeTab">
-      <ant-tab-pane key="1" tab="文本" class="tab-content">
+      <ant-tabs-pane key="1" tab="文本" class="tab-content">
         <div
           class="doc-text"
           v-if="articleText">
           <p>{{ articleText }}</p>
         </div>
-      </ant-tab-pane>
-      <ant-tab-pane key="2" tab="关键词" class="tab-content">
+      </ant-tabs-pane>
+      <ant-tabs-pane key="2" tab="关键词" class="tab-content">
         <ant-list class="doc-keyword" size="small" bordered :data-source="keywords.target">
           <template #renderItem="{ item }">
             <ant-list-item class="custom-list-item">
@@ -49,7 +49,7 @@
             </ant-list-item>
           </template>
         </ant-list>
-      </ant-tab-pane>
+      </ant-tabs-pane>
     </ant-tabs>
     <template #footer>
       <ant-button @click="handleCloseParseWordModal">关闭</ant-button>
@@ -68,6 +68,9 @@
 </template>
 
 <script lang="ts">
+import {
+  Button, List, Modal, Tabs, Tag, Input
+} from 'ant-design-vue';
 import { FileEnum } from 'metagraph-constant';
 import { CloseOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { defineComponent, inject, ref } from 'vue';
@@ -88,7 +91,15 @@ export default defineComponent({
   },
   components: {
     CloseOutlined,
-    UploadOutlined
+    UploadOutlined,
+    AntTabs: Tabs,
+    AntList: List,
+    AntInput: Input,
+    AntListItem: List.Item,
+    AntTabsPane: Tabs.TabPane,
+    AntTag: Tag,
+    AntButton: Button,
+    AntModal: Modal
   },
   emits: ['close'],
   setup(props, { emit }) {

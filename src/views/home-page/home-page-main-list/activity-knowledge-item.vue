@@ -1,6 +1,6 @@
 <template>
   <div class="repository-item">
-    <ant-avatar  :size="32" class="icon"
+    <ant-avatar :size="32" class="icon"
                 v-if="activityItem.user.avatar"
                 :src="activityItem.user.avatar"></ant-avatar>
     <div class="content">
@@ -46,8 +46,7 @@
 </template>
 
 <script lang="ts">
-import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
-import {
+import type {
   ActivityModelType, EntityCompletelyListItemType, StarResponseType, UserModelType
 } from 'metagraph-constant';
 import {
@@ -58,6 +57,7 @@ import {
   message, Button, Avatar, Tag
 } from 'ant-design-vue';
 import { StarOutlined } from '@ant-design/icons-vue';
+import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';

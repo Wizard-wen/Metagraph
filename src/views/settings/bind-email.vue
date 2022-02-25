@@ -26,7 +26,6 @@
       <ant-button type="primary" @click="bindEmail">绑定邮箱</ant-button>
     </ant-form-item>
   </ant-form>
-
   <ant-form
     v-if="bindEmailObject.isBind"
     ref="unbindEmailFormRef"
@@ -51,7 +50,9 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import {
+  Button, Form, Input, message
+} from 'ant-design-vue';
 import {
   defineComponent, onMounted, reactive, ref
 } from 'vue';
@@ -64,7 +65,11 @@ export default defineComponent({
   name: 'bind-email',
   components: {
     EndTime,
-    SettingHeader
+    SettingHeader,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntButton: Button,
+    AntInput: Input
   },
   setup() {
     const endTime = ref(new Date().getTime());

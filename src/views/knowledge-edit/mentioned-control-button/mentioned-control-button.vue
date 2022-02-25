@@ -32,6 +32,7 @@
 </template>
 
 <script lang="ts">
+import { Button, List } from 'ant-design-vue';
 import { ref, defineComponent } from 'vue';
 import { SocialActionButton, MetagraphDrawer, CommentIcon } from '@/components';
 import { mentionedKnowledge } from '../model/knowledge.edit';
@@ -41,7 +42,11 @@ export default defineComponent({
   components: {
     SocialActionButton,
     MetagraphDrawer,
-    CommentIcon
+    CommentIcon,
+    AntListItemMeta: List.Item.Meta,
+    AntListItem: List.Item,
+    AntList: List,
+    AntButton: Button,
   },
   setup() {
     const isCommentDrawerShow = ref(false);

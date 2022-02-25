@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+import { Tag } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { defineComponent, PropType } from 'vue';
 import { StarIcon, CommentIcon, KnowledgeIcon } from '@/components/icons';
@@ -50,7 +51,8 @@ export default defineComponent({
   components: {
     KnowledgeIcon,
     StarIcon,
-    CommentIcon
+    CommentIcon,
+    AntTag: Tag
   },
   setup() {
 

@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts">
+import { Spin } from 'ant-design-vue';
 import {
   defineComponent, onMounted, ref, onUnmounted, inject
 } from 'vue';
@@ -51,7 +52,8 @@ export default defineComponent({
     EdgeCreateModal,
     KnowledgeConnection,
     ZoomInIcon,
-    ZoomOutIcon
+    ZoomOutIcon,
+    AntSpin: Spin
   },
   setup() {
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));

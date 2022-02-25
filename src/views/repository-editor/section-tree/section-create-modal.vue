@@ -35,6 +35,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue';
+import { Input, Modal, Select } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { sectionModalData, SectionTreeService } from './section.tree';
 
@@ -45,6 +46,11 @@ export default defineComponent({
       type: Boolean,
       required: true
     }
+  },
+  components: {
+    AntSelect: Select,
+    AntModal: Modal,
+    AntInput: Input
   },
   emits: ['close'],
   setup(props, { emit }) {

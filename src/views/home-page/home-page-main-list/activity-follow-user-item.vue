@@ -6,39 +6,6 @@
       v-if="activityItem.user.avatar"
       :src="activityItem.user.avatar"></ant-avatar>
     <div class="content">
-      <!--      <div class="title-content">-->
-      <!--        <ant-popover placement="topLeft">-->
-      <!--          <template #content>-->
-      <!--            <div class="email">-->
-      <!--              <email-icon></email-icon>-->
-      <!--              {{ activityItem.user?.email || '' }}-->
-      <!--            </div>-->
-      <!--            <div class="email">-->
-      <!--              <location-icon></location-icon>-->
-      <!--              {{ activityItem.user?.location || '' }}-->
-      <!--            </div>-->
-      <!--            <div class="email">-->
-      <!--              <link-icon></link-icon>-->
-      <!--              {{ activityItem.user?.personalWebsite || '' }}-->
-      <!--            </div>-->
-      <!--            <div class="email">-->
-      <!--              <wechat-icon></wechat-icon>-->
-      <!--              {{ activityItem.user?.wechat || '' }}-->
-      <!--            </div>-->
-      <!--          </template>-->
-      <!--          <template #title>-->
-      <!--            <div class="title-content-slot">-->
-      <!--              <ant-avatar-->
-      <!--                v-if="activityItem.user.avatar"-->
-      <!--                :src="activityItem.user.avatar"></ant-avatar>-->
-      <!--              <div class="inner-title-name">{{ activityItem.user.name }}</div>-->
-      <!--              <link-icon class="link-icon"></link-icon>-->
-      <!--            </div>-->
-      <!--          </template>-->
-      <!--          <div class="user-name">{{ activityItem.user.name }}</div>-->
-      <!--        </ant-popover>-->
-      <!--        <div class="title" v-html="activityItem.content.content"></div>-->
-      <!--      </div>-->
       <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="box">
         <ant-list-item>
@@ -67,16 +34,17 @@
 </template>
 
 <script lang="ts">
-import type { ActivityModelType, EntityCompletelyListItemType, UserModelType } from 'metagraph-constant';
+import type {
+  ActivityModelType,
+  EntityCompletelyListItemType,
+  UserModelType
+} from 'metagraph-constant';
 import {
   computed, defineComponent, PropType, toRef
 } from 'vue';
+import { List, Avatar, Button } from 'ant-design-vue';
 import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import { CommonUtil } from '@/utils';
-
-import {
-  EmailIcon, LocationIcon, LinkIcon, WechatIcon
-} from '@/components/icons';
 
 export default defineComponent({
   name: 'activity-follow-user-item',
@@ -93,10 +61,10 @@ export default defineComponent({
   },
   components: {
     ActivityItemTitle,
-    EmailIcon,
-    LocationIcon,
-    LinkIcon,
-    WechatIcon
+    AntListItemMeta: List.Item.Meta,
+    AntListItem: List.Item,
+    AntAvatar: Avatar,
+    AntButton: Button,
   },
   setup(props) {
     const activity = toRef(props, 'activityItem');

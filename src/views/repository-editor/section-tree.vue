@@ -50,6 +50,9 @@ import type { SectionModelType } from 'metagraph-constant';
 import {
   computed, defineComponent, ref, inject
 } from 'vue';
+import {
+  Tree, Dropdown, Menu, Button
+} from 'ant-design-vue';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
 import { isRepositoryEditorLoading, knowledgeDrawer } from '@/views/repository-editor/repository-editor';
 import { isEditableKey } from '@/views/repository-editor/provide.type';
@@ -65,7 +68,12 @@ export default defineComponent({
   components: {
     KnowledgeIcon,
     SectionCreateModal,
-    FolderOutlined
+    FolderOutlined,
+    AntTree: Tree,
+    AntButton: Button,
+    AntDropdown: Dropdown,
+    AntMenu: Menu,
+    AntMenuItem: Menu.Item
   },
   setup() {
     const sectionTreeService = new SectionTreeService();

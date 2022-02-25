@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import { Avatar, message } from 'ant-design-vue';
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 import {
   computed, onMounted, ref, defineComponent, inject
@@ -83,7 +83,8 @@ export default defineComponent({
     EmailIcon,
     LocationIcon,
     LinkIcon,
-    WechatIcon
+    WechatIcon,
+    AntAvatar: Avatar
   },
   setup() {
     const router = useRouter();

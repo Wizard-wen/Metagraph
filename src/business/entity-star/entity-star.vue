@@ -7,7 +7,7 @@
           <ant-button v-else @click="handleLoadMore">加载更多</ant-button>
         </div>
       </template>
-      <ant-list-item v-for="item in list">
+      <ant-list-item v-for="(item, index) in list" :key="index">
         <template #actions>
           <ant-button @click="goProfilePage(item.id)">查看</ant-button>
         </template>
@@ -26,7 +26,9 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import {
+  Avatar, Button, List, message, Spin
+} from 'ant-design-vue';
 import type { PublicEntityType, UserModelType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, reactive, ref, toRef, toRefs
@@ -45,6 +47,14 @@ export default defineComponent({
       type: String,
       required: true
     }
+  },
+  components: {
+    AntSpin: Spin,
+    AntButton: Button,
+    AntAvatar: Avatar,
+    AntList: List,
+    AntListItem: List.Item,
+    AntListItemMeta: List.Item.Meta
   },
   setup(props) {
     const entityId = toRef(props, 'entityId');

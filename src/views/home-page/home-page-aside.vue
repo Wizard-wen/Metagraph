@@ -26,7 +26,7 @@
               placeholder="查找您的知识库..."
               class="search-input"></ant-input>
           </div>
-          <div>
+          <div class="repository-list-container">
             <ant-list size="small" :data-source="filteredRepositoryList">
               <template #renderItem="{ item }">
                 <ant-list-item>
@@ -37,6 +37,9 @@
                     <span class="user-name">{{ item.author.name }}</span>
                     &nbsp;/&nbsp;
                     <span class="repository-name">{{ item.content.name }}</span>
+                    <clone-icon
+                      style="margin-left: 5px;"
+                      v-if="item.content.cloneFromRepositoryEntityId"></clone-icon>
                   </div>
                 </ant-list-item>
               </template>
@@ -57,20 +60,23 @@ import {
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import {
-  Spin, List, Input, Button
+  Spin, List, Input, Button, Avatar
 } from 'ant-design-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import { CloneIcon } from '@/components/icons';
 import { useStore } from '@/store';
 import { ownRepositoryList } from './home.page';
 
 export default defineComponent({
   name: 'home-page-aside',
   components: {
+    CloneIcon,
     PlusOutlined,
     AntSpin: Spin,
     AntList: List,
     AntListItem: List.Item,
     AntInput: Input,
+    AntAvatar: Avatar,
     AntButton: Button
   },
   setup() {
@@ -114,6 +120,7 @@ export default defineComponent({
   width: 300px;
   padding: 0 18px;
   background: #fff;
+  overflow-y: auto;
 
   .user {
     display: flex;
@@ -177,6 +184,9 @@ export default defineComponent({
           border-radius: 6px;
           outline: none;
         }
+      }
+
+      .repository-list-container {
       }
 
       .repo-item {

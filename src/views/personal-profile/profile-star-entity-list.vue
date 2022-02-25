@@ -1,5 +1,5 @@
 <template>
-  <template v-for="item in myStaredEntityList.target">
+  <template v-for="(item, index) in myStaredEntityList.target" :key="index">
     <template v-if="item.entity.entityType === 'Repository'">
       <repository-list-item :repository="item"></repository-list-item>
     </template>

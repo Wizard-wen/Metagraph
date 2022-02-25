@@ -4,15 +4,12 @@
  */
 
 import { createApp } from 'vue';
-import {
-  Button, Input, Modal, Tree, Select, Form,
-  PageHeader, Switch, Spin, Card, Steps, Comment,
-  DatePicker, Checkbox, Radio, Dropdown, Menu,
-  Avatar, Pagination, Upload, List, Tag, Drawer,
-  Descriptions, Col, Row, Empty, Tabs, Timeline,
-  Collapse, Image, Slider, Divider, Tooltip, Alert, Popover
-} from 'ant-design-vue';
-import 'ant-design-vue/dist/antd.css';
+// import {
+//   Button, Input, Modal, Select, Form,
+//   Spin, Card, Checkbox, Radio,
+//   Avatar, Pagination, List, Tag, Drawer,
+// } from 'ant-design-vue';
+// import 'ant-design-vue/dist/antd.css';
 import App from './App.vue';
 import router from './router';
 import { store, key } from './store';
@@ -32,60 +29,50 @@ app.directive('contextmenu', Contextmenu);
 app.directive('hide', Hide);
 app.directive('clickOutside', clickOutside);
 // 引入全局component
-app.component('AntDivider', Divider);
-app.component('AntTooltip', Tooltip);
-app.component('AntImage', Image);
-app.component('AntPopover', Popover);
-app.component('AntSlider', Slider);
-app.component('AntCollapse', Collapse);
-app.component('AntCollapsePanel', Collapse.Panel);
-app.component('AntTimeline', Timeline);
-app.component('AntTimelineItem', Timeline.Item);
-app.component('AntTabs', Tabs);
-app.component('AntTabPane', Tabs.TabPane);
-app.component('AntCol', Col);
-app.component('AntRow', Row);
-app.component('AntTree', Tree);
-app.component('AntDrawer', Drawer);
-app.component('AntEmpty', Empty);
-app.component('AntAlert', Alert);
-app.component('AntDescriptions', Descriptions);
-app.component('AntDescriptionsItem', Descriptions.Item);
-app.component('AntDirectoryTree', Tree.DirectoryTree);
-app.component('AntTreeNode', Tree.TreeNode);
-app.component('AntModal', Modal);
-app.component('AntButton', Button);
-app.component('AntForm', Form);
-app.component('AntFormItem', Form.Item);
-app.component('AntSelect', Select);
-app.component('AntSelectOption', Select.Option);
-app.component('AntCheckbox', Checkbox);
-app.component('AntCheckboxGroup', Checkbox.Group);
-app.component('AntRadio', Radio);
-app.component('AntRadioGroup', Radio.Group);
-app.component('AntInput', Input);
-app.component('AntTextArea', Input.TextArea);
-app.component('AntInputSearch', Input.Search);
-app.component('AntInputPassword', Input.Password);
-app.component('AntUpload', Upload);
-app.component('AntDatePicker', DatePicker);
-app.component('AntPageHeader', PageHeader);
-app.component('AntSwitch', Switch);
-app.component('AntSpin', Spin);
-app.component('AntCard', Card);
-app.component('AntSteps', Steps);
-app.component('AntStep', Steps.Step);
-app.component('AntComment', Comment);
-app.component('AntMenu', Menu);
-app.component('AntMenuItem', Menu.Item);
-app.component('AntDropdown', Dropdown);
-app.component('AntAvatar', Avatar);
-app.component('AntPagination', Pagination);
-app.component('AntList', List);
-app.component('AntListItem', List.Item);
-app.component('AntListItemMeta', List.Item.Meta);
-app.component('AntTag', Tag);
-app.use(Form);
+// app.component('AntTooltip', Tooltip);
+// app.component('AntImage', Image);
+// app.component('AntSlider', Slider);
+// app.component('AntCollapse', Collapse);
+// app.component('AntCollapsePanel', Collapse.Panel);
+// app.component('AntTimeline', Timeline);
+// app.component('AntTimelineItem', Timeline.Item);
+// app.component('AntTabs', Tabs);
+// app.component('AntTabPane', Tabs.TabPane);
+// app.component('AntCol', Col);
+// app.component('AntRow', Row);
+// app.component('AntDrawer', Drawer);
+// app.component('AntEmpty', Empty);
+// app.component('AntAlert', Alert);
+// app.component('AntDescriptions', Descriptions);
+// app.component('AntDescriptionsItem', Descriptions.Item);
+// app.component('AntModal', Modal);
+// app.component('AntButton', Button);
+// app.component('AntForm', Form);
+// app.component('AntFormItem', Form.Item);
+// app.component('AntSelect', Select);
+// app.component('AntSelectOption', Select.Option);
+// app.component('AntCheckbox', Checkbox);
+// app.component('AntCheckboxGroup', Checkbox.Group);
+// app.component('AntRadio', Radio);
+// app.component('AntRadioGroup', Radio.Group);
+// app.component('AntInput', Input);
+// app.component('AntTextArea', Input.TextArea);
+// app.component('AntInputSearch', Input.Search);
+// app.component('AntInputPassword', Input.Password);
+// app.component('AntPageHeader', PageHeader);
+// app.component('AntSwitch', Switch);
+// app.component('AntSpin', Spin);
+// app.component('AntCard', Card);
+// app.component('AntMenu', Menu);
+// app.component('AntMenuItem', Menu.Item);
+// app.component('AntDropdown', Dropdown);
+// app.component('AntAvatar', Avatar);
+// app.component('AntPagination', Pagination);
+// app.component('AntList', List);
+// app.component('AntListItem', List.Item);
+// app.component('AntListItemMeta', List.Item.Meta);
+// app.component('AntTag', Tag);
+// app.use(Form);
 // 传入 injection key
 app.use(store, key);
 app.use(router);

@@ -15,6 +15,9 @@
         <ant-tag class="repository-type-tag">
           {{ isPublicRepository ? '公开' : '私有' }}
         </ant-tag>
+        <ant-tag class="repository-type-tag">
+          {{ isCloneRepository ? '克隆' : '原创' }}
+        </ant-tag>
         <div class="saving-status">
           <ant-spin :spinning="savingStatus === 'saving...'"></ant-spin>
           <span>{{ savingStatus }}</span>
@@ -22,6 +25,12 @@
       </div>
     </div>
     <div class="right">
+      <ant-button
+        type="primary"
+        v-if="isCloneButtonShow"
+        :loading="isCloning"
+        @click="handleOpenCloneModal">克隆
+      </ant-button>
       <star-control-button
         @update="handleStarStatusUpdate"
         :is-owner="!!repositoryModel.target.author.id"
@@ -41,16 +50,24 @@
       </div>
     </div>
   </div>
+  <clone-repository-modal
+    :old-repository-name="currentRepositoryName"
+    @close="handleCloseCloneModal"
+    :is-modal-visible="isCloneModalShow"></clone-repository-modal>
 </template>
 
 <script lang="ts">
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import {
-  computed,
-  defineComponent, inject, PropType, ref, toRef
+  Button, message, Modal, Spin, Tag
+} from 'ant-design-vue';
+import {
+  computed, createVNode,
+  defineComponent, inject, PropType, ref
 } from 'vue';
-import type { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
+import type { RepositoryModelType } from 'metagraph-constant';
 import { useRouter } from 'vue-router';
-import { knowledge, KnowledgeEdit } from '@/views/knowledge-edit/model/knowledge.edit';
+import CloneRepositoryModal from '@/views/repository-editor/repository-editor-header/clone-repository-modal.vue';
 import { useStore } from '@/store';
 import RepositoryViewChange from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
 import { StarControlButton, CommentControlButton } from '@/business';
@@ -70,10 +87,14 @@ export default defineComponent({
     }
   },
   components: {
+    CloneRepositoryModal,
     RepositoryViewChange,
     StarControlButton,
     CommentControlButton,
-    EditIcon
+    EditIcon,
+    AntTag: Tag,
+    AntButton: Button,
+    AntSpin: Spin,
   },
   emits: ['viewChange'],
   setup(props, { emit }) {
@@ -81,11 +102,14 @@ export default defineComponent({
     const store = useStore();
     const repositoryEditor = new RepositoryEditor();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+    const isCloning = ref(false);
+    const isCloneModalShow = ref(false);
     const currentUserModel = computed(() => store.state.user?.user);
     const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
     const goHomePage = async () => {
       await router.push('/');
     };
+    const isLogin = computed(() => store.state.user.isLogin);
 
     async function handleStarStatusUpdate() {
       if (repositoryEntityId.value) {
@@ -107,6 +131,56 @@ export default defineComponent({
     const handleRepositoryViewChange = (status: 'section' | 'graph') => {
       emit('viewChange', status);
     };
+
+    async function cloneRepository(name?: string) {
+      isCloning.value = true;
+      const clonedRepositoryEntityId = await repositoryEditor.cloneRepository(
+        repositoryEntityId.value,
+        name
+      );
+      isCloning.value = false;
+      if (!clonedRepositoryEntityId) {
+        return;
+      }
+      Modal.confirm({
+        title: '跳转指引',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '确定要跳转至新知识库吗?',
+        okText: '确定',
+        cancelText: '取消',
+        async onOk() {
+          await router.replace({
+            name: 'RepositoryEditor',
+            query: {
+              repositoryEntityId: clonedRepositoryEntityId,
+              type: 'edit'
+            },
+            force: true
+          });
+        },
+        onCancel() {
+          message.info('取消删除！');
+        },
+      });
+    }
+
+    async function handleCloseCloneModal(params?: {
+      name: string
+    }) {
+      isCloneModalShow.value = false;
+      if (params) {
+        await cloneRepository(params?.name);
+      }
+    }
+
+    function handleOpenCloneModal() {
+      isCloneModalShow.value = true;
+    }
+
+    const isCloneRepository = computed(() => (repositoryModel.target?.content as RepositoryModelType).cloneFromRepositoryEntityId);
+    // 只有在登录且非克隆知识库，才能有克隆功能
+    const isCloneButtonShow = computed(() => !isCloneRepository.value && isLogin.value);
+    const currentRepositoryName = computed(() => (repositoryModel.target?.content as RepositoryModelType).name);
     return {
       repositoryEntityId,
       isPublicRepository,
@@ -116,7 +190,15 @@ export default defineComponent({
       goRepositoryEditPage,
       handleRepositoryViewChange,
       handleUpdateComment,
-      handleStarStatusUpdate
+      handleStarStatusUpdate,
+      cloneRepository,
+      isCloneButtonShow,
+      isCloneRepository,
+      isCloning,
+      isCloneModalShow,
+      handleOpenCloneModal,
+      handleCloseCloneModal,
+      currentRepositoryName
     };
   }
 });

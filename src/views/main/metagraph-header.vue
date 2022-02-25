@@ -5,7 +5,7 @@
         class="logo"
         src="/hogwarts-logo.webp"
         height="32" width="32"
-        @click="goHomePage"/>
+        @click="goHomePage" alt="logo"/>
       <ant-input-search
         @search="handleSearch"
         style="width: 260px"></ant-input-search>
@@ -68,6 +68,9 @@ import {
   computed, defineComponent
 } from 'vue';
 import { useRouter } from 'vue-router';
+import {
+  Avatar, Dropdown, Menu, Button, Input
+} from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { MutationEnum, useStore } from '@/store';
 
@@ -75,6 +78,12 @@ export default defineComponent({
   name: 'metagraph-header',
   components: {
     PlusOutlined,
+    AntDropdown: Dropdown,
+    AntAvatar: Avatar,
+    AntMenu: Menu,
+    AntMenuItem: Menu.Item,
+    AntButton: Button,
+    AntInputSearch: Input.Search
   },
   setup() {
     const router = useRouter();

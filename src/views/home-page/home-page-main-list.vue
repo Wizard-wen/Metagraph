@@ -19,13 +19,14 @@
       <ant-pagination
         v-if="!isLogin"
         class="pagination"
+        :pageSize="10"
         v-model:current="repositoryList.current"
         :total="repositoryList.total"
         @change="onRepositoryPaginationChange"/>
-
       <ant-pagination
         v-if="isLogin"
         class="pagination"
+        :pageSize="10"
         v-model:current="activityList.current"
         :total="activityList.total"
         @change="onActivityPaginationChange"/>

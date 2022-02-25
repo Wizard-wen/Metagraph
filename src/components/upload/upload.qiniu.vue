@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import { message, Upload } from 'ant-design-vue';
 import * as qiniu from 'qiniu-js';
 import {
   defineComponent, ref, toRefs, watch
@@ -61,6 +61,7 @@ export default defineComponent({
   components: {
     LoadingOutlined,
     PlusOutlined,
+    AntUpload: Upload
   },
   setup(props, context) {
     const { modelValue } = toRefs(props);

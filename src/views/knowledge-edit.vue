@@ -64,6 +64,7 @@ import { FileImageOutlined } from '@ant-design/icons-vue';
 import {
   EditorContent
 } from '@tiptap/vue-3';
+import { Spin, Tag } from 'ant-design-vue';
 import {
   provide, defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
@@ -104,7 +105,9 @@ export default defineComponent({
     EditorContent,
     KnowledgeBindPanel,
     KnowledgeEditForm,
-    KnowledgeCustomFields
+    KnowledgeCustomFields,
+    AntSpin: Spin,
+    AntTag: Tag
   },
   setup() {
     const route = useRoute();

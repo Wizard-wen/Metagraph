@@ -28,10 +28,10 @@
 </template>
 
 <script lang="ts">
-import { Settings } from '@/views/settings/settings';
 import {
   defineComponent, onMounted, reactive, computed
 } from 'vue';
+import { Settings } from '@/views/settings/settings';
 import { useStore } from '@/store';
 import RouterMenuList from '@/github.style.component/router-menu-list/router-menu-list.vue';
 
@@ -60,9 +60,18 @@ export default defineComponent({
       }
     });
     const routerList = reactive([
-      { path: '/settings/profile', name: '用户信息' },
-      { path: '/settings/bindEmail', name: '绑定邮箱' },
-      { path: '/settings/security', name: '更改密码' }
+      {
+        path: '/settings/profile',
+        name: '用户信息'
+      },
+      {
+        path: '/settings/bindEmail',
+        name: '绑定邮箱'
+      },
+      {
+        path: '/settings/security',
+        name: '更改密码'
+      }
     ]);
     const userModel = computed(() => store.state.user.user);
     const settings = new Settings();

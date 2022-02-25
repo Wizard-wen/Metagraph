@@ -40,24 +40,10 @@ export class UserApiService {
     });
   }
 
-  static async login(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
-    return RequestUtil.post<{ password: string; name: string }, any>({
-      apiPath: ApiPathEnum.LoginByName,
-      requestBody: params
-    });
-  }
-
   static async getById(): Promise<PublicApiResponseType<UserModelType>> {
     return RequestUtil.post<undefined, UserModelType>({
       apiPath: ApiPathEnum.GetById,
       requestBody: undefined
-    });
-  }
-
-  static async getPublicUserById(params: { userId: string }): Promise<PublicApiResponseType<UserModelType>> {
-    return RequestUtil.post<{ userId: string }, UserModelType>({
-      apiPath: ApiPathEnum.GetPublicUserById,
-      requestBody: params
     });
   }
 

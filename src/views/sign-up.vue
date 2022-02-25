@@ -58,13 +58,15 @@
 
 </template>
 <script lang="ts">
-import { customFormRules } from '@/views/settings/custom.form.rules';
-import { message } from 'ant-design-vue';
+import {
+  Button, Form, Input, message, Radio
+} from 'ant-design-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
   defineComponent, reactive, ref, UnwrapRef
 } from 'vue';
 import { useRouter } from 'vue-router';
+import { customFormRules } from '@/views/settings/custom.form.rules';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
 import { UserNoAuthApiService } from '@/api.service/no.auth/user.no.auth.api.service';
 import { UserApiService } from '@/api.service';
@@ -82,6 +84,13 @@ interface SignUpFormState {
 export default defineComponent({
   components: {
     UploadFormItem,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntInputPassword: Input.Password,
+    AntButton: Button,
+    AntRadio: Radio,
+    AntRadioGroup: Radio.Group,
+    AntInput: Input
   },
   setup() {
     const formRef = ref();

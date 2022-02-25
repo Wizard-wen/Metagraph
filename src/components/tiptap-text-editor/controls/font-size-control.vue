@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, defineEmits } from 'vue';
+import { Select as AntSelect } from 'ant-design-vue';
 
 const emits = defineEmits(['fontSizeChange']);
 const articleFontSize = ref('12');

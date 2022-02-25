@@ -21,7 +21,8 @@
             :key="item.article.id">
             <div
               class="entity-item"
-              v-for="childItem in item.children">
+              :key="index"
+              v-for="(childItem, index) in item.children">
               <div class="left">
                 <div class="knowledge-name">{{ childItem.name }}</div>
                 <ant-tag>{{ childItem.weight }}</ant-tag>
@@ -47,7 +48,9 @@
 import {
   defineComponent, inject, onMounted, ref, createVNode, reactive
 } from 'vue';
-import { Modal, message } from 'ant-design-vue';
+import {
+  Modal, message, Collapse, Tag, Button, Spin
+} from 'ant-design-vue';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import CreateOrBindKnowledgeModal
@@ -67,7 +70,12 @@ export default defineComponent({
     CaretRightOutlined,
     UploadIcon,
     CreateIcon,
-    DeleteIcon
+    DeleteIcon,
+    AntTag: Tag,
+    AntButton: Button,
+    AntSpin: Spin,
+    AntCollapse: Collapse,
+    AntCollapsePanel: Collapse.Panel
   },
   setup() {
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));

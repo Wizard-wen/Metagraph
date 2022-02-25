@@ -2,6 +2,9 @@
   <template v-if="activityItem.content.type === 'CreateRepository'">
     <activity-repository-item :activity-item="activityItem"></activity-repository-item>
   </template>
+  <template v-if="activityItem.content.type === 'CloneRepository'">
+    <activity-repository-item :activity-item="activityItem"></activity-repository-item>
+  </template>
   <template v-if="activityItem.content.type === 'CreateKnowledge'">
     <activity-knowledge-item
       :activity-item="activityItem"></activity-knowledge-item>
@@ -20,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import {
+import type {
   ActivityModelType, EntityCompletelyListItemType, UserModelType
 } from 'metagraph-constant';
 import {

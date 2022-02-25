@@ -9,7 +9,7 @@ import { ActivityApiService } from '@/api.service/activity.api.service';
 import { FollowApiService } from '@/api.service/follow.api.service';
 import { FollowNoAuthApiService } from '@/api.service/no.auth/follow.no.auth.api.service';
 import { StarNoAuthApiService } from '@/api.service/no.auth/star.no.auth.api.service';
-import { RepositoryNoAuthApiService, UserApiService } from '@/api.service';
+import { RepositoryNoAuthApiService, UserApiService, UserNoAuthApiService } from '@/api.service';
 
 export const myStaredEntityList = reactive<{
   target: EntityCompletelyListItemType[]
@@ -57,7 +57,7 @@ export class PersonalProfile {
   }
 
   async getUserModelById(userId: string): Promise<void> {
-    const result = await UserApiService.getPublicUserById({ userId });
+    const result = await UserNoAuthApiService.getPublicUserById({ userId });
     if (result.data) {
       userProfile.value = result.data;
     }

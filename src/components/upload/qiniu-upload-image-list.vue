@@ -6,8 +6,7 @@
       :file-list="modelValue"
       @preview="handlePreview"
       :before-upload="beforeUpload"
-      :custom-request="handleCustomRequest"
-    >
+      :custom-request="handleCustomRequest">
       <div v-if="modelValue.length < 8">
         <plus-outlined/>
         <div class="ant-upload-text">上传</div>
@@ -21,7 +20,7 @@
 
 <script lang="ts">
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import { message, Modal, Upload } from 'ant-design-vue';
 import { FileEnum } from 'metagraph-constant';
 import * as qiniu from 'qiniu-js';
 import {
@@ -58,6 +57,8 @@ export default defineComponent({
   name: 'qiniu-upload-image-list',
   components: {
     PlusOutlined,
+    AntUpload: Upload,
+    AntModal: Modal
   },
   props: {
     modelValue: {

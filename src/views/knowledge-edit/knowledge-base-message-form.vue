@@ -26,9 +26,13 @@
     </ant-form-item>
     <ant-form-item label="知识点领域">
       <div class="tag-box">
-        <ant-tag v-for="item in knowledgeForm.domain">{{ item.domainName }}</ant-tag>
+        <ant-tag
+          :key="index"
+          v-for="(item, index) in knowledgeForm.domain">{{ item.domainName }}
+        </ant-tag>
       </div>
-      <ant-button style="display: block" type="primary" size="default" @click="handleOpenDomainModal">
+      <ant-button
+        style="display: block" type="primary" size="default" @click="handleOpenDomainModal">
         <template #icon>
           <EditOutlined/>
         </template>
@@ -38,8 +42,9 @@
     <ant-form-item label="知识库">
       <ant-select disabled v-model:value="repositoryEntityId">
         <ant-select-option
+          :key="index"
           :value="item.entity.id"
-          v-for="item in ownRepositoryList">
+          v-for="(item, index) in ownRepositoryList">
           {{ item.content.name }}
         </ant-select-option>
       </ant-select>
@@ -49,7 +54,9 @@
     </ant-form-item>
     <ant-form-item label="标签">
       <div class="tag-box">
-        <ant-tag v-for="item in knowledgeForm.tagList">{{ item.label }}</ant-tag>
+        <ant-tag
+          :key="index"
+          v-for="(item, index) in knowledgeForm.tagList">{{ item.label }}</ant-tag>
       </div>
       <ant-button style="display: block" type="primary" size="default" @click="handleOpenModal">
         <template #icon>
@@ -72,6 +79,9 @@
   </ant-form>
 </template>
 <script lang="ts">
+import {
+  Button, Form, Input, Radio, Select, Tag
+} from 'ant-design-vue';
 import {
   defineComponent, onMounted, ref, inject
 } from 'vue';
@@ -102,7 +112,14 @@ export default defineComponent({
     EditOutlined,
     KnowledgeTagModal,
     EditIcon,
-    SaveIcon
+    SaveIcon,
+    AntSelect: Select,
+    AntSelectOption: Select.Option,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntButton: Button,
+    AntTag: Tag,
+    AntInput: Input
   },
   setup() {
     const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);

@@ -10,6 +10,7 @@
     :zIndex="9999"
     @cancel="handleModalCancel">
     <vueCropper
+      v-if="!isGif"
       style="height: 400px"
       ref="cropperRef"
       :img="cropOption.img"
@@ -37,6 +38,7 @@
       :mode="cropOption.mode"
       :limitMinSize="cropOption.limitMinSize"
     ></vueCropper>
+    <img v-if="isGif" :src="gifBase64" alt="">
     <div class="control-box">
       <ant-button
         type="primary"
@@ -59,7 +61,7 @@
 
 <script lang="ts">
 import { QiniuUploadService } from '@/service/qiniu.upload.service';
-import { message } from 'ant-design-vue';
+import { Button, message, Modal } from 'ant-design-vue';
 import {
   defineComponent, reactive, ref, PropType
 } from 'vue';
@@ -70,7 +72,9 @@ import { FileEnum } from 'metagraph-constant';
 export default defineComponent({
   name: 'upload-cropper-modal',
   components: {
-    VueCropper
+    VueCropper,
+    AntModal: Modal,
+    AntButton: Button
   },
   props: {
     isModalVisible: {
@@ -83,7 +87,16 @@ export default defineComponent({
     },
     fixedNumber: {
       type: Array as PropType<number[]>,
-      default: [1, 1]
+      default: () => [1, 1]
+    },
+    fixedBox: {
+      type: Boolean,
+      default: false
+    },
+    fixed: {
+      require: true,
+      type: Boolean,
+      default: false
     }
   },
   emits: ['close'],
@@ -126,14 +139,16 @@ export default defineComponent({
       // 限制图片最大宽度和高度
       maxImgSize: 3000,
       // 是否开启截图框宽高固定比例
-      fixed: true,
+      fixed: props.fixed,
       // 截图框的宽高比例
-      fixedNumber: [1, 1],
+      fixedNumber: props.fixed ? (props.fixedNumber || [1, 1]) : undefined,
       // 固定截图框大小
-      fixedBox: false,
+      fixedBox: props.fixedBox,
       limitMinSize: [100, 120]
     });
-
+    const domFile = ref<File>();
+    const isGif = ref(false);
+    const gifBase64 = ref<string>();
     const handleModalOk = () => {
       emit('close');
     };
@@ -170,8 +185,12 @@ export default defineComponent({
         return;
       }
       const file = target.files[0];
+      domFile.value = file;
       if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(target.value)) {
         return;
+      }
+      if (/\.(gif|GIF)$/.test(target.value)) {
+        isGif.value = true;
       }
       const reader = new FileReader();
       reader.onload = () => {
@@ -182,7 +201,11 @@ export default defineComponent({
         } else {
           data = reader.result;
         }
-        cropOption.img = data;
+        if (!isGif.value) {
+          cropOption.img = data;
+        } else {
+          gifBase64.value = data;
+        }
         if (inputRef.value) {
           inputRef.value.value = '';
         }
@@ -193,24 +216,51 @@ export default defineComponent({
       reader.readAsArrayBuffer(file);
     }
 
-    async function handleUpload() {
-      cropperRef.value.getCropData(async (data: string) => {
-        const qiniuUploadService = new QiniuUploadService();
-        isLoading.value = true;
-        const result = await qiniuUploadService.customRequestUploadHandler({
-          base64: data,
-          type: FileEnum.Image,
-          name: ''
-        });
-        if (result) {
-          emit('close', {
-            ...result
-          });
-        } else {
-          message.error('上传失败');
-        }
-        isLoading.value = false;
+    async function uploadToQiniu(data: string) {
+      isLoading.value = true;
+      const qiniuUploadService = new QiniuUploadService();
+      const result = await qiniuUploadService.customRequestUploadHandler({
+        base64: data,
+        type: FileEnum.Image,
+        name: ''
       });
+      if (result) {
+        emit('close', {
+          ...result
+        });
+      } else {
+        message.error('上传失败');
+      }
+      isLoading.value = false;
+    }
+
+    async function uploadFileToQiniu() {
+      isLoading.value = true;
+      const qiniuUploadService = new QiniuUploadService();
+      const result = await qiniuUploadService.customRequestUploadHandler({
+        file: domFile.value,
+        type: FileEnum.Image,
+        name: ''
+      });
+      if (result) {
+        emit('close', {
+          ...result
+        });
+      } else {
+        message.error('上传失败');
+      }
+      isLoading.value = false;
+    }
+
+    async function handleUpload() {
+      if (isGif.value && gifBase64.value) {
+        console.log(gifBase64.value, 'gif');
+        await uploadFileToQiniu();
+      } else {
+        cropperRef.value.getCropData(async (data: string) => {
+          await uploadToQiniu(data);
+        });
+      }
     }
 
     return {
@@ -225,7 +275,9 @@ export default defineComponent({
       handleUploadImg,
       handleUpload,
       cropperRef,
-      isLoading
+      isLoading,
+      isGif,
+      gifBase64
     };
   }
 });

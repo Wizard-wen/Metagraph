@@ -11,7 +11,7 @@ export class StarNoAuthApiService {
   // 获取用户公开信息
   static async getEntityStarDetailList(params: { entityId: string }): Promise<PublicApiResponseType<any>> {
     return RequestUtil.post<{ entityId: string }, any>({
-      apiPath: ApiPathEnum.GetUserProfileById,
+      apiPath: ApiPathEnum.GetPublicUserById,
       requestBody: params
     });
   }

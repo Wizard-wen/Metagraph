@@ -37,9 +37,10 @@
 </template>
 
 <script lang="ts">
-import { ActivityModelType, EntityCompletelyListItemType, UserModelType } from 'metagraph-constant';
+import type { ActivityModelType, EntityCompletelyListItemType, UserModelType } from 'metagraph-constant';
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
+import { Popover, Avatar } from 'ant-design-vue';
 import {
   EmailIcon,
   LocationIcon,
@@ -64,7 +65,9 @@ export default defineComponent({
     EmailIcon,
     LocationIcon,
     LinkIcon,
-    WechatIcon
+    WechatIcon,
+    AntPopover: Popover,
+    AntAvatar: Avatar
   },
   setup() {
     const router = useRouter();
@@ -99,6 +102,7 @@ export default defineComponent({
     font-weight: bolder;
     margin-right: 5px;
     cursor: pointer;
+
     &:hover {
       color: #0969DA;
     }

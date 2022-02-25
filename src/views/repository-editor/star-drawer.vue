@@ -29,6 +29,7 @@
 </template>
 
 <script lang="ts">
+import { Drawer, List, Button, Avatar } from 'ant-design-vue';
 import type { UserModelType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, ref, toRefs, watch,
@@ -47,6 +48,14 @@ export default defineComponent({
       type: String,
       required: true
     },
+  },
+  components: {
+    AntListItemMeta: List.Item.Meta,
+    AntListItem: List.Item,
+    AntList: List,
+    AntButton: Button,
+    AntDrawer: Drawer,
+    AntAvatar: Avatar
   },
   setup(props, context) {
     const { entityId, isShow } = toRefs(props);

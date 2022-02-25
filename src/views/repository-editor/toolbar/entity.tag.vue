@@ -43,7 +43,7 @@
 
 import { CommentOutlined, StarOutlined, TagOutlined } from '@ant-design/icons-vue';
 import {
-  defineComponent, ref, onMounted, inject, computed
+  defineComponent, computed
 } from 'vue';
 import ArrowUpIcon from '@/components/icons/arrow.up.icon.vue';
 import ArrowDownIcon from '@/components/icons/arrow.down.icon.vue';

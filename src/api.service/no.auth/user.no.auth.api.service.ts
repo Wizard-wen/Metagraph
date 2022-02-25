@@ -9,9 +9,23 @@ import { PublicApiResponseType, RequestUtil } from '@/utils';
 
 export class UserNoAuthApiService {
   // 获取用户公开信息
-  static async getUserProfileById(params: { userId: string }): Promise<PublicApiResponseType<UserModelType>> {
+  // static async getUserProfileById(params: { userId: string }): Promise<PublicApiResponseType<UserModelType>> {
+  //   return RequestUtil.post<{ userId: string }, UserModelType>({
+  //     apiPath: ApiPathEnum.GetUserProfileById,
+  //     requestBody: params
+  //   });
+  // }
+
+  static async login(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{ password: string; name: string }, any>({
+      apiPath: ApiPathEnum.LoginByName,
+      requestBody: params
+    });
+  }
+
+  static async getPublicUserById(params: { userId: string }): Promise<PublicApiResponseType<UserModelType>> {
     return RequestUtil.post<{ userId: string }, UserModelType>({
-      apiPath: ApiPathEnum.GetUserProfileById,
+      apiPath: ApiPathEnum.GetPublicUserById,
       requestBody: params
     });
   }
@@ -24,10 +38,10 @@ export class UserNoAuthApiService {
   }
 
   // 发送邮箱验证码
-  // static async sendRegisterEmailCode(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
-  //   return RequestUtil.post<{ password: string; name: string }, any>({
-  //     apiPath: ApiPathEnum.SendRegisterEmailCode,
-  //     requestBody: params
-  //   });
-  // }
+  static async sendRegisterEmailCode(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{ password: string; name: string }, any>({
+      apiPath: ApiPathEnum.SendRegisterEmailCode,
+      requestBody: params
+    });
+  }
 }

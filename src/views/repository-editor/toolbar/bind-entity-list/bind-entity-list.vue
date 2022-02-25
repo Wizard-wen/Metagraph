@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+import { Button } from 'ant-design-vue';
 import {
   defineComponent, ref, computed, inject
 } from 'vue';
@@ -57,7 +58,8 @@ export default defineComponent({
     StarOutlined,
     ViewIcon,
     EditIcon,
-    CreateBindKnowledgeModal
+    CreateBindKnowledgeModal,
+    AntButton: Button,
   },
   setup() {
     const store = useStore();

@@ -10,13 +10,17 @@
   </div>
   <upload-cropper-modal
     v-if="isModalShow"
+    :fixed="false"
     :is-modal-visible="isModalShow"
     :title="title"
     @close="handleModalClose($event)"></upload-cropper-modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, toRef } from 'vue';
+import { Button } from 'ant-design-vue';
+import {
+  defineComponent, PropType, ref, toRef
+} from 'vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
 import UploadCropperModal from '@/components/upload/upload-cropper-modal.vue';
 
@@ -24,7 +28,8 @@ export default defineComponent({
   name: 'upload-form-item',
   components: {
     UploadOutlined,
-    UploadCropperModal
+    UploadCropperModal,
+    AntButton: Button
   },
   props: {
     title: {

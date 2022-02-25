@@ -15,8 +15,7 @@
             :entityId="repositoryEntityId"
             :editable="isEditable"
             @clickMention="handleClickMention($event)"
-            @mention="handleMention($event)"
-            @saveSectionArticle="saveSectionArticle($event)">
+            @mention="handleMention($event)">
           </section-article-tip-tap>
         </div>
         <div class="style-panel">
@@ -43,10 +42,10 @@
 <script lang="ts">
 import { JSONContent } from '@tiptap/vue-3';
 import {
-  defineComponent, ref, onBeforeMount, onUnmounted, provide, nextTick
+  defineComponent, ref, onBeforeMount, onUnmounted, provide
 } from 'vue';
-import { useRoute } from 'vue-router';
-import { Empty } from 'ant-design-vue';
+import { onBeforeRouteUpdate, useRoute } from 'vue-router';
+import { Empty, Spin } from 'ant-design-vue';
 import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
 import {
   sectionArticleTiptapTextEditor,
@@ -78,7 +77,8 @@ export default defineComponent({
     SectionTree,
     SectionArticleTipTap,
     KnowledgeGraphPanel,
-    RepositoryEditorHeader
+    RepositoryEditorHeader,
+    AntSpin: Spin
   },
   setup() {
     const route = useRoute();
@@ -120,6 +120,19 @@ export default defineComponent({
     });
     onUnmounted(() => {
       document.removeEventListener('contextmenu', preventContextmenu);
+    });
+
+    onBeforeRouteUpdate(async (to, from) => {
+      if (to.query.repositoryEntityId !== from.query.repositoryEntityId) {
+        isRepositoryEditorLoading.value = true;
+        repositoryEntityId.value = to.query.repositoryEntityId as string;
+        await Promise.all([
+          repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
+          repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
+          sectionTreeService.getSectionTree(repositoryEntityId.value)
+        ]);
+        isRepositoryEditorLoading.value = false;
+      }
     });
 
     function handleClickMention(event: { id: string, name: string }) {

@@ -88,7 +88,6 @@ export enum ApiPathEnum {
   GetUserBindEmail = '/account/getUserBindEmail',
   UpdateUser = '/account/updateUser',
   RegisterByName = '/public/user/registerByName',
-  GetUserProfileById = '/public/user/profile',
   GetPublicUserById = '/public/user/getById',
   SendRegisterEmailCode = '/public/user/sendEmailCode',
   CheckIfUserExists = '/public/user/check/nickname',
@@ -103,6 +102,7 @@ export enum ApiPathEnum {
   getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
   CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
   GetRepositoryEntityList = '/repository/getEntityList',
+  CloneRepository = '/repository/clone',
   BindToRepository = '/repository/bind/entity',
   // no.auth repository
   GetNoAuthRepositoryBindEntityList = '/public/repository/getBindEntityList',

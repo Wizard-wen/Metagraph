@@ -45,16 +45,17 @@
 </template>
 <script lang="ts">
 import { ExclamationCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { message, Form, Modal } from 'ant-design-vue';
-import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  defineComponent, reactive, ref, UnwrapRef, inject, createVNode
+  message, Form, Modal, Input, Button
+} from 'ant-design-vue';
+import {
+  defineComponent, ref, inject, createVNode
 } from 'vue';
 import {
   KnowledgeEdit,
   knowledgeEntityIdInjectKey,
   customFields,
-  CustomFieldType, customFieldsModelRef, customFieldsRulesRef, customFieldsValidateInfo,
+  CustomFieldType, customFieldsModelRef, customFieldsValidateInfo,
   customFieldsValidate
 } from './model/knowledge.edit';
 import { KnowledgeApiService } from '@/api.service';
@@ -139,6 +140,10 @@ export default defineComponent({
     AddFieldModal,
     MinusCircleOutlined,
     PlusOutlined,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntButton: Button,
+    AntInput: Input
   },
 });
 </script>

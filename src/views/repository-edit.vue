@@ -63,6 +63,9 @@
 </template>
 <script lang="ts">
 import {
+  Button, Form, Input, Radio
+} from 'ant-design-vue';
+import {
   defineComponent, onMounted, ref, computed
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -82,7 +85,14 @@ export default defineComponent({
     LockOutlined,
     BookOutlined,
     UploadFormItem,
-    DomainSelectFormItem
+    DomainSelectFormItem,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntTextArea: Input.TextArea,
+    AntButton: Button,
+    AntRadio: Radio,
+    AntRadioGroup: Radio.Group,
+    AntInput: Input
   },
   setup() {
     const route = useRoute();

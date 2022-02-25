@@ -4,15 +4,19 @@
  */
 
 export class ConfigService {
-  private static apiLocalBaseURL = 'http://localhost:7250/'
+  private static apiLocalBaseURL = 'http://localhost:7250/';
 
-  private static apiTestBaseURL = 'https://www.metagraph.design/api'
+  private static apiLocalDockerURL = 'http://localhost:7251/';
+
+  private static apiTestBaseURL = 'https://www.metagraph.design/api';
 
   static apiBaseURL = ConfigService.apiLocalBaseURL;
 
-  private static websocketLocalBaseURL = 'ws://localhost:8089'
+  private static websocketLocalBaseURL = 'ws://localhost:8089';
 
-  private static websocketTestBaseURL = 'wss://www.metagraph.design/websocket'
+  private static websocketDockerBaseURL = 'ws://localhost:8088';
+
+  private static websocketTestBaseURL = 'wss://www.metagraph.design/websocket';
 
   static websocketBaseURL = ConfigService.websocketLocalBaseURL;
 }

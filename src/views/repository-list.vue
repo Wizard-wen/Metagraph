@@ -8,7 +8,7 @@
 // import { RepositoryApiService } from "@/api.service";
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import RepoList from './repository-list/repo.list.vue';
+import RepoList from './repository-list/repo-list.vue';
 
 export default defineComponent({
   name: 'repository-list',

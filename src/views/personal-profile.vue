@@ -1,6 +1,6 @@
 <template>
   <ant-tabs v-model:activeKey="activeKey" class="custom-ant-tab">
-    <ant-tab-pane key="1">
+    <ant-tabs-pane key="1">
       <template #tab>
         <span>
           <overview-icon class="tab-icon"></overview-icon>
@@ -13,8 +13,8 @@
           <profile-overview></profile-overview>
         </div>
       </div>
-    </ant-tab-pane>
-    <ant-tab-pane key="2">
+    </ant-tabs-pane>
+    <ant-tabs-pane key="2">
       <template #tab>
         <span>
           <repository-list-icon class="tab-icon"></repository-list-icon>
@@ -28,8 +28,8 @@
           <profile-repository-list></profile-repository-list>
         </div>
       </div>
-    </ant-tab-pane>
-    <ant-tab-pane key="3">
+    </ant-tabs-pane>
+    <ant-tabs-pane key="3">
       <template #tab>
         <span>
           <star-icon class="tab-icon"></star-icon>
@@ -43,9 +43,8 @@
           <profile-star-entity-list></profile-star-entity-list>
         </div>
       </div>
-    </ant-tab-pane>
-
-    <ant-tab-pane key="4">
+    </ant-tabs-pane>
+    <ant-tabs-pane key="4">
       <template #tab>
         <span>
           <star-icon class="tab-icon"></star-icon>
@@ -59,9 +58,8 @@
           <profile-followed-user-list></profile-followed-user-list>
         </div>
       </div>
-    </ant-tab-pane>
-
-    <ant-tab-pane key="5">
+    </ant-tabs-pane>
+    <ant-tabs-pane key="5">
       <template #tab>
         <span>
           <star-icon class="tab-icon"></star-icon>
@@ -75,7 +73,7 @@
           <profile-follower-user-list></profile-follower-user-list>
         </div>
       </div>
-    </ant-tab-pane>
+    </ant-tabs-pane>
   </ant-tabs>
 </template>
 
@@ -84,6 +82,7 @@ import {
   defineComponent, ref, provide, onMounted
 } from 'vue';
 import { useRoute, onBeforeRouteUpdate } from 'vue-router';
+import { Tabs, Tag } from 'ant-design-vue';
 import ProfileFollowerUserList from '@/views/personal-profile/profile-follower-user-list.vue';
 import ProfileFollowedUserList from '@/views/personal-profile/profile-followed-user-list.vue';
 import OverviewIcon from '@/components/icons/overview-icon.vue';
@@ -93,8 +92,10 @@ import ProfileOverview from '@/views/personal-profile/profile-overview.vue';
 import { userIdKey, userProfileKey, userFollowKey } from '@/views/personal-profile/personal.profile.provide';
 import ProfileSidebar from './personal-profile/profile-sidebar.vue';
 import { RepositoryListIcon, StarIcon } from '@/components/icons';
-import { myStaredEntityList, myRepositoryEntityList,
-  PersonalProfile, userFollow, userProfile } from './personal-profile/personal.profile';
+import {
+  myStaredEntityList, myRepositoryEntityList,
+  PersonalProfile, userFollow, userProfile
+} from './personal-profile/personal.profile';
 
 export default defineComponent({
   name: 'personal-profile',
@@ -107,7 +108,10 @@ export default defineComponent({
     ProfileOverview,
     ProfileSidebar,
     RepositoryListIcon,
-    StarIcon
+    StarIcon,
+    AntTabs: Tabs,
+    AntTabsPane: Tabs.TabPane,
+    AntTag: Tag
   },
   setup() {
     const route = useRoute();

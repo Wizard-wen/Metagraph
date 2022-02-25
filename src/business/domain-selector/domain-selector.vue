@@ -3,6 +3,7 @@
     <ant-tag
       closable
       @close="handleDeleteDomainTag(index)"
+      :key="index"
       v-for="(item, index) in modelValue">{{ item.domainName || '-' }}
     </ant-tag>
   </div>
@@ -13,7 +14,8 @@
       v-model:value="domainBaseTypeId"
       placeholder="请选择领域类型">
       <ant-select-option
-        v-for="item in domainBaseTypeList.target"
+        :key="index"
+        v-for="(item, index) in domainBaseTypeList.target"
         :value="item.id">{{ item.name }}
       </ant-select-option>
     </ant-select>
@@ -29,7 +31,9 @@
 import {
   defineComponent, onMounted, PropType, toRef
 } from 'vue';
-import { Cascader } from 'ant-design-vue';
+import {
+  Cascader, Select, Button, Tag
+} from 'ant-design-vue';
 import {
   domain, domainList, domainBaseTypeId, domainIdList, domainTree, domainBaseTypeList, DomainSelector
 } from './domain.selector';
@@ -37,7 +41,11 @@ import {
 export default defineComponent({
   name: 'domain-select',
   components: {
-    AntCascader: Cascader
+    AntCascader: Cascader,
+    AntSelect: Select,
+    AntSelectOption: Select.Option,
+    AntButton: Button,
+    AntTag: Tag
   },
   props: {
     modelValue: {
@@ -115,6 +123,7 @@ export default defineComponent({
   gap: 15x;
   margin-bottom: 20px;
 }
+
 .domain-form-box {
   display: flex;
   gap: 20px;

@@ -41,7 +41,7 @@
             class="tip-tap-editor" :editor="editor"/>
         </div>
       </div>
-      <div class="editor-container-view" v-if="!editable">
+      <div class="editor-container-view" v-if="!editable" ref="contentRef">
         <editor-content
           v-if="editor && sectionArticle.contentHtml" class="tip-tap-editor"
           :editor="editor"/>
@@ -94,7 +94,8 @@ export default defineComponent({
     EditorContent,
     // BubbleMenu,
     SectionArticleControl,
-    ArticleLimit
+    ArticleLimit,
+    AntEmpty: Empty
   },
   props: {
     editable: {
@@ -106,7 +107,7 @@ export default defineComponent({
       type: String
     }
   },
-  emits: ['clickMention', 'saveSectionArticle', 'mention'],
+  emits: ['clickMention', 'mention'],
   setup(props, context) {
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const editable = toRef(props, 'editable');
@@ -146,6 +147,7 @@ export default defineComponent({
     }
 
     async function handleClickMentionItem(event: Event) {
+      console.log('click')
       const target = event?.target as HTMLSpanElement;
       if (target?.dataset?.mentionId && target?.dataset?.mentionName) {
         mentionKnowledge.id = target.dataset.mentionId;
@@ -172,6 +174,7 @@ export default defineComponent({
 
     onMounted(async () => {
       if (contentRef.value) {
+        console.log('bind');
         contentRef.value?.addEventListener('click', handleClickMentionItem);
       }
     });

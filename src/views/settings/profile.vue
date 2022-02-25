@@ -59,23 +59,31 @@
 </template>
 
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import {
+  Button, Form, Input, message, Radio
+} from 'ant-design-vue';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  defineComponent, onMounted, ref, toRaw
+  defineComponent, ref, toRaw
 } from 'vue';
 import { customFormRules } from '@/views/settings/custom.form.rules';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
 import { useStore } from '@/store';
 import { UserApiService } from '@/api.service';
 import SettingHeader from './setting.header.vue';
-import { Settings, userProfileFormState, UserProfileFormStateType } from './settings';
+import { userProfileFormState, UserProfileFormStateType } from './settings';
 
 export default defineComponent({
   name: 'Profile',
   components: {
     UploadFormItem,
-    SettingHeader
+    SettingHeader,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntButton: Button,
+    AntRadio: Radio,
+    AntRadioGroup: Radio.Group,
+    AntInput: Input
   },
   setup() {
     const store = useStore();

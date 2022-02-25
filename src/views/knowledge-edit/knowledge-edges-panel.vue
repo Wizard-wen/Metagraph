@@ -48,11 +48,16 @@
 </template>
 
 <script lang="ts">
+import { Collapse } from 'ant-design-vue';
 import { ref, defineComponent } from 'vue';
 import { edges } from './model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-edges-panel',
+  components: {
+    AntCollapse: Collapse,
+    AntCollapsePanel: Collapse.Panel
+  },
   setup() {
     const isInnerPre = ref(false);
     const isOuterPre = ref(false);

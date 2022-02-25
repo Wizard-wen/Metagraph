@@ -32,14 +32,12 @@
             {{ item.name }}
           </ant-select-option>
         </ant-select>
-
         <ant-button
           type="primary"
           @click="findPath"
           :disabled="!targetNode || !sourceNode">查询知识点关联链路
         </ant-button>
       </div>
-
       <ant-alert
         style="height: 36px;"
         message="该功能为体验版本，尚不完善，敬请期待！"
@@ -53,7 +51,7 @@
         <ant-spin :spinning="isPathLoading">
           <template v-if="path.target">
             <div class="step-length">链路步长 {{ path.target.length }}</div>
-            <div v-for="(item, index) in path.target.segments" class="step-card">
+            <div v-for="(item, index) in path.target.segments" :key="index" class="step-card">
               <div>第{{ index + 1 }}步</div>
               <div>From {{ item.start.properties.name }}</div>
               <arrow-down-icon></arrow-down-icon>
@@ -62,12 +60,14 @@
           </template>
           <ant-empty v-else :image="simpleImage"></ant-empty>
         </ant-spin>
-
       </div>
       <div class="right">
         <div class="control">
-          <zoom-in-icon style="font-size: 25px; margin-right: 10px;cursor: pointer" @click="zoomIn"></zoom-in-icon>
-          <zoom-out-icon style="font-size: 25px;cursor: pointer" @click="zoomOut"></zoom-out-icon>
+          <zoom-in-icon
+            style="font-size: 25px; margin-right: 10px;cursor: pointer"
+            @click="zoomIn"></zoom-in-icon>
+          <zoom-out-icon
+            style="font-size: 25px;cursor: pointer" @click="zoomOut"></zoom-out-icon>
         </div>
         <ant-spin :spinning="isLoading">
           <div id="container" style="background: #fff"></div>
@@ -79,7 +79,9 @@
 </template>
 
 <script lang="ts">
-import { Empty } from 'ant-design-vue';
+import {
+  Empty, Alert, Select, Spin
+} from 'ant-design-vue';
 import {
   defineComponent, onMounted, ref, reactive
 } from 'vue';
@@ -121,7 +123,12 @@ export default defineComponent({
     ArrowRightIcon,
     ArrowLeftIcon,
     ZoomInIcon,
-    ZoomOutIcon
+    ZoomOutIcon,
+    AntAlert: Alert,
+    AntSpin: Spin,
+    AntEmpty: Empty,
+    AntSelect: Select,
+    AntSelectOption: Select.Option
   },
   setup() {
     function refreshDragedNodePosition(e: any) {

@@ -32,20 +32,20 @@ export const repositoryFormRules = {
   name: [
     {
       required: true,
-      message: '请输入仓库名称',
+      message: '请输入知识库名称',
       trigger: 'blur'
     },
     {
       min: 3,
       max: 15,
-      message: '仓库名称应当在3-15个字符',
+      message: '知识库名称应当在3-15个字符',
       trigger: 'blur'
     }
   ],
   description: [
     {
       required: true,
-      message: '请输入仓库描述',
+      message: '请输入知识库描述',
       trigger: 'blur'
     },
   ],
@@ -53,13 +53,10 @@ export const repositoryFormRules = {
     {
       type: 'array',
       required: true,
-      message: '请选择仓库领域',
+      message: '请选择知识库领域',
       trigger: 'change'
     },
-  ],
-  // avatar: [
-  //   { required: true, message: '请上传图片', trigger: 'value' },
-  // ],
+  ]
 };
 
 export class RepositoryEdit {
@@ -81,7 +78,7 @@ export class RepositoryEdit {
       domain: repositoryFormState.domain
     });
     if (response.data) {
-      message.success('创建成功');
+      message.success('知识库创建成功！');
       this.router.push({
         path: '/repository/editor',
         query: {
@@ -100,7 +97,7 @@ export class RepositoryEdit {
       domain: repositoryFormState.domain
     });
     if (!response.message) {
-      message.success('更新成功');
+      message.success('知识库更新成功！');
       this.router.go(-1);
     }
   }

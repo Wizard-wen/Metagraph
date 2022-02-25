@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType, StarResponseType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, StarResponseType } from 'metagraph-constant';
 import {
   defineComponent, toRef, PropType, computed, ref
 } from 'vue';

@@ -8,9 +8,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
+import { Switch } from 'ant-design-vue';
 
 export default defineComponent({
   name: 'repository-view-change',
+  components: {
+    AntSwitch: Switch
+  },
   props: {
     viewStatus: {
       type: String as PropType<'section' | 'graph'>,

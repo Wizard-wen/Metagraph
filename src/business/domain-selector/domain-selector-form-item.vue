@@ -17,6 +17,7 @@
 
 <script lang="ts">
 import { EditOutlined } from '@ant-design/icons-vue';
+import { Button, Tag } from 'ant-design-vue';
 import { defineComponent, PropType, ref } from 'vue';
 import DomainSelectModal from './domain-selector-modal.vue';
 
@@ -37,7 +38,9 @@ export default defineComponent({
   },
   components: {
     EditOutlined,
-    DomainSelectModal
+    DomainSelectModal,
+    AntButton: Button,
+    AntTag: Tag
   },
   // 为了上层能够响应ant design form 的表单验证 blur change，需要在emit中声明
   emits: ['update:modelValue', 'blur', 'change'],

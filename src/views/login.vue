@@ -44,19 +44,23 @@
   </div>
 </template>
 <script lang="ts">
-import { message } from 'ant-design-vue';
+import { Button, Form, Input, message } from 'ant-design-vue';
 import {
   defineComponent, reactive, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { LockOutlined, UserOutlined } from '@ant-design/icons-vue';
 import { useStore, MutationEnum } from '@/store';
-import { UserApiService } from '@/api.service';
+import { UserNoAuthApiService } from '@/api.service';
 
 export default defineComponent({
   components: {
     LockOutlined,
-    UserOutlined
+    UserOutlined,
+    AntForm: Form,
+    AntFormItem: Form.Item,
+    AntButton: Button,
+    AntInput: Input
   },
   setup() {
     const formRef = ref();
@@ -83,7 +87,7 @@ export default defineComponent({
       formRef.value
         .validate()
         .then(async () => {
-          const response = await UserApiService.login({
+          const response = await UserNoAuthApiService.login({
             name: formState.name,
             password: formState.password
           });

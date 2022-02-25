@@ -34,6 +34,7 @@
 </template>
 
 <script lang="ts">
+import { Tag } from 'ant-design-vue';
 import { defineComponent } from 'vue';
 import { StarIcon, RepositoryListIcon, CommentIcon } from '@/components/icons';
 import { myRepositoryEntityList } from './personal.profile';
@@ -43,7 +44,8 @@ export default defineComponent({
   components: {
     StarIcon,
     RepositoryListIcon,
-    CommentIcon
+    CommentIcon,
+    AntTag: Tag
   },
   setup() {
     return {

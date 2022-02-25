@@ -33,6 +33,7 @@
     @close="isPreviewVisible = false"></knowledge-drawer-content>
 </template>
 <script lang="ts">
+import { Button, Tag } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 import { defineComponent, ref } from 'vue';
 import MentionedControlButton from '@/views/knowledge-edit/mentioned-control-button/mentioned-control-button.vue';
@@ -57,7 +58,9 @@ export default defineComponent({
     MentionedControlButton,
     KnowledgeDrawerContent,
     GoBackIcon,
-    SocialActionButton
+    SocialActionButton,
+    AntButton: Button,
+    AntTag: Tag
   },
   setup() {
     const isPreviewVisible = ref(false);

@@ -12,7 +12,7 @@
         {{ repository.content.description }}
       </div>
       <div class="tag-list">
-        <div class="tag" v-for="item in repository.content.domain">
+        <div class="tag" v-for="(item, index) in repository.content.domain" :key="index">
           {{ item.domainBaseTypeName }}-{{ item.domainName }}
         </div>
       </div>
@@ -31,6 +31,7 @@
 </template>
 
 <script lang="ts">
+import { Tag } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   computed, defineComponent, PropType, toRef
@@ -50,7 +51,8 @@ export default defineComponent({
   components: {
     RepositoryListIcon,
     StarIcon,
-    CommentIcon
+    CommentIcon,
+    AntTag: Tag
   },
   setup(props) {
     const store = useStore();

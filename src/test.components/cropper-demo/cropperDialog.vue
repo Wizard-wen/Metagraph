@@ -1,17 +1,4 @@
 <template>
-  <!--  <ant-modal-->
-  <!--    :title="'裁剪图片'"-->
-  <!--    v-loading="is_loading"-->
-  <!--    v-if="cropperDialogVisible"-->
-  <!--    v-model:visible="cropperDialogVisible"-->
-  <!--    :show-close="false"-->
-  <!--    :close-on-press-escape="false"-->
-  <!--    :close-on-click-modal="false"-->
-  <!--    width="1100px"-->
-  <!--    append-to-body-->
-  <!--    class="dialog">-->
-  <!--    -->
-  <!--  </ant-modal>-->
   <div class="cropper-content">
     <!-- 剪裁框 -->
     <div class="cropper">
