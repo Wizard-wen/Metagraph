@@ -116,7 +116,6 @@ export default defineComponent({
             });
         })
         .catch((error: ValidateErrorEntity<UserProfileFormStateType>) => {
-          console.log('error', error);
           message.error('修改信息时出现问题！');
         });
     };

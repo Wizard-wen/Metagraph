@@ -16,7 +16,7 @@ import {
   SectionApiService,
   SectionNoAuthApiService
 } from '@/api.service';
-import { ActionEnum, MutationEnum, store } from '@/store';
+import { MutationEnum, store } from '@/store';
 
 export const sectionModalData = reactive<{
   entityType: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection';
@@ -164,12 +164,12 @@ export class SectionTreeService {
     await this.getSectionTree(repositoryEntityId);
   }
 
-  async getSectionContentByKey(key: string): Promise<void> {
-    console.log('切换section item，执行获取section content ');
-    await store.dispatch(ActionEnum.GET_SECTION_CONTENT, {
-      sectionId: key
-    });
-  }
+  // async getSectionContentByKey(key: string): Promise<void> {
+  //   console.log('切换section item，执行获取section content ');
+  //   await store.dispatch(ActionEnum.GET_SECTION_CONTENT, {
+  //     sectionId: key
+  //   });
+  // }
 
   async initSectionModal(params: {
     type: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',

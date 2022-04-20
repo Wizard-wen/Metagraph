@@ -26,6 +26,7 @@
           </template>
         </ant-dropdown>
       </div>
+      `
       <div class="login-status">
         <div class="no-login" v-if="!isLogin">
           <ant-button ghost @click="goSignInPage">登 录</ant-button>
@@ -47,6 +48,9 @@
                 </ant-menu-item>
                 <ant-menu-item @click="goFollowerPage">
                   关注我的人
+                </ant-menu-item>
+                <ant-menu-item @click="goPLanListPage">
+                  我的计划
                 </ant-menu-item>
                 <ant-menu-item @click="goUserEditPage">
                   设置
@@ -172,6 +176,12 @@ export default defineComponent({
         name: 'Login'
       });
     };
+
+    const goPLanListPage = async () => {
+      await router.push({
+        path: '/planList',
+      });
+    };
     return {
       goSignInPage,
       goCreateRepoPage,
@@ -187,7 +197,8 @@ export default defineComponent({
       goKnowledgeMap,
       user: userModel,
       goFollowedPage,
-      goFollowerPage
+      goFollowerPage,
+      goPLanListPage
     };
   }
 });

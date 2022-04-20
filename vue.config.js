@@ -1,5 +1,7 @@
 // 导入compression-webpack-plugin
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
+// const path = require('path');
+// const { defineConfig } = require('@vue/cli-service')
 // 定义压缩文件类型
 // const productionGzipExtensions = ['js', 'css'];
 
@@ -11,6 +13,7 @@ module.exports = {
       }
     }
   },
+  // 该对象将会被 webpack-merge 合并入最终的 webpack 配置。
   configureWebpack: {
     plugins: [
       // 开启gzip压缩
@@ -23,32 +26,28 @@ module.exports = {
       })
     ],
     optimization: {
+      runtimeChunk: 'single',
       splitChunks: {
-        // all async  initial
-        chunks: 'all',
-        // 生成 chunk 的最小体积（以 bytes 为单位）。
-        minSize: 1000000,
-        maxSize: 3000000,
-        // 拆分前必须共享模块的最小 chunks 数。
+        chunks: 'async',
+        minSize: 20000,
+        // minRemainingSize: 0,
         minChunks: 1,
-        // 按需加载时的最大并行请求数。
-        maxAsyncRequests: 10,
-        // 入口点的最大并行请求数。
-        maxInitialRequests: 10,
-        automaticNameDelimiter: '~',
-        name: true,
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
+        enforceSizeThreshold: 50000,
         cacheGroups: {
-          vendors: {
+          defaultVendors: {
             test: /[\\/]node_modules[\\/]/,
-            priority: -10
+            priority: -10,
+            reuseExistingChunk: true,
           },
           default: {
             minChunks: 2,
             priority: -20,
-            reuseExistingChunk: true
-          }
-        }
-      },
+            reuseExistingChunk: true,
+          },
+        },
+      }
     },
   },
   chainWebpack: (config) => {
@@ -97,6 +96,7 @@ module.exports = {
       // 通过 html-webpack-plugin 将 cdn 注入到 index.html 之中
       config.plugin('html')
         .tap((args) => {
+          console.log(args);
           args[0].cdn = cdn;
           return args;
         });
@@ -128,22 +128,5 @@ module.exports = {
     //     '^/': ''// 请求的时候使用这个api就可以
     //   }
     // },
-    // '/websocket': {
-    //   target: 'http://localhost:8089/', // 这里后台的地址模拟的;应该填写你们真实的后台接口
-    //   ws: true,
-    //   changOrigin: true, // 允许跨域
-    //   pathRewrite: {
-    //     '^/': ''// 请求的时候使用这个api就可以
-    //   }
-    // },
-    // '/': {
-    //   target: 'http://edu.songxiwen.com.cn/', // 这里后台的地址模拟的;应该填写你们真实的后台接口
-    //   ws: true,
-    //   changOrigin: true, // 允许跨域
-    //   pathRewrite: {
-    //     '^/': ''// 请求的时候使用这个api就可以
-    //   }
-    // }
-    // }
   }
 };

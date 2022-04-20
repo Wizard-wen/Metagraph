@@ -22,7 +22,7 @@ export const key: InjectionKey<Store<RootStateType>> = Symbol('store');
 
 // 持久化来自userModule中的user token isLogin
 const dataState = createPersistedState({
-  paths: ['user', 'token', 'isLogin']
+  paths: ['user', 'token', 'isLogin', 'global.guide']
 });
 
 export const store = createStore({

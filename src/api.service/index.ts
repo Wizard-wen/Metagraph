@@ -16,6 +16,7 @@ export { StarApiService } from './star.api.service';
 export { TagApiService } from './tag.api.service';
 export { UserApiService } from './user.api.service';
 export { EntityApiService } from './entity.api.service';
+export { PlanApiService } from './plan.api.service';
 // no.auth api
 export { RepositoryNoAuthApiService } from './no.auth/repository.no.auth.api.service';
 export { EdgeNoAuthApiService } from './no.auth/edge.no.auth.api.service';

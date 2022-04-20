@@ -13,7 +13,7 @@ import { reactive, ref, defineEmits } from 'vue';
 import { Select as AntSelect } from 'ant-design-vue';
 
 const emits = defineEmits(['fontSizeChange']);
-const articleFontSize = ref('12');
+const articleFontSize = ref('14');
 const fontSizeList = reactive([
   {
     label: '12',

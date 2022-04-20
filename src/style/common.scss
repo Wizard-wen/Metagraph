@@ -1,4 +1,4 @@
-
+$fontColor: #24292e;
 * {
   box-sizing: border-box;
 }
@@ -17,7 +17,7 @@ input {
   position: absolute;
 }
 
-$fontColor: #24292e !global;
+
 $themeColor: #d14424;
 $textColor: #41464b;
 $borderColor: #eee;
@@ -47,4 +47,13 @@ $borderRadius: 2px;
       -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
     }
   }
+}
+
+.custom-date-picker {
+  z-index: 10000!important;
+}
+
+
+.grabbing * {
+  cursor: grabbing !important;
 }

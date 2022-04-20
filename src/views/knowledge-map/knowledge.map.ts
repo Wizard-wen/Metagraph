@@ -64,7 +64,7 @@ export class KnowledgeMap {
         nodeSpacing: (d: any) => 8,
       },
       defaultNode: {
-        size: 15,
+        size: 55,
         color: '#5B8FF9',
         style: {
           lineWidth: 2,
@@ -72,7 +72,7 @@ export class KnowledgeMap {
         },
       },
       defaultEdge: {
-        size: 2,
+        // size: 2,
         color: '#e2e2e2',
       },
       modes: {
@@ -186,10 +186,6 @@ export class KnowledgeMap {
       const targetKnowledge = knowledgeList.target?.find(
         (nodeItem) => nodeItem.entity.id === item.targetKnowledgeEntityId
       );
-
-
-
-
       if (originKnowledge && targetKnowledge) {
         const edgeItem = enabledEdges.find((innerItem) => innerItem.source === originKnowledge.entity.id
           && innerItem.target === targetKnowledge.entity.id);

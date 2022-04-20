@@ -8,6 +8,7 @@ import {
 } from 'vue';
 import { EntityCompletelyListItemType, KnowledgeModelType, TagModelType } from 'metagraph-constant';
 import { Form, message } from 'ant-design-vue';
+import { v1 as uuidV1 } from 'uuid';
 import {
   DomainNoAuthApiService,
   EdgeApiService,
@@ -169,11 +170,11 @@ export class KnowledgeEdit {
       knowledgeForm.author = knowledgeAuthor.name;
       knowledgeForm.domain = knowledgeContent.domain || [];
       // knowledgeForm.domainId = knowledgeContent?.domainId || '';
-      knowledgePictures.target = knowledgeContent.pictures ? knowledgeContent.pictures.map((item) => ({
-        ...item,
-        uid: new Date().getTime()
-          .toString()
-      })) : [];
+      knowledgePictures.target = knowledgeContent.pictures
+        ? knowledgeContent.pictures.map((item) => ({
+          ...item,
+          uid: uuidV1()
+        })) : [];
       knowledgeForm.tagList = result.data.tag.map((item: TagModelType) => ({
         label: item.name,
         value: item.id

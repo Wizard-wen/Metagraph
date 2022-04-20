@@ -40,6 +40,16 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/personal-profile.vue')
       },
       {
+        path: 'planList',
+        name: 'PlanList',
+        component: () => import('@/views/plan/plan-list.vue')
+      },
+      {
+        path: 'planBoard',
+        name: 'planBoard',
+        component: () => import('@/views/plan/plan-board.vue')
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: Settings,
@@ -48,11 +58,6 @@ const routes: Array<RouteRecordRaw> = [
             path: 'profile',
             name: 'Profile',
             component: () => import('@/views/settings/profile.vue')
-          },
-          {
-            path: 'account',
-            name: 'account',
-            component: () => import('@/views/settings/account.vue')
           },
           {
             path: 'security',
@@ -92,6 +97,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/signup',
     name: 'SignUp',
     component: () => import('@/views/sign-up.vue')
+  },
+  {
+    path: '/signupByEmail',
+    name: 'SignUpByEmail',
+    component: () => import('@/views/sign-up/sign-up-by-email.vue')
   },
   {
     path: '/test',

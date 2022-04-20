@@ -26,9 +26,11 @@
 <script lang="ts">
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  reactive, ref, UnwrapRef, toRaw, defineComponent, toRef
+  reactive, ref, UnwrapRef, toRaw, defineComponent, toRef, inject
 } from 'vue';
 import { Form, Input, Modal } from 'ant-design-vue';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { RepositoryApiService } from '@/api.service';
 
 interface FormState {
   name: string;
@@ -56,6 +58,7 @@ export default defineComponent({
   setup(props, context) {
     const formRef = ref();
     const initName = toRef(props, 'oldRepositoryName');
+    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const formState: UnwrapRef<FormState> = reactive({
       name: `${initName.value}的副本`,
     });
@@ -88,10 +91,33 @@ export default defineComponent({
         });
     }
 
+    async function getCloneStatus() {
+      const result = await RepositoryApiService.getCloneRepositoryStatus({
+        repositoryEntityId: repositoryEntityId.value,
+        key: ''
+      });
+      return !result.data;
+    }
+
+    async function handleClone(name: string) {
+      const clonedRepositoryEntityId = await RepositoryApiService.cloneRepository({
+        repositoryEntityId: repositoryEntityId.value,
+        name
+      });
+      let isFinish = false;
+      const timer = setInterval(async () => {
+        isFinish = await getCloneStatus();
+        if (isFinish) {
+          clearInterval(timer);
+        }
+      }, 500);
+    }
+
     const rules = reactive({
       name: [{
         validator: validateCustomField,
-        trigger: 'blur'
+        trigger: 'blur',
+        required: true
       }]
     });
     return {

@@ -33,7 +33,7 @@
         </div>
         <ant-button
           v-if="isLogin"
-          class="star-btn"
+          class="control-btn star-btn"
           :loading="isStarButtonDisabled"
           @click="addStar($event, activityItem.entity.hasStared)"
           :type="activityItem.entity.hasStared ? 'primary': 'default'"
@@ -230,13 +230,11 @@ export default defineComponent({
         }
       }
 
-      .star-btn {
+      .control-btn {
         position: absolute;
         padding: 2px 12px;
         font-size: 12px;
         line-height: 18px;
-        top: 16px;
-        right: 16px;
         border: 1px solid #1b1f2326;
         border-radius: 6px;
         cursor: pointer;
@@ -245,6 +243,16 @@ export default defineComponent({
         &::v-deep(.ant-btn) {
           height: 28px;
         }
+      }
+
+      .plan-btn {
+        top: 16px;
+        right: 76px;
+      }
+
+      .star-btn {
+        top: 16px;
+        right: 16px;
       }
     }
   }

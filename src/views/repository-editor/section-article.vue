@@ -112,7 +112,7 @@ export default defineComponent({
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const editable = toRef(props, 'editable');
     const limit = ref(30000);
-    const articleFontSize = ref('12');
+    const articleFontSize = ref('14');
     const changeArticleFontSize = (event: { value: string }) => {
       articleFontSize.value = event.value;
     };
@@ -255,6 +255,7 @@ export default defineComponent({
 
       .editor-container {
         position: absolute;
+        min-height: 500px;
         width: 100%;
         background: #fff;
       }

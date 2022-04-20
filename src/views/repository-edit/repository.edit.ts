@@ -18,6 +18,7 @@ export interface RepositoryFormStateType {
     domainId: string[];
   }[];
   avatar?: string;
+  isAllowedClone: 'allow' | 'forbidden';
 }
 
 export const repositoryFormState: UnwrapRef<RepositoryFormStateType> = reactive({
@@ -25,7 +26,8 @@ export const repositoryFormState: UnwrapRef<RepositoryFormStateType> = reactive(
   type: 'public',
   description: '',
   domain: [],
-  avatar: ''
+  avatar: '',
+  isAllowedClone: 'forbidden'
 });
 
 export const repositoryFormRules = {
@@ -41,6 +43,20 @@ export const repositoryFormRules = {
       message: '知识库名称应当在3-15个字符',
       trigger: 'blur'
     }
+  ],
+  isAllowedClone: [
+    {
+      required: true,
+      message: '请选择是否允许被克隆',
+      trigger: 'change'
+    },
+  ],
+  type: [
+    {
+      required: true,
+      message: '请选择知识库类型',
+      trigger: 'change'
+    },
   ],
   description: [
     {
@@ -68,6 +84,7 @@ export class RepositoryEdit {
       repositoryFormState.name = result.data.name;
       repositoryFormState.type = result.data.type;
       repositoryFormState.domain = result.data.domain;
+      repositoryFormState.isAllowedClone = result.data.isAllowedClone ? 'allow' : 'forbidden';
       repositoryFormState.description = result.data.description || '';
     }
   }
@@ -75,6 +92,7 @@ export class RepositoryEdit {
   async createRepository(): Promise<void> {
     const response = await RepositoryApiService.createRepository({
       ...repositoryFormState,
+      isAllowedClone: repositoryFormState.isAllowedClone === 'allow',
       domain: repositoryFormState.domain
     });
     if (response.data) {
@@ -94,6 +112,7 @@ export class RepositoryEdit {
     const response = await RepositoryApiService.updateRepository({
       repositoryEntityId,
       ...repositoryFormState,
+      isAllowedClone: repositoryFormState.isAllowedClone === 'allow',
       domain: repositoryFormState.domain
     });
     if (!response.message) {

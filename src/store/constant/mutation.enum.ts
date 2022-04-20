@@ -6,6 +6,9 @@
 export enum MutationEnum {
   SET_IS_SPINNING = 'setIsSpinning',
 
+  SET_GUIDE_STATUS = 'setGuideStatus',
+  INIT_GUIDE_STATUS = 'initGuideStatus',
+
   SET_SECTION_ARTICLE = 'setSectionArticle',
 
   InitKnowledgeModelData = 'initKnowledgeModelData',

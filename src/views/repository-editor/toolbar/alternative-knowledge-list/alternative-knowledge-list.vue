@@ -42,6 +42,10 @@
     :search-value="searchKnowledgeModel.searchText"
     :is-modal-visible="searchKnowledgeModel.isShow"
     @close="searchKnowledgeModel.isShow = false"></create-or-bind-knowledge-modal>
+  <parse-word-modal
+    v-if="isParseWordModalShow"
+    :is-upload-modal-shown="isParseWordModalShow"
+    @close="isParseWordModalShow = false"></parse-word-modal>
 </template>
 
 <script lang="ts">
@@ -55,6 +59,7 @@ import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import CreateOrBindKnowledgeModal
   from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
+import ParseWordModal from '@/views/repository-editor/section-article/parse-word-modal.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { CreateIcon, DeleteIcon, UploadIcon } from '@/components/icons';
 import {
@@ -71,6 +76,7 @@ export default defineComponent({
     UploadIcon,
     CreateIcon,
     DeleteIcon,
+    ParseWordModal,
     AntTag: Tag,
     AntButton: Button,
     AntSpin: Spin,
@@ -85,7 +91,7 @@ export default defineComponent({
       isShow: false,
       searchText: ''
     });
-
+const isParseWordModalShow = ref(false);
     function startLoading() {
       isLoading.value = true;
     }
@@ -134,7 +140,8 @@ export default defineComponent({
       alternativeKnowledgeList,
       deleteAlternativeKnowledge,
       createKnowledge,
-      searchKnowledgeModel
+      searchKnowledgeModel,
+      isParseWordModalShow
     };
   }
 });

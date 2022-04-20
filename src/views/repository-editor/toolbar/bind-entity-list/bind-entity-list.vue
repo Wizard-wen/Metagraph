@@ -5,6 +5,7 @@
         <template #icon>
           <PlusOutlined/>
         </template>
+        绑定知识点
       </ant-button>
     </div>
     <div class="entity-list-content">

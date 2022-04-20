@@ -128,7 +128,7 @@ export default defineComponent({
           context.emit('close');
         },
         async onCancel() {
-          // todo
+          message.info('取消创建!');
         },
       });
     };

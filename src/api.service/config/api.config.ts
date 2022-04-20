@@ -96,14 +96,21 @@ export enum ApiPathEnum {
    */
   CreateRepository = '/repository/create',
   UpdateRepository = '/repository/update',
-  // GetRepositoryList = '/repository/getList',
+  RemoveRepository = '/repository/remove',
   GetRepositoryByEntityId = '/repository/getRepositoryByEntityId',
-  GetOwnRepositoryList = '/repository/getOwnList',
-  getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
+  BindToRepository = '/repository/bind/entity',
+  UnbindFromRepository = '/repository/unbind/entity',
   CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
+  GetOwnRepositoryList = '/repository/getOwnList',
+  // GetRepositoryList = '/repository/getList',
+
+  getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
+
   GetRepositoryEntityList = '/repository/getEntityList',
   CloneRepository = '/repository/clone',
-  BindToRepository = '/repository/bind/entity',
+  GetCloneRepositoryStatus = '/repository/getCloneStatus',
+  GetRepositoryUsingEntity = '/repository/getUsingEntity',
+
   // no.auth repository
   GetNoAuthRepositoryBindEntityList = '/public/repository/getBindEntityList',
   GetNoAuthRepositoryEntityList = '/public/repository/getList',
@@ -138,12 +145,20 @@ export enum ApiPathEnum {
    */
   CreateErrorDetail = '/system/errorDetail/create',
   /**
-   * learning plan
+   * plan
    */
-  AddToPlan = '/learningPlan/addToPlan',
-  GetMyPlanList = '/learningPlan/getMyPlanList',
-  ChangePlanStatus = '/learningPlan/changePlanStatus',
-  GetOneLevelNextToStudyKnowledge = '/learningPlan/getOneLevelNextToStudyKnowledge',
+  CreatePlan = '/plan/create',
+  GetPlanTree = '/plan/getTree',
+  GetPlanList = '/plan/getList',
+  UpdatePlan = '/plan/update',
+  GetPlanDetail = '/plan/getDetail',
+  GetPlan = '/plan/get',
+  CreatePlanItem = '/plan/item/create',
+  UpdatePlanItem = '/plan/item/update',
+  GetPlanItemDetail = '/plan/item/getDetail',
+  BindToPlanItem = '/plan/item/bind/entity',
+  UnbindFromPlanItem = '/plan/item/unbind/entity',
+  UnbindEntityFromPlan = '/plan/unbind/entity',
   /**
    * activity
    */

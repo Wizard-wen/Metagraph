@@ -23,5 +23,15 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+      // 白屏时间
+      console.log('系统白屏时间 测法1-----', new Date() - performance.timing.navigationStart)
+      // 通过 domLoading 和 navigationStart 也可以
+      console.log('系统白屏时间 测法2-----', performance.timing.domLoading - performance.timing.navigationStart)
+      window.addEventListener('load', () => {
+        // 首屏时间
+        console.log('系统首屏加载时间 -----', new Date() - performance.timing.navigationStart);
+      })
+    </script>
   </body>
 </html>

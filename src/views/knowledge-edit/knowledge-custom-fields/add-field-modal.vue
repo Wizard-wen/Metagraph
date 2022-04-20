@@ -1,7 +1,7 @@
 <template>
   <ant-modal
     :width="800"
-    title="添加字段"
+    title="添加自定义字段"
     okText="确定"
     cancelText="取消"
     :visible="isModalVisible"
@@ -28,7 +28,7 @@ import {
 } from 'ant-design-vue';
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  reactive, ref, UnwrapRef, toRaw, inject, defineComponent
+  reactive, ref, UnwrapRef, inject, defineComponent
 } from 'vue';
 import { KnowledgeApiService } from '@/api.service';
 import { knowledgeEntityIdInjectKey } from '@/views/knowledge-edit/model/knowledge.edit';
@@ -64,31 +64,32 @@ export default defineComponent({
     }
 
     async function validateCustomField(rule: RuleObject, value: string): Promise<unknown> {
-      if (value === '') {
-        // eslint-disable-next-line prefer-promise-reject-errors
-        return Promise.reject('请输入自定义字段名');
-      }
-      const result = await KnowledgeApiService.checkField({
-        knowledgeEntityId: knowledgeEntityId?.value,
-        customField: {
-          label: value
+      return new Promise((resolve, reject) => {
+        if (value === '') {
+          reject('请输入自定义字段名');
         }
+        KnowledgeApiService.checkField({
+          knowledgeEntityId: knowledgeEntityId?.value,
+          customField: {
+            label: value
+          }
+        })
+          .then((result) => {
+            if (result.data) {
+              if (result.data.isExists) {
+                reject('自定义字段名重复！');
+              }
+              resolve(true);
+            }
+            reject(result.message);
+          });
       });
-      if (result.data) {
-        if (result.data.isExists) {
-          // eslint-disable-next-line prefer-promise-reject-errors
-          return Promise.reject('自定义字段名重复！');
-        }
-        return Promise.resolve();
-      }
-      return Promise.reject(result.message);
     }
 
     function handleModalOk() {
       formRef.value
         .validate()
         .then(async () => {
-          console.log('values', formState, toRaw(formState));
           const result = await KnowledgeApiService.addField({
             knowledgeEntityId: knowledgeEntityId?.value,
             customField: {
@@ -111,7 +112,8 @@ export default defineComponent({
     const rules = reactive({
       name: [{
         validator: validateCustomField,
-        trigger: 'blur'
+        trigger: 'blur',
+        required: true
       }]
     });
     return {

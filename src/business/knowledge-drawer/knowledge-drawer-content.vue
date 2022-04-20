@@ -11,7 +11,7 @@
           {{ knowledgeModel.content.name }}
         </p>
         <ant-divider/>
-        <p class="h2-level-title-style">基本信息</p>
+        <p class="h2-level-title-style">基本信息1</p>
         <ant-row>
           <ant-col :span="24">
             <description-item

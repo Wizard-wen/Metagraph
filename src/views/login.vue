@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-box">
       <div class="login-image">
-        <img :src="'./hogwarts-logo.webp'" alt="" height="300" width="300">
+        <img src="@/assets/hogwarts-logo.webp" alt="" height="300" width="300">
       </div>
       <div class="project-name">Metagraph</div>
       <ant-form

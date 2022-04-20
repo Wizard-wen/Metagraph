@@ -15,6 +15,14 @@
         <ant-form-item label="知识库名称" name="name">
           <ant-input v-model:value="repositoryFormState.name"/>
         </ant-form-item>
+        <ant-form-item
+          v-if="repositoryFormState.type === 'public'"
+          label="是否允许克隆" name="isAllowedClone">
+          <ant-radio-group v-model:value="repositoryFormState.isAllowedClone">
+            <ant-radio value="allow">允许</ant-radio>
+            <ant-radio value="forbidden">不允许</ant-radio>
+          </ant-radio-group>
+        </ant-form-item>
         <ant-form-item label="知识库类型" name="type">
           <ant-radio-group v-model:value="repositoryFormState.type">
             <ant-radio class="radio" value="private">
@@ -56,10 +64,20 @@
       </ant-form>
       <div class="control-button">
         <ant-button type="primary" @click="onSubmit">{{ pageTitle }}</ant-button>
+        <ant-button
+          v-if="repositoryEntityId"
+          style="margin-left: 10px"
+          type="primary" danger @click="deleteRepository">删除
+        </ant-button>
         <ant-button style="margin-left: 10px" @click="goBack">返回</ant-button>
       </div>
     </div>
   </div>
+  <repository-delete-confirm-modal
+    v-if="isDeleteModalVisible"
+    :repositoryEntityId="repositoryEntityId"
+    @close="handleDeleteModalClose"
+    :isModalVisible="isDeleteModalVisible"></repository-delete-confirm-modal>
 </template>
 <script lang="ts">
 import {
@@ -69,8 +87,11 @@ import {
   defineComponent, onMounted, ref, computed
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { LockOutlined, BookOutlined } from '@ant-design/icons-vue';
-import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
+import {
+  LockOutlined, BookOutlined
+} from '@ant-design/icons-vue';
+import type { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
+import RepositoryDeleteConfirmModal from '@/views/repository-edit/repository-delete-confirm-modal.vue';
 import {
   repositoryFormState,
   RepositoryFormStateType,
@@ -82,6 +103,7 @@ import { DomainSelectFormItem } from '@/business';
 
 export default defineComponent({
   components: {
+    RepositoryDeleteConfirmModal,
     LockOutlined,
     BookOutlined,
     UploadFormItem,
@@ -101,10 +123,12 @@ export default defineComponent({
     if (repositoryEntityId.value === undefined) {
       repositoryFormState.name = '';
       repositoryFormState.avatar = '';
+      repositoryFormState.isAllowedClone = 'allow';
       repositoryFormState.domain = [];
       repositoryFormState.type = 'public';
       repositoryFormState.description = '';
     }
+    const isDeleteModalVisible = ref(false);
     const repositoryEdit = new RepositoryEdit();
     const pageTitle = computed(() => {
       if (repositoryEntityId.value) {
@@ -135,6 +159,15 @@ export default defineComponent({
           console.log('error', error);
         });
     };
+
+    function deleteRepository() {
+      isDeleteModalVisible.value = true;
+    }
+
+    function handleDeleteModalClose() {
+      isDeleteModalVisible.value = false;
+    }
+
     const goBack = () => {
       router.back();
     };
@@ -147,6 +180,10 @@ export default defineComponent({
       pageTitle,
       labelCol: { span: 4 },
       wrapperCol: { span: 24 },
+      deleteRepository,
+      handleDeleteModalClose,
+      isDeleteModalVisible,
+      repositoryEntityId
     };
   },
 });

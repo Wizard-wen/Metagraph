@@ -46,10 +46,10 @@ import {
 } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { Empty, Spin } from 'ant-design-vue';
-import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
+// import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
 import {
-  sectionArticleTiptapTextEditor,
-  sectionTree,
+  // sectionArticleTiptapTextEditor,
+  // sectionTree,
   SectionTreeService
 } from '@/views/repository-editor/section-tree/section.tree';
 import {
@@ -61,13 +61,13 @@ import {
   isRepositoryEditorLoading
 } from '@/views/repository-editor/repository-editor';
 
+import { KnowledgeDrawerContent } from '@/business';
 import Toolbar from './repository-editor/toolbar.vue';
 import SectionTree from './repository-editor/section-tree.vue';
 import SectionArticleTipTap from './repository-editor/section-article.vue';
 import KnowledgeGraphPanel from './repository-editor/knowledge-graph-panel.vue';
 import { isEditableKey, repositoryEntityIdKey } from './repository-editor/provide.type';
 import RepositoryEditorHeader from './repository-editor/repository-editor-header/repository-editor-header.vue';
-import { KnowledgeDrawerContent } from '@/business';
 
 export default defineComponent({
   name: 'editable.repository',
@@ -89,10 +89,10 @@ export default defineComponent({
     provide(repositoryEntityIdKey, repositoryEntityId);
     provide(isEditableKey, isEditable);
     const repositoryEditorService = new RepositoryEditor();
-    const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
-      repositoryEntityId.value,
-      isEditable.value
-    );
+    // const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
+    //   repositoryEntityId.value,
+    //   isEditable.value
+    // );
     // 视图状态
     const viewStatus = ref<'section' | 'graph'>('section');
 

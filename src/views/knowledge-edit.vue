@@ -27,7 +27,7 @@
                   <br/>
                   高宽像素不低于320px*320px
                 </div>
-                <button class="add-button">选择概念图册封面</button>
+                <ant-button class="add-button" @click="openSetKnowledgeCover">选择概念图册封面</ant-button>
               </div>
               <editor-content
                 #tiptap
@@ -64,7 +64,7 @@ import { FileImageOutlined } from '@ant-design/icons-vue';
 import {
   EditorContent
 } from '@tiptap/vue-3';
-import { Spin, Tag } from 'ant-design-vue';
+import { Button, Spin, Modal } from 'ant-design-vue';
 import {
   provide, defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
@@ -107,7 +107,7 @@ export default defineComponent({
     KnowledgeEditForm,
     KnowledgeCustomFields,
     AntSpin: Spin,
-    AntTag: Tag
+    AntButton: Button
   },
   setup() {
     const route = useRoute();
@@ -166,6 +166,11 @@ export default defineComponent({
     const goBack = () => {
       router.go(-1);
     };
+
+    function openSetKnowledgeCover() {
+      Modal.info({ title: '暂未开放！' });
+    }
+
     return {
       editor,
       knowledge,
@@ -181,7 +186,8 @@ export default defineComponent({
       changeArticleFontSize,
       saveKnowledgeArticle,
       articleFontSize,
-      sidebarElementList
+      sidebarElementList,
+      openSetKnowledgeCover
     };
   }
 });

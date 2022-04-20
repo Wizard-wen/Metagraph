@@ -7,7 +7,7 @@
       </div>
       <div class=repo-content>
         <div class="repo-list">
-          <div class="repo-header">
+          <div class="repo-header" id="step2" data-homepage="2">
             知识库列表
             <ant-button
               type="primary"
@@ -19,7 +19,7 @@
               创建
             </ant-button>
           </div>
-          <div class="search">
+          <div class="search" id="step3" data-homepage="3">
             <ant-input
               v-model:value="searchText"
               type="text"
@@ -117,7 +117,7 @@ export default defineComponent({
 
 .home-aside {
   height: calc(100vh - 55px);
-  width: 300px;
+  width: 330px;
   padding: 0 18px;
   background: #fff;
   overflow-y: auto;

@@ -80,7 +80,7 @@
 
 <script lang="ts">
 import {
-  Empty, Alert, Select, Spin
+  Empty, Alert, Select, Spin, Button
 } from 'ant-design-vue';
 import {
   defineComponent, onMounted, ref, reactive
@@ -128,7 +128,8 @@ export default defineComponent({
     AntSpin: Spin,
     AntEmpty: Empty,
     AntSelect: Select,
-    AntSelectOption: Select.Option
+    AntSelectOption: Select.Option,
+    AntButton: Button
   },
   setup() {
     function refreshDragedNodePosition(e: any) {
@@ -155,7 +156,7 @@ export default defineComponent({
           },
           end: {
             properties: any
-          }
+          },
           relationship: {
             properties: any
           }

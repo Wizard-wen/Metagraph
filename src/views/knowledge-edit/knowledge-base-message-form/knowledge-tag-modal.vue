@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import {
-  ref, computed, toRef, PropType, inject, defineComponent
+  ref, computed, toRef, PropType, inject, defineComponent, onMounted
 } from 'vue';
 import {
   Modal, Button, Tag, Checkbox
@@ -63,10 +63,14 @@ export default defineComponent({
     const selectedTagList = computed(
       () => selectedTagIds.value.map((item) => tag.list.find((tagItem) => tagItem.value === item))
     );
+    const modalConfirmLoading = ref(false);
 
     function handleModalCancel() {
       emit('close');
     }
+    // onMounted(async () => {
+    //   await knowledgeEdit.getTagList();
+    // });
 
     async function handleModalOk() {
       await TagApiService.update({
@@ -89,50 +93,12 @@ export default defineComponent({
       selectedTagIds,
       handleModalCancel,
       handleModalOk,
-      handleLoadMore
+      handleLoadMore,
+      tag,
+      modalConfirmLoading
     };
   }
 });
-// const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
-// const props = defineProps({
-//   isModalVisible: {
-//     type: Boolean,
-//     required: true
-//   },
-//   selectedTagIdsFromProp: {
-//     type: Array as PropType<string[]>,
-//     default: () => [],
-//     required: true
-//   }
-// });
-// const selectedTagIdList = toRef(props, 'selectedTagIdsFromProp');
-// const emit = defineEmits(['close']);
-// const modalConfirmLoading = ref(false);
-// const selectedTagIds = ref(selectedTagIdList.value);
-// const knowledgeEdit = new KnowledgeEdit();
-// const selectedTagList = computed(
-//   () => selectedTagIds.value.map((item) => tag.list.find((tagItem) => tagItem.value === item))
-// );
-
-// function handleModalCancel() {
-//   emit('close');
-// }
-//
-// async function handleModalOk() {
-//   await TagApiService.update({
-//     entityId: knowledgeEntityId?.value || '',
-//     tagIds: selectedTagIds.value || [],
-//     entityType: 'Knowledge'
-//   });
-//   emit('close', {
-//     selectedTagList: selectedTagList.value
-//   });
-// }
-//
-// const handleLoadMore = async () => {
-//   tag.currentPage += 1;
-//   await knowledgeEdit.getTagList();
-// };
 </script>
 
 <style scoped lang="scss">

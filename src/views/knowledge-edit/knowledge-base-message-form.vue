@@ -65,7 +65,6 @@
         修改标签
       </ant-button>
     </ant-form-item>
-
     <knowledge-tag-modal
       v-if="isModalVisible"
       :isModalVisible="isModalVisible"
@@ -80,7 +79,7 @@
 </template>
 <script lang="ts">
 import {
-  Button, Form, Input, Radio, Select, Tag
+  Button, Form, Input, Select, Tag
 } from 'ant-design-vue';
 import {
   defineComponent, onMounted, ref, inject

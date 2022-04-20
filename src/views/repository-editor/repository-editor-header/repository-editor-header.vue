@@ -66,7 +66,7 @@ import {
   defineComponent, inject, PropType, ref
 } from 'vue';
 import type { RepositoryModelType } from 'metagraph-constant';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import CloneRepositoryModal from '@/views/repository-editor/repository-editor-header/clone-repository-modal.vue';
 import { useStore } from '@/store';
 import RepositoryViewChange from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
@@ -99,9 +99,12 @@ export default defineComponent({
   emits: ['viewChange'],
   setup(props, { emit }) {
     const router = useRouter();
+    const route = useRoute();
     const store = useStore();
     const repositoryEditor = new RepositoryEditor();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+    const needRefresh = ref(route.query.refresh);
+    console.log(needRefresh);
     const isCloning = ref(false);
     const isCloneModalShow = ref(false);
     const currentUserModel = computed(() => store.state.user?.user);
@@ -153,7 +156,8 @@ export default defineComponent({
             name: 'RepositoryEditor',
             query: {
               repositoryEntityId: clonedRepositoryEntityId,
-              type: 'edit'
+              type: 'edit',
+              refresh: 'need'
             },
             force: true
           });
@@ -177,9 +181,10 @@ export default defineComponent({
       isCloneModalShow.value = true;
     }
 
+    const isAllowedClone = computed(() => (repositoryModel.target?.content as RepositoryModelType).isAllowedClone);
     const isCloneRepository = computed(() => (repositoryModel.target?.content as RepositoryModelType).cloneFromRepositoryEntityId);
     // 只有在登录且非克隆知识库，才能有克隆功能
-    const isCloneButtonShow = computed(() => !isCloneRepository.value && isLogin.value);
+    const isCloneButtonShow = computed(() => isAllowedClone.value && isLogin.value);
     const currentRepositoryName = computed(() => (repositoryModel.target?.content as RepositoryModelType).name);
     return {
       repositoryEntityId,
