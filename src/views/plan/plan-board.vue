@@ -115,7 +115,8 @@
           layout="vertical"
           :model="planFormState"
           @submit="handleFilter">
-          <ant-form-item style="margin-top: 20px;margin-bottom: 10px" ref="name" label="计划名" name="name">
+          <ant-form-item
+            style="margin-top: 20px;margin-bottom: 10px" ref="name" label="计划名" name="name">
             <ant-input :disabled="isFormDisabled" v-model:value="planFormState.name"/>
           </ant-form-item>
           <ant-form-item style="margin-bottom: 10px" ref="planDate" label="起始日" name="planDate">
@@ -125,7 +126,8 @@
               :dropdownClassName="'custom-date-picker'"
               :format="'YYYY/MM/DD'" v-model:value="planFormState.planDate"/>
           </ant-form-item>
-          <ant-form-item style="margin-bottom: 10px" ref="deadlineDate" label="截止日" name="deadlineDate">
+          <ant-form-item
+            style="margin-bottom: 10px" ref="deadlineDate" label="截止日" name="deadlineDate">
             <ant-date-picker
               :disabled="isFormDisabled"
               style="width: 100%;"
@@ -217,14 +219,9 @@ export default defineComponent({
     });
 
     const donePercent = computed(
-      () => Math.fround((planBoard.value.doneList.length / planBoard.value.list.length) * 100)
+      () => Math.round((planBoard.value.doneList.length / planBoard.value.list.length) * 100)
+
     );
-
-    const stack = ref<any[]>([]);
-
-    function log(evt: any) {
-      window.console.log(evt);
-    }
 
     async function handlePlanItemStatus(evt: any, status: 'todo' | 'doing' | 'done') {
       if (evt.added) {
@@ -259,8 +256,9 @@ export default defineComponent({
     }
 
     function addPlanItem() {
-      isShowModal.value = true;
+      planItemId.value = undefined;
       planBoardService.clearPlanItem();
+      isShowModal.value = true;
     }
 
     async function closePlanItemModal() {
@@ -346,7 +344,6 @@ export default defineComponent({
     });
 
     return {
-      log,
       drag: false,
       planBoard,
       addPlanItem,

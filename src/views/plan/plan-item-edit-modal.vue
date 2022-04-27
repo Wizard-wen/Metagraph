@@ -41,9 +41,8 @@
 </template>
 
 <script lang="ts">
-import { PlanApiService } from '@/api.service/plan.api.service';
 import {
-  planItem, PlanBoard, PlanItemState, planBoard
+  planItem, PlanBoard, PlanItemState
 } from '@/views/plan/plan.board';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import { PlanModelType } from 'metagraph-constant';
@@ -127,22 +126,15 @@ export default defineComponent({
     }
 
     const disabledPlanDate = (planValue: Moment) => {
-      if (planModel.value) {
-        if (planModel.value.planDate && planModel.value.deadlineDate) {
-          return planValue < moment(planModel.value.planDate) || planValue > moment(planModel.value.deadlineDate);
-        }
-      }
-      return false;
+      return planValue < moment(new Date());
     };
 
     const disabledDeadlineDate = (planValue: Moment) => {
-      if (planModel.value) {
-        if (planModel.value.planDate && planModel.value.deadlineDate) {
-          if (planItem.planDate) {
-            return planValue < planItem.planDate || planValue > moment(planModel.value.deadlineDate);
-          }
-          return planValue < moment(planModel.value.planDate) || planValue > moment(planModel.value.deadlineDate);
+      if (planModel.value?.planDate) {
+        if (planItem.planDate) {
+          return planValue < planItem.planDate;
         }
+        return planValue < moment(planModel.value.planDate);
       }
       return false;
     };

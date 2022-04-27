@@ -12,7 +12,10 @@ import { ApiPathEnum } from '@/api.service/config/api.config';
 import { PublicApiResponseType, RequestUtil } from '@/utils';
 
 export class ActivityApiService {
-  static async getList(params: { pageIndex: number, pageSize: number }): Promise<PublicApiResponseType<{
+  static async getList(params: {
+    pageIndex: number,
+    pageSize: number
+  }): Promise<PublicApiResponseType<{
     list: {
       user: UserModelType,
       entity?: EntityCompletelyListItemType,

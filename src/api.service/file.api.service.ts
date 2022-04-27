@@ -14,10 +14,12 @@ import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
 export class FileApiService {
-  static async getCredential(params: QiniuUploadingCredentialRequestType): Promise<PublicApiResponseType<QiniuUploadingCredentialResponseType>> {
-    return RequestUtil.post<QiniuUploadingCredentialRequestType, QiniuUploadingCredentialResponseType>({
+  static async getCredential(params: { name: string;
+    type?: FileEnum; provider?: any }): Promise<PublicApiResponseType<QiniuUploadingCredentialResponseType>> {
+    return RequestUtil.post<{ name: string;
+      type?: FileEnum; provider?: any }, QiniuUploadingCredentialResponseType>({
       apiPath: ApiPathEnum.GetQiniuFileCredential,
-      requestBody: params
+      requestBody: { ...params, provider: 'System' }
     });
   }
 

@@ -3,9 +3,9 @@
  * @date  2022/4/6 16:30
  */
 import { PlanApiService } from '@/api.service/plan.api.service';
+import { CommonUtil } from '@/utils';
 import { message } from 'ant-design-vue';
 import { PlanModelType } from 'metagraph-constant';
-import moment from 'moment';
 import { ref } from 'vue';
 
 export const plan = ref<{
@@ -20,10 +20,28 @@ export class PlanList {
   async getPlanList(): Promise<void> {
     const result = await PlanApiService.getList();
     if (result.data) {
-      plan.value.list = result.data.list.map(item => {
+      plan.value.list = result.data.list.map((item: PlanModelType) => {
+        let status;
+        let statusColor;
+        if (item.deadlineDate) {
+          if (
+            new Date().getTime() - new Date(item.deadlineDate).getTime() < 259200
+          ) {
+            status = 'willExpired';
+            statusColor = 'gold';
+          }
+          if (new Date().getTime() > new Date(item.deadlineDate).getTime()) {
+            status = 'isExpired';
+            statusColor = 'magenta';
+          }
+        }
+
         return {
           ...item,
-          deadlineDate: moment(item.deadlineDate, 'YYYY MM DD')
+          status,
+          statusColor,
+          deadlineDate: item.deadlineDate ? CommonUtil.formatDate(new Date(item.deadlineDate), 'yyyy-MM-dd hh:mm:ss') : undefined,
+          planDate: item.planDate ? CommonUtil.formatDate(new Date(item.planDate), 'yyyy-MM-dd hh:mm:ss') : undefined
         };
       });
       plan.value.total = result.data.total;
@@ -54,5 +72,4 @@ export class PlanList {
       message.success('编辑成功!');
     }
   }
-
 }
