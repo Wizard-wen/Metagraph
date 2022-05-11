@@ -2,7 +2,7 @@
 
 > 让不同知识背景的人尽快站在同一起跑线
 
-__[点击体验](https://metagraph.design)__
+<a href="https://metagraph.design" target="_blank">点击体验</a>
 
 ## 简介
 ***Metagraph*** 是一个内容创作分享平台。
@@ -76,12 +76,10 @@ __[点击体验](https://metagraph.design)__
     - [X] 我的followers
     - [X] 关注我的
 
-## 快速开始
+## Roadmap
 
+### Features
 
-
-# Roadmap
-## Feature
 - 知识地图页面，支持知识路径搜索，基于Neo4j图数据库
 - 知识地图页面，支持输入Cypher语句，回显搜索结果
 - 仓库开发页面，三级前置知识点展示
@@ -95,40 +93,13 @@ __[点击体验](https://metagraph.design)__
 - 开发图片上传时裁剪
 - 知识点面板开发
 
-## Performance
+### Performance
 
 - 优化仓库开发页面的布局结构
 - 优化编辑模式下的富文本
 - 编辑模式下，富文本添加图片可以编辑图片大小  
 - 优化预览模式下的富文本
 - 优化预览模式下的图谱
-
-
-## 技术点
-
-- WebSocket超时重连
-- vuex持久化
-- 图片裁切
-- 文本编辑器
-- 图编辑器
-- 右键菜单
-- 树组件
-- dom to image （知识点卡片）
-- 下拉刷新
-- 文本解析（扩充）
-
-
-## 踩坑 
-- 父子组件生命周期执行顺序
-- inject provide只能在setup中使用
-
-  
-## 性能优化
-- 图片压缩
-- 字体图标
-- Gzip压缩
-- 减少静态资源请求
-
 
 
 
