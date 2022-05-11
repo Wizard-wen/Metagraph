@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import { message, Upload } from 'ant-design-vue';
 import * as qiniu from 'qiniu-js';
 import {
   defineComponent, ref, toRefs, watch
@@ -51,7 +51,7 @@ function getBase64(img: Blob, callback: (base64Url: string) => void) {
 }
 
 export default defineComponent({
-  name: 'upload.qiniu',
+  name: 'upload-qiniu',
   props: {
     modelValue: {
       type: String,
@@ -61,6 +61,7 @@ export default defineComponent({
   components: {
     LoadingOutlined,
     PlusOutlined,
+    AntUpload: Upload
   },
   setup(props, context) {
     const { modelValue } = toRefs(props);
@@ -97,7 +98,8 @@ export default defineComponent({
         message?: string;
       } = await FileApiService.getCredential({
         name: params.name,
-        type: params.type
+        type: params.type,
+        provider: 'System'
       });
       const tokenForUploading = result.data;
       console.log(tokenForUploading);

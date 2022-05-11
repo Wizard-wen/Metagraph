@@ -4,13 +4,21 @@
  */
 
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { Modal } from 'ant-design-vue';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
+import { message, Modal } from 'ant-design-vue';
 import {
-  ref, reactive, createVNode, computed
+  EntityCompletelyListItemType,
+  KnowledgeModelType,
+  RepositoryModelType
+} from 'metagraph-constant';
+import {
+  reactive, createVNode, computed, ref
 } from 'vue';
-import { ActionEnum, MutationEnum, store } from '@/store';
-import { RepositoryNoAuthApiService, SectionApiService } from '@/api.service';
+import { ActionEnum, store } from '@/store';
+import {
+  EntityNoAuthApiService, KnowledgeApiService, RepositoryApiService,
+  RepositoryNoAuthApiService,
+  SectionApiService
+} from '@/api.service';
 
 type AlternativeType = {
   id: string;
@@ -23,6 +31,7 @@ type AlternativeType = {
   updatedAt: Date;
   createdAt: Date;
 }
+export const isRepositoryEditorLoading = ref(false);
 
 export interface RepositoryEditorInterface {
   getRepositoryByEntityId(repositoryEntityId: string): Promise<void>
@@ -38,34 +47,58 @@ export const repositoryModel = reactive<{
   target: undefined
 });
 
-export const isEditable = ref(false);
-
 export const sectionEntityId = computed(() => {
   if (store.state.repositoryEditor.selectedTreeNodeSectionKeys) {
     return store.state.repositoryEditor.selectedTreeNodeSectionKeys[0];
   }
   return undefined;
 });
+// 常规绑定的实体
+export const repositoryBindEntityList = reactive<{
+  target: EntityCompletelyListItemType[]
+}>({
+  target: []
+});
+// 用户的未发布草稿知识点
+export const unpublishedDraftKnowledgeList = ref<EntityCompletelyListItemType[]>();
 
 export const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
-const userModel = computed(() => store.state.user.user);
-export class RepositoryEditor implements RepositoryEditorInterface {
 
+export class RepositoryEditor implements RepositoryEditorInterface {
   async getRepositoryByEntityId(repositoryEntityId: string): Promise<void> {
-    const response = await RepositoryNoAuthApiService.getById({
-      repositoryEntityId
+    const response = await EntityNoAuthApiService.getEntityById({
+      entityId: repositoryEntityId
     });
     if (response.data) {
       repositoryModel.target = response.data;
-      let status = false;
-      if (userModel.value) {
-        const content = response.data.content as RepositoryModelType;
-        status = content.userId === userModel.value.id;
-        isEditable.value = status;
-      }
-      store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
-        status
-      });
+    }
+  }
+
+  async getRepositoryBindEntityList(repositoryEntityId: string): Promise<void> {
+    const result = await RepositoryNoAuthApiService
+      .getRepositoryBindEntityList(repositoryEntityId);
+    if (result.data) {
+      repositoryBindEntityList.target = result.data;
+    }
+  }
+
+  async cloneRepository(repositoryEntityId: string, name?: string): Promise<string | undefined> {
+    const response = await RepositoryApiService.cloneRepository({
+      repositoryEntityId,
+      name
+    });
+    if (response.data) {
+      message.success('克隆成功！');
+      return response.data.clonedRepositoryEntityId;
+    }
+    message.error('克隆失败！');
+    return undefined;
+  }
+
+  async getOwnDraftKnowledgeList(repositoryEntityId: string): Promise<void> {
+    const result = await KnowledgeApiService.GetOwnDraftKnowledgeList({ repositoryEntityId });
+    if (result.data) {
+      unpublishedDraftKnowledgeList.value = result.data;
     }
   }
 
@@ -80,6 +113,8 @@ export class RepositoryEditor implements RepositoryEditorInterface {
   }): Promise<void> {
     Modal.confirm({
       title: '是否绑定知识点至当前单元?',
+      okText: '确定',
+      cancelText: '取消',
       icon: createVNode(ExclamationCircleOutlined),
       content: '',
       async onOk() {

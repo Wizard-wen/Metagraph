@@ -8,6 +8,7 @@ import { reactive, ref, toRaw } from 'vue';
 import { message } from 'ant-design-vue';
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import { EdgeApiService } from '@/api.service';
+import { graph } from './knowledge.graph.data';
 
 export interface KnowledgeEdgeFormState {
   knowledgeEntityId?: string;
@@ -20,6 +21,7 @@ export interface KnowledgeEdgeFormState {
   description?: string;
 }
 
+export const newEdgeId = ref();
 export const knowledgeEdgeFormRef = ref();
 export const knowledgeEdgeFormState = reactive<{
   knowledgeEntityId?: string;
@@ -27,6 +29,7 @@ export const knowledgeEdgeFormState = reactive<{
   targetKnowledgeEntityId?: string;
   originKnowledgeEntity?: EntityCompletelyListItemType;
   originKnowledgeEntityId?: string;
+  // antv x6生成的临时edge id
   temporaryEdgeId?: string;
   description: string;
 }>({
@@ -40,29 +43,45 @@ export const knowledgeEdgeFormState = reactive<{
 
 export const knowledgeEdgeFormRules = {
   knowledgeEntityId: [
-    { required: true, message: '请选择所属实体', trigger: 'change' }
+    {
+      required: true,
+      message: '请选择所属实体',
+      trigger: 'change'
+    }
   ],
   targetKnowledgeEntityId: [
-    { required: true, message: '请选择目标实体', trigger: 'change' }
+    {
+      required: true,
+      message: '请选择目标实体',
+      trigger: 'change'
+    }
   ],
   originKnowledgeEntityId: [
-    { required: true, message: '请选择源实体', trigger: 'change' }
+    {
+      required: true,
+      message: '请选择源实体',
+      trigger: 'change'
+    }
   ],
   description: [
-    { required: true, message: '请输入关联描述', trigger: 'blur' }
+    {
+      required: true,
+      message: '请输入关联描述',
+      trigger: 'blur'
+    }
   ],
 };
 
 export class KnowledgeGraphPanel {
   async validateEdge(): Promise<undefined | ValidateErrorEntity<KnowledgeEdgeFormState>> {
     return new Promise((resolve) => {
-      knowledgeEdgeFormRef.value.validate().then(() => {
-        console.log('values', knowledgeEdgeFormState, toRaw(knowledgeEdgeFormState));
-        resolve(undefined);
-      }).catch((error: ValidateErrorEntity<KnowledgeEdgeFormState>) => {
-        console.log('error', error);
-        resolve(error);
-      });
+      knowledgeEdgeFormRef.value.validate()
+        .then(() => {
+          resolve(undefined);
+        })
+        .catch((error: ValidateErrorEntity<KnowledgeEdgeFormState>) => {
+          resolve(error);
+        });
     });
   }
 
@@ -73,9 +92,10 @@ export class KnowledgeGraphPanel {
     knowledgeEdgeFormState.targetKnowledgeEntityId = params.targetKnowledgeEntityId;
     knowledgeEdgeFormState.knowledgeEntityId = params.knowledgeEntityId;
     knowledgeEdgeFormState.temporaryEdgeId = params.temporaryEdgeId;
+    knowledgeEdgeFormState.description = '';
   }
 
-  async createEdge(repositoryEntityId: string) {
+  async createEdge(repositoryEntityId: string): Promise<void> {
     if (knowledgeEdgeFormState.originKnowledgeEntityId === undefined
       || knowledgeEdgeFormState.targetKnowledgeEntityId === undefined
       || knowledgeEdgeFormState.knowledgeEntityId === undefined
@@ -92,20 +112,52 @@ export class KnowledgeGraphPanel {
       knowledgeEntityId: knowledgeEdgeFormState.knowledgeEntityId,
       targetKnowledgeEntityId: knowledgeEdgeFormState.targetKnowledgeEntityId,
       edgeRepositoryEntityId: repositoryEntityId,
-      // description: `From ${(knowledgeEdgeFormState.originKnowledgeEntity.content as KnowledgeModelType).name}
-      // ,to ${(knowledgeEdgeFormState.targetKnowledgeEntity.content as KnowledgeModelType).name}
-      // ,belongs to ${(edgeOwner.content as KnowledgeModelType).name}`
       description: `From ${(knowledgeEdgeFormState.originKnowledgeEntity.content as KnowledgeModelType).name}`
     });
     if (result.data) {
+      graph.value?.removeEdge(newEdgeId.value);
+      graph.value?.addEdge({
+        id: result.data.id,
+        source: {
+          cell: `${result.data.originKnowledgeEntityId}`,
+          port: `${result.data.originKnowledgeEntityId}-out`
+        },
+        target: {
+          cell: `${result.data.targetKnowledgeEntityId}`,
+          port: `${result.data.targetKnowledgeEntityId}-in`
+        },
+        labels: [result.data.description || ''],
+        connector: 'rounded',
+        attrs: {
+          line: {
+            stroke: '#a0a0a0',
+            strokeWidth: 1,
+            targetMarker: {
+              name: 'classic',
+              size: 7,
+            },
+          },
+        },
+        // tools: [
+        //   {
+        //     name: 'tooltip',
+        //     args: {
+        //       tooltip: 'Tooltip Content',
+        //     },
+        //   },
+        // ],
+      });
       message.success('关联创建成功');
+    }
+    if (result.message) {
+      message.error(result.message);
     }
   }
 
   async removeEdge(params: {
     id: string,
     repositoryEntityId: string
-  }) {
+  }): Promise<void> {
     const result = await EdgeApiService.remove({
       edgeId: params.id,
       edgeRepositoryEntityId: params.repositoryEntityId

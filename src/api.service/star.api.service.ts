@@ -10,7 +10,7 @@ import type {
   KnowledgeResponseType,
   StarResponseType,
   UserResponseType,
-  DomainResponseType
+  DomainResponseType, EntityCompletelyListItemType
 } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
@@ -49,13 +49,7 @@ export class StarApiService {
     pageSize: number;
   }): Promise<PublicApiResponseType<{
     total: number;
-    list: {
-      star: number;
-      comment: number;
-      tag: string[];
-      content: any;
-      entityId: string;
-    }[];
+    list: EntityCompletelyListItemType[];
   } | undefined>> {
     return RequestUtil.post<{
       entityType?: PublicEntityType;
@@ -63,13 +57,7 @@ export class StarApiService {
       pageSize: number;
     }, {
       total: number;
-      list: {
-        star: number;
-        comment: number;
-        tag: string[];
-        content: any;
-        entityId: string;
-      }[];
+      list: EntityCompletelyListItemType[];
     } | undefined>({
       apiPath: ApiPathEnum.GetMyStarList,
       requestBody: params

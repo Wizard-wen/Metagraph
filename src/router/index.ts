@@ -24,9 +24,9 @@ const routes: Array<RouteRecordRaw> = [
         component: Repository
       },
       {
-        path: 'repo/list/:name',
+        path: '/repository/list',
         name: 'RepositoryList',
-        component: () => import('@/views/repository.list.vue')
+        component: () => import('@/views/repository-list.vue')
       },
       {
         path: '/repository/edit',
@@ -39,6 +39,16 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/personal-profile.vue')
       },
       {
+        path: 'planList',
+        name: 'PlanList',
+        component: () => import('@/views/plan/plan-list.vue')
+      },
+      {
+        path: 'planBoard',
+        name: 'planBoard',
+        component: () => import('@/views/plan/plan-board.vue')
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: Settings,
@@ -49,14 +59,14 @@ const routes: Array<RouteRecordRaw> = [
             component: () => import('@/views/settings/profile.vue')
           },
           {
-            path: 'account',
-            name: 'account',
-            component: () => import('@/views/settings/account.vue')
-          },
-          {
             path: 'security',
             name: 'security',
             component: () => import('@/views/settings/security.vue')
+          },
+          {
+            path: 'bindEmail',
+            name: 'bindEmail',
+            component: () => import('@/views/settings/bind-email.vue')
           }
         ]
       }
@@ -77,6 +87,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'KnowledgeEdit',
     component: () => import('@/views/knowledge-edit.vue')
   },
+
+  {
+    path: '/knowledge/preview',
+    name: 'KnowledgePreview',
+    component: () => import('@/views/knowledge-preview.vue')
+  },
   {
     path: '/login',
     name: 'Login',
@@ -88,9 +104,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/sign-up.vue')
   },
   {
-    path: '/user/star/:userId',
-    name: 'UserStar',
-    component: () => import('@/views/user/user.star.vue')
+    path: '/signupByEmail',
+    name: 'SignUpByEmail',
+    component: () => import('@/views/sign-up/sign-up-by-email.vue')
   },
   {
     path: '/test',

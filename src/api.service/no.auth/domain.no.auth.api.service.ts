@@ -3,7 +3,11 @@
  * @date  2021/9/17 22:49
  */
 
-import type { DomainResponseType } from 'metagraph-constant';
+import type {
+  DomainBaseTypeModelType, DomainModelType,
+  DomainResponseType,
+  DomainTreeNodeResponseType
+} from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
@@ -24,9 +28,23 @@ export class DomainNoAuthApiService {
     });
   }
 
-  static getTree(): Promise<PublicApiResponseType<DomainResponseType[]>> {
-    return RequestUtil.get<DomainResponseType[]>({
-      apiPath: ApiPathEnum.GetDomainTree
+  static getTree(params: { domainBaseTypeId: string }): Promise<PublicApiResponseType<{
+    tree: DomainTreeNodeResponseType[],
+    list: DomainModelType[]
+  }>> {
+    return RequestUtil.post<{ domainBaseTypeId: string }, {
+      tree: DomainTreeNodeResponseType[],
+      list: DomainModelType[]
+    }>({
+      apiPath: ApiPathEnum.GetDomainTree,
+      requestBody: params
+    });
+  }
+
+  static getDomainBaseTypeList(): Promise<PublicApiResponseType<DomainBaseTypeModelType[]>> {
+    return RequestUtil.post<undefined, DomainBaseTypeModelType[]>({
+      apiPath: ApiPathEnum.GetDomainBaseTypeList,
+      requestBody: undefined
     });
   }
 }

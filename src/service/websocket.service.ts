@@ -5,11 +5,11 @@
  */
 
 export class WebsocketService {
-  ws!: WebSocket;
+  private ws!: WebSocket;
 
-  lockReconnect = false;
+  private lockReconnect = false;
 
-  timeout = 3000;
+  private timeout = 3000;
 
   // 计时器
   private reconnectTimer?: number;
@@ -18,22 +18,26 @@ export class WebsocketService {
 
   private heartCheckServerTimer?: number;
 
-  isDestroy?: boolean;
+  private isDestroy?: boolean;
 
-  events: {
+  // 注册的事件
+  private events: {
     event: string;
     handler: (message: any) => void
   }[] = [{
     event: 'check',
     handler(message: any): void {
-      console.log(message);
+      // console.log(message);
     }
   }];
 
-  constructor(private readonly url: string, events: {
-    event: string;
-    handler: (message: any) => void
-  }[]) {
+  constructor(
+    private readonly url: string,
+    events: {
+      event: string;
+      handler: (message: any) => void
+    }[]
+  ) {
     this.createWebSocket();
     this.events = this.events.concat(events);
   }
@@ -57,17 +61,15 @@ export class WebsocketService {
     window.clearTimeout(this.heartCheckBrowserTimer);
   }
 
-  createWebSocket(): void {
+  private createWebSocket(): void {
     try {
       this.ws = new WebSocket(this.url);
       this.ws.onclose = () => {
-        console.log('链接关闭');
         if (!this.isDestroy) {
           this.reconnect();
         }
       };
       this.ws.onerror = () => {
-        console.log('发生异常了');
         this.reconnect();
       };
       this.ws.onopen = () => {
@@ -76,7 +78,6 @@ export class WebsocketService {
       };
       this.ws.onmessage = (event: MessageEvent) => {
         // 拿到任何消息都说明当前连接是正常的
-        console.log('接收到消息', event);
         if (event.data) {
           const result = JSON.parse(event.data);
           const eventModel = this.events.find((item) => item.event === result.event);
@@ -87,12 +88,11 @@ export class WebsocketService {
         this.heartCheck();
       };
     } catch (e) {
-      console.log('catch');
       this.reconnect();
     }
   }
 
-  reconnect(): void {
+  private reconnect(): void {
     if (this.lockReconnect) {
       return;
     }
@@ -105,21 +105,19 @@ export class WebsocketService {
     }, 4000);
   }
 
-  heartCheck(): void {
-    console.log('start');
+  private heartCheck(): void {
     this.heartCheckBrowserTimer && clearTimeout(this.heartCheckBrowserTimer);
     this.heartCheckServerTimer && clearTimeout(this.heartCheckServerTimer);
     // 心跳检测客户端定时器
     this.heartCheckBrowserTimer = window.setTimeout(() => {
       // 这里发送一个心跳，后端收到后，返回一个心跳消息，
-      console.log('长时间没有消息发送，发送心跳检测。');
       this.send({
         event: 'check',
         data: 'Are you ok?'
       });
       // 心跳检测服务端定时器
       this.heartCheckServerTimer = window.setTimeout(() => {
-        console.log('链接出现了异常！');
+        // 链接出现了异常
         this.ws.close();
         this.createWebSocket();
       }, this.timeout);

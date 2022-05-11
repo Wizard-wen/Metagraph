@@ -24,24 +24,21 @@
       </ant-list-item>
     </ant-list>
     <div>
-
     </div>
   </ant-drawer>
 </template>
 
 <script lang="ts">
+import { Drawer, List, Button, Avatar } from 'ant-design-vue';
+import type { UserModelType } from 'metagraph-constant';
 import {
   defineComponent, onMounted, ref, toRefs, watch,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarApiService } from '@/api.service';
-import Comment from './comment.vue';
 
 export default defineComponent({
   name: 'star-drawer',
-  components: {
-    // Comment
-  },
   props: {
     isShow: {
       type: Boolean,
@@ -52,19 +49,27 @@ export default defineComponent({
       required: true
     },
   },
+  components: {
+    AntListItemMeta: List.Item.Meta,
+    AntListItem: List.Item,
+    AntList: List,
+    AntButton: Button,
+    AntDrawer: Drawer,
+    AntAvatar: Avatar
+  },
   setup(props, context) {
     const { entityId, isShow } = toRefs(props);
     const visible = ref<boolean>(false);
     const router = useRouter();
-    watch(isShow, async (newValue, oldValue) => {
+    watch(isShow, async (newValue) => {
       if (newValue) {
         visible.value = newValue;
       }
     });
-    const afterVisibleChange = (bool: boolean) => {
+    const afterVisibleChange = () => {
       context.emit('showChange', false);
     };
-    const starList = ref<any[]>([]);
+    const starList = ref<UserModelType[]>([]);
 
     async function getStarDetailList() {
       const result = await StarApiService.getEntityStarList({

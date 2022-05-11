@@ -5,98 +5,121 @@
         <img src="/hogwarts-logo.webp" height="32" width="32" alt="">
       </div>
       <div class="title">
-        <div class="name">{{ repositoryModel.author.name }}</div>
+        <div class="name">{{ repositoryModel.target.author.name }}</div>
         &nbsp;/&nbsp;
-        <div class="name">{{ repositoryModel.content.name }}</div>
-        <edit-icon class="edit-icon" @click="goRepositoryEditPage"></edit-icon>
+        <div class="name">{{ repositoryModel.target.content.name }}</div>
+        <edit-icon
+          v-if="repositoryModel.target.author.id === currentUserModel?.id"
+          class="edit-icon"
+          @click="goRepositoryEditPage"></edit-icon>
         <ant-tag class="repository-type-tag">
           {{ isPublicRepository ? '公开' : '私有' }}
         </ant-tag>
+        <ant-tag class="repository-type-tag">
+          {{ isCloneRepository ? '克隆' : '原创' }}
+        </ant-tag>
+        <div class="saving-status">
+          <ant-spin :spinning="savingStatus === 'saving...'"></ant-spin>
+          <span>{{ savingStatus }}</span>
+        </div>
       </div>
     </div>
     <div class="right">
-      <social-action-button
-        :title="repositoryModel.hasStared ? '取消点赞' : '点赞'"
-        :total="repositoryModel.star"
-        @total="isStarDrawerShow = true">
-        <template #icon>
-          <star-icon></star-icon>
-        </template>
-      </social-action-button>
-      <social-action-button
-        @total="isCommentDrawerShow = true"
-        :title="'评论'"
-        :total="repositoryModel.comment">
-        <template #icon>
-          <comment-icon></comment-icon>
-        </template>
-      </social-action-button>
+      <ant-button
+        type="primary"
+        v-if="isCloneButtonShow"
+        :loading="isCloning"
+        @click="handleOpenCloneModal">克隆
+      </ant-button>
+      <star-control-button
+        @update="handleStarStatusUpdate"
+        :is-owner="!!repositoryModel.target.author.id"
+        :has-star="repositoryModel.target.hasStared"
+        :count="repositoryModel.target.star"
+        :entity-id="repositoryModel.target.entity.id"
+        :entity-type="repositoryModel.target.entity.entityType"></star-control-button>
+      <comment-control-button
+        @update="handleUpdateComment"
+        :count="repositoryModel.target.comment"
+        :entity-id="repositoryModel.target.entity.id"
+        :entity-type="repositoryModel.target.entity.entityType"></comment-control-button>
       <div class="view-switch">
-        <ant-switch
-          checked-children="图谱视图"
-          un-checked-children="单元视图"
-          v-model:checked="viewStatus"/>
+        <repository-view-change
+          :view-status="viewStatus"
+          @viewChange="handleRepositoryViewChange"></repository-view-change>
       </div>
     </div>
-    <comment-drawer
-      :is-show="isCommentDrawerShow"
-      :entityId="repositoryModel.entity.id"
-      @showChange="isCommentDrawerShow=false"
-    ></comment-drawer>
-    <star-drawer
-      :is-show="isStarDrawerShow"
-      :entityId="repositoryModel.entity.id"
-      @showChange="isStarDrawerShow=false"
-    ></star-drawer>
   </div>
+  <clone-repository-modal
+    :old-repository-name="currentRepositoryName"
+    @close="handleCloseCloneModal"
+    :is-modal-visible="isCloneModalShow"></clone-repository-modal>
 </template>
 
 <script lang="ts">
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import {
-  computed,
-  defineComponent, inject, PropType, ref, toRef, watch
+  Button, message, Modal, Spin, Tag
+} from 'ant-design-vue';
+import {
+  computed, createVNode,
+  defineComponent, inject, PropType, ref
 } from 'vue';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
-import { useRouter } from 'vue-router';
-import StarDrawer from '@/views/repository-editor/star-drawer.vue';
-import CommentDrawer from '@/views/repository-editor/comment-drawer.vue';
+import type { RepositoryModelType } from 'metagraph-constant';
+import { useRoute, useRouter } from 'vue-router';
+import CloneRepositoryModal from '@/views/repository-editor/repository-editor-header/clone-repository-modal.vue';
+import { useStore } from '@/store';
+import RepositoryViewChange from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
+import { StarControlButton, CommentControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
-import { StarIcon, CommentIcon, EditIcon } from '@/components/icons';
-import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
+import { EditIcon } from '@/components/icons';
+import { repositoryModel, RepositoryEditor } from '../repository-editor';
 
 export default defineComponent({
   name: 'repository-editor-header',
   props: {
-    repositoryModel: {
-      type: Object as PropType<EntityCompletelyListItemType>,
+    viewStatus: {
+      type: String as PropType<'section' | 'graph'>,
       required: true
+    },
+    savingStatus: {
+      type: String as PropType<'saving' | 'saved'>,
     }
   },
   components: {
-    StarDrawer,
-    StarIcon,
+    CloneRepositoryModal,
+    RepositoryViewChange,
+    StarControlButton,
+    CommentControlButton,
     EditIcon,
-    CommentIcon,
-    SocialActionButton,
-    CommentDrawer,
+    AntTag: Tag,
+    AntButton: Button,
+    AntSpin: Spin,
   },
   emits: ['viewChange'],
   setup(props, { emit }) {
     const router = useRouter();
+    const route = useRoute();
+    const store = useStore();
+    const repositoryEditor = new RepositoryEditor();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const viewStatus = ref(false);
-    const repositoryProp = toRef(props, 'repositoryModel');
-    const isCommentDrawerShow = ref(false);
-    const isStarDrawerShow = ref(false);
-    const isPublicRepository = computed(() => ((repositoryProp.value?.content as RepositoryModelType).type === 'public'));
-    watch(viewStatus, (newValue, oldValue) => {
-      if (newValue !== oldValue) {
-        emit('viewChange');
-      }
-    });
+    const needRefresh = ref(route.query.refresh);
+    console.log(needRefresh);
+    const isCloning = ref(false);
+    const isCloneModalShow = ref(false);
+    const currentUserModel = computed(() => store.state.user?.user);
+    const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
     const goHomePage = async () => {
       await router.push('/');
     };
+    const isLogin = computed(() => store.state.user.isLogin);
+
+    async function handleStarStatusUpdate() {
+      if (repositoryEntityId.value) {
+        await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
+      }
+    }
+
     const goRepositoryEditPage = async () => {
       await router.push({
         path: '/repository/edit',
@@ -105,14 +128,82 @@ export default defineComponent({
         }
       });
     };
+    const handleUpdateComment = async () => {
+      await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
+    };
+    const handleRepositoryViewChange = (status: 'section' | 'graph') => {
+      emit('viewChange', status);
+    };
+
+    async function cloneRepository(name?: string) {
+      isCloning.value = true;
+      const clonedRepositoryEntityId = await repositoryEditor.cloneRepository(
+        repositoryEntityId.value,
+        name
+      );
+      isCloning.value = false;
+      if (!clonedRepositoryEntityId) {
+        return;
+      }
+      Modal.confirm({
+        title: '跳转指引',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '确定要跳转至新知识库吗?',
+        okText: '确定',
+        cancelText: '取消',
+        async onOk() {
+          await router.replace({
+            name: 'RepositoryEditor',
+            query: {
+              repositoryEntityId: clonedRepositoryEntityId,
+              type: 'edit',
+              refresh: 'need'
+            },
+            force: true
+          });
+        },
+        onCancel() {
+          message.info('取消删除！');
+        },
+      });
+    }
+
+    async function handleCloseCloneModal(params?: {
+      name: string
+    }) {
+      isCloneModalShow.value = false;
+      if (params) {
+        await cloneRepository(params?.name);
+      }
+    }
+
+    function handleOpenCloneModal() {
+      isCloneModalShow.value = true;
+    }
+
+    const isAllowedClone = computed(() => (repositoryModel.target?.content as RepositoryModelType).isAllowedClone);
+    const isCloneRepository = computed(() => (repositoryModel.target?.content as RepositoryModelType).cloneFromRepositoryEntityId);
+    // 只有在登录且非克隆知识库，才能有克隆功能
+    const isCloneButtonShow = computed(() => isAllowedClone.value && isLogin.value);
+    const currentRepositoryName = computed(() => (repositoryModel.target?.content as RepositoryModelType).name);
     return {
-      viewStatus,
       repositoryEntityId,
       isPublicRepository,
-      isCommentDrawerShow,
-      isStarDrawerShow,
+      currentUserModel,
+      repositoryModel,
       goHomePage,
-      goRepositoryEditPage
+      goRepositoryEditPage,
+      handleRepositoryViewChange,
+      handleUpdateComment,
+      handleStarStatusUpdate,
+      cloneRepository,
+      isCloneButtonShow,
+      isCloneRepository,
+      isCloning,
+      isCloneModalShow,
+      handleOpenCloneModal,
+      handleCloseCloneModal,
+      currentRepositoryName
     };
   }
 });
@@ -163,6 +254,10 @@ export default defineComponent({
         height: 24px;
         border-radius: 4px;
         margin-left: 10px;
+      }
+
+      .saving-status {
+        font-size: 12px;
       }
     }
   }

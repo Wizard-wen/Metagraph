@@ -1,19 +1,22 @@
 /**
  * @author songxiwen
- * @date  2021/9/11 12:08
+ * @date  2021/9/11 22:08
  */
 
-// eslint-disable-next-line import/prefer-default-export
 export class ConfigService {
-  private static apiLocalBaseURL = 'http://localhost:7250/'
+  private static apiLocalBaseURL = 'http://localhost:7250/';
 
-  private static apiTestBaseURL = 'https://edu.songxiwen.com.cn/api'
+  private static apiLocalDockerURL = 'http://localhost:7251/';
 
-  static apiBaseURL = ConfigService.apiLocalBaseURL
+  private static apiTestBaseURL = 'https://www.metagraph.design/api';
 
-  private static websocketLocalBaseURL = 'ws://localhost:8089'
+  static apiBaseURL = ConfigService.apiTestBaseURL;
 
-  private static websocketTestBaseURL = 'wss://edu.songxiwen.com.cn/websocket'
+  private static websocketLocalBaseURL = 'ws://localhost:8089';
 
-  static websocketBaseURL = ConfigService.websocketLocalBaseURL
+  private static websocketDockerBaseURL = 'ws://localhost:8088';
+
+  private static websocketTestBaseURL = 'wss://www.metagraph.design/websocket';
+
+  static websocketBaseURL = ConfigService.websocketTestBaseURL;
 }

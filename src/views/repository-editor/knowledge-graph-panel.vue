@@ -1,338 +1,102 @@
 <template>
-  <div class="graph-box">
-    <knowledge-connection></knowledge-connection>
-    <div class="graph-content">
-      <ant-modal
-        title="关联知识点"
-        v-model:visible="isModalVisible"
-        :confirm-loading="modalConfirmLoading"
-        cancelText="取消"
-        okText="关联"
-        @cancel="handleModalCancel"
-        @ok="handleModalOk">
-        <ant-form
-          :rules="knowledgeEdgeFormRules"
-          ref="knowledgeEdgeFormRef"
-          :model="knowledgeEdgeFormState">
-          <ant-form-item label="所属知识点" name="knowledgeEntityId">
-            <ant-select
-              v-model:value="knowledgeEdgeFormState.knowledgeEntityId"
-              placeholder="input search text">
-              <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
-                {{ d.content.name }}
-              </ant-select-option>
-            </ant-select>
-          </ant-form-item>
-          <ant-form-item label="源知识点" name="originKnowledgeEntityId">
-            <ant-select
-              v-model:value="knowledgeEdgeFormState.originKnowledgeEntityId"
-              :disabled="true"
-              placeholder="input search text">
-              <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
-                {{ d.content.name }}
-              </ant-select-option>
-            </ant-select>
-          </ant-form-item>
-          <ant-form-item label="目标知识点" name="targetKnowledgeEntityId">
-            <ant-select
-              v-model:value="knowledgeEdgeFormState.targetKnowledgeEntityId"
-              :disabled="true"
-              placeholder="input search text">
-              <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
-                {{ d.content.name }}
-              </ant-select-option>
-            </ant-select>
-          </ant-form-item>
-          <ant-form-item label="关联描述" name="description">
-            <ant-input
-              v-model:value="knowledgeEdgeFormState.description"
-              placeholder="请填写关联理由">
-            </ant-input>
-          </ant-form-item>
-        </ant-form>
-      </ant-modal>
-      <div class="graph-top">
-        <div style="height: 50px;" class="graph-control">
-          <zoom-in-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomInGraph"/>
-          <zoom-out-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomOutGraph"/>
+  <ant-spin :spinning="isLoading">
+    <div class="graph-box">
+      <knowledge-connection></knowledge-connection>
+      <div class="graph-content">
+        <div class="graph-top">
+          <div style="height: 50px;" class="graph-control">
+            <zoom-in-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomInGraph"/>
+            <zoom-out-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomOutGraph"/>
+          </div>
+          <div style="display: flex">
+            <div id="container" class="graph-graph"></div>
+          </div>
+          <div id="mini-map-container" class="graph-mini-map"></div>
         </div>
-        <div style="display: flex">
-          <div id="container" class="graph-graph"></div>
-        </div>
-        <div id="mini-map-container" class="graph-mini-map"></div>
-      </div>
-      <div class="graph-bottom">
-
+        <div class="graph-bottom"></div>
       </div>
     </div>
-  </div>
+  </ant-spin>
+
+  <edge-create-modal
+    v-if="isModalVisible"
+    :is-modal-visible="isModalVisible"
+    @close="isModalVisible = false"></edge-create-modal>
 </template>
 
 <script lang="ts">
-import * as AntvX6 from '@antv/x6';
-import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
+import { Spin } from 'ant-design-vue';
 import {
-  defineComponent, onMounted, computed, reactive, ref, onUnmounted, watch, inject, createVNode
+  defineComponent, onMounted, ref, onUnmounted, inject
 } from 'vue';
-import { useRoute } from 'vue-router';
-import { message, Modal } from 'ant-design-vue';
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
-import { ActionEnum, MutationEnum, useStore } from '@/store';
-import { ConfigService } from '@/config/config.service';
-import { RepositoryApiService } from '@/api.service';
+import EdgeCreateModal from '@/views/repository-editor/knowledge-graph-panel/edge-create-modal.vue';
+import {
+  KnowledgeGraphData,
+  graph,
+  initWebSocket,
+  isModalVisible
+} from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
+import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
-import { WebsocketService } from '@/service/websocket.service';
-import KnowledgeConnection from './knowledge-graph-panel/knowledge.connection.vue';
+import KnowledgeConnection from './knowledge-graph-panel/knowledge-relation.vue';
 import {
   knowledgeEdgeFormRules,
   knowledgeEdgeFormRef,
   knowledgeEdgeFormState,
-  KnowledgeGraphPanel
 } from './knowledge-graph-panel/knowledge.graph.panel';
 
 export default defineComponent({
-  name: 'knowledge.graph',
+  name: 'knowledge-graph-panel',
   components: {
+    EdgeCreateModal,
     KnowledgeConnection,
     ZoomInIcon,
     ZoomOutIcon,
-    ExclamationCircleOutlined
+    AntSpin: Spin
   },
   setup() {
-    const route = useRoute();
-    const store = useStore();
-    const userModel = computed(() => store.state.user.user);
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const knowledgeGraphPanel = new KnowledgeGraphPanel();
-    const repositoryGraphEdges = computed(() => store.state.repositoryEditor.repositoryEdgeList);
-    const repositoryGraphNodes = computed(() => store.state.repositoryEditor.knowledgeList);
-    const isEditable = computed(() => store.state.repositoryEditor.editable);
+    const isEditable = inject(isEditableKey, ref(false));
     const isExtendTreeGraphShow = ref(false);
     const isPreTreeGraphShow = ref(false);
-    const isUserOwnRepository = ref(false);
-    const graph = computed<{
-      graph?: AntvX6.Graph,
-      dnd?: AntvX6.Addon.Dnd
-    }>(() => store.state.repositoryEditor.graph);
-
-    const knowledgeInEdgeList = ref<EntityCompletelyListItemType[]>([]);
-    // modal
-    const isModalVisible = ref<boolean>(false);
-    const modalConfirmLoading = ref<boolean>(false);
-
-    const handleModalOk = async () => {
-      const errorMessage = await knowledgeGraphPanel.validateEdge();
-      if (errorMessage) {
-        return;
-      }
-      modalConfirmLoading.value = true;
-      await knowledgeGraphPanel.createEdge(repositoryEntityId.value);
-      await store.dispatch(ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID, {
-        repositoryEntityId: repositoryEntityId.value,
-        hasAuth: isUserOwnRepository.value
-      });
-      modalConfirmLoading.value = false;
-      isModalVisible.value = false;
-      // todo 刷新页面，否则新创建的节点不在图数据model中
-    };
-    const handleModalCancel = async () => {
-      if (knowledgeEdgeFormState.temporaryEdgeId) {
-        graph.value.graph?.removeEdge(knowledgeEdgeFormState.temporaryEdgeId);
-      }
-      message.info('取消创建关联');
-    };
-    const websocketService = ref<WebsocketService>();
+    const isLoading = ref(false);
+    let knowledgeGraphData: KnowledgeGraphData;
     onUnmounted(() => {
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
-      // 关闭websocket
-      websocketService.value?.close();
-      websocketService.value = undefined;
-      // 销毁图
-      graph.value.graph?.dispose();
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
-    });
-    // watch(isEditable, (newValue) => {
-    //   if (newValue) {
-    //     console.log('初始化');
-    //     websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
-    //       {
-    //         event: 'graph',
-    //         handler(info) {
-    //           console.log(info);
-    //         }
-    //       }
-    //     ]);
-    //   }
-    // });
-    const checkIfUserOwnRepository = async () => {
-      if (!userModel.value) {
-        return false;
-      }
-      const result = await RepositoryApiService.checkIfUserOwnRepository({
-        repositoryEntityId: repositoryEntityId.value
-      });
-      if (result.data) {
-        return result.data.hasAuth;
-      }
-      return false;
-    };
-    onMounted(async () => {
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: true });
+      isLoading.value = true;
       if (isEditable.value) {
-        websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
-          {
-            event: 'graph',
-            handler(info) {
-              console.log(info);
-            }
-          }
-        ]);
+        knowledgeGraphData.closeWebSocket();
       }
-      isUserOwnRepository.value = await checkIfUserOwnRepository();
-      store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
-        status: isUserOwnRepository.value
-      });
-      // 初始化图
-      store.commit(MutationEnum.INIT_GRAPH);
-      await store.dispatch(ActionEnum.GET_EDGE_LIST_BY_REPOSITORY_ID, {
-        repositoryEntityId: repositoryEntityId.value,
-        hasAuth: isUserOwnRepository.value
-      });
-      if (graph.value.graph === undefined) {
-        return;
+      knowledgeGraphData.destroy();
+      isLoading.value = false;
+    });
+    onMounted(async () => {
+      isLoading.value = true;
+      knowledgeGraphData = new KnowledgeGraphData();
+      if (isEditable.value) {
+        initWebSocket();
       }
-      repositoryGraphNodes.value.forEach((item: any) => {
-        console.log(item);
-        graph.value.graph?.addNode(item);
-      });
-      repositoryGraphEdges.value.forEach((item: any) => graph.value.graph?.addEdge(item));
-      graph.value.graph.on('edge:connected', async ({ edge, previousView, currentView }) => {
-        if (edge.getSourceCell() === null || edge.getTargetCell() === null) {
-          return;
-        }
-
-        const sourceCellData = edge.getSourceCell()?.data;
-        const targetCellData = edge.getTargetCell()?.data;
-        console.log(sourceCellData, targetCellData)
-        knowledgeInEdgeList.value = [sourceCellData, targetCellData];
-        knowledgeGraphPanel.setKnowledgeEdgeFormState({
-          temporaryEdgeId: edge.id,
-          originKnowledgeEntityId: sourceCellData.entity.id,
-          targetKnowledgeEntityId: targetCellData.entity.id,
-          originKnowledgeEntity: sourceCellData,
-          targetKnowledgeEntity: targetCellData
-        });
-        isModalVisible.value = true;
-      });
-      graph.value.graph.on('edge:selected', ({ cell, edge }) => {
-        console.log(edge, cell);
-        edge.setAttrs({
-          line: {
-            stroke: '#7c68fc', // 指定 path 元素的填充色
-          },
-        });
-      });
-      graph.value.graph.on('edge:change:connector', ({ cell, edge }) => {
-        console.log(edge, cell, '------edge:change:connector');
-      });
-      graph.value.graph.on('edge:unselected', ({ cell, edge }) => {
-        console.log(edge, cell);
-        edge.setAttrs({
-          line: {
-            stroke: '#000', // 指定 path 元素的填充色
-          },
-        });
-      });
-      graph.value.graph.on('node:click', async ({ cell }) => {
-        store.commit(MutationEnum.SET_SELECTED_ENTITY_ID, { id: cell.id });
-        await store.dispatch(ActionEnum.GET_PRE_EXTEND_KNOWLEDGE_LIST, {
-          repositoryEntityId: repositoryEntityId.value,
-          knowledgeEntityId: cell.id
-        });
-      });
-      graph.value.graph.on('node:moved', async ({ x, y, node }) => {
-        console.log(x, y, node.data);
-        websocketService.value?.send({
-          event: 'graph',
-          data: {
-            entityId: node.data.entity.id,
-            repositoryEntityId: repositoryEntityId.value,
-            x,
-            y
-          }
-        });
-      });
-      graph.value.graph.on('edge:removed', async ({ edge, options }) => {
-        console.log(edge, options);
-        await knowledgeGraphPanel.removeEdge({
-          id: edge.id,
-          repositoryEntityId: repositoryEntityId.value
-        });
-
-        // if (options.triggerByFunction) {
-        //   Modal.confirm({
-        //     title: '确定删除知识关联?',
-        //     icon: createVNode(ExclamationCircleOutlined),
-        //     content: '删除关系操作不可恢复，请谨慎操作',
-        //     async onOk() {
-        //       await knowledgeGraphPanel.removeEdge({
-        //         id: edge.id,
-        //         repositoryEntityId: repositoryEntityId.value
-        //       });
-        //     },
-        //     onCancel() {
-        //       message.info('放弃删除关联');
-        //     },
-        //   });
-        // }
-      });
-      graph.value.graph.on('edge:mouseenter', ({ edge }) => {
-        if (userModel.value && isUserOwnRepository.value) {
-          // hover展示删除按钮
-          edge.addTools([
-            'source-arrowhead',
-            'target-arrowhead',
-            {
-              name: 'button-remove',
-              args: {
-                distance: -30,
-              },
-            },
-          ]);
-        }
-      });
-      graph.value.graph.on('edge:mouseleave', ({ edge }) => {
-        edge.removeTools();
-      });
-      store.commit(MutationEnum.SET_IS_SPINNING, { status: false });
+      await knowledgeGraphData.initData(repositoryEntityId.value, isEditable.value);
+      isLoading.value = false;
     });
 
     const handleZoomInGraph = () => {
-      graph.value.graph?.zoom(0.1);
+      graph.value?.zoom(0.1);
     };
     const handleZoomOutGraph = () => {
-      graph.value.graph?.zoom(-0.1);
+      graph.value?.zoom(-0.1);
     };
 
     return {
       isExtendTreeGraphShow,
       isPreTreeGraphShow,
-      // modal
       isModalVisible,
-      modalConfirmLoading,
-      handleModalOk,
-      handleModalCancel,
-      // form
-      // knowledgeFormRef,
-      // knowledgeFormState,
-      knowledgeInEdgeList,
       handleZoomInGraph,
       handleZoomOutGraph,
       knowledgeEdgeFormRules,
       knowledgeEdgeFormRef,
-      knowledgeEdgeFormState
+      knowledgeEdgeFormState,
+      isLoading
     };
   },
 });
@@ -366,10 +130,10 @@ export default defineComponent({
 
       .graph-mini-map {
         border: 1px solid #ccc;
-        z-index: 9999;
+        z-index: 999;
         height: 200px;
         position: fixed;
-        bottom: 0px;
+        bottom: 0;
         right: 300px;
       }
     }

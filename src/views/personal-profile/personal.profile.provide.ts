@@ -8,3 +8,7 @@ import type { UserModelType } from 'metagraph-constant';
 
 export const userProfileKey: InjectionKey<Ref<UserModelType>> = Symbol('userProfileKey');
 export const userIdKey: InjectionKey<Ref<string>> = Symbol('userIdKey');
+export const userFollowKey: InjectionKey<Ref<{
+  followerCount: number;
+  followedCount: number;
+}>> = Symbol('userFollowKey');

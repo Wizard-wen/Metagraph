@@ -10,10 +10,52 @@ import { GlobalModuleType, RootStateType } from '@/store/type';
 export const globalModule: Module<GlobalModuleType, RootStateType> = {
   state: () => ({
     isSpinning: false,
+    guide: {
+      homepage: {
+        status: 'not-start'
+      },
+      repositorySectionEditor: {
+        status: 'not-start'
+      },
+      repositoryGraphEditor: {
+        status: 'not-start'
+      },
+      knowledgeEditor: {
+        status: 'not-start'
+      }
+    }
   }),
   mutations: {
     [MutationEnum.SET_IS_SPINNING](state, { status }) {
       state.isSpinning = status;
+    },
+    [MutationEnum.SET_GUIDE_STATUS](state) {
+      if (!state.guide) {
+        state.guide = {
+          homepage: {
+            status: 'not-start'
+          },
+          repositorySectionEditor: {
+            status: 'not-start'
+          },
+          repositoryGraphEditor: {
+            status: 'not-start'
+          },
+          knowledgeEditor: {
+            status: 'not-start'
+          }
+        };
+      }
+    },
+    [MutationEnum.SET_GUIDE_STATUS](state, params: {
+      type: 'homepage' | 'repositorySectionEditor' | 'repositoryGraphEditor' | 'knowledgeEditor',
+      step: number,
+      status: 'done' | 'doing' | 'not-start'
+    }) {
+      state.guide[params.type] = {
+        status: params.status,
+        step: params.step
+      };
     }
   }
 };

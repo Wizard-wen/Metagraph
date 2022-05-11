@@ -25,7 +25,8 @@ export class RequestUtil {
       }>(params.apiPath, params.requestBody).then((data) => {
         if (data.data.code === 0) {
           resolve({
-            data: data.data.data
+            data: data.data.data,
+            code: data.data.code
           });
         }
         resolve({ message: data.data.message });

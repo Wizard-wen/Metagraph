@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+import { Spin } from 'ant-design-vue';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '@/store';
 import MetagraphHeader from './main/metagraph-header.vue';
@@ -13,7 +14,8 @@ import MetagraphHeader from './main/metagraph-header.vue';
 export default defineComponent({
   name: 'Main',
   components: {
-    MetagraphHeader
+    MetagraphHeader,
+    AntSpin: Spin
   },
   setup() {
     const store = useStore();

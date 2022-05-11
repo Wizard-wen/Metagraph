@@ -23,14 +23,24 @@ export class CommonUtil {
     if (/(y+)/.test(formattedDate)) {
       formattedDate = formattedDate.replace(RegExp.$1, (`${date.getFullYear()}`).substr(4 - RegExp.$1.length));
     }
-    Object.keys(object).forEach((item: string) => {
-      if (new RegExp(`(${item})`).test(formattedDate)) {
-        const newWord = (RegExp.$1.length === 1)
-          ? (object[item])
-          : ((`00${object[item]}`).substr((`${object[item]}`).length));
-        formattedDate = formattedDate.replace(RegExp.$1, newWord.toString());
-      }
-    });
+    Object.keys(object)
+      .forEach((item: string) => {
+        if (new RegExp(`(${item})`).test(formattedDate)) {
+          const newWord = (RegExp.$1.length === 1)
+            ? (object[item])
+            : ((`00${object[item]}`).substr((`${object[item]}`).length));
+          formattedDate = formattedDate.replace(RegExp.$1, newWord.toString());
+        }
+      });
     return formattedDate;
+  }
+
+  static async changeFileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   }
 }

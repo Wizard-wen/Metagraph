@@ -19,7 +19,7 @@ export type CustomMentionOptions = {
   suggestion: Omit<SuggestionOptions, 'editor'>,
 }
 
-export const TestPluginKey = new PluginKey('test');
+export const TestMentionPluginKey = new PluginKey('testMention');
 
 export const CustomTestMention = Node.create<CustomMentionOptions>({
   name: 'testMention',
@@ -28,14 +28,25 @@ export const CustomTestMention = Node.create<CustomMentionOptions>({
     return {
       HTMLAttributes: {},
       renderLabel(params: any) {
-        const { options, node } = params;
+        const {
+          options,
+          node
+        } = params;
         return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`;
       },
       suggestion: {
-        char: '#',
-        pluginKey: TestPluginKey,
+        startOfLine: false,
+        // 触发自动完成弹出窗口的字符。
+        char: '@',
+        // A ProseMirror PluginKey.
+        pluginKey: TestMentionPluginKey,
         command: (params: any) => {
-          const { editor, range, props } = params;
+          const {
+            editor,
+            range,
+            props
+          } = params;
+          console.log('from command ', params);
           // increase range.to by one when the next node is of type "text"
           // and starts with a space character
           const { nodeAfter } = editor.view.state.selection.$to;
@@ -61,7 +72,11 @@ export const CustomTestMention = Node.create<CustomMentionOptions>({
             .run();
         },
         allow: (params: any) => {
-          const { editor, range } = params;
+          const {
+            editor,
+            range
+          } = params;
+          console.log('from allow ', params);
           const $from = editor.state.doc.resolve(range.from);
           const type = editor.schema.nodes[this.name!];
           const allow = !!$from.parent.type.contentMatch.matchType(type);
@@ -71,8 +86,35 @@ export const CustomTestMention = Node.create<CustomMentionOptions>({
       },
     };
   },
-
+  /**
+   * 将此节点添加到一组扩展中，可以在模式的内容属性中引用。
+   * // add to 'block' group
+   * group: 'block',
+   * // add to 'inline' group
+   * group: 'inline',
+   * // add to 'block' and 'list' group
+   * group: 'block list',
+   */
   group: 'inline',
+  /**
+   * content 属性准确定义了节点可以拥有的内容类型。
+   * ProseMirror 对此非常严格。
+   * 这意味着，不符合架构的内容将被丢弃。
+   * 它需要一个名称或组作为字符串。 这里有一些例子：
+   * // must have one or more blocks
+   * content: 'block+',
+   * // must have zero or more blocks
+   *  content: 'block*',
+   * // allows all kinds of 'inline' content (text or hard breaks)
+   * content: 'inline*',
+   * // must not have anything else than 'text'
+   * content: 'text*',
+   * // can have one or more paragraphs, or lists (if lists are used)
+   * content: '(paragraph|list?)+',
+   * // must have exact one heading at the top, and one or more blocks below
+   * content: 'heading block+'
+   */
+  content: 'inline*',
 
   inline: true,
 
@@ -95,7 +137,33 @@ export const CustomTestMention = Node.create<CustomMentionOptions>({
           };
         },
       },
+      name: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-name'),
+        renderHTML: (attributes) => {
+          if (!attributes.name) {
+            return {};
+          }
 
+          return {
+            'data-name': attributes.name,
+          };
+        },
+      },
+
+      count: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-count'),
+        renderHTML: (attributes) => {
+          if (!attributes.count) {
+            return {};
+          }
+
+          return {
+            'data-count': attributes.count,
+          };
+        },
+      },
       label: {
         default: null,
         parseHTML: (element) => element.getAttribute('data-label'),
@@ -111,42 +179,18 @@ export const CustomTestMention = Node.create<CustomMentionOptions>({
       },
     };
   },
-
-  // parseHTML() {
-  //   return [
-  //     {
-  //       tag: `span[data-type="${this.name}"]`,
-  //     },
-  //   ];
-  // },
-  //
-  // renderHTML({ node, HTMLAttributes }) {
-  //   return [
-  //     'span',
-  //     mergeAttributes({ 'data-type': this.name }, this.options.HTMLAttributes, HTMLAttributes),
-  //     this.options.renderLabel({
-  //       options: this.options,
-  //       node,
-  //     }),
-  //   ];
-  // },
-  //
-  // renderText({ node }) {
-  //   return this.options.renderLabel({
-  //     options: this.options,
-  //     node,
-  //   });
-  // },
   parseHTML() {
     return [
       {
-        tag: 'vue-component',
+        tag: `vue-component[data-type="${this.name}"]`,
       },
     ];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ['vue-component', mergeAttributes(HTMLAttributes), 0];
+  renderHTML({ node, HTMLAttributes }) {
+    return ['vue-component',
+      mergeAttributes({ 'data-type': this.name }, this.options.HTMLAttributes, HTMLAttributes)
+    ];
   },
 
   addNodeView() {
@@ -154,10 +198,17 @@ export const CustomTestMention = Node.create<CustomMentionOptions>({
   },
   addKeyboardShortcuts() {
     return {
-      Backspace: () => this.editor.commands.command(({ tr, state }) => {
+      Backspace: () => this.editor.commands.command(({
+        tr,
+        state
+      }) => {
+        console.log('key board short cuts ---------', tr, state);
         let isMention = false;
         const { selection } = state;
-        const { empty, anchor } = selection;
+        const {
+          empty,
+          anchor
+        } = selection;
 
         if (!empty) {
           return false;

@@ -5,7 +5,7 @@
 
 import type {
   SectionResponseType,
-  SectionEntityType
+  SectionEntityType, SectionArticleUpdateRequestType
 } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
@@ -52,17 +52,14 @@ export class SectionApiService {
     });
   }
 
-  static saveSectionArticle(params: { sectionId: string; content: any; contentHtml?: any }): Promise<PublicApiResponseType<any>> {
-    return RequestUtil.post<{ sectionId: string; content: any; contentHtml?: any }, any>({
+  /**
+   * 保存单元文章
+   * @param params
+   */
+  static saveSectionArticle(params: SectionArticleUpdateRequestType): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<SectionArticleUpdateRequestType, void>({
       apiPath: ApiPathEnum.SaveSectionArticle,
       requestBody: params
     });
   }
-
-  // static getEntityList(params: { name: string; entityType?: string; pageIndex: number; pageSize: number }): Promise<PublicApiResponseType<any>> {
-  //   return RequestUtil.post<{ name: string; entityType?: string; pageIndex: number; pageSize: number }, any>({
-  //     apiPath: ApiPathEnum.GetEntityList,
-  //     requestBody: params
-  //   });
-  // }
 }

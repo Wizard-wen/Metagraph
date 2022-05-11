@@ -7,21 +7,25 @@ export enum ApiPathEnum {
   /**
    * knowledge
    */
-  CreateKnowledge = '/knowledge/create',
-  UpdateKnowledge = '/knowledge/update',
-  RemoveKnowledge = '/knowledge/remove/id',
-  SaveKnowledgeDescription = '/knowledge/save/description',
-  // 获取知识点
-  GetNoAuthKnowledgeById = '/public/knowledge/get',
-  // 带分页的知识点列表
-  GetNoAuthKnowledgeList = '/public/knowledge/getList',
-  // 获取某个知识点的前置、导出知识点
-  GetNoAuthEdgesByKnowledgeEntityId = '/public/knowledge/findEdgesByKnowledgeEntityId',
-  // 仓库绑定的知识点
-  GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
-  GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
-  CreateAlternativeKnowledgeList = '/knowledge/createAlternativeKnowledgeList',
-  RemoveAlternativeKnowledge = '/knowledge/removeAlternativeKnowledge',
+  // SaveKnowledgeDescription = '/knowledge/save/description',
+  // CheckCustomKnowledgeFormField = '/knowledge/checkField',
+  // AddCustomKnowledgeFormField = '/knowledge/addField',
+  // RemoveCustomKnowledgeFormField = '/knowledge/removeField',
+  // SaveCustomKnowledgeFormFields = '/knowledge/saveFields',
+  // // 获取知识点
+  // GetNoAuthKnowledgeById = '/public/knowledge/get',
+  // GetNoAuthKnowledgePath = '/public/knowledge/getPath',
+  // // 获取引用当前知识点的知识点列表
+  // GetNoAuthKnowledgeMentionedList = '/public/knowledge/getMentionedList',
+  // // 带分页的知识点列表
+  // GetNoAuthKnowledgeList = '/public/knowledge/getList',
+  // // 获取某个知识点的前置、导出知识点
+  // GetNoAuthEdgesByKnowledgeEntityId = '/public/knowledge/findEdgesByKnowledgeEntityId',
+  // // 仓库绑定的知识点
+  // GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
+  // GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
+  // CreateMultipleAlternativeKnowledge = '/knowledge/createMultipleAlternativeKnowledge',
+  // RemoveAlternativeKnowledge = '/knowledge/removeAlternativeKnowledge',
   /**
    * edge
    */
@@ -41,10 +45,10 @@ export enum ApiPathEnum {
   /**
    * file
    */
-  GetQiniuFileCredential = '/file/getCredential',
-  RemoveFile = '/file/remove',
-  GetFileList = '/file/getList',
-  GetFileByKey = '/file/get/key',
+  GetQiniuFileCredential = '/public/file/getCredential',
+  RemoveFile = '/public/file/remove',
+  GetFileList = '/public/file/getList',
+  GetFileByKey = '/public/file/get/key',
   /**
    * comment
    */
@@ -58,43 +62,61 @@ export enum ApiPathEnum {
   CreateStar = '/star/create',
   CancelStar = '/star/cancel',
   GetMyStarList = '/star/getList/my',
-  GetEntityStaredUserList = '/star/getEntityStaredUserList',
+  GetEntityStaredUserList = '/public/star/getEntityStaredUserList',
+  GetUserStarList = '/public/star/getList/user',
   // GetEntityStarDetailList = '/public/star/getEntityStarDetailList',
   /**
    * entity
    */
   GetEntityList = '/entity/getList',
-  GetEntityById = '/entity/get/id',
+  GetEntityById = '/public/entity/get/id',
+  GetEntityListByEntityType = '/public/entity/getListByEntityType',
+  GetSearchEntityList = '/public/entity/getSearchList',
   /**
    * user
    */
-  LoginByName = '/account/loginByName',
+
+  SendBindEmailCode = '/account/sendBindMailCode',
+  BindEmail = '/account/bindEmail',
+  UnbindEmail = '/account/unbindEmail',
   GetById = '/account/getById',
-  GetUserProfileById = '/public/user/profile',
+  LoginByName = '/public/user/loginByName',
+  UpdatePassword = '/account/updatePassword',
+  GetUserBindEmail = '/account/getUserBindEmail',
+  UpdateUser = '/account/updateUser',
+  RegisterByName = '/public/user/registerByName',
   GetPublicUserById = '/public/user/getById',
   SendRegisterEmailCode = '/public/user/sendEmailCode',
-  RegisterByName = '/account/registerByName',
-  UpdatePassword = '/account/updatePassword',
+  CheckIfUserExists = '/public/user/check/nickname',
   /**
    * repository
    */
   CreateRepository = '/repository/create',
   UpdateRepository = '/repository/update',
-  // GetRepositoryList = '/repository/getList',
-  GetRepositoryByEntityId = '/repository/getRepositoryByEntityId',
-  GetOwnRepositoryList = '/repository/getOwnList',
-  getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
-  CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
-  GetRepositoryEntityList = '/repository/getEntityList',
+  RemoveRepository = '/repository/remove',
+  GetRepositoryByEntityId = '/repository/getModelByEntityId',
   BindToRepository = '/repository/bind/entity',
+  UnbindFromRepository = '/repository/unbind/entity',
+  // CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
+  GetOwnRepositoryList = '/repository/getOwnList',
+  // GetRepositoryList = '/repository/getList',
+
+  // getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
+
+  // GetRepositoryEntityList = '/repository/getEntityList',
+  CloneRepository = '/repository/clone',
+  GetCloneRepositoryStatus = '/repository/getCloneStatus',
+  GetRepositoryUsingEntity = '/repository/getUsingEntity',
+
   // no.auth repository
   GetNoAuthRepositoryBindEntityList = '/public/repository/getBindEntityList',
   GetNoAuthRepositoryEntityList = '/public/repository/getList',
-  GetNoAuthRepositoryById = '/public/repository/get/id',
+  GetNoAuthHotRepositoryEntityList = '/public/repository/get/hotList',
   /**
    * tag
    */
   GetTagList = '/tag/getList',
+  UpdateTag = '/tag/update',
   /**
    * nlp
    */
@@ -104,10 +126,37 @@ export enum ApiPathEnum {
    */
   GetDomainList = '/public/domain/getList',
   GetDomainTree = '/public/domain/get/tree',
+  GetDomainBaseTypeList = '/public/domain/baseType/getList',
   /**
    * follow
    */
   CheckIfFollowed = '/follow/checkIfFollowed',
   Follow = '/follow/create',
-  UnFollow = '/follow/stop'
+  UnFollow = '/follow/stop',
+  GetFollowCount = '/public/follow/getFollowCount',
+  GetFollowerList = '/public/follow/getFollowerList',
+  GetFollowedList = '/public/follow/getFollowedList',
+  /**
+   * error detail
+   */
+  CreateErrorDetail = '/system/errorDetail/create',
+  /**
+   * plan
+   */
+  CreatePlan = '/plan/create',
+  GetPlanTree = '/plan/getTree',
+  GetPlanList = '/plan/getList',
+  UpdatePlan = '/plan/update',
+  GetPlanDetail = '/plan/getDetail',
+  GetPlan = '/plan/get',
+  CreatePlanItem = '/plan/item/create',
+  UpdatePlanItem = '/plan/item/update',
+  GetPlanItemDetail = '/plan/item/getDetail',
+  BindToPlanItem = '/plan/item/bind/entity',
+  UnbindFromPlanItem = '/plan/item/unbind/entity',
+  UnbindEntityFromPlan = '/plan/unbind/entity',
+  /**
+   * activity
+   */
+  GetActivityList = '/activity/getList'
 }

@@ -24,20 +24,24 @@ const articleFontSize = ref('12');
 
 <style scoped lang="scss">
 .article-container {
-  height: calc(100vh - 116px);
-  overflow-y: auto;
+  text-align: left;
+  height: 100%;
+  //overflow-y: auto;
+  background: #fafbfc;
 
   .editor-range {
     position: relative;
-    width: 816px;
+    //width: 816px;
     min-height: 100%;
     margin: 0 auto;
+    padding: 30px;
   }
 
   .editor-container {
     position: absolute;
     width: 100%;
     background: #fff;
+
   }
 }
 </style>

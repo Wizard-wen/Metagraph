@@ -13,11 +13,11 @@ export type UserStateType = {
   };
   isLogin?: boolean;
   token?: string;
-  userState?: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  isLoginState?: boolean;
-  tokenState?: string
+  // userState?: {
+  //   id: string;
+  //   name: string;
+  //   avatar?: string;
+  // };
+  // isLoginState?: boolean;
+  // tokenState?: string
 }

@@ -8,8 +8,16 @@ import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
 export class FollowApiService {
-  static async checkIfFollowed(params: { followedUser: string }): Promise<PublicApiResponseType<{ status: boolean }>> {
-    return RequestUtil.post<{ followedUser: string }, { status: boolean }>({
+  static async checkIfFollowed(params: { followedUser: string }): Promise<PublicApiResponseType<{
+    status: boolean;
+    followingCount: number;
+    followedCount: number;
+  }>> {
+    return RequestUtil.post<{ followedUser: string }, {
+      status: boolean;
+      followingCount: number;
+      followedCount: number;
+    }>({
       apiPath: ApiPathEnum.CheckIfFollowed,
       requestBody: params
     });

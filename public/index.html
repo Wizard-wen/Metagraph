@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-cmn-Hans">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="keywords" content="metagraph">
+    <meta name="description" content="让不同知识背景的人尽快站在同一起跑线；以知识库为单位构建某个领域的知识内容，建立知识点之间的关联关系，最终构建出全平台的跨领域知识图谱">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>metagraph</title>
   </head>
@@ -21,5 +23,15 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+      // 白屏时间
+      console.log('系统白屏时间 测法1-----', new Date() - performance.timing.navigationStart)
+      // 通过 domLoading 和 navigationStart 也可以
+      console.log('系统白屏时间 测法2-----', performance.timing.domLoading - performance.timing.navigationStart)
+      window.addEventListener('load', () => {
+        // 首屏时间
+        console.log('系统首屏加载时间 -----', new Date() - performance.timing.navigationStart);
+      })
+    </script>
   </body>
 </html>

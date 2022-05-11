@@ -1,103 +1,162 @@
 <template>
-  <ant-spin :spinning="spinning" class="repository-page">
+  <ant-spin :spinning="isRepositoryEditorLoading" class="repository-page">
     <repository-editor-header
-      @viewChange="viewStatus = !viewStatus"
+      @viewChange="handleChangeView"
+      :view-status="viewStatus"
+      :saving-status="isSaving"
       v-if="repositoryModel.target"
-      :repository-model="repositoryModel.target"
     ></repository-editor-header>
     <div class="editable">
-      <div class="section-view" v-if="!viewStatus">
+      <div class="section-view" v-if="viewStatus === 'section'">
         <section-tree></section-tree>
         <div class="text-content">
           <section-article-tip-tap
-            v-if="repositoryEntityId && sectionEntityId"
+            v-if="repositoryEntityId"
             :entityId="repositoryEntityId"
             :editable="isEditable"
-            @mention="handleMention($event)"
-            @saveSectionArticle="saveSectionArticle($event)">
+            @clickMention="handleClickMention($event)"
+            @mention="handleMention($event)">
           </section-article-tip-tap>
-          <ant-empty v-else :image="simpleImage"/>
         </div>
         <div class="style-panel">
-          <toolbar></toolbar>
+          <right-sidebar></right-sidebar>
         </div>
       </div>
       <div v-else class="section-view">
-        <knowledge-graph class="graph-content"></knowledge-graph>
+        <div class="graph-content">
+          <knowledge-graph-panel></knowledge-graph-panel>
+        </div>
         <div class="style-panel">
-          <toolbar></toolbar>
+          <right-sidebar></right-sidebar>
         </div>
       </div>
     </div>
   </ant-spin>
+  <knowledge-drawer-content
+    v-if="knowledgeDrawerState.isShow"
+    :is-visible="knowledgeDrawerState.isShow"
+    :knowledge-entity-id="knowledgeDrawerState.entityId"
+    @close="handleCloseKnowledgeDrawer"></knowledge-drawer-content>
 </template>
 
 <script lang="ts">
+import { JSONContent } from '@tiptap/vue-3';
 import {
-  defineComponent, ref, computed, onBeforeMount, onUnmounted, provide
+  defineComponent, ref, onBeforeMount, onUnmounted, provide
 } from 'vue';
-import { useRoute } from 'vue-router';
-import { Empty } from 'ant-design-vue';
+import { onBeforeRouteUpdate, useRoute } from 'vue-router';
+import { Empty, Spin } from 'ant-design-vue';
+import {
+  SectionTreeService
+} from '@/views/repository-editor/section-tree/section.tree';
 import {
   RepositoryEditor,
-  isEditable,
   repositoryModel,
   sectionEntityId,
-  isPublicRepository
+  isPublicRepository,
+  isRepositoryEditorLoading
 } from '@/views/repository-editor/repository-editor';
-import { ActionEnum, MutationEnum, useStore } from '@/store';
-import Toolbar from './repository-editor/toolbar.vue';
+
+import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
+import RightSidebar from './repository-editor/right-sidebar.vue';
 import SectionTree from './repository-editor/section-tree.vue';
 import SectionArticleTipTap from './repository-editor/section-article.vue';
-import KnowledgeGraph from './repository-editor/knowledge-graph-panel.vue';
-import { repositoryEntityIdKey } from './repository-editor/provide.type';
+import KnowledgeGraphPanel from './repository-editor/knowledge-graph-panel.vue';
+import { isEditableKey, repositoryEntityIdKey } from './repository-editor/provide.type';
 import RepositoryEditorHeader from './repository-editor/repository-editor-header/repository-editor-header.vue';
 
 export default defineComponent({
   name: 'editable.repository',
   components: {
-    Toolbar,
+    KnowledgeDrawerContent,
+    RightSidebar,
     SectionTree,
     SectionArticleTipTap,
-    KnowledgeGraph,
-    RepositoryEditorHeader
+    KnowledgeGraphPanel,
+    RepositoryEditorHeader,
+    AntSpin: Spin
   },
   setup() {
     const route = useRoute();
-    const store = useStore();
-    const spinning = computed(() => store.state.global.isSpinning);
+    // 当前知识库entityId
     const repositoryEntityId = ref<string>(route.query.repositoryEntityId as string);
+    const isEditable = ref<boolean>((route.query.type as string) === 'edit');
+    const sectionTreeService = new SectionTreeService();
     provide(repositoryEntityIdKey, repositoryEntityId);
-    const viewStatus = ref(false);
+    provide(isEditableKey, isEditable);
     const repositoryEditorService = new RepositoryEditor();
-    const {
-      getRepositoryByEntityId
-    } = repositoryEditorService;
+    // 视图状态
+    const viewStatus = ref<'section' | 'graph'>('section');
+    const isSaving = ref();
+
+    // 切换视图状态
+    async function handleChangeView(view: 'section' | 'graph') {
+      viewStatus.value = view;
+      if (view === 'section') {
+        await sectionTreeService.getSectionTree(repositoryEntityId.value);
+      }
+    }
+
     const preventContextmenu = (event: MouseEvent) => {
       event.preventDefault();
     };
+
     onBeforeMount(async () => {
-      store.commit(MutationEnum.SET_REPOSITORY_EDITABLE, {
-        status: undefined
-      });
-      await getRepositoryByEntityId(repositoryEntityId.value);
+      isRepositoryEditorLoading.value = true;
+      await Promise.all([
+        repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
+        repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
+        sectionTreeService.getSectionTree(repositoryEntityId.value)
+      ]);
+      if (isEditable.value) {
+        await repositoryEditorService.getOwnDraftKnowledgeList(repositoryEntityId.value)
+      }
+      isRepositoryEditorLoading.value = false;
       document.addEventListener('contextmenu', preventContextmenu);
     });
     onUnmounted(() => {
       document.removeEventListener('contextmenu', preventContextmenu);
     });
+
+    onBeforeRouteUpdate(async (to, from) => {
+      if (to.query.repositoryEntityId !== from.query.repositoryEntityId) {
+        isRepositoryEditorLoading.value = true;
+        repositoryEntityId.value = to.query.repositoryEntityId as string;
+        await Promise.all([
+          repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
+          repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
+          sectionTreeService.getSectionTree(repositoryEntityId.value)
+        ]);
+        isRepositoryEditorLoading.value = false;
+      }
+    });
+
+    function handleClickMention(event: { id: string, name: string }) {
+      knowledgeDrawerState.isShow = true;
+      knowledgeDrawerState.entityId = event.id;
+    }
+
+    function handleCloseKnowledgeDrawer() {
+      knowledgeDrawerState.isShow = false;
+    }
+
     const saveSectionArticle = async (params: {
-      content: Record<string, any>,
+      content: JSONContent,
       contentHtml: string
     }) => {
-      await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
+      isSaving.value = 'saving...';
+      await sectionTreeService.saveSectionArticle({
         content: params.content,
         contentHtml: params.contentHtml
       });
+      isSaving.value = 'saved';
+      setTimeout(() => {
+        isSaving.value = undefined;
+      }, 500);
     };
     const handleMention = (params: {
       name: string, id: string, success: () => string, fail: () => string,
-      content: Record<string, any>,
+      content: JSONContent,
       contentHtml: string
     }) => {
       repositoryEditorService.handleMention({
@@ -106,6 +165,7 @@ export default defineComponent({
       });
     };
     return {
+      isRepositoryEditorLoading,
       repositoryModel,
       viewStatus,
       saveSectionArticle,
@@ -113,9 +173,13 @@ export default defineComponent({
       sectionEntityId,
       repositoryEntityId,
       handleMention,
-      spinning,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       isPublicRepository,
+      handleChangeView,
+      handleClickMention,
+      isSaving,
+      knowledgeDrawerState,
+      handleCloseKnowledgeDrawer
     };
   }
 });

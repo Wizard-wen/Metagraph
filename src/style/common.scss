@@ -1,4 +1,4 @@
-
+$fontColor: #24292e;
 * {
   box-sizing: border-box;
 }
@@ -12,20 +12,48 @@ input {
 .position-relative {
   position: relative;
 }
+
 .position-absolute {
   position: absolute;
 }
 
-$fontColor: #24292e !global;
+
 $themeColor: #d14424;
 $textColor: #41464b;
 $borderColor: #eee;
 $lightGray: #f9f9f9;
 $backgroundColor: #f5f6f7;
+$highlightBackgroundColor: #1790ff;
 $boxShadow: 3px 3px 3px rgba(#000, 0.15);
 $borderRadius: 2px;
 
-.custom-tip-tap-image{
+.custom-tip-tap-image {
   display: block;
   margin: 0 auto;
+}
+
+@mixin list-item-highlight {
+  background: $highlightBackgroundColor;
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.custom-input-style {
+  ::v-deep(.ant-input) {
+    background: #FFFFFF !important;
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    &:focus {
+      background: #FFFFFF !important;
+      -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    }
+  }
+}
+
+.custom-date-picker {
+  z-index: 10000!important;
+}
+
+
+.grabbing * {
+  cursor: grabbing !important;
 }

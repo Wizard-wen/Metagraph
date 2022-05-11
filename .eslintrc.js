@@ -25,7 +25,8 @@ module.exports = {
     'no-unused-expressions': 'off',
     'import/prefer-default-export': 'off',
     'class-methods-use-this': 'off',
-    'no-shadow': 'off'
+    'no-shadow': 'off',
+    "prefer-promise-reject-errors": 'off'
   },
 
   overrides: [

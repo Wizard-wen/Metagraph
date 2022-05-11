@@ -10,6 +10,7 @@
     :zIndex="9999"
     @cancel="handleModalCancel">
     <vueCropper
+      v-if="!isGif"
       style="height: 400px"
       ref="cropperRef"
       :img="cropOption.img"
@@ -37,32 +38,43 @@
       :mode="cropOption.mode"
       :limitMinSize="cropOption.limitMinSize"
     ></vueCropper>
-    <ant-button class="select-image">
-      选择图片
-      <input type="file" class="upload-input"
-             accept="image/png, image/jpeg, image/gif, image/jpg"
-             @change="handleUploadImg($event)" ref="inputRef">
-
-    </ant-button>
-    <ant-button @click="handleUpload">上传图片</ant-button>
-    <ant-button @click="handleModalCancel">关闭</ant-button>
+    <img v-if="isGif" :src="gifBase64" alt="">
+    <div class="control-box">
+      <ant-button
+        type="primary"
+        class="select-image button-style">
+        选择图片
+        <input
+          type="file" class="upload-input"
+          accept="image/png, image/jpeg, image/gif, image/jpg"
+          @change="handleUploadImg($event)" ref="inputRef">
+      </ant-button>
+      <ant-button
+        class="button-style"
+        type="primary"
+        :loading="isLoading" @click="handleUpload">上传图片
+      </ant-button>
+      <ant-button class="button-style" @click="handleModalCancel">关闭</ant-button>
+    </div>
   </ant-modal>
 </template>
 
 <script lang="ts">
 import { QiniuUploadService } from '@/service/qiniu.upload.service';
-import { message } from 'ant-design-vue';
+import { Button, message, Modal } from 'ant-design-vue';
 import {
-  defineComponent, reactive, ref, PropType
+  defineComponent, reactive, ref, PropType, toRef
 } from 'vue';
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum, FileProvider } from 'metagraph-constant';
 
 export default defineComponent({
   name: 'upload-cropper-modal',
   components: {
-    VueCropper
+    VueCropper,
+    AntModal: Modal,
+    AntButton: Button
   },
   props: {
     isModalVisible: {
@@ -73,15 +85,29 @@ export default defineComponent({
       type: String,
       default: '上传图片'
     },
+    provider: {
+      type: String as PropType<FileProvider>,
+      required: true
+    },
     fixedNumber: {
       type: Array as PropType<number[]>,
-      default: [1, 1]
+      default: () => [1, 1]
+    },
+    fixedBox: {
+      type: Boolean,
+      default: false
+    },
+    fixed: {
+      require: true,
+      type: Boolean,
+      default: false
     }
   },
   emits: ['close'],
   setup(props, { emit }) {
-    // const isModalVisible = toRef(props, 'isModalVisible');
+    const fileProvider = toRef(props, 'provider');
     const modalConfirmLoading = ref(false);
+    const isLoading = ref(false);
     const cropOption = reactive({
       // 裁剪图片的地址
       img: '',
@@ -118,14 +144,16 @@ export default defineComponent({
       // 限制图片最大宽度和高度
       maxImgSize: 3000,
       // 是否开启截图框宽高固定比例
-      fixed: true,
+      fixed: props.fixed,
       // 截图框的宽高比例
-      fixedNumber: [1, 1],
+      fixedNumber: props.fixed ? (props.fixedNumber || [1, 1]) : undefined,
       // 固定截图框大小
-      fixedBox: false,
+      fixedBox: props.fixedBox,
       limitMinSize: [100, 120]
     });
-
+    const domFile = ref<File>();
+    const isGif = ref(false);
+    const gifBase64 = ref<string>();
     const handleModalOk = () => {
       emit('close');
     };
@@ -162,8 +190,12 @@ export default defineComponent({
         return;
       }
       const file = target.files[0];
+      domFile.value = file;
       if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(target.value)) {
         return;
+      }
+      if (/\.(gif|GIF)$/.test(target.value)) {
+        isGif.value = true;
       }
       const reader = new FileReader();
       reader.onload = () => {
@@ -174,7 +206,11 @@ export default defineComponent({
         } else {
           data = reader.result;
         }
-        cropOption.img = data;
+        if (!isGif.value) {
+          cropOption.img = data;
+        } else {
+          gifBase64.value = data;
+        }
         if (inputRef.value) {
           inputRef.value.value = '';
         }
@@ -185,23 +221,53 @@ export default defineComponent({
       reader.readAsArrayBuffer(file);
     }
 
-    async function handleUpload() {
-      cropperRef.value.getCropData(async (data: string) => {
-        const qiniuUploadService = new QiniuUploadService();
-        const result = await qiniuUploadService.customRequestUploadHandler({
-          base64: data,
-          type: FileEnum.Image,
-          name: ''
-        });
-        if (result) {
-          emit('close', {
-            ...result
-          });
-        } else {
-          message.error('上传失败');
-        }
-        console.log(data);
+    async function uploadToQiniu(data: string) {
+      isLoading.value = true;
+      const qiniuUploadService = new QiniuUploadService();
+      const result = await qiniuUploadService.customRequestUploadHandler({
+        base64: data,
+        type: FileEnum.Image,
+        name: '',
+        provider: fileProvider.value
       });
+      if (result) {
+        emit('close', {
+          ...result
+        });
+      } else {
+        message.error('上传失败');
+      }
+      isLoading.value = false;
+    }
+
+    async function uploadFileToQiniu() {
+      isLoading.value = true;
+      const qiniuUploadService = new QiniuUploadService();
+      const result = await qiniuUploadService.customRequestUploadHandler({
+        file: domFile.value,
+        type: FileEnum.Image,
+        name: domFile.value?.name || '',
+        provider: fileProvider.value
+      });
+      if (result) {
+        emit('close', {
+          ...result
+        });
+      } else {
+        message.error('上传失败');
+      }
+      isLoading.value = false;
+    }
+
+    async function handleUpload() {
+      if (isGif.value && gifBase64.value) {
+        console.log(gifBase64.value, 'gif');
+        await uploadFileToQiniu();
+      } else {
+        cropperRef.value.getCropData(async (data: string) => {
+          await uploadToQiniu(data);
+        });
+      }
     }
 
     return {
@@ -215,13 +281,24 @@ export default defineComponent({
       inputRef,
       handleUploadImg,
       handleUpload,
-      cropperRef
+      cropperRef,
+      isLoading,
+      isGif,
+      gifBase64
     };
   }
 });
 </script>
 
 <style scoped lang="scss">
+.control-box {
+  padding-top: 10px;
+}
+
+.button-style {
+  margin-right: 10px;
+}
+
 .select-image {
   position: relative;
 

@@ -3,7 +3,7 @@
  * @date 2021/09/12
  */
 
-import type { TagModelType } from 'metagraph-constant';
+import type { PublicEntityType, TagModelType } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
@@ -18,6 +18,21 @@ export class TagApiService {
       pageSize: number;
     }, { list: TagModelType[]; total: number }>({
       apiPath: ApiPathEnum.GetTagList,
+      requestBody: params
+    });
+  }
+
+  static async update(params: {
+    entityId: string;
+    tagIds: string[];
+    entityType: PublicEntityType;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      entityId: string;
+      tagIds: string[];
+      entityType: PublicEntityType;
+    }, void>({
+      apiPath: ApiPathEnum.UpdateTag,
       requestBody: params
     });
   }

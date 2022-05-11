@@ -5,45 +5,74 @@
 import { reactive, UnwrapRef, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import { DomainResponseType } from 'metagraph-constant';
-import { RepositoryApiService, DomainNoAuthApiService } from '@/api.service';
+import { RepositoryApiService } from '@/api.service';
 
-export const domainList = reactive<{
-  target: DomainResponseType[]
-}>({
-  target: []
-});
 export const repositoryFormRef = ref();
 export interface RepositoryFormStateType {
   name: string;
   type: 'public' | 'private';
   description: string;
-  domainId: string;
+  domain: {
+    domainBaseTypeId: string;
+    domainName?: string;
+    domainId: string[];
+  }[];
   avatar?: string;
+  isAllowedClone: 'allow' | 'forbidden';
 }
 
 export const repositoryFormState: UnwrapRef<RepositoryFormStateType> = reactive({
   name: '',
   type: 'public',
   description: '',
-  domainId: '',
-  avatar: ''
+  domain: [],
+  avatar: '',
+  isAllowedClone: 'forbidden'
 });
 
 export const repositoryFormRules = {
   name: [
-    { required: true, message: '请输入仓库名称', trigger: 'blur' },
-    { min: 3, max: 15, message: '仓库名称应当在3-15个字符', trigger: 'blur' }
+    {
+      required: true,
+      message: '请输入知识库名称',
+      trigger: 'blur'
+    },
+    {
+      min: 3,
+      max: 15,
+      message: '知识库名称应当在3-15个字符',
+      trigger: 'blur'
+    }
+  ],
+  isAllowedClone: [
+    {
+      required: true,
+      message: '请选择是否允许被克隆',
+      trigger: 'change'
+    },
+  ],
+  type: [
+    {
+      required: true,
+      message: '请选择知识库类型',
+      trigger: 'change'
+    },
   ],
   description: [
-    { required: true, message: '请输入仓库描述', trigger: 'blur' },
+    {
+      required: true,
+      message: '请输入知识库描述',
+      trigger: 'blur'
+    },
   ],
-  domainId: [
-    { required: true, message: '请选择仓库领域', trigger: 'change' },
-  ],
-  // avatar: [
-  //   { required: true, message: '请上传图片', trigger: 'value' },
-  // ],
+  domain: [
+    {
+      type: 'array',
+      required: true,
+      message: '请选择知识库领域',
+      trigger: 'change'
+    },
+  ]
 };
 
 export class RepositoryEdit {
@@ -54,41 +83,58 @@ export class RepositoryEdit {
     if (result.data) {
       repositoryFormState.name = result.data.name;
       repositoryFormState.type = result.data.type;
+      repositoryFormState.domain = result.data.domain;
+      repositoryFormState.isAllowedClone = result.data.isAllowedClone ? 'allow' : 'forbidden';
       repositoryFormState.description = result.data.description || '';
     }
   }
 
   async createRepository(): Promise<void> {
     const response = await RepositoryApiService.createRepository({
-      ...repositoryFormState
+      ...repositoryFormState,
+      isAllowedClone: repositoryFormState.isAllowedClone === 'allow',
+      domain: repositoryFormState.domain
     });
     if (response.data) {
-      message.success('创建成功');
+      message.success('知识库创建成功！');
       this.router.push({
         path: '/repository/editor',
         query: {
-          repositoryEntityId: response.data.entity.id
+          repositoryEntityId: response.data.entity.id,
+          type: 'edit'
         }
-      }).then();
+      })
+        .then();
     }
   }
 
   async updateRepository(repositoryEntityId: string): Promise<void> {
     const response = await RepositoryApiService.updateRepository({
       repositoryEntityId,
-      ...repositoryFormState
+      ...repositoryFormState,
+      isAllowedClone: repositoryFormState.isAllowedClone === 'allow',
+      domain: repositoryFormState.domain
     });
     if (!response.message) {
-      message.success('更新成功');
+      message.success('知识库更新成功！');
       this.router.go(-1);
     }
   }
 
-  async getDomainTree(): Promise<void> {
-    const response = await DomainNoAuthApiService.getTree();
-    if (response.data) {
-      console.log(response.data);
-      domainList.target = response.data;
-    }
-  }
+  // async getDomainTree(domainBaseTypeId: string): Promise<void> {
+  //   const response = await DomainNoAuthApiService.getTree({ domainBaseTypeId });
+  //   if (response.data) {
+  //     console.log(response.data);
+  //     domainTree.target = response.data;
+  //   }
+  // }
+  //
+  // async getDomainBaseTypeList(): Promise<void> {
+  //   const response = await DomainNoAuthApiService.getDomainBaseTypeList();
+  //   if (response.data) {
+  //     console.log(response.data);
+  //     domainBaseTypeList.target = response.data;
+  //     domainBaseTypeId.value = domainBaseTypeList.target[0].id;
+  //   }
+  // }
 }

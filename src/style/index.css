@@ -56,7 +56,6 @@ figcaption {
     -webkit-font-smoothing: antialiased;
     outline: none;
     word-break: break-all;
-    /* 字体 element-ui */
 
     font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
@@ -146,7 +145,6 @@ body .el-table colgroup.gutter{
 th{
     padding: 0!important;
 }
-
 
 
 

@@ -6,6 +6,11 @@
 export enum MutationEnum {
   SET_IS_SPINNING = 'setIsSpinning',
 
+  SET_GUIDE_STATUS = 'setGuideStatus',
+  INIT_GUIDE_STATUS = 'initGuideStatus',
+
+  SET_SECTION_ARTICLE = 'setSectionArticle',
+
   InitKnowledgeModelData = 'initKnowledgeModelData',
 
   SET_REPOSITORY_EDITABLE = 'setRepositoryEditable',
@@ -26,6 +31,7 @@ export enum MutationEnum {
   SET_SECTION_ARTICLE_CONTENT = 'setSectionArticleContent',
   // 设置当前单元富文本的标题
   SET_SECTION_ARTICLE_TITLE = 'setSectionArticleTitle',
+  SET_SECTION_ARTICLE_HTML = 'setSectionArticleHtml',
   // 设置仓库中关联的实体
   SET_REPOSITORY_BIND_ENTITY_LIST = 'setRepositoryBindEntityList',
   // 设置当前选中的实体
@@ -39,6 +45,7 @@ export enum MutationEnum {
   INIT_GRAPH = 'initGraph',
   // user
   SET_USER_MODEL = 'setUserModel',
+  CLEAR_USER_MODEL = 'clearUserModel',
   // home-page
   SET_REPOSITORY_LIST = 'setRepositoryList',
   SET_OWN_REPOSITORY_LIST = 'setOwnRepositoryList',

@@ -6,3 +6,4 @@
 import { InjectionKey, Ref } from 'vue';
 
 export const repositoryEntityIdKey: InjectionKey<Ref<string>> = Symbol('repositoryEntityId');
+export const isEditableKey: InjectionKey<Ref<boolean>> = Symbol('isEditable');

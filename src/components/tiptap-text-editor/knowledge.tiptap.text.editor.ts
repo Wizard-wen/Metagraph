@@ -4,31 +4,34 @@
  */
 
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { JSONContent } from '@tiptap/vue-3';
 import { EditorView } from 'prosemirror-view';
 import { Range } from '@tiptap/core';
-import { message, Modal } from 'ant-design-vue';
+import { Modal } from 'ant-design-vue';
 import { createVNode } from 'vue';
-import { edges } from '@/views/knowledge-edit/model/knowledge.edit';
 import {
-  EdgeApiService,
-  KnowledgeApiService,
-  KnowledgeNoAuthApiService,
-  RepositoryNoAuthApiService
-} from '@/api.service';
+  KnowledgeEdit,
+  mentionedKnowledge, repositoryEntityList
+} from '@/views/knowledge-edit/model/knowledge.edit';
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
-  limit = 30000;
+  limit = 600;
+
+  editable = true;
+
+  private knowledgeEdit = new KnowledgeEdit();
 
   constructor(
-    private readonly repositoryEntityId: string,
-    private readonly knowledgeEntityId: string,
+    private readonly params: {
+      repositoryEntityId: string,
+      // 只有正式发布后才有entity id
+      knowledgeEntityId: string,
+      hasPublished: boolean
+    }
   ) {
     super();
   }
-
-  private repositoryEntityList?: EntityCompletelyListItemType[];
 
   handleClick(view: EditorView, pos: number, event: MouseEvent): void {
     console.log('click', view, pos, event);
@@ -37,78 +40,30 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   protected async save(params: {
     content: Record<string, any>,
     contentHtml: any
-  }): Promise<void> {
-    await this.handleSaveSectionArticle(params);
-  }
-
-  private async createEdge(params: {
-    id: string,
-    name: string
-  }): Promise<void> {
-    const result = await EdgeApiService.create({
-      originKnowledgeEntityId: params.id,
-      knowledgeEntityId: this.knowledgeEntityId,
-      targetKnowledgeEntityId: this.knowledgeEntityId,
-      edgeRepositoryEntityId: this.repositoryEntityId,
-      description: `From ${params.name}`
+  }): Promise<boolean> {
+    return this.knowledgeEdit.handleSaveSectionArticle({
+      ...params,
+      knowledgeEntityId: this.params.knowledgeEntityId
     });
-    if (!result.message) {
-      console.log('success');
-    }
-    if (result.message) {
-      message.warn(result.message);
-    }
-  }
-
-  private async getRepositoryBindList(): Promise<void> {
-    const result = await RepositoryNoAuthApiService
-      .getRepositoryBindEntityList(this.repositoryEntityId);
-    if (result.data) {
-      this.repositoryEntityList = result.data;
-    }
   }
 
   async initData(): Promise<void> {
-    await this.getRepositoryBindList();
-    this.setMentionKnowledgeList(this.repositoryEntityList ?? []);
-  }
-
-  private async findEdgesByKnowledgeEntityId(): Promise<void> {
-    const result = await KnowledgeNoAuthApiService.findEdgesByKnowledgeEntityId({
-      knowledgeEntityId: this.knowledgeEntityId,
-      repositoryEntityId: this.repositoryEntityId
-    });
-    if (result.data) {
-      edges.target = result.data;
-    }
-  }
-
-  private async handleSaveSectionArticle(params: {
-    content: Record<string, any>,
-    contentHtml: any
-  }): Promise<void> {
-    const result = await KnowledgeApiService.saveDescription({
-      description: JSON.stringify(params.content),
-      descriptionHTML: params.contentHtml,
-      entityId: this.knowledgeEntityId
-    });
-    if (!result.message) {
-      console.log('success');
-    }
+    this.setMentionKnowledgeList(repositoryEntityList.value ?? []);
   }
 
   handleMention(params: {
     name: string;
     id: string;
-    content: any;
+    content: JSONContent;
     contentHtml: string;
     range: Range
   }): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
-    const entity = edges.target?.preInnerList?.find((item) => item.entity.id === params.id);
+    const entity = mentionedKnowledge.list.find((item) => item.entity.id === params.id);
     console.log(entity, '-------- entity', params.id);
     if (entity) {
+      // 如果已经绑定了知识点，就
       that.success(params.range, {
         id: params.id,
         name: params.name
@@ -127,15 +82,23 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
           id: params.id,
           name: params.name
         });
-        const result = await that.createEdge({
+        console.log(params);
+        await that.knowledgeEdit.createDraftKnowledgeMention({
           id: params.id,
-          // 这个参数应该取消
-          name: ''
+          repositoryEntityId: that.params.repositoryEntityId,
+          knowledgeEntityId: that.params.knowledgeEntityId
         });
-        await that.findEdgesByKnowledgeEntityId();
-        await that.handleSaveSectionArticle({
+        await that.knowledgeEdit.getMentionedList(that.params.knowledgeEntityId);
+        if (that.params.hasPublished) {
+          await that.knowledgeEdit.findEdgesByKnowledgeEntityId({
+            knowledgeEntityId: that.params.knowledgeEntityId,
+            repositoryEntityId: that.params.repositoryEntityId
+          });
+        }
+        await that.knowledgeEdit.handleSaveSectionArticle({
           content: params.content,
-          contentHtml: params.contentHtml
+          contentHtml: params.contentHtml,
+          knowledgeEntityId: that.params.knowledgeEntityId
         });
       },
       async onCancel() {
@@ -143,9 +106,10 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
           id: params.id,
           name: params.name
         });
-        await that.handleSaveSectionArticle({
+        await that.knowledgeEdit.handleSaveSectionArticle({
           content: params.content,
-          contentHtml: params.contentHtml
+          contentHtml: params.contentHtml,
+          knowledgeEntityId: that.params.knowledgeEntityId
         });
       },
     });

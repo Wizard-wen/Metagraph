@@ -1,16 +1,17 @@
 <template>
-  <div class="section-article">
+  <div class="section-article" :style="{
+    height: 'calc(100vh - 56px)' }">
     <div class="bottom-message">
       <div class="limit-container">
         <article-limit
           v-if="editor"
-          :current="editor.getCharacterCount()"
+          :current="editor.storage.characterCount.characters()"
           :limit="limit"></article-limit>
       </div>
     </div>
-    <div class="article-control">
+    <div class="article-control" v-if="editable && editor
+    && sectionTree.selectedTreeSectionNodes.length">
       <section-article-control
-        v-if="editable && editor"
         :editor="editor"
         @fontSizeChange="changeArticleFontSize($event)"
         @save="saveSectionArticle"></section-article-control>
@@ -24,9 +25,11 @@
     <!--      :marks="paddingMarks"-->
     <!--      v-model:value="paddingValue"-->
     <!--      :disabled="false"/>-->
-    <div class="article-container">
-      <div class="editor-range">
+    <div class="article-container" :style="{
+    height: editable ? 'calc(100vh - 116px)' : 'calc(100vh - 60px)' }">
+      <div class="editor-range" v-if="editable && sectionTree.selectedTreeSectionNodes.length">
         <div class="editor-container"
+             ref="contentRef"
              :style="{
               width: (paddingValue[1] - paddingValue[0]) + 'px',
               left: paddingValue[0] + 'px',
@@ -34,45 +37,73 @@
             }"
              v-if="editable">
           <editor-content
+            v-if="editable && editor"
             :style="{fontSize: articleFontSize + 'px'}"
             class="tip-tap-editor" :editor="editor"/>
         </div>
       </div>
-      <div class="editor-container-view" v-if="!editable">
-        <editor-content class="tip-tap-editor" :editor="editor"/>
+      <ant-empty
+        v-if="editable && !sectionTree.selectedTreeSectionNodes.length"
+        :image="simpleImage">
+        <ant-button type="primary">创建章节</ant-button>
+      </ant-empty>
+      <div class="editor-container-view" v-if="!editable" ref="contentRef">
+        <editor-content
+          v-if="editor && sectionArticle.contentHtml" class="tip-tap-editor"
+          :editor="editor"/>
+        <ant-empty v-else :image="simpleImage"/>
       </div>
     </div>
+
+    <!--    <bubble-menu-->
+    <!--      v-if="editor"-->
+    <!--      class="bubble-menu"-->
+    <!--      :tippy-options="{ duration: 100 }"-->
+    <!--      :editor="editor"-->
+    <!--    >-->
+    <!--      <button @click="getFocusContent">get</button>-->
+    <!--      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
+    <!--        Bold-->
+    <!--      </button>-->
+    <!--      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
+    <!--        Italic-->
+    <!--      </button>-->
+    <!--      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
+    <!--        Strike-->
+    <!--      </button>-->
+    <!--    </bubble-menu>-->
   </div>
 </template>
 
 <script lang="ts">
-import tippy, { Instance } from 'tippy.js';
+
 import {
-  defineComponent, ref, computed, onUnmounted, Ref, onMounted, watch, toRef
+  defineComponent, ref, onUnmounted, onMounted, toRef, reactive, inject
 } from 'vue';
 import {
-  useEditor, EditorContent, VueRenderer, Editor
+  EditorContent,
+  // BubbleMenu,
 } from '@tiptap/vue-3';
-import { mergeAttributes } from '@tiptap/core';
-import Document from '@tiptap/extension-document';
-import Paragraph from '@tiptap/extension-paragraph';
-import Text from '@tiptap/extension-text';
-import CharacterCount from '@tiptap/extension-character-count';
-import Mention from '@tiptap/extension-mention';
-import StarterKit from '@tiptap/starter-kit';
-import { useRoute } from 'vue-router';
-import Image from '@tiptap/extension-image';
-import { ActionEnum, useStore } from '@/store';
-import MentionList from './tiptap/mention.list.vue';
-import SectionArticleControl from './section.article/section-article-control.vue';
-import ArticleLimit from './section.article/article.limit.vue';
+import { Empty, message, Button } from 'ant-design-vue';
+import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import SectionArticleControl from './section-article/section-article-control.vue';
+import ArticleLimit from './section-article/article-limit.vue';
+import {
+  sectionArticle,
+  sectionTree,
+  sectionArticleTiptapTextEditor,
+  SectionTreeService,
+} from './section-tree/section.tree';
 
 export default defineComponent({
   name: 'section-article',
   components: {
     EditorContent,
+    // BubbleMenu,
     SectionArticleControl,
-    ArticleLimit
+    ArticleLimit,
+    AntEmpty: Empty,
+    AntButton: Button
   },
   props: {
     editable: {
@@ -84,240 +115,107 @@ export default defineComponent({
       type: String
     }
   },
+  emits: ['clickMention', 'mention'],
   setup(props, context) {
-    const route = useRoute();
-    const store = useStore();
+    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const editable = toRef(props, 'editable');
-    const knowledgeList = computed(() => store.state.repositoryEditor.repositoryEntityList);
     const limit = ref(30000);
-    const timer = ref(0);
-    const articleFontSize = ref('12');
+    const articleFontSize = ref('14');
     const changeArticleFontSize = (event: { value: string }) => {
       articleFontSize.value = event.value;
     };
     const paddingValue = ref<number[]>([0, 816]);
-    const paddingFormatter = (value: number) => {
-      console.log(value);
-      return `${value}px`;
-    };
+    const paddingFormatter = (value: number) => `${value}px`;
     const paddingMarks = ref<Record<number, any>>({
-      0: { style: { left: '-20px' }, label: '0px' },
-      816: { style: { right: '0px' }, label: '816px' }
-    });
-    const articleContent = computed(() => store.state.repositoryEditor.sectionArticleContent);
-    const CustomMention = Mention.extend({
-      // addNodeView() {
-      //   return VueNodeViewRenderer(MentionView);
-      // },
-      renderHTML({ node, HTMLAttributes }) {
-        return [
-          'span',
-          mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-          `@${node.attrs.name}`
-        ];
+      0: {
+        style: { left: '-20px' },
+        label: '0px'
       },
-      addAttributes() {
-        return {
-          name: {
-            default: null,
-            parseHTML: (element) => ({ name: element.getAttribute('data-mention-name') }),
-            renderHTML: (attributes) => {
-              if (!attributes.name) {
-                return {};
-              }
-              return {
-                'data-mention-name': attributes.name,
-              };
-            },
-          },
-          id: {
-            default: null,
-            parseHTML: (element) => ({
-              id: element.getAttribute('data-mention-id'),
-            }),
-            renderHTML: (attributes) => {
-              if (!attributes.id) {
-                return {};
-              }
-              return {
-                'data-mention-id': attributes.id,
-              };
-            },
-          },
-        };
-      },
+      816: {
+        style: { right: '0px' },
+        label: '816px'
+      }
     });
-    const editor: Ref<Editor | undefined> = useEditor({
-      editable: editable.value,
-      content: articleContent.value,
-      editorProps: {
-        handleClick: (view, pos, event) => {
-          console.log(view, pos, event);
-          context.emit('clickMention');
-          return true;
-        },
-        // handleKeyDown(view, event) {
-        //   console.log(view, event);
-        //   return true;
-        // }
-      },
-      extensions: [
-        Document,
-        Paragraph,
-        StarterKit,
-        Image,
-        Text,
-        CharacterCount.configure({
-          limit: limit.value,
-        }),
-        CustomMention.configure({
-          HTMLAttributes: {
-            class: 'mention',
-          },
-          suggestion: {
-            items: () => knowledgeList.value,
-            render: () => {
-              let component: VueRenderer;
-              let popup: Instance[];
-              return {
-                // eslint-disable-next-line no-shadow
-                onStart: (props) => {
-                  if (editor.value) {
-                    component = new VueRenderer(MentionList, {
-                      editor: editor.value,
-                      props,
-                    });
-                  }
-                  popup = tippy('body', {
-                    getReferenceClientRect: props.clientRect,
-                    appendTo: () => document.body,
-                    content: component.element,
-                    showOnCreate: true,
-                    interactive: true,
-                    trigger: 'manual',
-                    placement: 'bottom-start',
-                  });
-                },
-                // eslint-disable-next-line no-shadow
-                onUpdate(props) {
-                  component.updateProps(props);
-                  popup[0].setProps({
-                    getReferenceClientRect: props.clientRect,
-                  });
-                },
-                // eslint-disable-next-line no-shadow
-                onKeyDown(props) {
-                  return component.ref?.onKeyDown(props);
-                },
-                onExit() {
-                  popup[0].destroy();
-                  component.destroy();
-                },
-              };
-            },
-            // eslint-disable-next-line no-shadow
-            command: ({ editor, range, props }) => {
-              // console.log(editor.getJSON());
-              context.emit('mention', {
-                name: props.name,
-                id: props.id,
-                content: editor.getJSON(),
-                contentHtml: editor.getHTML(),
-                success() {
-                  console.log('success');
-                  editor
-                    .chain()
-                    .focus()
-                    .insertContentAt(range, [
-                      {
-                        type: 'mention',
-                        attrs: { name: props.name, id: props.id }
-                      },
-                      {
-                        type: 'text',
-                        text: ' ',
-                      },
-                    ])
-                    .run();
-                  return editor.getJSON();
-                },
-                fail() {
-                  editor
-                    .chain()
-                    .focus()
-                    .insertContentAt(range, [
-                      {
-                        type: 'text',
-                        text: props.name,
-                      },
-                    ])
-                    .run();
-                  return editor.getJSON();
-                }
-              });
-            },
-          },
-        })
-      ]
+    const contentRef = ref<Element>();
+    const mentionKnowledge = reactive<{
+      id: string;
+      name: string;
+    }>({
+      id: '',
+      name: ''
     });
-    onMounted(async () => {
-      await store.dispatch(ActionEnum.GET_REPOSITORY_BIND_ENTITY_LIST, {
-        repositoryEntityId: route.query.repositoryEntityId
-      });
-      // 定时存储文章
-      timer.value = window.setInterval(() => {
-        context.emit('saveSectionArticle', {
-          content: editor.value?.getJSON(),
-          contentHtml: editor.value?.getHTML()
+    SectionTreeService.initEditor(repositoryEntityId.value, editable.value);
+    const editor = sectionArticleTiptapTextEditor?.editor;
+
+    function getFocusContent() {
+      console.log(editor?.value?.chain()
+        .focus());
+      const node = editor?.value?.state;
+      console.log(node);
+    }
+
+    async function handleClickMentionItem(event: Event) {
+      console.log('click');
+      const target = event?.target as HTMLSpanElement;
+      if (target?.dataset?.mentionId && target?.dataset?.mentionName) {
+        mentionKnowledge.id = target.dataset.mentionId;
+        mentionKnowledge.name = target.dataset.mentionName;
+        context.emit('clickMention', {
+          id: target.dataset.mentionId,
+          name: target.dataset.mentionName
         });
-        // editor.value?.commands.focus();
-      }, 10000);
+      }
+    }
+
+    // 存储单元文章
+    const saveSectionArticle = async () => {
+      if (editor?.value) {
+        const result = await sectionArticleTiptapTextEditor?.saveContent({
+          content: editor.value.getJSON(),
+          contentHtml: editor.value.getHTML()
+        });
+        if (result) {
+          message.success('保存成功！');
+        }
+      }
+    };
+
+    onMounted(async () => {
+      if (contentRef.value) {
+        console.log('bind');
+        contentRef.value?.addEventListener('click', handleClickMentionItem);
+      }
     });
     onUnmounted(() => {
-      // 清除定时器
-      if (timer.value) {
-        window.clearInterval(timer.value);
+      if (contentRef.value) {
+        contentRef.value?.removeEventListener('click', handleClickMentionItem);
       }
-      context.emit('saveSectionArticle', {
-        content: editor.value?.getJSON(),
-        contentHtml: editor.value?.getHTML()
-      });
-      editor.value?.destroy();
+      sectionArticleTiptapTextEditor?.destroy();
     });
-    // 更新article
-    watch(articleContent, (newValue) => {
-      console.log(newValue, 'article changed');
-      editor.value?.commands.setContent(newValue);
-    });
-    // 是否可编辑
-    watch(editable, (newValue) => {
-      editor.value?.setEditable(newValue);
-    });
-    // 存储单元文章
-    const saveSectionArticle = () => {
-      context.emit('saveSectionArticle', {
-        content: editor.value?.getJSON(),
-        contentHtml: editor.value?.getHTML()
-      });
-    };
 
     return {
       editor,
+      sectionArticleTiptapTextEditor,
       limit,
       saveSectionArticle,
       changeArticleFontSize,
       articleFontSize,
       paddingValue,
       paddingFormatter,
-      paddingMarks
+      paddingMarks,
+      sectionArticle,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      contentRef,
+      sectionTree,
+      getFocusContent
     };
   }
 });
 </script>
 
 <style lang="scss" scoped>
-@import "../../style/common";
-/* Basic editor styles */
+@import "../../style/common.scss";
+@import "../../style/tiptap.common.scss";
 
 .mention {
   color: #A975FF;
@@ -352,84 +250,32 @@ export default defineComponent({
   }
 
   .article-control {
-    //width: 100%;
-    //height: 46px;
-    //position: absolute;
-    //top: 0;
     padding-bottom: 15px;
   }
 
   .article-container {
-    height: calc(100vh - 116px);
     overflow-y: auto;
-    //padding-top: 15px;
 
     .editor-range {
       position: relative;
       width: 816px;
       min-height: 100%;
       margin: 0 auto;
-    }
 
-    .editor-container {
-      position: absolute;
-      width: 100%;
-      background: #fff;
-
-      .tip-tap-editor {
-        & ::v-deep(.ProseMirror) {
-          text-indent: 10px;
-          outline: none;
-          padding: 20px;
-          //min-height: 1000px;
-
-          > * + * {
-            margin-top: 0.75em;
-          }
-
-          h1, h2, h3, h4, h5, h6 {
-            line-height: 1.1;
-          }
-
-          .mention {
-            color: #A975FF;
-            cursor: pointer;
-            background-color: rgba(#A975FF, 0.1);
-            border-radius: 0.3rem;
-            padding: 0.1rem 0.3rem;
-          }
-        }
+      .editor-container {
+        position: absolute;
+        min-height: 500px;
+        width: 100%;
+        background: #fff;
       }
     }
 
     .editor-container-view {
       width: 816px;
       margin: 0 auto;
-      background: #fff;
-
-      .tip-tap-editor {
-        & ::v-deep(.ProseMirror) {
-          text-indent: 10px;
-          outline: none;
-          padding: 20px;
-
-          > * + * {
-            margin-top: 0.75em;
-          }
-
-          h1, h2, h3, h4, h5, h6 {
-            line-height: 1.1;
-          }
-
-          .mention {
-            color: #A975FF;
-            cursor: pointer;
-            background-color: rgba(#A975FF, 0.1);
-            border-radius: 0.3rem;
-            padding: 0.1rem 0.3rem;
-          }
-        }
-      }
+      min-height: 100%;
+      padding-top: 50px;
+      //background: #fff;
     }
 
     .comment-content {
