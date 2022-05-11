@@ -5,13 +5,17 @@
 
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { message, Modal } from 'ant-design-vue';
-import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
+import {
+  EntityCompletelyListItemType,
+  KnowledgeModelType,
+  RepositoryModelType
+} from 'metagraph-constant';
 import {
   reactive, createVNode, computed, ref
 } from 'vue';
 import { ActionEnum, store } from '@/store';
 import {
-  EntityNoAuthApiService, RepositoryApiService,
+  EntityNoAuthApiService, KnowledgeApiService, RepositoryApiService,
   RepositoryNoAuthApiService,
   SectionApiService
 } from '@/api.service';
@@ -28,13 +32,6 @@ type AlternativeType = {
   createdAt: Date;
 }
 export const isRepositoryEditorLoading = ref(false);
-export const knowledgeDrawer = reactive<{
-  isShow: boolean,
-  entityId: string
-}>({
-  isShow: false,
-  entityId: ''
-});
 
 export interface RepositoryEditorInterface {
   getRepositoryByEntityId(repositoryEntityId: string): Promise<void>
@@ -56,12 +53,14 @@ export const sectionEntityId = computed(() => {
   }
   return undefined;
 });
-
+// 常规绑定的实体
 export const repositoryBindEntityList = reactive<{
   target: EntityCompletelyListItemType[]
 }>({
   target: []
 });
+// 用户的未发布草稿知识点
+export const unpublishedDraftKnowledgeList = ref<EntityCompletelyListItemType[]>();
 
 export const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
 
@@ -72,6 +71,14 @@ export class RepositoryEditor implements RepositoryEditorInterface {
     });
     if (response.data) {
       repositoryModel.target = response.data;
+    }
+  }
+
+  async getRepositoryBindEntityList(repositoryEntityId: string): Promise<void> {
+    const result = await RepositoryNoAuthApiService
+      .getRepositoryBindEntityList(repositoryEntityId);
+    if (result.data) {
+      repositoryBindEntityList.target = result.data;
     }
   }
 
@@ -88,11 +95,10 @@ export class RepositoryEditor implements RepositoryEditorInterface {
     return undefined;
   }
 
-  async getRepositoryBindEntityList(repositoryEntityId: string): Promise<void> {
-    const result = await RepositoryNoAuthApiService
-      .getRepositoryBindEntityList(repositoryEntityId);
+  async getOwnDraftKnowledgeList(repositoryEntityId: string): Promise<void> {
+    const result = await KnowledgeApiService.GetOwnDraftKnowledgeList({ repositoryEntityId });
     if (result.data) {
-      repositoryBindEntityList.target = result.data;
+      unpublishedDraftKnowledgeList.value = result.data;
     }
   }
 

@@ -14,27 +14,38 @@
     </div>
     <div class="content">
       <ant-form
-        class="custom-form"
-        ref="formRef"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol">
-        <ant-form-item
-          class="form-item-custom"
-          v-bind="customFieldsValidateInfo[item.key]"
-          v-for="item in customFields.target"
-          :key="item.key"
-          :label="item.label"
-          :name="item.key">
-          <ant-input
-            :ref="item.key"
-            v-model:value="customFieldsModelRef[item.key]"
-            @blur="customFieldsValidate(item.key, { trigger: 'blur' }).catch(() => {})"
-            :placeholder="`请输入${item.label}`"
-            style="width: 80%; margin-right: 8px"/>
-          <MinusCircleOutlined
-            class="dynamic-delete-button"
-            @click="removeField(item)"/>
-        </ant-form-item>
+        ref="formRef">
+        <ant-row>
+          <ant-col
+            :span="item.grid * 12"
+            v-for="item in knowledgeCustomFields"
+            :key="item.key"
+            v-bind="customFieldsValidateInfo[item.key]">
+            <ant-form-item
+              class="custom-form-item"
+              :label="item.label"
+              :name="item.key">
+              <ant-date-picker
+                v-model:value="customFieldsModelRef[item.key]"
+                style="width: 80%; margin-right: 8px"
+                v-if="item.type === 'Date'"/>
+              <ant-input
+                v-if="item.type === 'Input'"
+                v-model:value="customFieldsModelRef[item.key]"
+                :placeholder="`请输入${item.label}`"
+                style="width: 80%; margin-right: 8px"/>
+              <ant-text-area
+                v-if="item.type === 'Textarea'"
+                v-model:value="customFieldsModelRef[item.key]"
+                :placeholder="`请输入${item.label}`"
+                style="max-width: calc(100% - 60px); margin-right: 8px"></ant-text-area>
+              <MinusCircleOutlined
+                style="font-size: 16px"
+                class="dynamic-delete-button"
+                @click="removeField(item)"/>
+            </ant-form-item>
+          </ant-col>
+        </ant-row>
       </ant-form>
     </div>
   </div>
@@ -46,30 +57,29 @@
 <script lang="ts">
 import { ExclamationCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import {
-  message, Form, Modal, Input, Button
+  message, Form, Modal, Input, Button, DatePicker, Row, Col
 } from 'ant-design-vue';
+import type { KnowledgeCustomFieldType } from 'metagraph-constant';
 import {
   defineComponent, ref, inject, createVNode
 } from 'vue';
-import {
-  KnowledgeEdit,
-  knowledgeEntityIdInjectKey,
-  customFields,
-  CustomFieldType, customFieldsModelRef, customFieldsValidateInfo,
-  customFieldsValidate
-} from './model/knowledge.edit';
 import { KnowledgeApiService } from '@/api.service';
 import AddFieldModal from '@/views/knowledge-edit/knowledge-custom-fields/add-field-modal.vue';
+import {
+  KnowledgeEdit,
+  draftKnowledgeEntityIdInjectKey,
+  knowledgeCustomFields, customFieldsValidateInfo,
+  customFieldsModelRef, customFieldsRulesRef
+} from './model/knowledge.edit';
 
-const { useForm } = Form;
 export default defineComponent({
   name: 'knowledge-custom-fields',
   setup() {
     const knowledgeEdit = new KnowledgeEdit();
-    const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
+    const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey);
     const formRef = ref();
 
-    async function removeField(item: CustomFieldType) {
+    async function removeField(item: KnowledgeCustomFieldType) {
       Modal.confirm({
         title: '确定删除自定义字段吗?',
         okText: '确定',
@@ -79,11 +89,11 @@ export default defineComponent({
         content: `该操作不可逆，确定删除自定义字段${item.label}吗？`,
         async onOk() {
           const result = await KnowledgeApiService.removeField({
-            knowledgeEntityId: knowledgeEntityId?.value || '',
+            knowledgeEntityId: draftKnowledgeEntityId?.value || '',
             customFieldKey: item.key
           });
           if (result.code === 0) {
-            await knowledgeEdit.getKnowledge(knowledgeEntityId?.value || '');
+            await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value || '');
             message.success('删除成功！');
           }
         },
@@ -101,39 +111,44 @@ export default defineComponent({
 
     async function handleAddFieldModalClose() {
       isFieldModalVisible.value = false;
-      await knowledgeEdit.getKnowledge(knowledgeEntityId?.value || '');
+      await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value || '');
     }
 
     async function handleSaveCustomField() {
-      Object.keys(customFieldsModelRef)
-        .forEach((item) => {
-          const customFieldItem = customFields.target.find(
-            (customFieldItem) => customFieldItem.key === item
-          )!;
-          customFieldItem.value = customFieldsModelRef[item];
+      const { validate } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
+      // Object.keys(customFieldsModelRef)
+      //   .forEach((item) => {
+      //     const customFieldItem = knowledgeCustomFields.value.find(
+      //       (customFieldItem) => customFieldItem.key === item
+      //     )!;
+      //     customFieldItem.value = customFieldsModelRef[item];
+      //   });
+      validate()
+        .then(async () => {
+          const result = await KnowledgeApiService.saveFields({
+            knowledgeEntityId: draftKnowledgeEntityId?.value || '',
+            customFields: knowledgeCustomFields.value
+          });
+          console.log(result);
+          if (result.code === 0) {
+            message.success('保存成功！');
+          }
+        })
+        .catch((err) => {
+          console.log('error', err);
         });
-      const result = await KnowledgeApiService.saveFields({
-        knowledgeEntityId: knowledgeEntityId?.value || '',
-        customFields: customFields.target
-      });
-      if (result.code === 0) {
-        message.success('保存成功！');
-      }
     }
 
     return {
       formRef,
       removeField,
       handleOpenAddFieldModal,
-      labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
       isFieldModalVisible,
       handleAddFieldModalClose,
       handleSaveCustomField,
-      customFields,
+      knowledgeCustomFields,
       customFieldsValidateInfo,
-      customFieldsModelRef,
-      customFieldsValidate
+      customFieldsModelRef
     };
   },
   components: {
@@ -143,7 +158,11 @@ export default defineComponent({
     AntForm: Form,
     AntFormItem: Form.Item,
     AntButton: Button,
-    AntInput: Input
+    AntInput: Input,
+    AntTextArea: Input.TextArea,
+    AntDatePicker: DatePicker,
+    AntRow: Row,
+    AntCol: Col
   },
 });
 </script>
@@ -168,7 +187,7 @@ export default defineComponent({
     border-bottom: 1px solid $borderColor;
 
     .title {
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .right {
@@ -182,13 +201,9 @@ export default defineComponent({
   }
 }
 
-.custom-form {
-  display: grid;
-  width: 100%;
-  grid-template-columns: 1fr 1fr;
-
-  .form-item-custom {
-    //width: 50%;
+.custom-form-item {
+  &::v-deep(.ant-form-item-label) {
+    width: 100px;
   }
 
 }

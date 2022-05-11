@@ -1,10 +1,13 @@
 <template>
   <div class="bind-panel">
-    <ant-collapse accordion :defaultActiveKey="'1'">
+    <ant-collapse
+      v-if="knowledgeEdges.target"
+      accordion
+      :defaultActiveKey="'1'">
       <ant-collapse-panel key="1" header="知识库内前置知识点">
         <div class="card-content">
           <div
-            v-for="(item, index) in edges.target.preInnerList"
+            v-for="(item, index) in knowledgeEdges.target.preInnerList"
             :key="index"
             data-type="rect"
             class="dnd-rect">
@@ -15,7 +18,7 @@
       <ant-collapse-panel key="2" header="知识库外前置知识点" :disabled="false">
         <div class="card-content">
           <div
-            v-for="(item, index) in edges.target.preOuterList"
+            v-for="(item, index) in knowledgeEdges.target.preOuterList"
             :key="index"
             data-type="rect"
             class="dnd-rect">
@@ -26,7 +29,7 @@
       <ant-collapse-panel key="3" header="知识库内导出知识点">
         <div class="card-content">
           <div
-            v-for="(item, index) in edges.target.extendInnerList"
+            v-for="(item, index) in knowledgeEdges.target.extendInnerList"
             :key="index"
             data-type="rect"
             class="dnd-rect">
@@ -36,7 +39,7 @@
       </ant-collapse-panel>
       <ant-collapse-panel key="4" header="知识库外导出知识点">
         <div
-          v-for="(item, index) in edges.target.extendOuterList"
+          v-for="(item, index) in knowledgeEdges.target.extendOuterList"
           :key="index"
           data-type="rect"
           class="dnd-rect">
@@ -44,17 +47,19 @@
         </div>
       </ant-collapse-panel>
     </ant-collapse>
+    <ant-empty v-else></ant-empty>
   </div>
 </template>
 
 <script lang="ts">
-import { Collapse } from 'ant-design-vue';
+import { Collapse, Empty } from 'ant-design-vue';
 import { ref, defineComponent } from 'vue';
-import { edges } from './model/knowledge.edit';
+import { knowledgeEdges } from './model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-edges-panel',
   components: {
+    AntEmpty: Empty,
     AntCollapse: Collapse,
     AntCollapsePanel: Collapse.Panel
   },
@@ -62,7 +67,7 @@ export default defineComponent({
     const isInnerPre = ref(false);
     const isOuterPre = ref(false);
     return {
-      edges,
+      knowledgeEdges,
       isOuterPre,
       isInnerPre
     };
@@ -73,24 +78,24 @@ export default defineComponent({
 <style scoped lang="scss">
 @import '../../style/common';
 
-.card-content {
-  height: 100%;
-  overflow: scroll;
-}
-
-.dnd-rect {
-  width: calc(100% - 6px);
-  height: 40px;
-  border: 1px solid $borderColor;
-  text-align: center;
-  line-height: 40px;
-  margin: 3px auto;
-  cursor: pointer;
-}
-
 .bind-panel {
   width: 100%;
   height: calc(100vh - 55px);
+
+  .card-content {
+    height: 100%;
+    overflow: scroll;
+
+    .dnd-rect {
+      width: calc(100% - 6px);
+      height: 40px;
+      border: 1px solid $borderColor;
+      text-align: center;
+      line-height: 40px;
+      margin: 3px auto;
+      cursor: pointer;
+    }
+  }
 }
 
 .knowledge-connection {

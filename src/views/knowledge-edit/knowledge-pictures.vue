@@ -6,7 +6,8 @@
     </div>
     <div class="content">
       <qiniu-upload-image-list
-        :modelValue="knowledgePictures.target"
+        @remove="handleRemovePicture($event)"
+        :modelValue="knowledgePictures"
         @update:modelValue="handlePicturesChange($event)"></qiniu-upload-image-list>
     </div>
   </div>
@@ -15,18 +16,10 @@
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue';
 import QiniuUploadImageList from '@/components/upload/qiniu-upload-image-list.vue';
-import { KnowledgeEdit, knowledgePictures, knowledgeEntityIdInjectKey } from './model/knowledge.edit';
-
-interface FileItem {
-  uid: string;
-  name?: string;
-  status?: string;
-  response?: string;
-  percent?: number;
-  url?: string;
-  preview?: string;
-  originFileObj?: any;
-}
+import type {
+  KnowledgePicturesFrontendType
+} from '@/views/knowledge-edit/model/knowledge.edit.type';
+import { KnowledgeEdit, knowledgePictures, draftKnowledgeEntityIdInjectKey } from './model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-pictures',
@@ -35,18 +28,28 @@ export default defineComponent({
   },
   setup() {
     const knowledgeEdit = new KnowledgeEdit();
-    const knowledgeEntityId = inject(knowledgeEntityIdInjectKey, ref(''));
+    const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
 
-    async function handlePicturesChange(events: any[]) {
-      knowledgePictures.target = events;
-      await knowledgeEdit.updateKnowledge(knowledgeEntityId.value, {
+    async function handlePicturesChange(events: KnowledgePicturesFrontendType[]) {
+      knowledgePictures.value = events;
+      await knowledgeEdit.updateDraftKnowledge(knowledgeEntityId.value, {
         pictures: events
       });
+      await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
+    }
+
+    async function handleRemovePicture(item: KnowledgePicturesFrontendType) {
+      await knowledgeEdit.removeKnowledgePicture({
+        knowledgeEntityId: knowledgeEntityId.value,
+        fileKey: item.fileKey
+      });
+      await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
     }
 
     return {
       knowledgePictures,
-      handlePicturesChange
+      handlePicturesChange,
+      handleRemovePicture
     };
   },
 });
@@ -74,7 +77,7 @@ export default defineComponent({
     border-bottom: 1px solid $borderColor;
 
     .title {
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .right {

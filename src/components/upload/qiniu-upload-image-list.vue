@@ -5,6 +5,7 @@
       list-type="picture-card"
       :file-list="modelValue"
       @preview="handlePreview"
+      :remove="handleRemove"
       :before-upload="beforeUpload"
       :custom-request="handleCustomRequest">
       <div v-if="modelValue.length < 8">
@@ -19,39 +20,14 @@
 </template>
 
 <script lang="ts">
-import { PlusOutlined } from '@ant-design/icons-vue';
+import { QiniuUploadService } from '@/service/qiniu.upload.service';
+import { KnowledgePicturesFrontendType } from '@/views/knowledge-edit/model/knowledge.edit.type';
+import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message, Modal, Upload } from 'ant-design-vue';
 import { FileEnum } from 'metagraph-constant';
-import * as qiniu from 'qiniu-js';
 import {
-  defineComponent, ref, PropType, toRef
+  defineComponent, ref, PropType, toRef, createVNode
 } from 'vue';
-import { FileApiService } from '@/api.service';
-
-function getBase64(file: File) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-}
-
-interface FileItem {
-  uid: string;
-  name?: string;
-  status?: string;
-  response?: string;
-  percent?: number;
-  url: string;
-  preview?: string;
-  originFileObj?: any;
-}
-
-interface FileInfo {
-  file: FileItem;
-  fileList: FileItem[];
-}
 
 export default defineComponent({
   name: 'qiniu-upload-image-list',
@@ -62,10 +38,10 @@ export default defineComponent({
   },
   props: {
     modelValue: {
-      type: Array as PropType<FileItem[]>
+      type: Array as PropType<KnowledgePicturesFrontendType[]>
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'remove'],
   setup(props, context) {
     const previewVisible = ref<boolean>(false);
     const previewImage = ref<string | undefined>('');
@@ -74,15 +50,13 @@ export default defineComponent({
     const handleCancel = () => {
       previewVisible.value = false;
     };
-    const handlePreview = async (file: FileItem) => {
-      if (!file.url && !file.preview) {
-        file.preview = (await getBase64(file.originFileObj)) as string;
-      }
-      previewImage.value = file.url || file.preview;
+    const handlePreview = async (file: KnowledgePicturesFrontendType) => {
+      console.log(file, '===preview');
+      previewImage.value = file.url;
       previewVisible.value = true;
     };
 
-    const beforeUpload = (file: any) => {
+    const beforeUpload = (file: File) => {
       const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
       if (!isJpgOrPng) {
         message.error('You can only upload JPG file!');
@@ -94,56 +68,49 @@ export default defineComponent({
       return isJpgOrPng && isLt2M;
     };
 
-    const customRequestUploadHandler = async (params: {
-      file: File,
-      name: string;
-      type: FileEnum
-    }) => {
-      const result: {
-        data?: {
-          key: string;
-          uploadToken: string;
-        };
-        message?: string;
-      } = await FileApiService.getCredential({
-        name: params.name,
-        type: params.type
-      });
-      const tokenForUploading = result.data;
-      if (tokenForUploading === undefined) {
-        return;
-      }
-      const observer = {
-        complete(response: { key: string; url: string; }) {
-          message.success('上传成功！');
-          context.emit('update:modelValue', [
-            ...(fileList.value || []),
-            {
-              uid: new Date().getTime()
-                .toString(),
-              url: response.url
-            }
-          ]);
-        }
-      };
-      await qiniu
-        .upload(
-          params.file,
-          tokenForUploading.key,
-          tokenForUploading.uploadToken
-        )
-        .subscribe(observer);
-    };
-
-    const handleCustomRequest = (option: any) => {
+    async function handleCustomRequest(option: any) {
       console.log(option);
       const file = option.file as File;
-      customRequestUploadHandler({
+      const qiniuUploadService = new QiniuUploadService();
+      const result = await qiniuUploadService.customRequestUploadHandler({
         name: file.name,
         file,
-        type: file.type.split('/')[1] as FileEnum
+        type: file.type.split('/')[1] as FileEnum,
+        provider: 'KnowledgePictures'
       });
-    };
+      if (result) {
+        message.success('上传成功！');
+        context.emit('update:modelValue', [
+          ...(fileList.value || []),
+          {
+            uid: new Date().getTime()
+              .toString(),
+            url: result.url,
+            fileKey: result.key
+          }
+        ]);
+      } else {
+        message.error('上传失败！');
+      }
+    }
+
+    function handleRemove(item: KnowledgePicturesFrontendType) {
+      console.log(item);
+      Modal.confirm({
+        title: '删除图片',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '确定删除该图片吗?',
+        okText: '确定',
+        cancelText: '取消',
+        async onOk() {
+          context.emit('remove', item);
+        },
+        onCancel() {
+          message.info('取消删除！');
+        }
+      });
+      return true;
+    }
 
     return {
       previewVisible,
@@ -151,7 +118,8 @@ export default defineComponent({
       handleCancel,
       handlePreview,
       handleCustomRequest,
-      beforeUpload
+      beforeUpload,
+      handleRemove
     };
   },
 });

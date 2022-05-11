@@ -21,7 +21,7 @@ import { Editor } from '@tiptap/vue-3';
 import { defineProps, PropType, ref } from 'vue';
 import { FindIcon } from '@/components/icons';
 import CreateBindKnowledgeModal
-  from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
+  from '@/views/repository-editor/right-sidebar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 
 const props = defineProps({
   editor: {

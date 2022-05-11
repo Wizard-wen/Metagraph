@@ -8,7 +8,7 @@ import * as AntvX6 from '@antv/x6';
 import { message, Modal } from 'ant-design-vue';
 import {
   EntityCompletelyListItemType,
-  ExerciseModelType, KnowledgeEdgeModelType,
+  ExerciseModelType, KnowledgeEdgeInEdgeGroupType, KnowledgeEdgeModelType,
   KnowledgeModelType
 } from 'metagraph-constant';
 import { createVNode, reactive, ref } from 'vue';
@@ -25,16 +25,19 @@ import {
 } from '@/api.service';
 import { RepositoryEditor } from '../repository-editor';
 
+type CustomEdgeType = {
+  isInnerRepository: boolean;
+} & KnowledgeEdgeInEdgeGroupType;
 export const isKnowledgeRelationLoading = ref(false);
-export const knowledgeInEdgeList = ref<EntityCompletelyListItemType[]>([]);
+export const knowledgeInEdgeList = ref<KnowledgeEdgeInEdgeGroupType[]>([]);
 export const isModalVisible = ref(false);
 export const selectedGraphNodeEntityId = ref();
 export const entityRelationEdges = reactive<{
   entity?: EntityCompletelyListItemType,
-  preInnerList: EntityCompletelyListItemType[],
-  preOuterList: EntityCompletelyListItemType[],
-  extendInnerList: EntityCompletelyListItemType[],
-  extendOuterList: EntityCompletelyListItemType[]
+  preInnerList: CustomEdgeType[],
+  preOuterList: CustomEdgeType[],
+  extendInnerList: CustomEdgeType[],
+  extendOuterList: CustomEdgeType[]
 }>({
   entity: undefined,
   preInnerList: [],
@@ -239,7 +242,7 @@ export class KnowledgeGraphData {
     knowledgeEntityId: string,
     repositoryEntityId: string
   ): Promise<void> {
-    const result = await KnowledgeNoAuthApiService.findEdgesByKnowledgeEntityId({
+    const result = await KnowledgeNoAuthApiService.getEdgesByKnowledgeEntityId({
       knowledgeEntityId,
       repositoryEntityId
     });
@@ -247,10 +250,22 @@ export class KnowledgeGraphData {
       return;
     }
     entityRelationEdges.entity = result.data.entity;
-    entityRelationEdges.extendInnerList = result.data.extendInnerList;
-    entityRelationEdges.extendOuterList = result.data.extendOuterList;
-    entityRelationEdges.preInnerList = result.data.preInnerList;
-    entityRelationEdges.preOuterList = result.data.preOuterList;
+    entityRelationEdges.extendInnerList = result.data.extendInnerList.map(item => ({
+      ...item,
+      isInnerRepository: true
+    }));
+    entityRelationEdges.extendOuterList = result.data.extendOuterList.map(item => ({
+      ...item,
+      isInnerRepository: false
+    }));
+    entityRelationEdges.preInnerList = result.data.preInnerList.map(item => ({
+      ...item,
+      isInnerRepository: true
+    }));
+    entityRelationEdges.preOuterList = result.data.preOuterList.map(item => ({
+      ...item,
+      isInnerRepository: false
+    }));
   }
 
   private initNodeMovedEventHandler(repositoryEntityId: string) {

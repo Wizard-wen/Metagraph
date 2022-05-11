@@ -91,13 +91,13 @@ export default defineComponent({
       await router.push('/repository/edit');
     };
     const goRepositoryEditorPage = async (item: EntityCompletelyListItemType) => {
-      await router.push({
+      router.push({
         name: 'RepositoryEditor',
         query: {
           repositoryEntityId: item.entity.id,
           type: 'edit'
         }
-      });
+      }).then();
     };
     return {
       goCreateRepositoryPage,

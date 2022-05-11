@@ -7,10 +7,9 @@ import { Graph, Tooltip } from '@antv/g6';
 import * as AntvG6 from '@antv/g6';
 import {
   EntityCompletelyListItemType,
-  KnowledgeEdgeModelType, KnowledgeModelType,
+  KnowledgeEdgeModelType, KnowledgeModelType,KnowledgeResponseType,
   RepositoryModelType
 } from 'metagraph-constant';
-import { KnowledgeResponseType } from 'metagraph-constant/dist/module/knowledge/knowledge.type';
 import { reactive, ref } from 'vue';
 import {
   EdgeNoAuthApiService, EntityNoAuthApiService, KnowledgeNoAuthApiService,

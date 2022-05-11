@@ -47,6 +47,7 @@
       <ant-form-item label="头像" ref="formIconRef" name="avatar">
         <upload-form-item
           :image-type="'avatar'"
+          :provider="'UserAvatar'"
           :title="'上传头像'" v-model="signUpFormState.avatar"></upload-form-item>
       </ant-form-item>
       <ant-form-item label="账号类型" ref="type" name="type">

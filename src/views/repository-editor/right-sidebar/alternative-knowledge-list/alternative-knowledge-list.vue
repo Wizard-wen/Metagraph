@@ -58,7 +58,7 @@ import {
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import CreateOrBindKnowledgeModal
-  from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
+  from '@/views/repository-editor/right-sidebar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 import ParseWordModal from '@/views/repository-editor/section-article/parse-word-modal.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { CreateIcon, DeleteIcon, UploadIcon } from '@/components/icons';
@@ -91,7 +91,8 @@ export default defineComponent({
       isShow: false,
       searchText: ''
     });
-const isParseWordModalShow = ref(false);
+    const isParseWordModalShow = ref(false);
+
     function startLoading() {
       isLoading.value = true;
     }

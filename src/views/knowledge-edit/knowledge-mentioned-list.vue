@@ -2,10 +2,10 @@
   <div class="bind-panel">
     <div class="knowledge-connection">
       <div class="title">引用的知识点</div>
-      <div class="content" v-if="edges?.target?.preInnerList.length">
+      <div class="content" v-if="mentionedKnowledge.list.length">
         <div
           class="content-item"
-          v-for="item in edges.target.preInnerList">
+          v-for="item in mentionedKnowledge.list">
           {{ item.content.name }}
           <div class="control-right">
             <EyeOutlined @click="showKnowledgeDrawer(item)"/>
@@ -24,16 +24,17 @@ import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { createVNode, inject, ref } from 'vue';
 import { DeleteIcon } from '@/components/icons';
 import { EdgeApiService } from '@/api.service';
+import { knowledgeDrawerState } from '@/business';
 import {
-  edges,
-  knowledgeDrawer,
+  knowledgeEdges,
+  mentionedKnowledge,
   KnowledgeEdit,
-  knowledgeEntityIdInjectKey,
+  draftKnowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
 } from './model/knowledge.edit';
 
 const repositoryEntityId = inject(repositoryEntityIdInjectKey, ref(''));
-const knowledgeEntityId = inject(knowledgeEntityIdInjectKey, ref(''));
+const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
 
 /**
  * 功能需求
@@ -60,27 +61,20 @@ function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string 
     okText: '确定',
     cancelText: '取消',
     async onOk() {
-      const result = await EdgeApiService.remove({
-        edgeId: item.edgeId,
-        edgeRepositoryEntityId: repositoryEntityId.value
-      });
-      if (result.data) {
-        message.success('解绑成功！');
-        await knowledgeEdit.findEdgesByKnowledgeEntityId({
-          knowledgeEntityId: knowledgeEntityId.value,
-          repositoryEntityId: repositoryEntityId.value
-        });
-      }
+      await knowledgeEdit.removeMentionKnowledge(
+        knowledgeEntityId.value,
+        item.entity.id
+      );
     },
     onCancel() {
-      // todo
+      message.info('取消解绑！');
     },
   });
 }
 
 function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
-  knowledgeDrawer.entityId = item.entity.id;
-  knowledgeDrawer.isShow = true;
+  knowledgeDrawerState.entityId = item.entity.id;
+  knowledgeDrawerState.isShow = true;
 }
 </script>
 

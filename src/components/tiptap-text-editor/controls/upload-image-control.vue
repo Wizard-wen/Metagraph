@@ -9,6 +9,7 @@
   </div>
   <upload-cropper-modal
     v-if="isUploadImageModalShow"
+    :provider="'RepositoryPictures'"
     :is-modal-visible="isUploadImageModalShow"
     :title="'添加图片'"
     @close="handleUploadImageModalClose($event)"></upload-cropper-modal>

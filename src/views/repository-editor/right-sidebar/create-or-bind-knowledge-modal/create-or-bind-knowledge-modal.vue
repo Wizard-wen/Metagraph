@@ -18,7 +18,7 @@
             class="search-input"
             v-model:value="searchText"
             @change="handleChange"></ant-input>
-          <ant-button @click="createNewEntity">创建</ant-button>
+          <ant-button @click="createNewDraftKnowledge">创建</ant-button>
         </div>
         <div class="list-box">
           <div v-if="searchData.target.length" class="list-content">
@@ -59,17 +59,12 @@ import {
 } from 'ant-design-vue';
 import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { BindIcon } from '@/components/icons';
 import {
   CreateOrBindKnowledgeModal,
-  searchText,
-  searchData,
-  bindEntityIdList,
-  total,
-  totalPage,
-  currentPage,
-  isLoading
-} from '@/views/repository-editor/toolbar/create-or-bind-knowledge-modal/create.or.bind.knowledge.modal';
-import { BindIcon } from '@/components/icons';
+  searchText, searchData, bindEntityIdList,
+  total, totalPage, currentPage, isLoading
+} from './create.or.bind.knowledge.modal';
 
 export default defineComponent({
   name: 'create-or-bind-knowledge-modal',
@@ -109,7 +104,7 @@ export default defineComponent({
     const handleModalCancel = () => {
       context.emit('close');
     };
-    const createNewEntity = async () => {
+    const createNewDraftKnowledge = async () => {
       if (searchText.value === '') {
         message.error('知识点名称不能为空！');
         return;
@@ -123,7 +118,7 @@ export default defineComponent({
         content: '',
         async onOk() {
           modalConfirmLoading.value = true;
-          await createOrBindKnowledgeModal.createNewEntity(repositoryEntityId.value);
+          await createOrBindKnowledgeModal.createNewDraftKnowledge(repositoryEntityId.value);
           modalConfirmLoading.value = false;
           context.emit('close');
         },
@@ -181,15 +176,16 @@ export default defineComponent({
       handleModalCancel,
       searchText,
       searchData,
-      handleChange,
-      handleLoadMore,
       total,
       currentPage,
       totalPage,
-      createNewEntity,
-      handleBindKnowledgeToRepository,
       bindEntityIdList,
-      isLoading
+      isLoading,
+      handleChange,
+      handleLoadMore,
+      createNewDraftKnowledge,
+      handleBindKnowledgeToRepository,
+
     };
   }
 });

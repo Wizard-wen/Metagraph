@@ -4,7 +4,7 @@
  */
 
 import KnowledgePictures from './knowledge-pictures.vue';
-import KnowledgeArticleControl from './knowledge-article-control.vue';
+import KnowledgeArticleControlToolbar from './knowledge-article-control-toolbar.vue';
 import KnowledgeBindPanel from './knowledge-edges-panel.vue';
 import KnowledgeEditHeader from './knowledge-edit-header.vue';
 import KnowledgeMentionedList from './knowledge-mentioned-list.vue';
@@ -13,7 +13,7 @@ import KnowledgeSidebar from './knowledge-sidebar.vue';
 import KnowledgeEditForm from './knowledge-base-message-form.vue';
 
 export {
-  KnowledgeArticleControl,
+  KnowledgeArticleControlToolbar,
   KnowledgePictures,
   KnowledgeBindPanel,
   KnowledgeEditHeader,

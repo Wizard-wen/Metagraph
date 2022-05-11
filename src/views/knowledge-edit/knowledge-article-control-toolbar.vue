@@ -29,6 +29,8 @@ import {
 import {
   // FindControl,
   // FontSizeControl,
+  // ToggleCodeControl,
+  // UploadImageControl,
   RedoControl,
   UndoControl,
   SaveControl,
@@ -38,13 +40,11 @@ import {
   ToggleHeadingControl,
   ToggleBulletListControl,
   ToggleOrderedListControl,
-  // ToggleCodeControl,
-  // UploadImageControl,
   ToggleStrikeControl
 } from '@/components/tiptap-text-editor/controls';
 
 export default defineComponent({
-  name: 'knowledge-article-control',
+  name: 'knowledge-article-control-toolbar',
   props: {
     editor: {
       type: Object as PropType<Editor>,

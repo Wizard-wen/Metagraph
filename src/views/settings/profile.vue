@@ -13,6 +13,7 @@
     <ant-form-item
       label="头像" ref="formIconRef" class="ant-form-item-style" name="avatar">
       <upload-form-item
+        :provider="'UserAvatar'"
         :title="'上传头像'"
         :image-type="'avatar'"
         v-model="userProfileFormState.avatar"></upload-form-item>

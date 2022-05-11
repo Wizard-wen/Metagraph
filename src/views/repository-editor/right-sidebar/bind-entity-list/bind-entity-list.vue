@@ -5,7 +5,7 @@
         <template #icon>
           <PlusOutlined/>
         </template>
-        绑定知识点
+        绑定/创建知识点
       </ant-button>
     </div>
     <div class="entity-list-content">
@@ -27,12 +27,26 @@
           <ViewIcon @click="handleClickEntityItem(item, 'view')"></ViewIcon>
         </div>
       </div>
+
+      <div
+        class="list-item"
+        v-for="item in unpublishedDraftKnowledgeList"
+        :key="item.entity.id">
+        <div class="text">
+          <SnippetsOutlined class="icon"/>
+          {{ item.content.name }}
+        </div>
+        <div class="control">
+          <EditIcon @click="handleClickEntityItem(item, 'draft')"></EditIcon>
+        </div>
+      </div>
+
     </div>
   </div>
-  <CreateBindKnowledgeModal
+  <create-or-bind-knowledge-modal
     v-if="isModalVisible"
     @close="handleModalClose"
-    :is-modal-visible="isModalVisible"></CreateBindKnowledgeModal>
+    :is-modal-visible="isModalVisible"></create-or-bind-knowledge-modal>
 </template>
 
 <script lang="ts">
@@ -41,25 +55,27 @@ import {
   defineComponent, ref, computed, inject
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { PlusOutlined, StarOutlined } from '@ant-design/icons-vue';
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import { PlusOutlined, StarOutlined, SnippetsOutlined } from '@ant-design/icons-vue';
+import type { EntityCompletelyListItemType, KnowledgeModelType, KnowledgeResponseType } from 'metagraph-constant';
 import {
   repositoryBindEntityList,
-  knowledgeDrawer,
+  unpublishedDraftKnowledgeList,
   RepositoryEditor
 } from '@/views/repository-editor/repository-editor';
+import { knowledgeDrawerState } from '@/business';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { useStore } from '@/store';
 import { ViewIcon, EditIcon } from '@/components/icons';
-import CreateBindKnowledgeModal from '../create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
+import CreateOrBindKnowledgeModal from '../create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 
 export default defineComponent({
   components: {
     PlusOutlined,
     StarOutlined,
+    SnippetsOutlined,
     ViewIcon,
     EditIcon,
-    CreateBindKnowledgeModal,
+    CreateOrBindKnowledgeModal,
     AntButton: Button,
   },
   setup() {
@@ -84,16 +100,26 @@ export default defineComponent({
 
     function handleClickEntityItem(
       item: EntityCompletelyListItemType,
-      type: 'view' | 'edit'
+      type: 'view' | 'edit' | 'draft'
     ): void {
       if (type === 'view') {
-        knowledgeDrawer.entityId = item.entity.id;
-        knowledgeDrawer.isShow = true;
+        knowledgeDrawerState.entityId = item.entity.id;
+        knowledgeDrawerState.isShow = true;
+      } else if (type === 'draft') {
+        router.push({
+          name: 'KnowledgeEdit',
+          query: {
+            draftKnowledgeEntityId: item.entity.id,
+            repositoryEntityId: repositoryEntityId.value
+          }
+        })
+          .then();
       } else {
         router.push({
           name: 'KnowledgeEdit',
           query: {
-            knowledgeEntityId: item.entity.id,
+            publishedKnowledgeEntityId: item.entity.id,
+            draftKnowledgeEntityId: (item.content as KnowledgeResponseType).draft?.entityId,
             repositoryEntityId: repositoryEntityId.value
           }
         })
@@ -103,6 +129,7 @@ export default defineComponent({
 
     return {
       repositoryBindEntityList,
+      unpublishedDraftKnowledgeList,
       entityList,
       selectedEntityId,
       isModalVisible,

@@ -1,6 +1,6 @@
 <template>
   <ant-form
-    :model="knowledgeForm"
+    :model="knowledgeBaseForm"
     layout="vertical"
     :label-col="labelCol" :wrapper-col="wrapperCol"
     class="knowledge-form-content">
@@ -13,11 +13,11 @@
         @click="handleSaveKnowledgeName"
         class="edit-icon"
         v-if="!isKnowledgeNameDisabled"></save-icon>
-      <ant-input v-model:value="knowledgeForm.name" :disabled="isKnowledgeNameDisabled"/>
+      <ant-input v-model:value="knowledgeBaseForm.name" :disabled="isKnowledgeNameDisabled"/>
     </ant-form-item>
     <ant-form-item label="基础类型">
       <ant-select
-        v-model:value="knowledgeForm.knowledgeBaseTypeId"
+        v-model:value="knowledgeBaseForm.knowledgeBaseTypeId"
         disabled
         placeholder="请选择知识点基本类型">
         <ant-select-option value="606fe7b650a08412400387e6">公理</ant-select-option>
@@ -25,10 +25,10 @@
       </ant-select>
     </ant-form-item>
     <ant-form-item label="知识点领域">
-      <div class="tag-box">
+      <div class="tag-box" v-if="knowledgeBaseForm.domain.length">
         <ant-tag
           :key="index"
-          v-for="(item, index) in knowledgeForm.domain">{{ item.domainName }}
+          v-for="(item, index) in knowledgeBaseForm.domain">{{ item.domainName }}
         </ant-tag>
       </div>
       <ant-button
@@ -50,13 +50,14 @@
       </ant-select>
     </ant-form-item>
     <ant-form-item label="作者">
-      <ant-input :value="knowledgeForm.author" disabled/>
+      <ant-input :value="knowledgeBaseForm.author" disabled/>
     </ant-form-item>
     <ant-form-item label="标签">
-      <div class="tag-box">
+      <div class="tag-box" v-if="knowledgeBaseForm.tagList.length">
         <ant-tag
           :key="index"
-          v-for="(item, index) in knowledgeForm.tagList">{{ item.label }}</ant-tag>
+          v-for="(item, index) in knowledgeBaseForm.tagList">{{ item.label }}
+        </ant-tag>
       </div>
       <ant-button style="display: block" type="primary" size="default" @click="handleOpenModal">
         <template #icon>
@@ -82,28 +83,21 @@ import {
   Button, Form, Input, Select, Tag
 } from 'ant-design-vue';
 import {
-  defineComponent, onMounted, ref, inject
+  defineComponent, ref, inject
 } from 'vue';
 import { EditOutlined } from '@ant-design/icons-vue';
 import { DomainSelectModal } from '@/business';
+import { EditIcon, SaveIcon } from '@/components/icons';
 import KnowledgeTagModal from './knowledge-base-message-form/knowledge-tag-modal.vue';
 import {
   KnowledgeEdit,
   domainList,
   ownRepositoryList,
   tag,
-  knowledgeForm,
-  knowledgeEntityIdInjectKey,
+  knowledgeBaseForm,
+  draftKnowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
 } from './model/knowledge.edit';
-import { EditIcon, SaveIcon } from '@/components/icons';
-
-interface FormState {
-  name: string;
-  knowledgeBaseTypeId: string;
-  domainId?: '';
-  repositoryEntityId: string;
-}
 
 export default defineComponent({
   components: {
@@ -121,17 +115,13 @@ export default defineComponent({
     AntInput: Input
   },
   setup() {
-    const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
+    const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey);
     const repositoryEntityId = inject(repositoryEntityIdInjectKey);
     const isKnowledgeNameDisabled = ref(true);
     const isModalVisible = ref(false);
     const modalConfirmLoading = ref(false);
     const isDomainModalVisible = ref(false);
     const knowledgeEdit = new KnowledgeEdit();
-    onMounted(async () => {
-      await knowledgeEdit.getDomainList();
-      await knowledgeEdit.getOwnRepositoryList();
-    });
     const handleModalOk = () => {
       isModalVisible.value = false;
     };
@@ -140,7 +130,7 @@ export default defineComponent({
       tag.currentPage = 1;
       tag.list = [];
       await knowledgeEdit.getTagList();
-      selectedTagIdsFromProp.value = knowledgeForm
+      selectedTagIdsFromProp.value = knowledgeBaseForm
         .tagList.map((item: { label: string, value: string }) => item.value);
       isModalVisible.value = true;
     };
@@ -151,15 +141,15 @@ export default defineComponent({
     }[]>();
     const handleOpenDomainModal = () => {
       isDomainModalVisible.value = true;
-      domainListProp.value = knowledgeForm.domain;
+      domainListProp.value = knowledgeBaseForm.domain;
     };
 
     async function handleKnowledgeTagModalClose(event?: {
       selectedTagList: { label: string, value: string }[]
     }) {
       isModalVisible.value = false;
-      if (event && knowledgeEntityId?.value) {
-        await knowledgeEdit.getKnowledge(knowledgeEntityId?.value);
+      if (event && draftKnowledgeEntityId?.value) {
+        await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value);
       }
     }
 
@@ -171,21 +161,21 @@ export default defineComponent({
       }[]
     }) {
       isDomainModalVisible.value = false;
-      if (event && knowledgeEntityId?.value) {
-        knowledgeForm.domain = event.domain;
-        await knowledgeEdit.updateKnowledge(knowledgeEntityId.value, {
+      if (event && draftKnowledgeEntityId?.value) {
+        knowledgeBaseForm.domain = event.domain;
+        await knowledgeEdit.updateDraftKnowledge(draftKnowledgeEntityId.value, {
           domain: event.domain
         });
-        await knowledgeEdit.getKnowledge(knowledgeEntityId?.value as string);
+        await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value as string);
       }
     }
 
     async function handleSaveKnowledgeName() {
-      if (knowledgeEntityId?.value) {
-        await knowledgeEdit.updateKnowledge(knowledgeEntityId.value, {
-          name: knowledgeForm.name
+      if (draftKnowledgeEntityId?.value) {
+        await knowledgeEdit.updateDraftKnowledge(draftKnowledgeEntityId.value, {
+          name: knowledgeBaseForm.name
         });
-        await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
+        await knowledgeEdit.getKnowledge(draftKnowledgeEntityId.value);
         isKnowledgeNameDisabled.value = true;
       }
     }
@@ -193,21 +183,21 @@ export default defineComponent({
     return {
       labelCol: { span: 8 },
       wrapperCol: { offset: 0 },
-      knowledgeForm,
+      knowledgeBaseForm,
       domainList,
       ownRepositoryList,
       repositoryEntityId,
       isModalVisible,
-      handleModalOk,
-      handleOpenModal,
       modalConfirmLoading,
-      handleKnowledgeTagModalClose,
       selectedTagIdsFromProp,
       isDomainModalVisible,
-      handleDomainModalClose,
-      handleOpenDomainModal,
       domainListProp,
       isKnowledgeNameDisabled,
+      handleModalOk,
+      handleOpenModal,
+      handleKnowledgeTagModalClose,
+      handleDomainModalClose,
+      handleOpenDomainModal,
       handleSaveKnowledgeName
     };
   },

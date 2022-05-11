@@ -3,7 +3,7 @@
  * @date  2021/11/8 15:32
  */
 
-import { store } from "@/store";
+import { store } from '@/store';
 import { mergeAttributes } from '@tiptap/core';
 import Mention from '@tiptap/extension-mention';
 import { Editor, VueRenderer } from '@tiptap/vue-3';

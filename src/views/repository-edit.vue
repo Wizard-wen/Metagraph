@@ -55,6 +55,7 @@
         </ant-form-item>
         <ant-form-item label="知识库封面" name="avatar">
           <upload-form-item
+            :provider="'RepositoryAvatar'"
             :title="'上传知识库封面'"
             v-model="repositoryFormState.avatar"></upload-form-item>
         </ant-form-item>

@@ -3,11 +3,21 @@
  * @date  2021/12/8 23:07
  */
 
+import { mentionPointerList } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
 import { mergeAttributes } from '@tiptap/core';
+import { Editor } from '@tiptap/core/dist/packages/core/src/Editor';
+import { ParentConfig } from '@tiptap/core/dist/packages/core/src/types';
 import Mention from '@tiptap/extension-mention';
+import { NodeType } from 'prosemirror-model';
 
 export const CustomMention = Mention.extend({
-  renderHTML({ node, HTMLAttributes }) {
+  onDestroy() {
+    console.log(this);
+  },
+  renderHTML({
+    node,
+    HTMLAttributes
+  }) {
     if (!node.attrs.name) {
       return [
         'span',
@@ -43,6 +53,7 @@ export const CustomMention = Mention.extend({
           if (!attributes.id) {
             return {};
           }
+          mentionPointerList.value.push(attributes.id)
           return {
             'data-mention-id': attributes.id,
           };

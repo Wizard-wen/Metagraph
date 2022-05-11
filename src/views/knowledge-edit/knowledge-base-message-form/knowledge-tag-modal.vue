@@ -27,13 +27,13 @@
 
 <script lang="ts">
 import {
-  ref, computed, toRef, PropType, inject, defineComponent, onMounted
+  ref, computed, toRef, PropType, inject, defineComponent
 } from 'vue';
 import {
   Modal, Button, Tag, Checkbox
 } from 'ant-design-vue';
 import { TagApiService } from '@/api.service';
-import { tag, KnowledgeEdit, knowledgeEntityIdInjectKey } from '../model/knowledge.edit';
+import { tag, KnowledgeEdit, draftKnowledgeEntityIdInjectKey } from '../model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-tag-modal',
@@ -57,7 +57,7 @@ export default defineComponent({
   emits: ['close'],
   setup(props, { emit }) {
     const selectedTagIdList = toRef(props, 'selectedTagIdsFromProp');
-    const knowledgeEntityId = inject(knowledgeEntityIdInjectKey);
+    const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey);
     const selectedTagIds = ref(selectedTagIdList.value);
     const knowledgeEdit = new KnowledgeEdit();
     const selectedTagList = computed(
@@ -68,13 +68,10 @@ export default defineComponent({
     function handleModalCancel() {
       emit('close');
     }
-    // onMounted(async () => {
-    //   await knowledgeEdit.getTagList();
-    // });
 
     async function handleModalOk() {
       await TagApiService.update({
-        entityId: knowledgeEntityId?.value || '',
+        entityId: draftKnowledgeEntityId?.value || '',
         tagIds: selectedTagIds.value || [],
         entityType: 'Knowledge'
       });
@@ -88,14 +85,13 @@ export default defineComponent({
       await knowledgeEdit.getTagList();
     };
     return {
-      knowledgeEntityId,
       selectedTagList,
       selectedTagIds,
+      modalConfirmLoading,
       handleModalCancel,
       handleModalOk,
       handleLoadMore,
       tag,
-      modalConfirmLoading
     };
   }
 });

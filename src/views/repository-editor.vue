@@ -19,7 +19,7 @@
           </section-article-tip-tap>
         </div>
         <div class="style-panel">
-          <toolbar></toolbar>
+          <right-sidebar></right-sidebar>
         </div>
       </div>
       <div v-else class="section-view">
@@ -27,16 +27,16 @@
           <knowledge-graph-panel></knowledge-graph-panel>
         </div>
         <div class="style-panel">
-          <toolbar></toolbar>
+          <right-sidebar></right-sidebar>
         </div>
       </div>
     </div>
   </ant-spin>
   <knowledge-drawer-content
-    v-if="knowledgeDrawer.isShow"
-    :is-visible="knowledgeDrawer.isShow"
-    :knowledge-entity-id="knowledgeDrawer.entityId"
-    @close="knowledgeDrawer.isShow = false"></knowledge-drawer-content>
+    v-if="knowledgeDrawerState.isShow"
+    :is-visible="knowledgeDrawerState.isShow"
+    :knowledge-entity-id="knowledgeDrawerState.entityId"
+    @close="handleCloseKnowledgeDrawer"></knowledge-drawer-content>
 </template>
 
 <script lang="ts">
@@ -46,10 +46,7 @@ import {
 } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { Empty, Spin } from 'ant-design-vue';
-// import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
 import {
-  // sectionArticleTiptapTextEditor,
-  // sectionTree,
   SectionTreeService
 } from '@/views/repository-editor/section-tree/section.tree';
 import {
@@ -57,12 +54,11 @@ import {
   repositoryModel,
   sectionEntityId,
   isPublicRepository,
-  knowledgeDrawer,
   isRepositoryEditorLoading
 } from '@/views/repository-editor/repository-editor';
 
-import { KnowledgeDrawerContent } from '@/business';
-import Toolbar from './repository-editor/toolbar.vue';
+import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
+import RightSidebar from './repository-editor/right-sidebar.vue';
 import SectionTree from './repository-editor/section-tree.vue';
 import SectionArticleTipTap from './repository-editor/section-article.vue';
 import KnowledgeGraphPanel from './repository-editor/knowledge-graph-panel.vue';
@@ -73,7 +69,7 @@ export default defineComponent({
   name: 'editable.repository',
   components: {
     KnowledgeDrawerContent,
-    Toolbar,
+    RightSidebar,
     SectionTree,
     SectionArticleTipTap,
     KnowledgeGraphPanel,
@@ -89,12 +85,9 @@ export default defineComponent({
     provide(repositoryEntityIdKey, repositoryEntityId);
     provide(isEditableKey, isEditable);
     const repositoryEditorService = new RepositoryEditor();
-    // const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
-    //   repositoryEntityId.value,
-    //   isEditable.value
-    // );
     // 视图状态
     const viewStatus = ref<'section' | 'graph'>('section');
+    const isSaving = ref();
 
     // 切换视图状态
     async function handleChangeView(view: 'section' | 'graph') {
@@ -107,7 +100,7 @@ export default defineComponent({
     const preventContextmenu = (event: MouseEvent) => {
       event.preventDefault();
     };
-    const isSaving = ref();
+
     onBeforeMount(async () => {
       isRepositoryEditorLoading.value = true;
       await Promise.all([
@@ -115,6 +108,9 @@ export default defineComponent({
         repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
         sectionTreeService.getSectionTree(repositoryEntityId.value)
       ]);
+      if (isEditable.value) {
+        await repositoryEditorService.getOwnDraftKnowledgeList(repositoryEntityId.value)
+      }
       isRepositoryEditorLoading.value = false;
       document.addEventListener('contextmenu', preventContextmenu);
     });
@@ -136,8 +132,12 @@ export default defineComponent({
     });
 
     function handleClickMention(event: { id: string, name: string }) {
-      knowledgeDrawer.isShow = true;
-      knowledgeDrawer.entityId = event.id;
+      knowledgeDrawerState.isShow = true;
+      knowledgeDrawerState.entityId = event.id;
+    }
+
+    function handleCloseKnowledgeDrawer() {
+      knowledgeDrawerState.isShow = false;
     }
 
     const saveSectionArticle = async (params: {
@@ -178,7 +178,8 @@ export default defineComponent({
       handleChangeView,
       handleClickMention,
       isSaving,
-      knowledgeDrawer,
+      knowledgeDrawerState,
+      handleCloseKnowledgeDrawer
     };
   }
 });

@@ -7,15 +7,12 @@ import { message } from 'ant-design-vue';
 import { MutationEnum, store } from '@/store';
 import { ErrorDetailSystemApiService } from '@/api.service/system/error.detail.system.api.service';
 import router from '@/router';
-// import 'ant-design-vue/dist/antd.css';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ConfigService } from '@/config/config.service';
 import { PublicApiResponseType } from '@/utils/request.util';
 // 请求拦截
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
   config.baseURL = ConfigService.apiBaseURL;
-  // store
-  console.log(store.state.user.token);
   config.headers = {
     ...config.headers,
     'edu-user-token': store.state.user.token || ''

@@ -54,7 +54,8 @@ import {
   Tree, Dropdown, Menu, Button
 } from 'ant-design-vue';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
-import { isRepositoryEditorLoading, knowledgeDrawer } from '@/views/repository-editor/repository-editor';
+import { knowledgeDrawerState } from '@/business';
+import { isRepositoryEditorLoading } from '@/views/repository-editor/repository-editor';
 import { isEditableKey } from '@/views/repository-editor/provide.type';
 import SectionCreateModal from '@/views/repository-editor/section-tree/section-create-modal.vue';
 import { KnowledgeIcon } from '@/components/icons';
@@ -94,9 +95,9 @@ export default defineComponent({
     async function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
       isRepositoryEditorLoading.value = true;
       if (!info.node.dataRef.section) {
-        knowledgeDrawer.isShow = true;
+        knowledgeDrawerState.isShow = true;
         // eslint-disable-next-line prefer-destructuring
-        knowledgeDrawer.entityId = selectedKeys[0].split('-')[0];
+        knowledgeDrawerState.entityId = selectedKeys[0].split('-')[0];
       }
       await sectionTreeService.selectTreeNode({
         selectedKeys,

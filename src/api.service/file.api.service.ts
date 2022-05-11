@@ -7,24 +7,22 @@ import { FileEnum } from 'metagraph-constant';
 import type {
   QiniuUploadingCredentialRequestType,
   QiniuUploadingCredentialResponseType,
-  FilePageListResponseType, FileResponseType,
+  FilePageListResponseType, FileModelType,
 } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
 
 export class FileApiService {
-  static async getCredential(params: { name: string;
-    type?: FileEnum; provider?: any }): Promise<PublicApiResponseType<QiniuUploadingCredentialResponseType>> {
-    return RequestUtil.post<{ name: string;
-      type?: FileEnum; provider?: any }, QiniuUploadingCredentialResponseType>({
+  static async getCredential(params: QiniuUploadingCredentialRequestType): Promise<PublicApiResponseType<QiniuUploadingCredentialResponseType>> {
+    return RequestUtil.post<QiniuUploadingCredentialRequestType, QiniuUploadingCredentialResponseType>({
       apiPath: ApiPathEnum.GetQiniuFileCredential,
       requestBody: { ...params, provider: 'System' }
     });
   }
 
-  static async getFileByKey(params: { key: string; }): Promise<PublicApiResponseType<FileResponseType>> {
-    return RequestUtil.post<{ key: string; }, FileResponseType>({
+  static async getFileByKey(params: { key: string; }): Promise<PublicApiResponseType<FileModelType>> {
+    return RequestUtil.post<{ key: string; }, FileModelType>({
       apiPath: ApiPathEnum.GetFileByKey,
       requestBody: params
     });

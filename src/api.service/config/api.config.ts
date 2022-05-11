@@ -7,28 +7,25 @@ export enum ApiPathEnum {
   /**
    * knowledge
    */
-  CreateKnowledge = '/knowledge/create',
-  UpdateKnowledge = '/knowledge/update',
-  RemoveKnowledge = '/knowledge/remove/id',
-  SaveKnowledgeDescription = '/knowledge/save/description',
-  CheckCustomKnowledgeFormField = '/knowledge/checkField',
-  AddCustomKnowledgeFormField = '/knowledge/addField',
-  RemoveCustomKnowledgeFormField = '/knowledge/removeField',
-  SaveCustomKnowledgeFormFields = '/knowledge/saveFields',
-  // 获取知识点
-  GetNoAuthKnowledgeById = '/public/knowledge/get',
-  GetNoAuthKnowledgePath = '/public/knowledge/getPath',
-  // 获取引用当前知识点的知识点列表
-  GetNoAuthKnowledgeMentionedList = '/public/knowledge/getMentionedList',
-  // 带分页的知识点列表
-  GetNoAuthKnowledgeList = '/public/knowledge/getList',
-  // 获取某个知识点的前置、导出知识点
-  GetNoAuthEdgesByKnowledgeEntityId = '/public/knowledge/findEdgesByKnowledgeEntityId',
-  // 仓库绑定的知识点
-  GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
-  GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
-  CreateAlternativeKnowledgeList = '/knowledge/createAlternativeKnowledgeList',
-  RemoveAlternativeKnowledge = '/knowledge/removeAlternativeKnowledge',
+  // SaveKnowledgeDescription = '/knowledge/save/description',
+  // CheckCustomKnowledgeFormField = '/knowledge/checkField',
+  // AddCustomKnowledgeFormField = '/knowledge/addField',
+  // RemoveCustomKnowledgeFormField = '/knowledge/removeField',
+  // SaveCustomKnowledgeFormFields = '/knowledge/saveFields',
+  // // 获取知识点
+  // GetNoAuthKnowledgeById = '/public/knowledge/get',
+  // GetNoAuthKnowledgePath = '/public/knowledge/getPath',
+  // // 获取引用当前知识点的知识点列表
+  // GetNoAuthKnowledgeMentionedList = '/public/knowledge/getMentionedList',
+  // // 带分页的知识点列表
+  // GetNoAuthKnowledgeList = '/public/knowledge/getList',
+  // // 获取某个知识点的前置、导出知识点
+  // GetNoAuthEdgesByKnowledgeEntityId = '/public/knowledge/findEdgesByKnowledgeEntityId',
+  // // 仓库绑定的知识点
+  // GetNoAuthKnowledgeListByRepositoryEntityId = '/public/knowledge/getList/repositoryEntityId',
+  // GetAlternativeKnowledgeList = '/knowledge/getAlternativeKnowledgeList',
+  // CreateMultipleAlternativeKnowledge = '/knowledge/createMultipleAlternativeKnowledge',
+  // RemoveAlternativeKnowledge = '/knowledge/removeAlternativeKnowledge',
   /**
    * edge
    */
@@ -97,16 +94,16 @@ export enum ApiPathEnum {
   CreateRepository = '/repository/create',
   UpdateRepository = '/repository/update',
   RemoveRepository = '/repository/remove',
-  GetRepositoryByEntityId = '/repository/getRepositoryByEntityId',
+  GetRepositoryByEntityId = '/repository/getModelByEntityId',
   BindToRepository = '/repository/bind/entity',
   UnbindFromRepository = '/repository/unbind/entity',
-  CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
+  // CheckIfUserOwnRepository = '/repository/checkIfUserOwnRepository',
   GetOwnRepositoryList = '/repository/getOwnList',
   // GetRepositoryList = '/repository/getList',
 
-  getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
+  // getRepositoryBindEntityListInGraph = '/repository/getRepositoryEntityListInGraph',
 
-  GetRepositoryEntityList = '/repository/getEntityList',
+  // GetRepositoryEntityList = '/repository/getEntityList',
   CloneRepository = '/repository/clone',
   GetCloneRepositoryStatus = '/repository/getCloneStatus',
   GetRepositoryUsingEntity = '/repository/getUsingEntity',
@@ -115,7 +112,6 @@ export enum ApiPathEnum {
   GetNoAuthRepositoryBindEntityList = '/public/repository/getBindEntityList',
   GetNoAuthRepositoryEntityList = '/public/repository/getList',
   GetNoAuthHotRepositoryEntityList = '/public/repository/get/hotList',
-  GetNoAuthRepositoryById = '/public/repository/get/id',
   /**
    * tag
    */

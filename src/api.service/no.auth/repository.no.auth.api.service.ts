@@ -26,13 +26,6 @@ export class RepositoryNoAuthApiService {
     });
   }
 
-  static async getById(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<EntityCompletelyListItemType>> {
-    return RequestUtil.post<{ repositoryEntityId: string }, EntityCompletelyListItemType>({
-      apiPath: ApiPathEnum.GetEntityById,
-      requestBody: params
-    });
-  }
-
   static async getHotList(): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
     return RequestUtil.get<EntityCompletelyListItemType[]>({
       apiPath: ApiPathEnum.GetNoAuthHotRepositoryEntityList

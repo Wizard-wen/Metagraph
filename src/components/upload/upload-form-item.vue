@@ -11,6 +11,7 @@
   <upload-cropper-modal
     v-if="isModalShow"
     :fixed="false"
+    :provider="provider"
     :is-modal-visible="isModalShow"
     :title="title"
     @close="handleModalClose($event)"></upload-cropper-modal>
@@ -18,6 +19,7 @@
 
 <script lang="ts">
 import { Button } from 'ant-design-vue';
+import { FileProvider } from 'metagraph-constant';
 import {
   defineComponent, PropType, ref, toRef
 } from 'vue';
@@ -34,6 +36,10 @@ export default defineComponent({
   props: {
     title: {
       type: String,
+      required: true
+    },
+    provider: {
+      type: String as PropType<FileProvider>,
       required: true
     },
     imageType: {

@@ -63,11 +63,11 @@
 import { QiniuUploadService } from '@/service/qiniu.upload.service';
 import { Button, message, Modal } from 'ant-design-vue';
 import {
-  defineComponent, reactive, ref, PropType
+  defineComponent, reactive, ref, PropType, toRef
 } from 'vue';
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum, FileProvider } from 'metagraph-constant';
 
 export default defineComponent({
   name: 'upload-cropper-modal',
@@ -85,6 +85,10 @@ export default defineComponent({
       type: String,
       default: '上传图片'
     },
+    provider: {
+      type: String as PropType<FileProvider>,
+      required: true
+    },
     fixedNumber: {
       type: Array as PropType<number[]>,
       default: () => [1, 1]
@@ -101,6 +105,7 @@ export default defineComponent({
   },
   emits: ['close'],
   setup(props, { emit }) {
+    const fileProvider = toRef(props, 'provider');
     const modalConfirmLoading = ref(false);
     const isLoading = ref(false);
     const cropOption = reactive({
@@ -222,7 +227,8 @@ export default defineComponent({
       const result = await qiniuUploadService.customRequestUploadHandler({
         base64: data,
         type: FileEnum.Image,
-        name: ''
+        name: '',
+        provider: fileProvider.value
       });
       if (result) {
         emit('close', {
@@ -240,7 +246,8 @@ export default defineComponent({
       const result = await qiniuUploadService.customRequestUploadHandler({
         file: domFile.value,
         type: FileEnum.Image,
-        name: ''
+        name: domFile.value?.name || '',
+        provider: fileProvider.value
       });
       if (result) {
         emit('close', {

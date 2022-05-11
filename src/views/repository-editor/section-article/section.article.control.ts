@@ -53,7 +53,8 @@ export class SectionArticleControl {
       message?: string;
     } = await FileApiService.getCredential({
       name: params.name,
-      type: params.type
+      type: params.type,
+      provider: 'AlternativeKnowledgeArticle'
     });
     const tokenForUploading = result.data;
 

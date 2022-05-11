@@ -14,18 +14,18 @@
     @visibleChange="isCommentDrawerShow = false">
     <template #content>
       <ant-list>
-        <ant-list-item v-for="item in mentionedKnowledge.list">
-            <template #actions>
-              <ant-button @click="goProfilePage(item.entity.id)">查看</ant-button>
+        <ant-list-item v-for="(item, index) in mentionedKnowledge.list" :key="index">
+          <template #actions>
+            <ant-button @click="goPreviewPage(item.entity.id)">查看</ant-button>
+          </template>
+          <ant-list-item-meta :description="item.author.name">
+            <template #title>
+              <div class="name" @click="goPreviewPage(item.entity.id)">
+                {{ item.content.name }}
+              </div>
             </template>
-            <ant-list-item-meta :description="item.author.name">
-              <template #title>
-                <div class="name" @click="goProfilePage(item.entity.id)">
-                  {{ item.content.name }}
-                </div>
-              </template>
-            </ant-list-item-meta>
-          </ant-list-item>
+          </ant-list-item-meta>
+        </ant-list-item>
       </ant-list>
     </template>
   </metagraph-drawer>
@@ -33,9 +33,10 @@
 
 <script lang="ts">
 import { Button, List } from 'ant-design-vue';
-import { ref, defineComponent } from 'vue';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { ref, defineComponent, PropType } from 'vue';
 import { SocialActionButton, MetagraphDrawer, CommentIcon } from '@/components';
-import { mentionedKnowledge } from '../model/knowledge.edit';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'mentioned-control-button',
@@ -48,17 +49,31 @@ export default defineComponent({
     AntList: List,
     AntButton: Button,
   },
+  props: {
+    mentionedKnowledge: {
+      type: Object as PropType<{
+        count: number;
+        list: EntityCompletelyListItemType[]
+      }>,
+      required: true
+    }
+  },
   setup() {
     const isCommentDrawerShow = ref(false);
-
-    function goProfilePage(id: string) {
-      // todo
+    const router = useRouter();
+    function goPreviewPage(id: string) {
+      const { href } = router.resolve({
+        path: '/knowledge/preview',
+        query: {
+          publishedKnowledgeEntityId: id
+        }
+      });
+      window.open(href, '_blank');
     }
 
     return {
       isCommentDrawerShow,
-      goProfilePage,
-      mentionedKnowledge
+      goPreviewPage
     };
   }
 });

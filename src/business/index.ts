@@ -11,6 +11,7 @@ import DomainSelectFormItem from './domain-selector/domain-selector-form-item.vu
 import KnowledgeDrawerContent from './knowledge-drawer/knowledge-drawer-content.vue';
 import FollowUser from './follow-user/follow-user.vue';
 
+export * from './knowledge-drawer/knowledge.drawer.state';
 export {
   CommentControlButton,
   StarControlButton,

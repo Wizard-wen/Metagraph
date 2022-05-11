@@ -15,16 +15,16 @@ export const alternativeKnowledgeList = reactive<{
 });
 
 export class AlternativeKnowledgeListService {
-  async createKnowledge(name: string, repositoryEntityId: string): Promise<void> {
-    const result = await KnowledgeApiService.create({
-      name,
-      knowledgeBaseTypeId: '',
-      repositoryEntityId
-    });
-    if (result.code === 0) {
-      message.success('创建知识点成功！');
-    }
-  }
+  // async createDraftKnowledge(name: string, repositoryEntityId: string): Promise<void> {
+  //   const result = await KnowledgeApiService.createDraftKnowledge({
+  //     name,
+  //     knowledgeBaseTypeId: '',
+  //     repositoryEntityId
+  //   });
+  //   if (result.code === 0) {
+  //     message.success('创建知识点成功！');
+  //   }
+  // }
 
   async removeAlternativeKnowledge(params: {
     id: string;

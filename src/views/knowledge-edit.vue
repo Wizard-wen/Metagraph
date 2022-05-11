@@ -1,14 +1,14 @@
 <template>
   <ant-spin :spinning="isLoading">
     <div class="knowledge-edit">
-      <knowledge-edit-header></knowledge-edit-header>
+      <knowledge-edit-header v-if="editor" :editor="editor"></knowledge-edit-header>
       <div class="knowledge-content">
         <knowledge-mentioned-list class="panel"></knowledge-mentioned-list>
         <div class="knowledge-editor">
-          <knowledge-article-control
+          <knowledge-article-control-toolbar
             @fontSizeChange="changeArticleFontSize($event)"
             @save="saveKnowledgeArticle"
-            v-if="editor" :editor="editor"></knowledge-article-control>
+            v-if="editor" :editor="editor"></knowledge-article-control-toolbar>
           <div class="knowledge-editor-content">
             <div class="text-content">
               <div class="header">
@@ -19,14 +19,20 @@
                 {{ editor.storage.characterCount.characters() }}/ 600 个字
               </div>
               <div class="upload-image">
-                <div class="icon">
-                  <FileImageOutlined style="color: #dedede; font-size: 40px"/>
+                <div class="cover" v-if="knowledgeCover">
+                  <img :src="knowledgeCover.url" alt="">
                 </div>
-                <div class="message">
-                  图片格式png/jpg
-                  <br/>
-                  高宽像素不低于320px*320px
+                <div v-else>
+                  <div class="icon">
+                    <FileImageOutlined style="color: #dedede; font-size: 40px"/>
+                  </div>
+                  <div class="message">
+                    图片格式png/jpg
+                    <br/>
+                    高宽像素不低于320px*320px
+                  </div>
                 </div>
+
                 <ant-button class="add-button" @click="openSetKnowledgeCover">选择概念图册封面</ant-button>
               </div>
               <editor-content
@@ -53,25 +59,43 @@
     </div>
   </ant-spin>
   <knowledge-drawer-content
-    v-if="knowledgeDrawer.isShow"
-    :is-visible="knowledgeDrawer.isShow"
-    :knowledge-entity-id="knowledgeDrawer.entityId"
-    @close="knowledgeDrawer.isShow = false"></knowledge-drawer-content>
+    v-if="knowledgeDrawerState.isShow"
+    :is-visible="knowledgeDrawerState.isShow"
+    :type="type"
+    :knowledge-entity-id="knowledgeDrawerState.entityId"
+    @close="knowledgeDrawerState.isShow = false"></knowledge-drawer-content>
+  <select-knowledge-cover-modal
+    :knowledge-entity-id="draftKnowledgeEntityId"
+    @close="isSelectKnowledgeCoverModalShow = false"
+    v-if="isSelectKnowledgeCoverModalShow"
+    :is-modal-visible="isSelectKnowledgeCoverModalShow"></select-knowledge-cover-modal>
 </template>
 
 <script lang="ts">
-import { FileImageOutlined } from '@ant-design/icons-vue';
+import { mentionPointerList } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
+import SelectKnowledgeCoverModal from '@/views/knowledge-edit/select-knowledge-cover-modal.vue';
+import { ExclamationCircleOutlined, FileImageOutlined } from '@ant-design/icons-vue';
 import {
   EditorContent
 } from '@tiptap/vue-3';
-import { Button, Spin, Modal } from 'ant-design-vue';
 import {
-  provide, defineComponent, onMounted, onUnmounted, ref
+  Button, message, Modal, Spin
+} from 'ant-design-vue';
+import {
+  provide, defineComponent, onMounted, onUnmounted, ref, computed, createVNode
 } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import {
+  LocationQueryValue,
+  useRoute,
+  useRouter,
+  onBeforeRouteUpdate,
+  onBeforeRouteLeave,
+  RouteLocationNormalized,
+  NavigationGuardNext
+} from 'vue-router';
 import { KnowledgeTiptapTextEditor } from '@/components/tiptap-text-editor/knowledge.tiptap.text.editor';
 import {
-  KnowledgeArticleControl,
+  KnowledgeArticleControlToolbar,
   KnowledgePictures,
   KnowledgeBindPanel,
   KnowledgeEditHeader,
@@ -81,25 +105,26 @@ import {
   KnowledgeEditForm
 } from '@/views/knowledge-edit/index';
 
-import { KnowledgeDrawerContent } from '@/business';
+import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
 import {
   KnowledgeEdit,
   knowledge,
+  knowledgeCover,
   knowledgeDescription,
-  knowledgeDrawer,
-  repositoryEntityList,
-  edges,
-  knowledgeEntityIdInjectKey, repositoryEntityIdInjectKey
+  draftKnowledgeEntityIdInjectKey,
+  publishedKnowledgeEntityIdInjectKey,
+  repositoryEntityIdInjectKey
 } from './knowledge-edit/model/knowledge.edit';
 
 export default defineComponent({
-  name: 'knowledge.edit',
+  name: 'knowledge-edit',
   components: {
+    SelectKnowledgeCoverModal,
     KnowledgeDrawerContent,
     KnowledgePictures,
     FileImageOutlined,
     KnowledgeSidebar,
-    KnowledgeArticleControl,
+    KnowledgeArticleControlToolbar,
     KnowledgeMentionedList,
     KnowledgeEditHeader,
     EditorContent,
@@ -112,31 +137,18 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const isLoading = ref(false);
-    const knowledgeEntityId = ref(route.query.knowledgeEntityId as string);
+    const publishedKnowledgeEntityId = ref(route.query.publishedKnowledgeEntityId as LocationQueryValue);
+    const draftKnowledgeEntityId = ref(route.query.draftKnowledgeEntityId as string);
     const repositoryEntityId = ref(route.query.repositoryEntityId as string);
-    provide(knowledgeEntityIdInjectKey, knowledgeEntityId);
+    provide(draftKnowledgeEntityIdInjectKey, draftKnowledgeEntityId);
+    provide(publishedKnowledgeEntityIdInjectKey, publishedKnowledgeEntityId);
     provide(repositoryEntityIdInjectKey, repositoryEntityId);
-    const articleFontSize = ref('14');
-    const changeArticleFontSize = (event: { value: string }) => {
-      articleFontSize.value = event.value;
-    };
-    const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor(
-      repositoryEntityId.value,
-      knowledgeEntityId.value
+
+    const type = computed(
+      () => (draftKnowledgeEntityId.value ? 'draft' : 'published')
     );
-    knowledgeTiptapTextEditor.initEditor();
-    const { editor } = knowledgeTiptapTextEditor;
-    const knowledgeEdit = new KnowledgeEdit();
-    const saveKnowledgeArticle = async () => {
-      if (editor.value) {
-        await knowledgeEdit.handleSaveSectionArticle({
-          content: editor.value?.getJSON(),
-          contentHtml: editor.value?.getHTML(),
-          knowledgeEntityId: knowledgeEntityId.value
-        });
-      }
-    };
+    const isLoading = ref(false);
+    const articleFontSize = ref('14');
     const sidebarElementList = [{
       label: '知识点',
       value: 'knowledge'
@@ -145,49 +157,140 @@ export default defineComponent({
       value: 'edge'
     }];
     const activeKey = ref('1');
-    onMounted(async () => {
-      isLoading.value = true;
-      await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
-      console.log('get knowledge');
-      await knowledgeEdit.getRepositoryBindList(repositoryEntityId.value);
-      await knowledgeEdit.findEdgesByKnowledgeEntityId({
-        knowledgeEntityId: knowledgeEntityId.value,
-        repositoryEntityId: repositoryEntityId.value
-      });
-      await knowledgeEdit.getMentionedList(knowledgeEntityId.value);
-      console.log(knowledgeDescription.value);
-      knowledgeTiptapTextEditor.setContent(knowledgeDescription.value);
-      await knowledgeTiptapTextEditor.initData();
-      isLoading.value = false;
+    const isSelectKnowledgeCoverModalShow = ref(false);
+
+    function changeArticleFontSize(event: { value: string }) {
+      articleFontSize.value = event.value;
+    }
+
+    mentionPointerList.value = [];
+    const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor({
+      repositoryEntityId: repositoryEntityId.value,
+      knowledgeEntityId: draftKnowledgeEntityId.value,
+      hasPublished: !!publishedKnowledgeEntityId.value
     });
-    onUnmounted(() => {
-      knowledgeTiptapTextEditor.destroy();
-    });
+    knowledgeTiptapTextEditor.initEditor();
+    const { editor } = knowledgeTiptapTextEditor;
+    const knowledgeEdit = new KnowledgeEdit();
+
+    async function saveKnowledgeArticle() {
+      if (editor.value) {
+        await knowledgeEdit.handleSaveSectionArticle({
+          content: editor.value?.getJSON(),
+          contentHtml: editor.value?.getHTML(),
+          knowledgeEntityId: draftKnowledgeEntityId.value
+        });
+      }
+    }
+
     const goBack = () => {
       router.go(-1);
     };
 
     function openSetKnowledgeCover() {
-      Modal.info({ title: '暂未开放！' });
+      isSelectKnowledgeCoverModalShow.value = true;
     }
 
+    async function handleConfirm(): Promise<boolean> {
+      return new Promise((resolve) => {
+        Modal.confirm({
+          zIndex: 100000,
+          title: '确定离开当前页面吗?',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: '',
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            resolve(true);
+          },
+          onCancel() {
+            resolve(false);
+          }
+        });
+      });
+    }
+
+    onBeforeRouteLeave(async (to, from) => await handleConfirm()
+      // 取消导航并停留在同一页面上
+    );
+
+    onBeforeRouteUpdate(async (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext
+    ) => {
+      if (
+        JSON.stringify(to.query) !== JSON.stringify(from.query)
+      ) {
+        const draftEntityId = to.query.draftKnowledgeEntityId;
+        const publishedEntityId = to.query.publishedKnowledgeEntityId;
+        if (draftEntityId && publishedEntityId) {
+          await Promise.all([
+            knowledgeEdit.getKnowledge(draftEntityId as string),
+            knowledgeEdit.getRepositoryBindList(repositoryEntityId.value),
+            knowledgeEdit.getMentionedList(draftEntityId as string),
+            knowledgeEdit.getDomainList(),
+            knowledgeEdit.getOwnRepositoryList(),
+            knowledgeEdit.setLatestVersionStatus({
+              publishedKnowledgeEntityId: publishedEntityId as string,
+            }),
+            knowledgeEdit.findEdgesByKnowledgeEntityId({
+              knowledgeEntityId: publishedEntityId as string,
+              repositoryEntityId: repositoryEntityId.value
+            })
+          ]);
+        }
+      }
+      next();
+    });
+    onMounted(async () => {
+      isLoading.value = true;
+      console.time('start request');
+      await Promise.all([
+        knowledgeEdit.getKnowledge(draftKnowledgeEntityId.value),
+        knowledgeEdit.getRepositoryBindList(repositoryEntityId.value),
+        knowledgeEdit.getMentionedList(draftKnowledgeEntityId.value),
+        knowledgeEdit.getDomainList(),
+        knowledgeEdit.getOwnRepositoryList(),
+        await knowledgeEdit.setLatestVersionStatus({
+          publishedKnowledgeEntityId: publishedKnowledgeEntityId.value ?? undefined,
+        })
+      ]);
+      if (publishedKnowledgeEntityId.value) {
+        await knowledgeEdit.findEdgesByKnowledgeEntityId({
+          knowledgeEntityId: publishedKnowledgeEntityId.value,
+          repositoryEntityId: repositoryEntityId.value
+        });
+      }
+      console.timeEnd('start request');
+      knowledgeTiptapTextEditor.setContent(knowledgeDescription.value);
+      await knowledgeTiptapTextEditor.initData();
+      isLoading.value = false;
+    });
+
+    onUnmounted(() => {
+      knowledgeTiptapTextEditor.destroy();
+    });
+
     return {
+      type,
       editor,
       knowledge,
       knowledgeDescription,
-      knowledgeDrawer,
+      knowledgeDrawerState,
+      knowledgeCover,
+      mentionPointerList,
       isLoading,
-      knowledgeEntityId,
       repositoryEntityId,
       activeKey,
-      edges,
-      repositoryEntityList,
+      isSelectKnowledgeCoverModalShow,
       goBack,
       changeArticleFontSize,
       saveKnowledgeArticle,
+      openSetKnowledgeCover,
       articleFontSize,
       sidebarElementList,
-      openSetKnowledgeCover
+      draftKnowledgeEntityId,
     };
   }
 });
@@ -217,7 +320,7 @@ export default defineComponent({
 
       .knowledge-editor-content {
         padding-top: 15px;
-        height: calc(100vh - 112px);
+        height: calc(100vh - 102px);
         overflow-y: auto;
 
         .text-content {
@@ -240,7 +343,7 @@ export default defineComponent({
             border-bottom: 1px solid $borderColor;
 
             .title {
-              font-size: 20px;
+              font-size: 18px;
             }
 
             .right {
@@ -257,6 +360,17 @@ export default defineComponent({
             width: 200px;
             background: #fbfbfb;
 
+            .cover {
+              height: 194px;
+              padding-top: 20px;
+
+              img {
+                object-fit: cover;
+                height: 170px;
+                width: 170px;
+              }
+            }
+
             .icon {
               height: 100px;
               padding-top: 60px;
@@ -267,10 +381,11 @@ export default defineComponent({
               font-size: 12px;
               line-height: 24px;
               color: #999;
+              margin-bottom: 20px;
             }
 
             .add-button {
-              margin-top: 40px;
+              margin-top: 20px;
               padding: 0 12px;
               height: 30px;
               background-color: #fff;

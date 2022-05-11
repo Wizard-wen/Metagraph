@@ -9,7 +9,8 @@
           :limit="limit"></article-limit>
       </div>
     </div>
-    <div class="article-control" v-if="editable && editor">
+    <div class="article-control" v-if="editable && editor
+    && sectionTree.selectedTreeSectionNodes.length">
       <section-article-control
         :editor="editor"
         @fontSizeChange="changeArticleFontSize($event)"
@@ -26,7 +27,7 @@
     <!--      :disabled="false"/>-->
     <div class="article-container" :style="{
     height: editable ? 'calc(100vh - 116px)' : 'calc(100vh - 60px)' }">
-      <div class="editor-range" v-if="editable">
+      <div class="editor-range" v-if="editable && sectionTree.selectedTreeSectionNodes.length">
         <div class="editor-container"
              ref="contentRef"
              :style="{
@@ -41,6 +42,11 @@
             class="tip-tap-editor" :editor="editor"/>
         </div>
       </div>
+      <ant-empty
+        v-if="editable && !sectionTree.selectedTreeSectionNodes.length"
+        :image="simpleImage">
+        <ant-button type="primary">创建章节</ant-button>
+      </ant-empty>
       <div class="editor-container-view" v-if="!editable" ref="contentRef">
         <editor-content
           v-if="editor && sectionArticle.contentHtml" class="tip-tap-editor"
@@ -49,23 +55,23 @@
       </div>
     </div>
 
-<!--    <bubble-menu-->
-<!--      v-if="editor"-->
-<!--      class="bubble-menu"-->
-<!--      :tippy-options="{ duration: 100 }"-->
-<!--      :editor="editor"-->
-<!--    >-->
-<!--      <button @click="getFocusContent">get</button>-->
-<!--      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
-<!--        Bold-->
-<!--      </button>-->
-<!--      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
-<!--        Italic-->
-<!--      </button>-->
-<!--      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
-<!--        Strike-->
-<!--      </button>-->
-<!--    </bubble-menu>-->
+    <!--    <bubble-menu-->
+    <!--      v-if="editor"-->
+    <!--      class="bubble-menu"-->
+    <!--      :tippy-options="{ duration: 100 }"-->
+    <!--      :editor="editor"-->
+    <!--    >-->
+    <!--      <button @click="getFocusContent">get</button>-->
+    <!--      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
+    <!--        Bold-->
+    <!--      </button>-->
+    <!--      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
+    <!--        Italic-->
+    <!--      </button>-->
+    <!--      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
+    <!--        Strike-->
+    <!--      </button>-->
+    <!--    </bubble-menu>-->
   </div>
 </template>
 
@@ -78,12 +84,13 @@ import {
   EditorContent,
   // BubbleMenu,
 } from '@tiptap/vue-3';
-import { Empty, message } from 'ant-design-vue';
+import { Empty, message, Button } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import SectionArticleControl from './section-article/section-article-control.vue';
 import ArticleLimit from './section-article/article-limit.vue';
 import {
   sectionArticle,
+  sectionTree,
   sectionArticleTiptapTextEditor,
   SectionTreeService,
 } from './section-tree/section.tree';
@@ -95,7 +102,8 @@ export default defineComponent({
     // BubbleMenu,
     SectionArticleControl,
     ArticleLimit,
-    AntEmpty: Empty
+    AntEmpty: Empty,
+    AntButton: Button
   },
   props: {
     editable: {
@@ -147,7 +155,7 @@ export default defineComponent({
     }
 
     async function handleClickMentionItem(event: Event) {
-      console.log('click')
+      console.log('click');
       const target = event?.target as HTMLSpanElement;
       if (target?.dataset?.mentionId && target?.dataset?.mentionName) {
         mentionKnowledge.id = target.dataset.mentionId;
@@ -198,6 +206,7 @@ export default defineComponent({
       sectionArticle,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       contentRef,
+      sectionTree,
       getFocusContent
     };
   }

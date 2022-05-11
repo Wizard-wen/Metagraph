@@ -3,7 +3,6 @@
  * @date 2021/09/15 00:15
  */
 
-import { defineAsyncComponent } from 'vue';
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Main from '../views/main.vue';
 import Settings from '../views/settings.vue';
@@ -87,6 +86,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/knowledge/edit',
     name: 'KnowledgeEdit',
     component: () => import('@/views/knowledge-edit.vue')
+  },
+
+  {
+    path: '/knowledge/preview',
+    name: 'KnowledgePreview',
+    component: () => import('@/views/knowledge-preview.vue')
   },
   {
     path: '/login',

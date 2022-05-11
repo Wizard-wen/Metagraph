@@ -7,7 +7,7 @@
       <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="box">
         <div class="name-content">
-          <div class="name" @click="goRepositoryPage($event)">
+          <div class="name" @click="goProfilePage">
             {{ activityItem.entity.content.name }}
           </div>
           <ant-tag color="#2b7489">知识点</ant-tag>
@@ -17,7 +17,7 @@
         </div>
 
         <div class="tag" v-if="activityItem.entity.content.domain.length">
-          <ant-tag v-for="item in activityItem.entity.content.domain">
+          <ant-tag v-for="(item, index) in activityItem.entity.content.domain" :key="index">
             {{ item.domainBaseTypeName }}-{{ item.domainName }}
           </ant-tag>
         </div>
@@ -33,7 +33,6 @@
           <div class="updatedAt">更新于 {{ date }}</div>
         </div>
         <add-to-plan-button
-          class="control-btn plan-btn"
           :entity-id="activityItem.entity.entity.id"
           :entity-type="activityItem.entity.entity.entityType"></add-to-plan-button>
         <ant-button
@@ -112,6 +111,16 @@ export default defineComponent({
       });
     };
 
+    function goProfilePage(id: string) {
+      const { href } = router.resolve({
+        path: '/knowledge/preview',
+        query: {
+          publishedKnowledgeEntityId: activityItem.value.entity.entity.id
+        }
+      });
+      window.open(href, '_blank');
+    }
+
     const addStar = async (event: MouseEvent, status: boolean) => {
       event.stopPropagation();
       isStarButtonDisabled.value = true;
@@ -147,6 +156,7 @@ export default defineComponent({
     return {
       goRepositoryPage,
       addStar,
+      goProfilePage,
       isLogin,
       date,
       isStarButtonDisabled

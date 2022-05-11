@@ -19,7 +19,7 @@
                 :key="index"
                 data-type="rect"
                 class="dnd-rect">
-                {{ item.content.name }}
+                {{ item.item.content.name }}
               </div>
             </div>
           </ant-card>
@@ -30,10 +30,10 @@
                 :key="index"
                 data-type="rect"
                 class="dnd-rect"
-                :class="{'is-active': !repositoryEntityIdList.includes(item.entity.id)}"
-                :draggable="!repositoryEntityIdList.includes(item.entity.id)"
-                @mousedown="startDrag($event, item)">
-                {{ item.content.name }}
+                :class="{'is-active': !repositoryEntityIdList.includes(item.item.entity.id)}"
+                :draggable="!repositoryEntityIdList.includes(item.item.entity.id)"
+                @mousedown="startDrag($event, item.item)">
+                {{ item.item.content.name }}
               </div>
             </div>
           </ant-card>
@@ -46,7 +46,7 @@
                 :key="index"
                 data-type="rect"
                 class="dnd-rect">
-                {{ item.content.name }}
+                {{ item.item.content.name }}
               </div>
             </div>
           </ant-card>
@@ -57,10 +57,10 @@
                 :key="index"
                 data-type="rect"
                 class="dnd-rect"
-                :class="{'is-active': !repositoryEntityIdList.includes(item.entity.id)}"
-                :draggable="!repositoryEntityIdList.includes(item.entity.id)"
-                @mousedown="startDrag($event, item)">
-                {{ item.content.name }}
+                :class="{'is-active': !repositoryEntityIdList.includes(item.item.entity.id)}"
+                :draggable="!repositoryEntityIdList.includes(item.item.entity.id)"
+                @mousedown="startDrag($event, item.item)">
+                {{ item.item.content.name }}
               </div>
             </div>
           </ant-card>

@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosResponse } from 'axios';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum, FileProvider } from 'metagraph-constant';
 import * as qiniu from 'qiniu-js';
 import { FileApiService } from '@/api.service';
 
@@ -13,7 +13,8 @@ export class QiniuUploadService {
     file?: File,
     base64?: string,
     name: string;
-    type: FileEnum
+    type: FileEnum,
+    provider: FileProvider
   }): Promise<{ key: string; url: string; } | undefined> {
     const result: {
       data?: {
@@ -23,7 +24,8 @@ export class QiniuUploadService {
       message?: string;
     } = await FileApiService.getCredential({
       name: params.name,
-      type: params.type
+      type: params.type,
+      provider: params.provider
     });
     if (result.data === undefined) {
       return undefined;
@@ -39,7 +41,6 @@ export class QiniuUploadService {
           )
           .subscribe({
             complete(response: { key: string; url: string; }) {
-              console.log(response);
               resolve(response);
             }
           });

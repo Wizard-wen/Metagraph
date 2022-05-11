@@ -21,12 +21,12 @@ import {
   computed, defineComponent, reactive, inject, ref
 } from 'vue';
 import { isEditableKey } from '@/views/repository-editor/provide.type';
-import ToolbarEntityList from './toolbar/bind-entity-list/bind-entity-list.vue';
-// import ToolbarKnowledgeEdge from './toolbar/toolbar.knowledge.edge.vue';
-import AlternativeKnowledgeList from './toolbar/alternative-knowledge-list/alternative-knowledge-list.vue';
+import ToolbarEntityList from './right-sidebar/bind-entity-list/bind-entity-list.vue';
+// import ToolbarKnowledgeEdge from './right-sidebar/right-sidebar.knowledge.edge.vue';
+import AlternativeKnowledgeList from './right-sidebar/alternative-knowledge-list/alternative-knowledge-list.vue';
 
 export default defineComponent({
-  name: 'Toolbar',
+  name: 'right-sidebar',
   setup() {
     const isEditable = inject(isEditableKey, ref(false));
     const toolbarState = ref('EntityList');

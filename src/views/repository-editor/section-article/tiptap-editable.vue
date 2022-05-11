@@ -23,7 +23,7 @@ import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import MentionList from '../tiptap/mention.list.vue';
 
 const emit = defineEmits(['saveArticle', 'clickMentionElement', 'mention']);
-console.log('tiptap setuo');
+
 const props = defineProps({
   articleContent: {
     type: Object as PropType<JSONContent>

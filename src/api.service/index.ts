@@ -8,9 +8,9 @@
 export { FileApiService } from './file.api.service';
 export { EntityNoAuthApiService } from './no.auth/entity.no.auth.api.service';
 export { CommentApiService } from './comment.api.service';
-export { EdgeApiService } from './edge.api.service';
-export { KnowledgeApiService } from './knowledge.api.service';
-export { RepositoryApiService } from './repository.api.service';
+export { EdgeApiService } from './auth/edge.api.service';
+export { KnowledgeApiService } from './auth/knowledge.api.service';
+export { RepositoryApiService } from './auth/repository.api.service';
 export { SectionApiService } from './section.api.service';
 export { StarApiService } from './star.api.service';
 export { TagApiService } from './tag.api.service';
