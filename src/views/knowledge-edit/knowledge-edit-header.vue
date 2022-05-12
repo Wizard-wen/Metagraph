@@ -160,6 +160,9 @@ export default defineComponent({
             repositoryEntityId: repositoryEntityId.value
           });
           if (result) {
+            await knowledgeEdit.setLatestVersionStatus({
+              publishedKnowledgeEntityId: result.publishedKnowledgeEntityId
+            });
             router.push({
               name: 'KnowledgeEdit',
               query: {

@@ -51,14 +51,18 @@ export const dnd = ref<AntvX6.Addon.Dnd>();
 export const websocketService = ref<WebsocketService>();
 
 export function initWebSocket(): void {
-  websocketService.value = new WebsocketService(ConfigService.websocketBaseURL, [
-    {
-      event: 'graph',
-      handler(info) {
-        // todo
+  websocketService.value = new WebsocketService(
+    // ConfigService.websocketBaseURL,
+    process.env.VUE_APP_API_WEBSOCKET_BASE_URL,
+    [
+      {
+        event: 'graph',
+        handler(info) {
+          // todo
+        }
       }
-    }
-  ]);
+    ]
+  );
 }
 
 export class KnowledgeGraphData {
@@ -250,19 +254,19 @@ export class KnowledgeGraphData {
       return;
     }
     entityRelationEdges.entity = result.data.entity;
-    entityRelationEdges.extendInnerList = result.data.extendInnerList.map(item => ({
+    entityRelationEdges.extendInnerList = result.data.extendInnerList.map((item) => ({
       ...item,
       isInnerRepository: true
     }));
-    entityRelationEdges.extendOuterList = result.data.extendOuterList.map(item => ({
+    entityRelationEdges.extendOuterList = result.data.extendOuterList.map((item) => ({
       ...item,
       isInnerRepository: false
     }));
-    entityRelationEdges.preInnerList = result.data.preInnerList.map(item => ({
+    entityRelationEdges.preInnerList = result.data.preInnerList.map((item) => ({
       ...item,
       isInnerRepository: true
     }));
-    entityRelationEdges.preOuterList = result.data.preOuterList.map(item => ({
+    entityRelationEdges.preOuterList = result.data.preOuterList.map((item) => ({
       ...item,
       isInnerRepository: false
     }));

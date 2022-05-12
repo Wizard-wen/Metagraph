@@ -49,8 +49,10 @@
 </template>
 
 <script lang="ts">
+import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { debounce } from 'lodash';
+import { KnowledgeResponseType } from 'metagraph-constant';
 import {
   defineComponent, toRef, watch, ref, onMounted, inject, createVNode
 } from 'vue';
@@ -60,6 +62,7 @@ import {
 import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
 import { BindIcon } from '@/components/icons';
+import { useRouter } from 'vue-router';
 import {
   CreateOrBindKnowledgeModal,
   searchText, searchData, bindEntityIdList,
@@ -86,6 +89,7 @@ export default defineComponent({
     }
   },
   setup(props, context) {
+    const router = useRouter();
     const isModalVisible = toRef(props, 'isModalVisible');
     const searchValue = toRef(props, 'searchValue');
     const createOrBindKnowledgeModal = new CreateOrBindKnowledgeModal();
@@ -118,8 +122,28 @@ export default defineComponent({
         content: '',
         async onOk() {
           modalConfirmLoading.value = true;
-          await createOrBindKnowledgeModal.createNewDraftKnowledge(repositoryEntityId.value);
+          const result = await createOrBindKnowledgeModal
+            .createNewDraftKnowledge(repositoryEntityId.value);
           modalConfirmLoading.value = false;
+          if (result) {
+            const knowledgeContent = result.content as KnowledgeResponseType;
+            await IndexdbService.getInstance().put('knowledge', {
+              id: result.entity.id,
+              name: knowledgeContent.name,
+              description: knowledgeContent.description ?? '',
+              entityId: result.entity.id,
+              type: 'draft',
+              knowledgeKey: knowledgeContent.knowledgeKey
+            });
+            router.push({
+              name: 'KnowledgeEdit',
+              query: {
+                draftKnowledgeEntityId: result.entity.id,
+                repositoryEntityId: repositoryEntityId.value,
+              }
+            })
+              .then();
+          }
           context.emit('close');
         },
         async onCancel() {

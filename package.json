@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "NODE_ENV=development vue-cli-service serve",
+    "serve:local": "NODE_ENV=local vue-cli-service serve --mode local",
     "build": "vue-cli-service build --mode production",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",

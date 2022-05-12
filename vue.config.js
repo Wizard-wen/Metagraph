@@ -1,9 +1,10 @@
+/**
+ * @author wizard
+ * @date 2021/05/11 22:34
+ */
+
 // 导入compression-webpack-plugin
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
-// const path = require('path');
-// const { defineConfig } = require('@vue/cli-service')
-// 定义压缩文件类型
-// const productionGzipExtensions = ['js', 'css'];
 
 module.exports = {
   css: {
@@ -96,7 +97,6 @@ module.exports = {
       // 通过 html-webpack-plugin 将 cdn 注入到 index.html 之中
       config.plugin('html')
         .tap((args) => {
-          console.log(args);
           args[0].cdn = cdn;
           return args;
         });

@@ -12,7 +12,8 @@ import { ConfigService } from '@/config/config.service';
 import { PublicApiResponseType } from '@/utils/request.util';
 // 请求拦截
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
-  config.baseURL = ConfigService.apiBaseURL;
+  // config.baseURL = ConfigService.apiBaseURL;
+  config.baseURL = process.env.VUE_APP_API_BASE_URL;
   config.headers = {
     ...config.headers,
     'edu-user-token': store.state.user.token || ''

@@ -101,6 +101,7 @@ import {
   knowledgeList,
   repositoryList,
   combos,
+  graphData,
   tooltip
 } from '@/views/knowledge-map/knowledge.map';
 
@@ -202,7 +203,7 @@ export default defineComponent({
     }
 
     const goHomePage = async () => {
-      await router.push('/');
+      router.push('/').then();
     };
 
     const zoomIn = () => {
@@ -244,6 +245,7 @@ export default defineComponent({
     return {
       graph,
       edges,
+      graphData,
       nodes,
       knowledgeList,
       repositoryList,
@@ -335,5 +337,141 @@ export default defineComponent({
       }
     }
   }
+
+  &::v-deep(.g6-component-contextmenu-1) {
+    .title{
+      font-size: 12px;
+      padding: 2px;
+      font-weight: bold;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 0;
+    }
+
+    .context-menu-list{
+      padding: 2px;
+      margin: 0;
+      li {
+        text-align: left;
+        list-style: none;
+        margin: 0;
+        padding: 3px 4px;
+        cursor: pointer;
+        color: salmon;
+        transition: all linear 0.1s;
+        &:hover {
+          background: rgba(255, 111, 75, 0.1);
+        }
+      }
+    }
+    //padding: 0 !important;
+    border: 1px solid #e2e2e2;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #545454;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 8px;
+    box-shadow: rgb(174, 174, 174) 0px 0px 10px;
+  }
+
+}
+
+.g6-topo-container {
+  position: relative;
+  .g6-topo-toolbar {
+    position: absolute;
+    z-index: 3;
+    right: 10px;
+    top: 10px;
+    background: #fff;
+    .g6-topo-toolbar_list {
+      display: flex;
+      border: 1px solid #ddd;
+    }
+    .g6-topo-toolbar_item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 12px;
+      cursor: pointer;
+      .topo-icon {
+        font-size: 17px;
+        margin-bottom: 5px;
+      }
+      .topo-label {
+        user-select: none;
+      }
+
+      &:hover {
+        color: salmon;
+      }
+    }
+    .g6-topo-toolbar_item.disabled {
+      cursor: not-allowed;
+      color: rgba(0, 0, 0, 0.3);
+      &:hover {
+        color: rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+  .g6-topo {
+    width: 100%;
+    height: 100%;
+    canvas {
+      position: relative;
+      z-index: 1;
+    }
+    .g6-grid-container {
+      z-index: 0 !important;
+    }
+    .g6-component-contextmenu {
+      z-index: 3;
+    }
+    .g6-component-tooltip {
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #545454;
+      background-color: transparent;
+      padding: 10px 8px;
+      box-shadow: none;
+      z-index: 4;
+    }
+  }
+}
+
+.g6-minimap {
+  position: absolute !important;
+  z-index: 4;
+  bottom: 0;
+}
+.g6-component-contextmenu {
+  &::v-deep(.title){
+    font-size: 15px;
+    padding: 5px 8px;
+    padding-right: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+  }
+
+  &::v-deep(.context-menu-list){
+    padding: 5px 8px;
+    margin: 0;
+    li {
+      list-style: none;
+      margin: 0;
+      padding: 3px 4px;
+      cursor: pointer;
+      color: salmon;
+      transition: all linear 0.1s;
+      &:hover {
+        background: rgba(255, 111, 75, 0.1);
+      }
+    }
+  }
+
+
+
+  padding: 0 !important;
 }
 </style>

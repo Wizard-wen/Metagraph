@@ -36,13 +36,13 @@ export default defineComponent({
     const userModel = computed(() => store.state.user.user);
 
     async function goRepositoryPage(item: EntityCompletelyListItemType) {
-      await router.push({
+      router.push({
         name: 'RepositoryEditor',
         query: {
           repositoryEntityId: item.entity.id,
           type: item.author.id === userModel.value?.id ? 'edit' : 'view'
         }
-      });
+      }).then();
     }
 
     return {

@@ -36,7 +36,7 @@
     v-if="knowledgeDrawerState.isShow"
     :is-visible="knowledgeDrawerState.isShow"
     :knowledge-entity-id="knowledgeDrawerState.entityId"
-    @close="handleCloseKnowledgeDrawer"></knowledge-drawer-content>
+    @close="handleCloseKnowledgeDrawer" :type="'published'"></knowledge-drawer-content>
 </template>
 
 <script lang="ts">
@@ -66,7 +66,7 @@ import { isEditableKey, repositoryEntityIdKey } from './repository-editor/provid
 import RepositoryEditorHeader from './repository-editor/repository-editor-header/repository-editor-header.vue';
 
 export default defineComponent({
-  name: 'editable.repository',
+  name: 'repository-editor',
   components: {
     KnowledgeDrawerContent,
     RightSidebar,

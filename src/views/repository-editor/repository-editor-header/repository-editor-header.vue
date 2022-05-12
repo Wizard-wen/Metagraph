@@ -110,7 +110,7 @@ export default defineComponent({
     const currentUserModel = computed(() => store.state.user?.user);
     const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
     const goHomePage = async () => {
-      await router.push('/');
+      router.push('/').then();;
     };
     const isLogin = computed(() => store.state.user.isLogin);
 
@@ -121,12 +121,12 @@ export default defineComponent({
     }
 
     const goRepositoryEditPage = async () => {
-      await router.push({
+      router.push({
         path: '/repository/edit',
         query: {
           repositoryEntityId: repositoryEntityId.value
         }
-      });
+      }).then();
     };
     const handleUpdateComment = async () => {
       await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);

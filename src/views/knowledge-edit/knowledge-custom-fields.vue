@@ -19,12 +19,14 @@
           <ant-col
             :span="item.grid * 12"
             v-for="item in knowledgeCustomFields"
-            :key="item.key"
-            v-bind="customFieldsValidateInfo[item.key]">
+            :key="item.key">
             <ant-form-item
+              v-bind="customFieldsValidateInfo[item.key]"
               class="custom-form-item"
               :label="item.label"
-              :name="item.key">
+              :name="item.key"
+              :rules="customFieldsRulesRef[item.key]"
+              required>
               <ant-date-picker
                 v-model:value="customFieldsModelRef[item.key]"
                 style="width: 80%; margin-right: 8px"
@@ -61,7 +63,7 @@ import {
 } from 'ant-design-vue';
 import type { KnowledgeCustomFieldType } from 'metagraph-constant';
 import {
-  defineComponent, ref, inject, createVNode
+  defineComponent, ref, inject, createVNode, toRaw
 } from 'vue';
 import { KnowledgeApiService } from '@/api.service';
 import AddFieldModal from '@/views/knowledge-edit/knowledge-custom-fields/add-field-modal.vue';
@@ -69,7 +71,7 @@ import {
   KnowledgeEdit,
   draftKnowledgeEntityIdInjectKey,
   knowledgeCustomFields, customFieldsValidateInfo,
-  customFieldsModelRef, customFieldsRulesRef
+  customFieldsModelRef, customFieldsRulesRef,
 } from './model/knowledge.edit';
 
 export default defineComponent({
@@ -116,15 +118,18 @@ export default defineComponent({
 
     async function handleSaveCustomField() {
       const { validate } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
-      // Object.keys(customFieldsModelRef)
-      //   .forEach((item) => {
-      //     const customFieldItem = knowledgeCustomFields.value.find(
-      //       (customFieldItem) => customFieldItem.key === item
-      //     )!;
-      //     customFieldItem.value = customFieldsModelRef[item];
-      //   });
       validate()
         .then(async () => {
+          console.log(knowledgeCustomFields.value, customFieldsModelRef.value);
+          Object.keys(customFieldsModelRef.value)
+            .forEach((item) => {
+              console.log(item);
+              const customFieldItem = knowledgeCustomFields.value.find(
+                (customFieldItem) => customFieldItem.key === item
+              )!;
+              console.log(customFieldItem);
+              customFieldItem.value = customFieldsModelRef.value[item];
+            });
           const result = await KnowledgeApiService.saveFields({
             knowledgeEntityId: draftKnowledgeEntityId?.value || '',
             customFields: knowledgeCustomFields.value
@@ -148,7 +153,8 @@ export default defineComponent({
       handleSaveCustomField,
       knowledgeCustomFields,
       customFieldsValidateInfo,
-      customFieldsModelRef
+      customFieldsModelRef,
+      customFieldsRulesRef
     };
   },
   components: {

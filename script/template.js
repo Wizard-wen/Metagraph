@@ -1,3 +1,9 @@
+/**
+ * @author wizard
+ * @date 2021/09/20
+ * @description 组件生成器
+ */
+
 module.exports = {
   vueTemplate: (componentName) => `<template>
   <div class="${componentName}">

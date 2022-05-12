@@ -15,7 +15,6 @@ import './style/hide.style.scss';
 import Contextmenu from './directives/contextmenu';
 import Hide from './directives/hide';
 import './api.service/config/request.intercepter';
-
 const app = createApp(App);
 // 引入全局directive
 app.directive('contextmenu', Contextmenu);

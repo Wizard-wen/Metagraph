@@ -3,6 +3,7 @@
  * @date  2021/12/8 15:12
  */
 
+import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { JSONContent } from '@tiptap/vue-3';
 import { EditorView } from 'prosemirror-view';
@@ -30,7 +31,7 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
       hasPublished: boolean
     }
   ) {
-    super();
+    super(params.knowledgeEntityId, 'Knowledge');
   }
 
   handleClick(view: EditorView, pos: number, event: MouseEvent): void {
@@ -41,10 +42,20 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
     content: Record<string, any>,
     contentHtml: any
   }): Promise<boolean> {
-    return this.knowledgeEdit.handleSaveSectionArticle({
-      ...params,
-      knowledgeEntityId: this.params.knowledgeEntityId
-    });
+    console.log('do save---');
+    const result = await IndexdbService.getInstance()
+      .update(
+        'knowledge',
+        this.params.knowledgeEntityId,
+        {
+          description: params.contentHtml
+        }
+      );
+    return !!result;
+    // return this.knowledgeEdit.handleSaveSectionArticle({
+    //   ...params,
+    //   knowledgeEntityId: this.params.knowledgeEntityId
+    // });
   }
 
   async initData(): Promise<void> {
@@ -61,7 +72,6 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     const entity = mentionedKnowledge.list.find((item) => item.entity.id === params.id);
-    console.log(entity, '-------- entity', params.id);
     if (entity) {
       // 如果已经绑定了知识点，就
       that.success(params.range, {
@@ -82,7 +92,6 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
           id: params.id,
           name: params.name
         });
-        console.log(params);
         await that.knowledgeEdit.createDraftKnowledgeMention({
           id: params.id,
           repositoryEntityId: that.params.repositoryEntityId,

@@ -3,6 +3,7 @@
  * @date  2021/12/4 14:50
  */
 
+import { IndexdbService } from '@/service/indexdb.service';
 import {
   KnowledgeBaseFormType,
   KnowledgePicturesFrontendType
@@ -62,10 +63,10 @@ export const knowledgeCommentCount = computed(() => knowledge.value?.comment || 
 export const repositoryEntityList = ref<EntityCompletelyListItemType[]>();
 
 export const knowledgeCustomFields = ref<KnowledgeCustomFieldType[]>([]);
-export const customFieldsModelRef = reactive<{
+export const customFieldsModelRef = ref<{
   [key: string]: any
 }>({});
-export const customFieldsRulesRef = reactive<{
+export const customFieldsRulesRef = ref<{
   [key: string]: {
     required: boolean;
     message: string;
@@ -161,6 +162,14 @@ export class KnowledgeEdit {
     if (result.data) {
       knowledge.value = result.data;
       knowledgeContent.value = result.data.content as KnowledgeModelType;
+      await IndexdbService.getInstance().put('knowledge', {
+        id: result.data.entity.id,
+        name: knowledgeContent.value?.name,
+        description: knowledgeContent.value?.description ?? '',
+        entityId: result.data.entity.id,
+        type: 'draft',
+        knowledgeKey: knowledgeContent.value.knowledgeKey
+      });
       const knowledgeAuthor = result.data.author;
       knowledgeBaseForm.name = knowledgeContent.value.name;
       knowledgeBaseForm.knowledgeBaseTypeId = knowledgeContent.value.knowledgeBaseTypeId;
@@ -200,13 +209,13 @@ export class KnowledgeEdit {
   }
 
   private setKnowledgeCustomField(customField?: KnowledgeCustomFieldType[]) {
-    customFieldsModelRef.value = [];
-    customFieldsRulesRef.value = [];
+    customFieldsModelRef.value = {};
+    customFieldsRulesRef.value = {};
 
     knowledgeCustomFields.value = customField ?? [];
     knowledgeCustomFields.value.forEach((item) => {
-      customFieldsModelRef[item.key] = item.type === 'Date' ? moment(item.value) : item.value;
-      customFieldsRulesRef[item.key] = [{
+      customFieldsModelRef.value[item.key] = item.type === 'Date' ? moment(item.value) : item.value;
+      customFieldsRulesRef.value[item.key] = [{
         required: true,
         message: `请输入${item.label}`,
         trigger: item.type === 'Date' ? 'change' : 'blur',

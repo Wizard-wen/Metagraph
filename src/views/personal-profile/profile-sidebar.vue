@@ -144,7 +144,7 @@ export default defineComponent({
     };
     const handleFollow = async () => {
       if (userModel.value === undefined) {
-        await router.push('/login');
+        router.push('/login').then();
       } else {
         await followUser();
       }

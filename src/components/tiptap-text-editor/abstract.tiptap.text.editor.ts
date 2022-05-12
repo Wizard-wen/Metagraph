@@ -3,8 +3,13 @@
  * @date  2021/12/7 21:42
  */
 
+import { IndexdbService } from '@/service/indexdb.service';
 import { Range, Editor as CoreEditor } from '@tiptap/core';
-import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
+import {
+  EntityCompletelyListItemType,
+  KnowledgeModelType,
+  PublicEntityType
+} from 'metagraph-constant';
 import { Node as ProsemirrorNode, Slice } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
 import CharacterCount from '@tiptap/extension-character-count';
@@ -22,6 +27,7 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { tiptapInitData } from '@/store/constant';
 import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
+import { throttle, debounce } from 'lodash';
 import { CustomMention } from './tiptap.custom.mention';
 import CodeBlockContainer from './code-block-container.vue';
 
@@ -33,6 +39,12 @@ export abstract class AbstractTiptapTextEditor {
   timer?: number;
 
   mentionKnowledgeList!: EntityCompletelyListItemType[];
+
+  protected constructor(
+    private readonly entityId: string,
+    private readonly entityType: PublicEntityType,
+  ) {
+  }
 
   protected abstract limit?: number;
 
@@ -162,29 +174,24 @@ export abstract class AbstractTiptapTextEditor {
     this.editor = useEditor({
       editable: this.editable,
       content: articleContent ?? tiptapInitData,
-      onTransaction({
-        editor,
-        transaction
-      }) {
-        // The editor state has changed.
-        // console.log(editor, transaction)
-      },
-      onUpdate({
-        editor,
-        transaction
-      }) {
-        console.log(editor, transaction);
-      },
+      onUpdate: debounce(({
+        editor
+      }) => {
+        if (_this.entityType === 'Knowledge') {
+          IndexdbService.getInstance()
+            .update(
+              'knowledge',
+              _this.entityId,
+              {
+                description: editor.getHTML()
+              }
+            )
+            .then((data: number) => {
+              console.log(data, '----- update by key down');
+            });
+        }
+      }, 1000),
       editorProps: {
-        handleDOMEvents: {
-          keypress: (view, event) => {
-            console.log(view, event, '-----key pres');
-            if (event.key === 'Enter') {
-              console.log('Heyyyy');
-            }
-            return false;
-          },
-        },
         handleClick: (view: EditorView, pos: number, event: MouseEvent) => {
           _this.handleClick(view, pos, event);
           return true;
@@ -287,9 +294,9 @@ export abstract class AbstractTiptapTextEditor {
       ]
     });
     if (this.editable) {
-      this.timer = setInterval(() => {
+      this.timer = setInterval(async () => {
         if (this.editor.value?.getHTML()) {
-          this.save({
+          await this.save({
             content: this.editor.value?.getJSON(),
             contentHtml: this.editor.value?.getHTML()
           });

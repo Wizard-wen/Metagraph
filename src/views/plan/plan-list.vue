@@ -86,12 +86,12 @@ export default defineComponent({
     }
 
     async function goPlanBoard(id: string) {
-      await router.push({
+      router.push({
         path: '/planBoard',
         query: {
           id
         }
-      });
+      }).then();
     }
 
     return {

@@ -25,7 +25,7 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
     private readonly repositoryEntityId: string,
     protected readonly editable: boolean
   ) {
-    super();
+    super(repositoryEntityId, 'Repository');
   }
 
   private repositoryEntityList?: EntityCompletelyListItemType[];

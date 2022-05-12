@@ -3,6 +3,7 @@
  * @date  2021/11/22 00:04
  */
 
+import { IndexdbService } from '@/service/indexdb.service';
 import { JSONContent } from '@tiptap/vue-3';
 import { message } from 'ant-design-vue';
 import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
@@ -84,6 +85,13 @@ export class SectionTreeService {
         // 如果section存在，那么选中第一个，获取section article
         await this.getSectionContent(currentSectionId);
         sectionArticleTiptapTextEditor?.setContent(sectionArticle.content);
+        await IndexdbService.getInstance().put('repository', {
+          id: currentSectionId,
+          name: sectionArticle.title,
+          content: sectionArticle.contentHtml,
+          sectionId: currentSectionId,
+          repositoryEntityId
+        });
         sectionTree.selectedTreeNodes = [currentSectionId];
         sectionTree.selectedTreeSectionNodes = [currentSectionId];
       } else {

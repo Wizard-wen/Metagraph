@@ -73,6 +73,7 @@
 
 <script lang="ts">
 import { mentionPointerList } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
+import { IndexdbService } from '@/service/indexdb.service';
 import SelectKnowledgeCoverModal from '@/views/knowledge-edit/select-knowledge-cover-modal.vue';
 import { ExclamationCircleOutlined, FileImageOutlined } from '@ant-design/icons-vue';
 import {
@@ -175,11 +176,22 @@ export default defineComponent({
 
     async function saveKnowledgeArticle() {
       if (editor.value) {
-        await knowledgeEdit.handleSaveSectionArticle({
+        const result = await knowledgeEdit.handleSaveSectionArticle({
           content: editor.value?.getJSON(),
           contentHtml: editor.value?.getHTML(),
           knowledgeEntityId: draftKnowledgeEntityId.value
         });
+        await IndexdbService.getInstance()
+          .update(
+            'knowledge',
+            draftKnowledgeEntityId.value,
+            {
+              description: editor.value?.getHTML()
+            }
+          );
+        if (result) {
+          message.success('保存成功！');
+        }
       }
     }
 
@@ -210,9 +222,25 @@ export default defineComponent({
       });
     }
 
-    onBeforeRouteLeave(async (to, from) => await handleConfirm()
+    onBeforeRouteLeave(async (to, from) => {
       // 取消导航并停留在同一页面上
-    );
+      const result = await handleConfirm();
+      if (result) {
+        const des = knowledgeTiptapTextEditor.editor.value?.getHTML();
+        const data = await IndexdbService.getInstance()
+          .get('knowledge', draftKnowledgeEntityId.value);
+        console.log(data, des);
+        if (editor.value) {
+          await knowledgeEdit.handleSaveSectionArticle({
+            content: editor.value?.getJSON(),
+            contentHtml: editor.value?.getHTML(),
+            knowledgeEntityId: draftKnowledgeEntityId.value
+          });
+        }
+        return result;
+      }
+      return false;
+    });
 
     onBeforeRouteUpdate(async (
       to: RouteLocationNormalized,
@@ -244,6 +272,7 @@ export default defineComponent({
       next();
     });
     onMounted(async () => {
+      window.onbeforeunload = (event: any) => '关闭前的提示';
       isLoading.value = true;
       console.time('start request');
       await Promise.all([
@@ -269,6 +298,7 @@ export default defineComponent({
     });
 
     onUnmounted(() => {
+      console.log('un handle');
       knowledgeTiptapTextEditor.destroy();
     });
 
@@ -414,6 +444,14 @@ export default defineComponent({
 
 .custom-editor-style {
   width: 620px;
+  height: 390px;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+}
+
+.custom-editor-style::-webkit-scrollbar {
+  width: 3px !important;
 }
 
 </style>
