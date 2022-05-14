@@ -37,8 +37,10 @@ export enum ApiPathEnum {
    * section
    */
   GetNoAuthSectionTree = '/public/section/tree',
+  GetNoAuthNormalSectionTree = '/public/section/tree/normal',
   CreateSection = '/section/create',
   UpdateSection = '/section/update',
+  RemoveSection = '/section/remove',
   GetNoAuthSectionContent = '/public/section/get/content',
   SaveSectionArticle = '/section/save/article',
   BindSectionEntity = '/section/bind/entity',

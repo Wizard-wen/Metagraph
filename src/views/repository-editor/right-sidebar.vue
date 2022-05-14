@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="sidebar">
     <div class="tabs">
       <div
         class="tab"
@@ -20,7 +20,7 @@
 import {
   computed, defineComponent, reactive, inject, ref
 } from 'vue';
-import { isEditableKey } from '@/views/repository-editor/provide.type';
+import { isEditableKey } from '@/views/repository-editor/model/provide.type';
 import ToolbarEntityList from './right-sidebar/bind-entity-list/bind-entity-list.vue';
 // import ToolbarKnowledgeEdge from './right-sidebar/right-sidebar.knowledge.edge.vue';
 import AlternativeKnowledgeList from './right-sidebar/alternative-knowledge-list/alternative-knowledge-list.vue';
@@ -29,7 +29,7 @@ export default defineComponent({
   name: 'right-sidebar',
   setup() {
     const isEditable = inject(isEditableKey, ref(false));
-    const toolbarState = ref('EntityList');
+    const toolbarState = ref<'EntityList' | 'Alternative'>('EntityList');
     const elementTabs = reactive<{
       target: { value: string; label: string; isAuth: boolean }[]
     }>({
@@ -79,7 +79,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../style/common';
 
-.toolbar {
+.sidebar {
   border-left: solid 1px $borderColor;
   background-color: #fff;
   min-height: 100%;

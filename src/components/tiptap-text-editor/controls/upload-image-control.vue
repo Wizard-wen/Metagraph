@@ -15,32 +15,49 @@
     @close="handleUploadImageModalClose($event)"></upload-cropper-modal>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { Editor } from '@tiptap/vue-3';
-import { defineProps, PropType, ref } from 'vue';
+import {
+  PropType, ref, defineComponent, toRef
+} from 'vue';
 import { ImageIcon } from '@/components/icons';
 import UploadCropperModal from '@/components/upload/upload-cropper-modal.vue';
 
-const props = defineProps({
-  editor: {
-    type: Object as PropType<Editor>,
-    required: true
+export default defineComponent({
+  props: {
+    editor: {
+      type: Object as PropType<Editor>,
+      required: true
+    }
+  },
+  components: {
+    UploadCropperModal,
+    ImageIcon
+  },
+  setup(props) {
+    const editor = toRef(props, 'editor');
+    const isUploadImageModalShow = ref(false);
+    const handleUploadImage = async () => {
+      isUploadImageModalShow.value = true;
+    };
+    const handleUploadImageModalClose = (event?: { url: string }) => {
+      isUploadImageModalShow.value = false;
+      if (event) {
+        editor.value?.chain()
+          .focus()
+          .setImage({ src: event.url })
+          .run();
+      }
+    };
+
+    return {
+      isUploadImageModalShow,
+      handleUploadImage,
+      handleUploadImageModalClose
+    };
   }
 });
-const isUploadImageModalShow = ref(false);
-const handleUploadImage = async () => {
-  isUploadImageModalShow.value = true;
-};
-const handleUploadImageModalClose = (event?: { url: string }) => {
-  isUploadImageModalShow.value = false;
-  if (event) {
-    console.log(event.url);
-    props.editor?.chain()
-      .focus()
-      .setImage({ src: event.url })
-      .run();
-  }
-};
+
 </script>
 <style scoped lang="scss">
 @import "../../../style/tiptap.common.scss";

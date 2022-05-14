@@ -23,6 +23,10 @@ export class IndexdbService {
       });
   }
 
+  async remove(table: string, sectionId: string): Promise<void> {
+    await this.db.table(table).delete(sectionId);
+  }
+
   async add(table: string, item: { [key: string]: IndexableType }): Promise<void> {
     await this.db.table(table)
       .add(item);

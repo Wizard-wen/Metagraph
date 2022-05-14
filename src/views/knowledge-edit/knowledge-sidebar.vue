@@ -58,7 +58,7 @@ export default defineComponent({
   height: calc(100vh - 56px);
 
   .tabs {
-    height: 46px;
+    height: 32px;
     font-size: 12px;
     flex-shrink: 0;
     display: flex;

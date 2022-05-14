@@ -14,11 +14,11 @@ import {
   RepositoryApiService,
   RepositoryNoAuthApiService
 } from '@/api.service';
-import { repositoryBindEntityList } from '../../repository-editor';
+import { repositoryBindEntityList } from '../../model/repository-editor';
 
 export const searchText = ref<string | undefined>(undefined);
 export const searchData = reactive<{
-  target: (EntityCompletelyListItemType & { hasBind: boolean })[]
+  target:(EntityCompletelyListItemType & { hasBind: boolean })[]
 }>({ target: [] });
 export const bindEntityIdList = reactive<{ target: string[] }>({
   target: []
@@ -29,14 +29,19 @@ export const currentPage = ref(1);
 export const isLoading = ref(true);
 
 export class CreateOrBindKnowledgeModal {
-  async createNewDraftKnowledge(repositoryEntityId: string): Promise<EntityCompletelyListItemType | undefined> {
+  async createNewDraftKnowledge(params: {
+    repositoryEntityId: string,
+    knowledgeBaseTypeId: string,
+    name: string
+  }): Promise<EntityCompletelyListItemType | undefined> {
     if (searchText.value === undefined) {
       return undefined;
     }
     const result = await KnowledgeApiService.createDraftKnowledge({
-      knowledgeBaseTypeId: '606fe62050a08412400387e5',
-      repositoryEntityId,
-      name: searchText.value
+      // knowledgeBaseTypeId: '606fe62050a08412400387e5',
+      // repositoryEntityId,
+      // name: searchText.value
+      ...params
     });
     if (!result.data) {
       message.error('创建新的知识点时出错！');

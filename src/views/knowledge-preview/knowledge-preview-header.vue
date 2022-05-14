@@ -42,16 +42,17 @@
     </div>
   </div>
   <knowledge-drawer-content
-    :knowledgeEntityId="knowledgeModel.entity.id"
-    v-if="isPreviewVisible"
-    :isVisible="isPreviewVisible"
-    @close="isPreviewVisible = false" :type="type"></knowledge-drawer-content>
+    :knowledgeEntityId="knowledgeDrawerState.entityId"
+    v-if="knowledgeDrawerState.isShow"
+    :isVisible="knowledgeDrawerState.isShow"
+    :type="knowledgeDrawerState.type"
+    @close="handleCloseDrawer"></knowledge-drawer-content>
 </template>
 <script lang="ts">
 import { Tag } from 'ant-design-vue';
 import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
 import {
-  computed, defineComponent, PropType, ref, toRef
+  computed, defineComponent, PropType, toRef
 } from 'vue';
 import { LinkOutlined } from '@ant-design/icons-vue';
 import MentionedControlButton from '@/views/knowledge-edit/knowledge-edit-header/mentioned-control-button.vue';
@@ -59,7 +60,8 @@ import SocialActionButton from '@/components/social-action-button/social-action-
 import {
   KnowledgeDrawerContent,
   CommentControlButton,
-  StarControlButton
+  StarControlButton,
+  knowledgeDrawerState
 } from '@/business';
 
 import {
@@ -96,8 +98,7 @@ export default defineComponent({
   setup(props) {
     const knowledgeModel = toRef(props, 'knowledgeModel');
     const type = toRef(props, 'type');
-    const isPreviewVisible = ref(false);
-    const knowledgeEdit = new KnowledgePreview();
+    const knowledgePreview = new KnowledgePreview();
 
     const knowledgeAuthStatus = computed(
       () => ((knowledgeModel.value.content as KnowledgeResponseType)?.isCertificated ? '已认证' : '未认证')
@@ -105,16 +106,21 @@ export default defineComponent({
 
     async function handleStarStatusUpdate() {
       if (type.value === 'published') {
-        await knowledgeEdit.getPublishedKnowledgePreview(knowledgeModel.value.entity.id);
+        await knowledgePreview.getPublishedKnowledgePreview(knowledgeModel.value.entity.id);
       }
+    }
+
+    function handleCloseDrawer() {
+      knowledgePreview.handleCloseKnowledgeDrawer();
     }
 
     return {
       handleStarStatusUpdate,
-      isPreviewVisible,
       previewKnowledgePublishStatus,
       knowledgeAuthStatus,
-      publishedKnowledgeMentioned
+      publishedKnowledgeMentioned,
+      knowledgeDrawerState,
+      handleCloseDrawer
     };
   }
 });

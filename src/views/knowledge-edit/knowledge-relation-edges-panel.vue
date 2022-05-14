@@ -5,49 +5,55 @@
       accordion
       :defaultActiveKey="'1'">
       <ant-collapse-panel key="1" header="知识库内前置知识点">
-        <div class="card-content">
+        <div class="card-content" v-if="knowledgeEdges.target.preInnerList.length">
           <div
             v-for="(item, index) in knowledgeEdges.target.preInnerList"
             :key="index"
             data-type="rect"
             class="dnd-rect">
-            {{ item.content.name }}
+            {{ item.item.content.name }}
           </div>
         </div>
+        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
       </ant-collapse-panel>
       <ant-collapse-panel key="2" header="知识库外前置知识点" :disabled="false">
-        <div class="card-content">
+        <div class="card-content" v-if="knowledgeEdges.target.preOuterList.length">
           <div
             v-for="(item, index) in knowledgeEdges.target.preOuterList"
             :key="index"
             data-type="rect"
             class="dnd-rect">
-            {{ item.content.name }}
+            {{ item.item.content.name }}
           </div>
         </div>
+        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
       </ant-collapse-panel>
       <ant-collapse-panel key="3" header="知识库内导出知识点">
-        <div class="card-content">
+        <div class="card-content" v-if="knowledgeEdges.target.extendInnerList.length">
           <div
             v-for="(item, index) in knowledgeEdges.target.extendInnerList"
             :key="index"
             data-type="rect"
             class="dnd-rect">
-            {{ item.content.name }}
+            {{ item.item.content.name }}
           </div>
         </div>
+        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
       </ant-collapse-panel>
       <ant-collapse-panel key="4" header="知识库外导出知识点">
-        <div
-          v-for="(item, index) in knowledgeEdges.target.extendOuterList"
-          :key="index"
-          data-type="rect"
-          class="dnd-rect">
-          {{ item.content.name }}
+        <div class="card-content" v-if="knowledgeEdges.target.extendOuterList.length">
+          <div
+            v-for="(item, index) in knowledgeEdges.target.extendOuterList"
+            :key="index"
+            data-type="rect"
+            class="dnd-rect">
+            {{ item.item.content.name }}
+          </div>
         </div>
+        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
       </ant-collapse-panel>
     </ant-collapse>
-    <ant-empty v-else></ant-empty>
+    <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
   </div>
 </template>
 
@@ -57,7 +63,7 @@ import { ref, defineComponent } from 'vue';
 import { knowledgeEdges } from './model/knowledge.edit';
 
 export default defineComponent({
-  name: 'knowledge-edges-panel',
+  name: 'knowledge-relation-edges-panel',
   components: {
     AntEmpty: Empty,
     AntCollapse: Collapse,
@@ -69,7 +75,8 @@ export default defineComponent({
     return {
       knowledgeEdges,
       isOuterPre,
-      isInnerPre
+      isInnerPre,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE
     };
   }
 });

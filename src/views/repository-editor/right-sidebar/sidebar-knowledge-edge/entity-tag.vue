@@ -4,14 +4,14 @@
     <div class="top-arrow" v-if="k2 === 'Pre' || k2  === 'Current'">
       <arrow-up-icon style="font-size: 16px;"></arrow-up-icon>
     </div>
-    <div class="entity" >
+    <div class="entity">
       <div class="left">
         <arrow-left-icon style="font-size: 16px;"></arrow-left-icon>
       </div>
       <div class="content" :class="{'entity-active': k2 === 'Current'}">
         <div class="inner-content">
           <div class="target-icon" v-if="k2 === 'Current'">
-            <TagOutlined />
+            <TagOutlined/>
           </div>
           <div class="title">
             {{ k1.name }}
@@ -70,7 +70,10 @@ export default defineComponent({
       required: true
     }
   },
-  setup({ knowledgeType, knowledge }) {
+  setup({
+    knowledgeType,
+    knowledge
+  }) {
     const k1 = computed(() => knowledge);
     const k2 = computed(() => knowledgeType);
     return {
@@ -81,7 +84,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-@import '../../../style/common';
+@import '../../../../style/common';
 
 .edge-item {
   .top-arrow {
@@ -112,11 +115,13 @@ export default defineComponent({
 
       .inner-content {
         position: relative;
-        .target-icon{
+
+        .target-icon {
           position: absolute;
           left: 5px;
           top: 5px;
         }
+
         .title {
           height: 60px;
           line-height: 60px;

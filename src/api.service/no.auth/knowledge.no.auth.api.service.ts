@@ -4,6 +4,7 @@
  */
 
 import { RequestNewUntil } from '@/utils/request.new.until';
+import { KnowledgeAuthedApi } from 'metagraph-constant';
 import type {
   EntityCompletelyListItemType, KnowledgeEdgeInEdgeGroupType,
   KnowledgeNoAuthApi
@@ -25,12 +26,27 @@ export class KnowledgeNoAuthApiService {
     });
   }
 
-  // static async get(params: { id: string; }): Promise<PublicApiResponseType<KnowledgeResponseType>> {
-  //   return RequestNewUntil.post<KnowledgeNoAuthApi.GetKnowledge>({
-  //     apiPath: '/public/knowledge/get',
-  //     requestBody: params
-  //   });
-  // }
+
+  static async getLatestVersion(params: {
+    publishedKnowledgeEntityId: string;
+  }): Promise<PublicApiResponseType<number>> {
+    return RequestNewUntil.post<KnowledgeNoAuthApi.GetLatestVersion>({
+      apiPath: '/public/knowledge/getLatestVersion',
+      requestBody: params
+    });
+  }
+
+  static async getPublishedKnowledgePreview(params: {
+    publishedKnowledgeEntityId: string;
+  }): Promise<PublicApiResponseType<{
+    entity: EntityCompletelyListItemType;
+    mentionList: EntityCompletelyListItemType[];
+  }>> {
+    return RequestNewUntil.post<KnowledgeNoAuthApi.GetPublishedKnowledgePreview>({
+      apiPath: '/public/knowledge/published/preview',
+      requestBody: params
+    });
+  }
 
   static async getPath(params: {
     originKnowledgeEntityId: string,

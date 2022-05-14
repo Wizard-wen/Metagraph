@@ -1,5 +1,9 @@
 <template>
-
+  <div class="section-view">
+    <div class="graph-content">
+      <knowledge-graph-panel></knowledge-graph-panel>
+    </div>
+  </div>
 </template>
 
 <script>

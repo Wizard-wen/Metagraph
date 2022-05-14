@@ -29,7 +29,7 @@ import {
   reactive, ref, UnwrapRef, toRaw, defineComponent, toRef, inject
 } from 'vue';
 import { Form, Input, Modal } from 'ant-design-vue';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { RepositoryApiService } from '@/api.service';
 
 interface FormState {

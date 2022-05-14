@@ -1,74 +1,105 @@
 <template>
   <div class="section-tree">
-    <ant-button
-      v-if="isEditable"
-      style="width: 100%"
-      @click="openCreateSectionModal({
+    <div class="tree-container">
+      <div class="header">单元树</div>
+      <div class="control">
+        <ant-button
+          v-if="isEditable"
+          class="add-section-button"
+          @click="openCreateSectionModal({
         type: 'Section', isRoot: true
       })">
-      创建顶级章节
-    </ant-button>
-    <div class="tree-content">
-      <ant-tree
-        :tree-data="sectionTree.tree"
-        class="ant-tree-customer"
-        show-icon
-        @select="handleSelectedTreeNode"
-        :selectedKeys="sectionTree.selectedTreeNodes">
-        <template #Knowledge>
-          <knowledge-icon></knowledge-icon>
-        </template>
-        <template #Section>
-          <FolderOutlined/>
-        </template>
-        <template #title="{ key: treeKey, title, entity, section }" v-if="isEditable">
-          <ant-dropdown :trigger="['contextmenu']" :disabled="entity !== undefined">
-            <span>{{ title }}</span>
-            <template #overlay>
-              <ant-menu
-                @click="({ key: menuKey }) => handleContextMenuClick(treeKey, menuKey, section)">
-                <ant-menu-item key="Section">插入子级章节</ant-menu-item>
-                <ant-menu-item key="Knowledge">绑定知识点</ant-menu-item>
-                <ant-menu-item key="ChangeSection">修改章节信息</ant-menu-item>
-              </ant-menu>
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          创建顶级单元
+        </ant-button>
+      </div>
+      <div class="tree-scroll-content">
+        <div class="tree-content">
+          <ant-tree
+            v-if="sectionTree.tree.length"
+            :tree-data="sectionTree.tree"
+            class="ant-tree-customer"
+            show-icon
+            defaultExpandAll
+            @select="handleSelectedTreeNode"
+            :selectedKeys="sectionTree.selectedTreeNodes">
+            <template #Section>
+              <FolderOutlined/>
             </template>
-          </ant-dropdown>
-        </template>
-      </ant-tree>
+            <template #title="{ key: treeKey, title, entity, section }" v-if="isEditable">
+              <ant-dropdown :trigger="['contextmenu']" :disabled="entity !== undefined">
+                <span>{{ title }}</span>
+                <template #overlay>
+                  <ant-menu
+                    @click="({
+                      key: menuKey
+                    }) => handleContextMenuClick(treeKey, menuKey, section)">
+                    <ant-menu-item key="Section">插入子级单元</ant-menu-item>
+                    <ant-menu-item key="Delete">删除</ant-menu-item>
+                    <ant-menu-item key="Knowledge">绑定知识点</ant-menu-item>
+                    <ant-menu-item key="ChangeSection">修改单元信息</ant-menu-item>
+                  </ant-menu>
+                </template>
+              </ant-dropdown>
+            </template>
+          </ant-tree>
+        </div>
+      </div>
     </div>
-    <section-create-modal
-      :is-modal-visible="isCreateSectionModalShown"
-      @close="isCreateSectionModalShown = false"></section-create-modal>
+    <div class="tree-bind-container">
+      <div class="header">单元知识点列表</div>
+      <div
+        class="section-bind-scroll-container"
+        v-if="currentSectionNode.entityList.length">
+        <div class="section-bind-list">
+          <div
+            class="list-item"
+            v-for="item in currentSectionNode.entityList"
+            :key="item.entity.id">
+            <div class="text no-break-line-text" :title="item.content.name">
+              <SnippetsOutlined class="icon"/>
+              {{ item.content.name }}
+            </div>
+            <div class="control">
+              <ViewIcon @click="handleClickEntityItem(item, 'draft')"></ViewIcon>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ant-empty :image="simpleImage" v-else></ant-empty>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import {
   FolderOutlined,
+  PlusOutlined, SnippetsOutlined
 } from '@ant-design/icons-vue';
-import type { SectionModelType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, SectionModelType } from 'metagraph-constant';
 import {
-  computed, defineComponent, ref, inject
+  defineComponent, ref, inject
 } from 'vue';
 import {
-  Tree, Dropdown, Menu, Button
+  Tree, Dropdown, Menu, Button, Empty
 } from 'ant-design-vue';
-import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
-import { knowledgeDrawerState } from '@/business';
-import { isRepositoryEditorLoading } from '@/views/repository-editor/repository-editor';
-import { isEditableKey } from '@/views/repository-editor/provide.type';
-import SectionCreateModal from '@/views/repository-editor/section-tree/section-create-modal.vue';
-import { KnowledgeIcon } from '@/components/icons';
+import { isEditableKey } from '@/views/repository-editor/model/provide.type';
+import { ViewIcon } from '@/components/icons';
 import {
-  SectionTreeService,
-  sectionTree
+  sectionTree,
+  currentSectionNode
 } from '@/views/repository-editor/section-tree/section.tree';
+import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 
 export default defineComponent({
   name: 'section-tree',
   components: {
-    KnowledgeIcon,
-    SectionCreateModal,
+    PlusOutlined,
+    ViewIcon,
+    AntEmpty: Empty,
+    SnippetsOutlined,
     FolderOutlined,
     AntTree: Tree,
     AntButton: Button,
@@ -76,39 +107,27 @@ export default defineComponent({
     AntMenu: Menu,
     AntMenuItem: Menu.Item
   },
-  setup() {
-    const sectionTreeService = new SectionTreeService();
+  emits: ['selectSection', 'createSection'],
+  setup(props, { emit }) {
+    const knowledgePreview = new KnowledgePreview();
     const isEditable = inject(isEditableKey, ref(false));
     const isCreateSectionModalShown = ref(false);
-    const selectedTreeNodeEntityId = computed(() => (sectionTree.selectedTreeNodes[0]?.includes('-')
-      ? sectionTree.selectedTreeNodes[0].split('-')[0] : ''));
 
     async function openCreateSectionModal(params: {
-      type: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',
+      type: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete',
       section?: SectionModelType,
       isRoot?: boolean
     }) {
-      isCreateSectionModalShown.value = true;
-      await sectionTreeService.initSectionModal(params);
+      emit('createSection', params);
     }
 
-    async function handleSelectedTreeNode(selectedKeys: string[], info: SelectEvent) {
-      isRepositoryEditorLoading.value = true;
-      if (!info.node.dataRef.section) {
-        knowledgeDrawerState.isShow = true;
-        // eslint-disable-next-line prefer-destructuring
-        knowledgeDrawerState.entityId = selectedKeys[0].split('-')[0];
-      }
-      await sectionTreeService.selectTreeNode({
-        selectedKeys,
-        info
-      }, isEditable.value);
-      isRepositoryEditorLoading.value = false;
+    async function handleSelectedTreeNode(selectedKeys: string[]) {
+      emit('selectSection', selectedKeys);
     }
 
     const handleContextMenuClick = (
       treeKey: string,
-      menuKey: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',
+      menuKey: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete',
       section?: SectionModelType
     ) => {
       openCreateSectionModal({
@@ -116,23 +135,126 @@ export default defineComponent({
         section
       });
     };
+
+    function handleClickEntityItem(item: EntityCompletelyListItemType) {
+      knowledgePreview.handleShowKnowledgeDrawer(
+        item.entity.id,
+        'published'
+      );
+    }
+
     return {
       handleContextMenuClick,
       openCreateSectionModal,
       handleSelectedTreeNode,
       isCreateSectionModalShown,
-      selectedTreeNodeEntityId,
       isEditable,
-      sectionTree
+      sectionTree,
+      currentSectionNode,
+      handleClickEntityItem,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
     };
   }
 });
 </script>
 
 <style scoped lang="scss">
+@import '../../style/common.scss';
+
 .section-tree {
-  .tree-content {
-    padding-left: 10px;
+  height: calc(100vh - 55px);
+
+  .tree-container {
+    height: 50%;
+    border-bottom: 1px solid #eee;
+
+    .header {
+      height: 32px;
+      line-height: 32px;
+      font-size: 12px;
+      text-align: center;
+      width: 100%;
+      border-bottom: 1px solid #eee;
+      background: #f9f9f9;
+    }
+
+    .control {
+      padding: 10px 15px 0 15px;
+      .add-section-button {
+        width: 100%;
+        font-size: 12px;
+        border-radius: 4px;
+      }
+    }
+
+    .tree-scroll-content {
+      height: calc(100% - 74px);
+      padding: 10px 0;
+    }
+
+    .tree-content {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      //padding-left: 10px;
+    }
+  }
+
+  .tree-bind-container {
+    height: 50%;
+    overflow: hidden;
+
+    .header {
+      height: 32px;
+      line-height: 32px;
+      font-size: 12px;
+      text-align: center;
+      width: 100%;
+      background: #f9f9f9;
+      border-bottom: 1px solid #eee;
+    }
+
+    .section-bind-scroll-container {
+      height: calc(100% - 32px);
+      padding: 10px 0;
+    }
+
+    .section-bind-list {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      .list-item {
+        padding: 0 15px;
+        height: 35px;
+        line-height: 35px;
+        width: 100%;
+        text-align: left;
+        text-indent: 5px;
+        display: flex;
+        justify-content: space-between;
+
+        &:hover {
+          @include list-item-highlight;
+          text-indent: 5px;
+        }
+
+        .text {
+          .icon {
+            text-indent: 0;
+          }
+        }
+
+        .text-no-icon {
+          padding-left: 17px;
+        }
+
+        .control {
+          font-size: 20px;
+          line-height: 35px;
+        }
+      }
+    }
   }
 }
 
@@ -146,7 +268,8 @@ export default defineComponent({
   ::v-deep(.ant-tree-node-content-wrapper) {
     clear: both; /* 清除左右浮动 */
     height: max-content;
-    width: 200px; /* 必须定义宽度 */
+    padding: 0;
+    //width: 195px; /* 必须定义宽度 */
     word-break: break-word; /* 文本行的任意字内断开 */
     word-wrap: break-word; /* IE */
     white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
@@ -154,6 +277,9 @@ export default defineComponent({
 
   ::v-deep(.ant-dropdown-trigger) {
     padding-right: 10px;
+    display: inline-block;
+    min-width: 80px;
+    min-height: 19px;
   }
 }
 </style>

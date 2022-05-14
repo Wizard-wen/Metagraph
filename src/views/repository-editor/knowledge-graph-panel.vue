@@ -36,7 +36,7 @@ import {
   initWebSocket,
   isModalVisible
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
-import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
 import KnowledgeConnection from './knowledge-graph-panel/knowledge-relation.vue';

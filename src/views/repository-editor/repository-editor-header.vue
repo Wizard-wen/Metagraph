@@ -71,9 +71,9 @@ import CloneRepositoryModal from '@/views/repository-editor/repository-editor-he
 import { useStore } from '@/store';
 import RepositoryViewChange from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
 import { StarControlButton, CommentControlButton } from '@/business';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { EditIcon } from '@/components/icons';
-import { repositoryModel, RepositoryEditor } from '../repository-editor';
+import { repositoryModel, RepositoryEditor } from './model/repository-editor';
 
 export default defineComponent({
   name: 'repository-editor-header',
@@ -104,13 +104,12 @@ export default defineComponent({
     const repositoryEditor = new RepositoryEditor();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const needRefresh = ref(route.query.refresh);
-    console.log(needRefresh);
     const isCloning = ref(false);
     const isCloneModalShow = ref(false);
     const currentUserModel = computed(() => store.state.user?.user);
     const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
     const goHomePage = async () => {
-      router.push('/').then();;
+      router.push('/').then();
     };
     const isLogin = computed(() => store.state.user.isLogin);
 
@@ -210,7 +209,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import "../../../style/common.scss";
+@import "../../style/common";
 
 .repository-editor-header {
   background: #fafbfc;

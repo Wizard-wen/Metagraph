@@ -77,7 +77,7 @@ import {
   computed, defineComponent, inject, onMounted, ref
 } from 'vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import {
   graph,
   dnd,
@@ -85,7 +85,7 @@ import {
   entityRelationEdges,
   isKnowledgeRelationLoading
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
-import { repositoryBindEntityList } from '../repository-editor';
+import { repositoryBindEntityList } from '../model/repository-editor';
 
 export default defineComponent({
   name: 'knowledge-connection',

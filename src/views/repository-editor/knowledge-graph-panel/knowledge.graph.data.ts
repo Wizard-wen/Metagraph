@@ -23,7 +23,7 @@ import {
   KnowledgeNoAuthApiService,
   RepositoryApiService
 } from '@/api.service';
-import { RepositoryEditor } from '../repository-editor';
+import { RepositoryEditor } from '../model/repository-editor';
 
 type CustomEdgeType = {
   isInnerRepository: boolean;

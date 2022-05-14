@@ -5,7 +5,8 @@
       <div class="content" v-if="mentionedKnowledge.list.length">
         <div
           class="content-item"
-          v-for="item in mentionedKnowledge.list">
+          :key="index"
+          v-for="(item, index) in mentionedKnowledge.list">
           {{ item.content.name }}
           <div class="control-right">
             <EyeOutlined @click="showKnowledgeDrawer(item)"/>
@@ -17,24 +18,21 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { createVNode, inject, ref } from 'vue';
-import { DeleteIcon } from '@/components/icons';
-import { EdgeApiService } from '@/api.service';
-import { knowledgeDrawerState } from '@/business';
 import {
-  knowledgeEdges,
+  createVNode, inject, ref, defineComponent
+} from 'vue';
+import { DeleteIcon } from '@/components/icons';
+import {
   mentionedKnowledge,
   KnowledgeEdit,
   draftKnowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
 } from './model/knowledge.edit';
-
-const repositoryEntityId = inject(repositoryEntityIdInjectKey, ref(''));
-const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
 
 /**
  * 功能需求
@@ -50,32 +48,51 @@ const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
  * 10.可以选择一段文本，直接标记为引用
  * 11.可以考虑展示一下，同一个知识点之间的循环引用关系
  */
-const knowledgeEdit = new KnowledgeEdit();
 
-function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string }) {
-  console.log(item);
-  Modal.confirm({
-    title: '确定删除知识点关联吗',
-    icon: createVNode(ExclamationCircleOutlined),
-    content: `确定要删除与知识点"${item.content.name}"的关联吗?`,
-    okText: '确定',
-    cancelText: '取消',
-    async onOk() {
-      await knowledgeEdit.removeMentionKnowledge(
-        knowledgeEntityId.value,
-        item.entity.id
-      );
-    },
-    onCancel() {
-      message.info('取消解绑！');
-    },
-  });
-}
+export default defineComponent({
+  name: '',
+  components: {
+    DeleteIcon,
+    EyeOutlined
+  },
+  setup() {
+    const repositoryEntityId = inject(repositoryEntityIdInjectKey, ref(''));
+    const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
+    const knowledgeEdit = new KnowledgeEdit();
+    const knowledgePreview = new KnowledgePreview();
 
-function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
-  knowledgeDrawerState.entityId = item.entity.id;
-  knowledgeDrawerState.isShow = true;
-}
+    function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string }) {
+      console.log(item);
+      Modal.confirm({
+        title: '确定删除知识点关联吗',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: `确定要删除与知识点"${item.content.name}"的关联吗?`,
+        okText: '确定',
+        cancelText: '取消',
+        async onOk() {
+          await knowledgeEdit.removeMentionKnowledge(
+            knowledgeEntityId.value,
+            item.entity.id
+          );
+        },
+        onCancel() {
+          message.info('取消解绑！');
+        },
+      });
+    }
+
+    function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
+      knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'punlished');
+    }
+
+    return {
+      handleRemoveEdge,
+      showKnowledgeDrawer,
+      mentionedKnowledge
+    };
+  }
+});
+
 </script>
 
 <style scoped lang="scss">
@@ -93,11 +110,11 @@ function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
   height: 100%;
 
   .title {
-    height: 46px;
-    line-height: 46px;
+    height: 32px;
+    line-height: 32px;
     text-align: center;
     font-size: 14px;
-    //background: $lightGray;
+    background: $lightGray;
     border-bottom: 1px solid $borderColor;
   }
 

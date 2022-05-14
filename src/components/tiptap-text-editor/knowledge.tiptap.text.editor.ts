@@ -3,6 +3,7 @@
  * @date  2021/12/8 15:12
  */
 
+import { knowledgeDrawerState } from '@/business';
 import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { JSONContent } from '@tiptap/vue-3';
@@ -39,8 +40,8 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   }
 
   protected async save(params: {
-    content: Record<string, any>,
-    contentHtml: any
+    content: JSONContent,
+    contentHtml: string
   }): Promise<boolean> {
     console.log('do save---');
     const result = await IndexdbService.getInstance()
@@ -52,10 +53,6 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
         }
       );
     return !!result;
-    // return this.knowledgeEdit.handleSaveSectionArticle({
-    //   ...params,
-    //   knowledgeEntityId: this.params.knowledgeEntityId
-    // });
   }
 
   async initData(): Promise<void> {
@@ -122,5 +119,11 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
         });
       },
     });
+  }
+
+  handleClickMentionItem(params: { id: string; name: string }): void {
+    knowledgeDrawerState.type = 'published';
+    knowledgeDrawerState.entityId = params.id;
+    knowledgeDrawerState.isShow = true;
   }
 }

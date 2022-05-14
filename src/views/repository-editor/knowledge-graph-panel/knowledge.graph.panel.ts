@@ -4,7 +4,7 @@
  */
 
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
-import { reactive, ref, toRaw } from 'vue';
+import { reactive, ref } from 'vue';
 import { message } from 'ant-design-vue';
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import { EdgeApiService } from '@/api.service';

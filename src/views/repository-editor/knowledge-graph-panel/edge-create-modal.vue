@@ -59,7 +59,7 @@ import {
   graph,
   knowledgeInEdgeList
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
-import { repositoryEntityIdKey } from '../provide.type';
+import { repositoryEntityIdKey } from '../model/provide.type';
 import {
   knowledgeEdgeFormRules,
   knowledgeEdgeFormRef,

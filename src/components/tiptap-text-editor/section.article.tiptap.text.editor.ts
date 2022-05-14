@@ -3,6 +3,8 @@
  * @date  2022/1/11 10:38
  */
 
+import { knowledgeDrawerState } from '@/business';
+import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Range } from '@tiptap/core';
 import { JSONContent } from '@tiptap/vue-3';
@@ -10,10 +12,12 @@ import { message, Modal } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { EditorView } from 'prosemirror-view';
 import { createVNode } from 'vue';
-import { SectionTreeService } from '@/views/repository-editor/section-tree/section.tree';
+import {
+  SectionTreeService
+} from '@/views/repository-editor/section-tree/section.tree';
 import { AbstractTiptapTextEditor } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
 import {
-  RepositoryNoAuthApiService, SectionApiService, SectionNoAuthApiService
+  RepositoryNoAuthApiService, SectionApiService
 } from '@/api.service';
 
 export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
@@ -30,33 +34,37 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
 
   private repositoryEntityList?: EntityCompletelyListItemType[];
 
-  handleClick(view: EditorView, pos: number, event: MouseEvent): void {
-    // todo
-  }
-
   /**
    * 改变section节点
    * @param sectionId
+   * @param isEditable
+   * @param sectionName
    */
-  async updateSection(sectionId: string, isEditable: boolean): Promise<void> {
+  async updateAndSaveSection(sectionId: string, isEditable: boolean, sectionName?: string): Promise<void> {
     // editable 的情况下更新section 之前先保存之前的section
     if (isEditable && this.editor.value?.getJSON() && this.editor.value?.getHTML()) {
       await this.save({
         content: this.editor.value?.getJSON(),
         contentHtml: this.editor.value?.getHTML()
       });
+      if (this.sectionId) {
+        await IndexdbService.getInstance()
+          .put('repository', {
+            id: this.sectionId,
+            name: sectionName ?? '',
+            content: this.editor.value?.getHTML(),
+            sectionId: this.sectionId,
+            repositoryEntityId: this.repositoryEntityId
+          });
+      }
     }
     // 更新section id
     this.sectionId = sectionId;
-    // 更新section 内容
-    await this.getContent(sectionId);
   }
 
-  private async getContent(sectionId: string): Promise<void> {
-    const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
-    if (result.data) {
-      this.setContent(JSON.parse(result.data.article.content));
-    }
+  updateSection(sectionId: string): void {
+    // 更新section id
+    this.sectionId = sectionId;
   }
 
   protected async save(params: {
@@ -159,5 +167,11 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
         }
       },
     });
+  }
+
+  handleClickMentionItem(params: { id: string; name: string }): void {
+    knowledgeDrawerState.type = 'published';
+    knowledgeDrawerState.entityId = params.id;
+    knowledgeDrawerState.isShow = true;
   }
 }

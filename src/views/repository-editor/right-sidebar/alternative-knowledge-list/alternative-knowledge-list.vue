@@ -60,7 +60,7 @@ import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import CreateOrBindKnowledgeModal
   from '@/views/repository-editor/right-sidebar/create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 import ParseWordModal from '@/views/repository-editor/section-article/parse-word-modal.vue';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { CreateIcon, DeleteIcon, UploadIcon } from '@/components/icons';
 import {
   activeKey,

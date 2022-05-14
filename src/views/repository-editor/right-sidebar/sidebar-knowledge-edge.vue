@@ -9,9 +9,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive } from 'vue';
-import EntityTag from './entity.tag.vue';
+import EntityTag from './sidebar-knowledge-edge/entity-tag.vue';
 
 export default defineComponent({
+  name: 'sidebar-knowledge-edge',
   components: {
     EntityTag
   },

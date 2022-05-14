@@ -6,8 +6,8 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { message, Modal } from 'ant-design-vue';
 import {
+  AlternativeKnowledgeModelType,
   EntityCompletelyListItemType,
-  KnowledgeModelType,
   RepositoryModelType
 } from 'metagraph-constant';
 import {
@@ -20,24 +20,13 @@ import {
   SectionApiService
 } from '@/api.service';
 
-type AlternativeType = {
-  id: string;
-  type?: string;
-  repositoryEntityId: string;
-  articleId: string;
-  name: string;
-  weight: number;
-  userId: string;
-  updatedAt: Date;
-  createdAt: Date;
-}
 export const isRepositoryEditorLoading = ref(false);
 
 export interface RepositoryEditorInterface {
   getRepositoryByEntityId(repositoryEntityId: string): Promise<void>
 }
 
-export const alternative = reactive<{ target: AlternativeType[] | null }>({
+export const alternative = reactive<{ target: AlternativeKnowledgeModelType[] | null }>({
   target: null
 });
 

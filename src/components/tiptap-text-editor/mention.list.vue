@@ -20,6 +20,7 @@ import {
 } from 'vue';
 
 export default defineComponent({
+  name: 'mention-list',
   props: {
     items: {
       type: Array as PropType<EntityCompletelyListItemType[]>,

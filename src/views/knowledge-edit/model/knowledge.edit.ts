@@ -8,9 +8,10 @@ import {
   KnowledgeBaseFormType,
   KnowledgePicturesFrontendType
 } from '@/views/knowledge-edit/model/knowledge.edit.type';
+import { JSONContent } from '@tiptap/vue-3';
 import { ValidateInfo } from 'ant-design-vue/es/form/useForm';
 import { differenceWith, isEqual } from 'lodash';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import {
   computed, InjectionKey, reactive, Ref, ref
 } from 'vue';
@@ -320,7 +321,7 @@ export class KnowledgeEdit {
       knowledgePublishStatus.value = '未发布';
       return;
     }
-    const result = await KnowledgeApiService.getLatestVersion({
+    const result = await KnowledgeNoAuthApiService.getLatestVersion({
       publishedKnowledgeEntityId: params.publishedKnowledgeEntityId
     });
     if (result.data) {
@@ -365,8 +366,8 @@ export class KnowledgeEdit {
    * @param params
    */
   async handleSaveSectionArticle(params: {
-    content: Record<string, any>,
-    contentHtml: any,
+    content: JSONContent,
+    contentHtml: string,
     knowledgeEntityId: string
   }): Promise<boolean> {
     const result = await KnowledgeApiService.saveDescription({

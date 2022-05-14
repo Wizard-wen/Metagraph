@@ -5,7 +5,7 @@
 
 import type {
   SectionResponseType,
-  SectionEntityType, SectionArticleUpdateRequestType
+  SectionEntityType, SectionArticleUpdateRequestType, SectionModelType
 } from 'metagraph-constant';
 import { ApiPathEnum } from '@/api.service/config/api.config';
 import { RequestUtil } from '@/utils';
@@ -31,11 +31,11 @@ export class SectionApiService {
   static updateSectionTree(params: {
     name: string;
     id: string;
-  }): Promise<PublicApiResponseType<void>> {
+  }): Promise<PublicApiResponseType<SectionModelType>> {
     return RequestUtil.post<{
       name: string;
       id: string;
-    }, void>({
+    }, SectionModelType>({
       apiPath: ApiPathEnum.UpdateSection,
       requestBody: params
     });
@@ -59,6 +59,19 @@ export class SectionApiService {
   static saveSectionArticle(params: SectionArticleUpdateRequestType): Promise<PublicApiResponseType<void>> {
     return RequestUtil.post<SectionArticleUpdateRequestType, void>({
       apiPath: ApiPathEnum.SaveSectionArticle,
+      requestBody: params
+    });
+  }
+
+  static removeSection(params: {
+    id: string;
+    repositoryEntityId: string;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestUtil.post<{
+      id: string;
+      repositoryEntityId: string;
+    }, void>({
+      apiPath: ApiPathEnum.RemoveSection,
       requestBody: params
     });
   }

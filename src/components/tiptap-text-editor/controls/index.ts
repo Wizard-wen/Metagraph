@@ -4,7 +4,6 @@
  */
 import FindControl from '@/components/tiptap-text-editor/controls/find-control.vue';
 import FontSizeControl from '@/components/tiptap-text-editor/controls/font-size-control.vue';
-import ParseTextControl from '@/components/tiptap-text-editor/controls/parse-text-control.vue';
 import RedoControl from '@/components/tiptap-text-editor/controls/redo-control.vue';
 import SaveControl from '@/components/tiptap-text-editor/controls/save-control.vue';
 import ToggleBlockquoteControl
@@ -28,7 +27,6 @@ import ToggleTaskControl from '@/components/tiptap-text-editor/controls/toggle-t
 export {
   FindControl,
   FontSizeControl,
-  ParseTextControl,
   RedoControl,
   UndoControl,
   SaveControl,

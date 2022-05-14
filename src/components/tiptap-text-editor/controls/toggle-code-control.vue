@@ -1,7 +1,7 @@
 <template>
   <div class="operation-icon" @click="toggleCode">
     <div class="icon">
-      <CodeIcon
+      <code-icon
         class="icon-svg"
         :class="{ 'is-active': editor.isActive('codeBlock') }"/>
     </div>
@@ -11,21 +11,36 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { Editor } from '@tiptap/vue-3';
-import { defineEmits, defineProps, PropType } from 'vue';
+import {
+  PropType, defineComponent, toRef
+} from 'vue';
 import { CodeIcon } from '@/components/icons';
 
-const props = defineProps({
-  editor: {
-    type: Object as PropType<Editor>,
-    required: true
+export default defineComponent({
+  props: {
+    editor: {
+      type: Object as PropType<Editor>,
+      required: true
+    }
+  },
+  components: { CodeIcon },
+  setup(props) {
+    const editor = toRef(props, 'editor');
+    function toggleCode() {
+      editor.value?.chain()
+        .focus()
+        .toggleCodeBlock()
+        .run();
+    }
+
+    return {
+      toggleCode
+    };
   }
 });
 
-function toggleCode() {
-  props.editor.chain().focus().toggleCodeBlock().run();
-}
 </script>
 <style scoped lang="scss">
 @import "../../../style/tiptap.common.scss";

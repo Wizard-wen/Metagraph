@@ -14,6 +14,8 @@
     </div>
     <div class="content">
       <ant-form
+        v-if="knowledgeCustomFields.length"
+        :model="customFieldsModelRef"
         ref="formRef">
         <ant-row>
           <ant-col
@@ -49,6 +51,10 @@
           </ant-col>
         </ant-row>
       </ant-form>
+      <ant-empty
+        v-else
+        :image="simpleImage"
+        description="暂无数据"></ant-empty>
     </div>
   </div>
   <add-field-modal
@@ -59,11 +65,11 @@
 <script lang="ts">
 import { ExclamationCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import {
-  message, Form, Modal, Input, Button, DatePicker, Row, Col
+  message, Form, Modal, Input, Button, DatePicker, Row, Col, Empty
 } from 'ant-design-vue';
 import type { KnowledgeCustomFieldType } from 'metagraph-constant';
 import {
-  defineComponent, ref, inject, createVNode, toRaw
+  defineComponent, ref, inject, createVNode
 } from 'vue';
 import { KnowledgeApiService } from '@/api.service';
 import AddFieldModal from '@/views/knowledge-edit/knowledge-custom-fields/add-field-modal.vue';
@@ -117,18 +123,19 @@ export default defineComponent({
     }
 
     async function handleSaveCustomField() {
-      const { validate } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
+      const { validate } = Form.useForm(customFieldsModelRef.value, customFieldsRulesRef.value);
       validate()
-        .then(async () => {
-          console.log(knowledgeCustomFields.value, customFieldsModelRef.value);
+        .then(async (value) => {
+          console.log(value, knowledgeCustomFields.value, customFieldsModelRef.value);
           Object.keys(customFieldsModelRef.value)
             .forEach((item) => {
-              console.log(item);
               const customFieldItem = knowledgeCustomFields.value.find(
                 (customFieldItem) => customFieldItem.key === item
-              )!;
+              );
               console.log(customFieldItem);
-              customFieldItem.value = customFieldsModelRef.value[item];
+              if (customFieldItem) {
+                customFieldItem.value = customFieldsModelRef.value[item];
+              }
             });
           const result = await KnowledgeApiService.saveFields({
             knowledgeEntityId: draftKnowledgeEntityId?.value || '',
@@ -154,7 +161,8 @@ export default defineComponent({
       knowledgeCustomFields,
       customFieldsValidateInfo,
       customFieldsModelRef,
-      customFieldsRulesRef
+      customFieldsRulesRef,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE
     };
   },
   components: {
@@ -168,50 +176,19 @@ export default defineComponent({
     AntTextArea: Input.TextArea,
     AntDatePicker: DatePicker,
     AntRow: Row,
-    AntCol: Col
+    AntCol: Col,
+    AntEmpty: Empty
   },
 });
 </script>
 <style lang="scss" scoped>
 @import '../../style/common.scss';
-
-.custom-field-box {
-  padding: 0 15px 15px 15px;
-  background: #FFFFFF;
-  max-width: 850px;
-  margin: 0 auto 15px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
-
-  .header {
-    height: 50px;
-    line-height: 50px;
-    padding: 0 20px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid $borderColor;
-
-    .title {
-      font-size: 18px;
-    }
-
-    .right {
-      display: flex;
-      gap: 10px;
-    }
-  }
-
-  .content {
-    padding-top: 15px;
-  }
-}
+@import "./style/knowledge.edit.scss";
 
 .custom-form-item {
   &::v-deep(.ant-form-item-label) {
     width: 100px;
   }
-
 }
 
 .dynamic-delete-button {

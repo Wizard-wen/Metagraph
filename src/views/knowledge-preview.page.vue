@@ -21,7 +21,6 @@
         :preview-model="publishedKnowledgePreviewModel"></knowledge-preview-component>
     </div>
   </ant-spin>
-
 </template>
 
 <script lang="ts">
@@ -39,7 +38,7 @@ import { LocationQueryValue, useRoute } from 'vue-router';
 import { Spin } from 'ant-design-vue';
 
 export default defineComponent({
-  name: 'knowledge-publish-preview',
+  name: 'knowledge-preview-page',
   components: {
     KnowledgePreviewComponent,
     KnowledgePreviewHeader,

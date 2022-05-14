@@ -5,9 +5,11 @@
     :height="700"
     v-if="isUploadModalShown"
     :visible="isUploadModalShown"
-    @cancel="handleCloseParseWordModal">
+    @cancel="handleCloseParseWordModal({
+      type: 'void'
+    })">
     <div class="upload-banner">
-      <div class="top">
+      <div class="top" v-if="isShowOperation">
         <ant-button class="upload-button">
           <upload-outlined></upload-outlined>
           选择word文本
@@ -17,16 +19,26 @@
             @change="handleFileChange($event)">
         </ant-button>
         <ant-button
+          type="primary"
           v-if="currentWordFile"
           @click="confirmUploadWord"
           :isLoading="textParsingStatus.isDoing"
         >{{ uploadButtonText }}
         </ant-button>
       </div>
-      <div class="file-name" v-if="wordTitle">
-        <ant-input
-          ref="fileNameInput"
-          v-model:value="wordTitle" suffix="上传前可修改默认文件名"></ant-input>
+      <div class="file-name">
+        <ant-form
+          ref="textFileFormRef"
+          :model="textFileForm"
+          :rules="textFileFormRules"
+          :label-col="labelCol" :wrapper-col="wrapperCol">
+          <ant-form-item name="title">
+            <ant-input
+              ref="fileNameInput"
+              v-model:value="textFileForm.title"
+              :suffix="suffixText"></ant-input>
+          </ant-form-item>
+        </ant-form>
       </div>
     </div>
     <ant-tabs v-model:activeKey="activeTab">
@@ -38,7 +50,7 @@
         </div>
       </ant-tabs-pane>
       <ant-tabs-pane key="2" tab="关键词" class="tab-content">
-        <ant-list class="doc-keyword" size="small" bordered :data-source="keywords.target">
+        <ant-list class="doc-keyword" size="small" bordered :data-source="keywords">
           <template #renderItem="{ item }">
             <ant-list-item class="custom-list-item">
               <div class="left">
@@ -52,7 +64,12 @@
       </ant-tabs-pane>
     </ant-tabs>
     <template #footer>
-      <ant-button @click="handleCloseParseWordModal">关闭</ant-button>
+      <ant-button @click="handleCloseParseWordModal({
+        type: 'void'
+      })">关闭
+      </ant-button>
+      <ant-button v-if="!isShowOperation" @click="clearText">清空文件
+      </ant-button>
       <ant-button
         type="primary"
         v-if="isShowOperationButton"
@@ -69,18 +86,18 @@
 
 <script lang="ts">
 import {
-  Button, List, Modal, Tabs, Tag, Input
+  Button, List, Modal, Tabs, Tag, Input, Form
 } from 'ant-design-vue';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum, SectionModelType } from 'metagraph-constant';
 import { CloseOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { defineComponent, inject, ref } from 'vue';
-import { repositoryEntityIdKey } from '../provide.type';
+import { repositoryEntityIdKey } from '../model/provide.type';
 import {
-  keywords, SectionArticleControl, wordTitle, articleText,
-  isShowOperationButton, textParsingStatus, uploadButtonText
+  keywords, SectionArticleControl,
+  textFileForm, textFileFormRef, textFileFormRules, articleText, isShowOperation,
+  isShowOperationButton, textParsingStatus, uploadButtonText, suffixText
 } from './section.article.control';
 
-const sectionArticleControl = new SectionArticleControl();
 export default defineComponent({
   name: 'parse-word-modal',
   props: {
@@ -99,10 +116,13 @@ export default defineComponent({
     AntTabsPane: Tabs.TabPane,
     AntTag: Tag,
     AntButton: Button,
-    AntModal: Modal
+    AntModal: Modal,
+    AntForm: Form,
+    AntFormItem: Form.Item
   },
   emits: ['close'],
   setup(props, { emit }) {
+    const sectionArticleControl = new SectionArticleControl();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const activeTab = ref('1');
     const fileNameInput = ref<HTMLInputElement>();
@@ -115,43 +135,73 @@ export default defineComponent({
       }
       // eslint-disable-next-line prefer-destructuring
       currentWordFile.value = target.files[0];
-      wordTitle.value = target.files[0].name;
+      textFileForm.value.title = target.files[0].name;
       fileNameInput.value?.focus();
     };
+
+    function clearText() {
+      currentWordFile.value = undefined;
+      sectionArticleControl.clearData();
+    }
+
     // 上传word文本
     const confirmUploadWord = async () => {
-      if (!currentWordFile.value) {
-        return;
-      }
-      await sectionArticleControl.customRequestUploadHandler({
-        repositoryEntityId: repositoryEntityId.value,
-        file: currentWordFile.value,
-        name: currentWordFile.value.name,
-        type: FileEnum.Text
-      });
+      textFileFormRef.value.validate()
+        .then(async () => {
+          if (!currentWordFile.value) {
+            return;
+          }
+          const result = await sectionArticleControl.customRequestUploadHandler({
+            repositoryEntityId: repositoryEntityId.value,
+            file: currentWordFile.value,
+            name: currentWordFile.value.name,
+            type: FileEnum.Text
+          });
+          if (result) {
+            await sectionArticleControl.parseUploadedFileText({
+              fileUrl: result.url,
+              repositoryEntityId: repositoryEntityId.value
+            });
+          }
+        });
     };
     // 清除 input file
     const clearCurrentUploadingValue = (event: InputEvent) => {
       const target = event.target as HTMLInputElement;
       target.value = '';
     };
+
     // 关闭modal
-    const handleCloseParseWordModal = () => {
-      emit('close');
-    };
+    function handleCloseParseWordModal(params: {
+      type: 'Section' | 'void' | 'Alternative'
+      sectionModel?: SectionModelType
+    }) {
+      emit('close', params);
+    }
+
     // 创建新单元
-    const createWordTextSection = async () => {
-      await sectionArticleControl.createWordTextSection(repositoryEntityId.value);
-      handleCloseParseWordModal();
-    };
+    async function createWordTextSection() {
+      textFileFormRef.value.validate()
+        .then(async () => {
+          const result = await sectionArticleControl
+            .createWordTextSection(repositoryEntityId.value);
+          handleCloseParseWordModal({
+            type: 'Section',
+            sectionModel: result
+          });
+        });
+    }
+
     // 创建备选知识点
     const createAlternativeKnowledgeList = async () => {
       await sectionArticleControl.createAlternativeKnowledgeList(repositoryEntityId.value);
-      handleCloseParseWordModal();
+      handleCloseParseWordModal({
+        type: 'Alternative'
+      });
     };
     // 删除关键词
     const removeKeyword = (index: number) => {
-      keywords.target.splice(index, 1);
+      keywords.value.splice(index, 1);
     };
     return {
       createWordTextSection,
@@ -160,7 +210,7 @@ export default defineComponent({
       handleFileChange,
       clearCurrentUploadingValue,
       activeTab,
-      wordTitle,
+      clearText,
       articleText,
       fileNameInput,
       isShowOperationButton,
@@ -169,7 +219,14 @@ export default defineComponent({
       currentWordFile,
       keywords,
       textParsingStatus,
-      uploadButtonText
+      uploadButtonText,
+      textFileFormRules,
+      textFileFormRef,
+      textFileForm,
+      isShowOperation,
+      suffixText,
+      labelCol: { span: 3 },
+      wrapperCol: { offset: 0 },
     };
   }
 });
