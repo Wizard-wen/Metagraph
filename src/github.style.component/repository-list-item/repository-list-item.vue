@@ -60,21 +60,21 @@ export default defineComponent({
     const repository = toRef(props, 'repository');
     const userModel = computed(() => store.state.user.user);
     const goRepositoryPage = async () => {
-      await router.push({
+      router.push({
         name: 'RepositoryEditor',
         query: {
           repositoryEntityId: repository.value.entity.id,
           type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
         }
-      });
+      }).then();
     };
     const goUserProfilePage = async () => {
-      await router.push({
+      router.push({
         path: '/profile',
         query: {
           id: repository.value.author.id
         }
-      });
+      }).then();
     };
     return {
       goRepositoryPage,

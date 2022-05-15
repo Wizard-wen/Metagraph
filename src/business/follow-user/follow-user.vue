@@ -44,12 +44,12 @@ export default defineComponent({
     const router = useRouter();
 
     async function goProfilePage(id: string) {
-      await router.push({
+      router.push({
         path: '/profile',
         query: {
           id
         }
-      });
+      }).then();
     }
 
     return {

@@ -1,17 +1,32 @@
 <template>
   <div class="menu-list">
     <div class="title">{{ title }}</div>
-    <router-link
-      v-for="(item, index) in routerList"
-      :key="index"
-      @click="handleMenuClick(item, index)"
-      :class="{
+    <template v-if="type === 'router'">
+      <router-link
+        v-for="(item, index) in routerList"
+        :key="index"
+        @click="handleMenuClick(item, index)"
+        :class="{
         'list-item-without-border': index === routerList.length - 1,
         'list-item-active': index === activeIndex
       }"
-      :to="item.path"
-      class="list-item">{{ item.name }}
-    </router-link>
+        :to="item.path"
+        class="list-item">{{ item.name }}
+      </router-link>
+    </template>
+    <template v-else>
+      <div
+        v-for="(item, index) in routerList"
+        :key="index"
+        @click="handleMenuClick(item, index)"
+        :class="{
+        'list-item-without-border': index === routerList.length - 1,
+        'list-item-active': index === active
+      }"
+        :to="item.path"
+        class="list-item">{{ item.name }}
+      </div>
+    </template>
   </div>
 </template>
 
@@ -29,26 +44,34 @@ export default defineComponent({
       default: 'title',
       required: true
     },
+    active: {
+      type: Number,
+      default: 0
+    },
     type: {
       type: String as PropType<'router' | 'normal'>,
       default: 'router'
     },
     navList: {
-      type: Array as PropType<{ path: string; name: string }[]>,
+      type: Array as PropType<{ path: string; name: string; value?: string }[]>,
       required: true,
       default: () => []
     }
   },
+  emits: ['onClickItem'],
   setup(props, { emit }) {
     const routerList = toRef(props, 'navList');
+    const type = toRef(props, 'type');
     const route = useRoute();
     const activeIndex = ref(0);
-    const handleMenuClick = (item: { path: string; name: string }, index: number) => {
+    const handleMenuClick = (item: { path: string; name: string; value?: string }, index: number) => {
       activeIndex.value = index;
-      emit('onClickItem', item);
+      emit('onClickItem', { ...item, index });
     };
     onMounted(() => {
-      activeIndex.value = routerList.value.findIndex((item) => item.path === route.path);
+      if (type.value === 'router') {
+        activeIndex.value = routerList.value.findIndex((item) => item.path === route.path);
+      }
     });
     return {
       routerList,
@@ -85,6 +108,7 @@ export default defineComponent({
     display: block;
     padding: 8px 16px;
     color: $fontColor;
+    cursor: pointer;
   }
 
   .list-item-without-border {

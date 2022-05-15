@@ -7,6 +7,8 @@
         height="32" width="32"
         @click="goHomePage" alt="logo"/>
       <ant-input-search
+        :allowClear="true"
+        v-model:value="searchData.text"
         @search="handleSearch"
         style="width: 260px"></ant-input-search>
       <div
@@ -69,14 +71,17 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent
+  computed, defineComponent, onMounted, ref
 } from 'vue';
-import { useRouter } from 'vue-router';
+import {
+  NavigationGuardNext, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter
+} from 'vue-router';
 import {
   Avatar, Dropdown, Menu, Button, Input
 } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { MutationEnum, useStore } from '@/store';
+import { searchData } from './metegraph.header';
 
 export default defineComponent({
   name: 'metagraph-header',
@@ -91,97 +96,118 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const route = useRoute();
     const store = useStore();
     const isLogin = computed(() => store.state.user.isLogin);
     const userModel = computed(() => store.state.user.user);
+
     const token = computed(() => store.state.user.token);
     const goSignInPage = async () => {
-      await router.push('/login');
+      router.push('/login').then();
     };
     const goCreateRepoPage = async () => {
-      await router.push('/repository/edit');
+      router.push('/repository/edit').then();
     };
     const goUserEditPage = async () => {
       if (userModel.value === undefined) return;
-      await router.push({
+      router.push({
         path: '/settings/profile',
         params: {
           userId: userModel.value.id
         }
-      });
+      }).then();
     };
     const goKnowledgeMap = async () => {
-      await router.push('/knowledge/map');
+      router.push('/knowledge/map').then();
     };
     const goStarPage = async () => {
       if (userModel.value === undefined) return;
-      await router.push({
+      router.push({
         path: '/profile',
         query: {
           id: userModel.value.id,
           tabKey: '3'
         }
-      });
+      }).then();
     };
 
     const goRepositoryPage = async () => {
       if (userModel.value === undefined) return;
-      await router.push({
+      router.push({
         path: '/profile',
         query: {
           id: userModel.value.id,
           tabKey: '2'
         }
-      });
+      }).then();
     };
 
     const goFollowedPage = async () => {
       if (userModel.value === undefined) return;
-      await router.push({
+      router.push({
         path: '/profile',
         query: {
           id: userModel.value.id,
           tabKey: '4'
         }
-      });
+      }).then();
     };
 
     const goFollowerPage = async () => {
       if (userModel.value === undefined) return;
-      await router.push({
+      router.push({
         path: '/profile',
         query: {
           id: userModel.value.id,
           tabKey: '5'
         }
-      });
+      }).then();
     };
     const goSignUpPage = async () => {
-      await router.push('/signup');
+      router.push('/signup').then();
     };
     const goHomePage = async () => {
-      await router.push('/');
+      router.push('/').then();
+      searchData.value.text = '';
+      searchData.value.type = '';
+      searchData.value.activeIndex = 0;
     };
     const handleSearch = async (event: any) => {
-      await router.push({
+      searchData.value.text = event;
+      router.push({
         path: '/repository/list',
         query: {
-          name: event ?? ''
-        }
-      });
+          name: event ?? '',
+          type: searchData.value.type
+        },
+        replace: true
+      }).then();
     };
     const signOut = async () => {
       store.commit(MutationEnum.CLEAR_USER_MODEL);
-      await router.push({
+      router.push({
         name: 'Login'
-      });
+      }).then();
     };
 
     const goPLanListPage = async () => {
-      await router.push({
+      router.push({
         path: '/planList',
-      });
+      }).then();
     };
+    onBeforeRouteUpdate((
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext
+    ) => {
+      console.log(to, from, '----- header');
+      next();
+    });
+    onMounted(() => {
+      if (route.path === '/repository/list') {
+        console.log(route);
+      }
+    });
     return {
       goSignInPage,
       goCreateRepoPage,
@@ -198,7 +224,8 @@ export default defineComponent({
       user: userModel,
       goFollowedPage,
       goFollowerPage,
-      goPLanListPage
+      goPLanListPage,
+      searchData
     };
   }
 });

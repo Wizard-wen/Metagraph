@@ -66,12 +66,12 @@ export default defineComponent({
     const handleInput = async (event: KeyboardEvent) => {
       console.log(value.value, ' ---- value');
       if (event.key === 'Enter') {
-        await router.push({
+        router.push({
           name: 'RepositoryList',
           params: {
             name: value.value
           }
-        });
+        }).then();
       }
     };
 

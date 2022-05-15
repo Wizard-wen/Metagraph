@@ -3,9 +3,14 @@
  * @date  2021/12/7 21:42
  */
 
+import { IndexdbService } from '@/service/indexdb.service';
 import { Range, Editor as CoreEditor } from '@tiptap/core';
-import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
-import { Node as ProsemirrorNode, Slice } from 'prosemirror-model';
+import {
+  EntityCompletelyListItemType,
+  KnowledgeModelType,
+  PublicEntityType
+} from 'metagraph-constant';
+import { Node as ProsemirrorNode } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
@@ -16,16 +21,15 @@ import {
 } from '@tiptap/vue-3';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import tippy, { Instance } from 'tippy.js';
-import { ref, Ref } from 'vue';
+import { Ref } from 'vue';
 import { lowlight } from 'lowlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { tiptapInitData } from '@/store/constant';
-import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
+import MentionList from '@/components/tiptap-text-editor/mention.list.vue';
+import { debounce } from 'lodash';
 import { CustomMention } from './tiptap.custom.mention';
 import CodeBlockContainer from './code-block-container.vue';
-
-export const mentionPointerList = ref<string[]>([]);
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -33,6 +37,13 @@ export abstract class AbstractTiptapTextEditor {
   timer?: number;
 
   mentionKnowledgeList!: EntityCompletelyListItemType[];
+
+  // eslint-disable-next-line no-useless-constructor
+  protected constructor(
+    private readonly entityId: string,
+    private readonly entityType: PublicEntityType,
+  ) {
+  }
 
   protected abstract limit?: number;
 
@@ -49,14 +60,6 @@ export abstract class AbstractTiptapTextEditor {
   }): Promise<boolean>;
 
   /**
-   * 响应点击事件
-   * @param view
-   * @param pos
-   * @param event
-   */
-  abstract handleClick(view: EditorView, pos: number, event: MouseEvent): void;
-
-  /**
    * 初始化数据
    */
   abstract initData(params?: { [key: string]: any }): void;
@@ -71,6 +74,15 @@ export abstract class AbstractTiptapTextEditor {
     content: JSONContent,
     contentHtml: string,
     range: Range
+  }): void;
+
+  /**
+   * 点击mention 元素
+   * @param params
+   */
+  abstract handleClickMentionItem(params: {
+    id: string;
+    name: string
   }): void;
 
   /**
@@ -162,42 +174,36 @@ export abstract class AbstractTiptapTextEditor {
     this.editor = useEditor({
       editable: this.editable,
       content: articleContent ?? tiptapInitData,
-      onTransaction({
-        editor,
-        transaction
-      }) {
-        // The editor state has changed.
-        // console.log(editor, transaction)
-      },
-      onUpdate({
-        editor,
-        transaction
-      }) {
-        console.log(editor, transaction);
-      },
+      onUpdate: debounce(({
+        editor
+      }) => {
+        if (_this.entityType === 'Knowledge') {
+          IndexdbService.getInstance()
+            .update(
+              'knowledge',
+              _this.entityId,
+              {
+                description: editor.getHTML()
+              }
+            )
+            .then((data: number) => {
+              console.log(data, '----- update by key down');
+            });
+        }
+      }, 1000),
       editorProps: {
-        handleDOMEvents: {
-          keypress: (view, event) => {
-            console.log(view, event, '-----key pres');
-            if (event.key === 'Enter') {
-              console.log('Heyyyy');
-            }
-            return false;
-          },
-        },
-        handleClick: (view: EditorView, pos: number, event: MouseEvent) => {
-          _this.handleClick(view, pos, event);
-          return true;
-        },
         handleClickOn(
           view: EditorView,
           pos: number,
-          node: ProsemirrorNode,
-          nodePos: number,
-          event: MouseEvent,
-          direct: boolean
+          node: ProsemirrorNode
         ) {
-          console.log(view, pos, node, nodePos, event, direct);
+          if (node.type.name === 'mention') {
+            _this.handleClickMentionItem({
+              ...node.attrs
+            } as {
+              id: string, name: string
+            });
+          }
           return true;
         },
       },
@@ -273,7 +279,6 @@ export abstract class AbstractTiptapTextEditor {
               const { range } = commandProps;
               const customCommandProps = commandProps.props;
               const coreEditor = commandProps.editor;
-              mentionPointerList.value?.push(customCommandProps.id);
               _this.handleMention({
                 name: customCommandProps.name,
                 id: customCommandProps.id,
@@ -286,16 +291,6 @@ export abstract class AbstractTiptapTextEditor {
         })
       ]
     });
-    if (this.editable) {
-      this.timer = setInterval(() => {
-        if (this.editor.value?.getHTML()) {
-          this.save({
-            content: this.editor.value?.getJSON(),
-            contentHtml: this.editor.value?.getHTML()
-          });
-        }
-      }, 10000);
-    }
   }
 
   /**

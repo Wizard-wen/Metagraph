@@ -13,10 +13,7 @@
       <toggle-heading-control :editor="editor" :level="1"></toggle-heading-control>
       <toggle-heading-control :editor="editor" :level="2"></toggle-heading-control>
       <toggle-heading-control :editor="editor" :level="3"></toggle-heading-control>
-<!--      <toggle-code-control :editor="editor"></toggle-code-control>-->
 <!--      <find-control :editor="editor"></find-control>-->
-<!--      <upload-image-control :editor="editor"></upload-image-control>-->
-<!--      <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>-->
     </div>
   </div>
 </template>
@@ -28,9 +25,6 @@ import {
 } from 'vue';
 import {
   // FindControl,
-  // FontSizeControl,
-  // ToggleCodeControl,
-  // UploadImageControl,
   RedoControl,
   UndoControl,
   SaveControl,
@@ -53,10 +47,7 @@ export default defineComponent({
   },
   components: {
     SaveControl,
-    // FontSizeControl,
-    // UploadImageControl,
     // FindControl,
-    // ToggleCodeControl,
     ToggleHeadingControl,
     ToggleBlockquoteControl,
     ToggleOrderedListControl,
@@ -91,8 +82,8 @@ export default defineComponent({
   padding: 2px 0;
   height: 46px;
   width: 100%;
-  background: #FFFFFF;
-  border-bottom: 1px solid $borderColor;
+  //background: #FFFFFF;
+  //border-bottom: 1px solid $borderColor;
 
   .operator-container {
     display: flex;

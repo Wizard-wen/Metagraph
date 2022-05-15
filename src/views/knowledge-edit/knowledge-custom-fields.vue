@@ -14,17 +14,21 @@
     </div>
     <div class="content">
       <ant-form
+        v-if="knowledgeCustomFields.length"
+        :model="customFieldsModelRef"
         ref="formRef">
         <ant-row>
           <ant-col
             :span="item.grid * 12"
             v-for="item in knowledgeCustomFields"
-            :key="item.key"
-            v-bind="customFieldsValidateInfo[item.key]">
+            :key="item.key">
             <ant-form-item
+              v-bind="customFieldsValidateInfo[item.key]"
               class="custom-form-item"
               :label="item.label"
-              :name="item.key">
+              :name="item.key"
+              :rules="customFieldsRulesRef[item.key]"
+              required>
               <ant-date-picker
                 v-model:value="customFieldsModelRef[item.key]"
                 style="width: 80%; margin-right: 8px"
@@ -47,6 +51,10 @@
           </ant-col>
         </ant-row>
       </ant-form>
+      <ant-empty
+        v-else
+        :image="simpleImage"
+        description="暂无数据"></ant-empty>
     </div>
   </div>
   <add-field-modal
@@ -57,7 +65,7 @@
 <script lang="ts">
 import { ExclamationCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import {
-  message, Form, Modal, Input, Button, DatePicker, Row, Col
+  message, Form, Modal, Input, Button, DatePicker, Row, Col, Empty
 } from 'ant-design-vue';
 import type { KnowledgeCustomFieldType } from 'metagraph-constant';
 import {
@@ -69,7 +77,7 @@ import {
   KnowledgeEdit,
   draftKnowledgeEntityIdInjectKey,
   knowledgeCustomFields, customFieldsValidateInfo,
-  customFieldsModelRef, customFieldsRulesRef
+  customFieldsModelRef, customFieldsRulesRef,
 } from './model/knowledge.edit';
 
 export default defineComponent({
@@ -115,16 +123,20 @@ export default defineComponent({
     }
 
     async function handleSaveCustomField() {
-      const { validate } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
-      // Object.keys(customFieldsModelRef)
-      //   .forEach((item) => {
-      //     const customFieldItem = knowledgeCustomFields.value.find(
-      //       (customFieldItem) => customFieldItem.key === item
-      //     )!;
-      //     customFieldItem.value = customFieldsModelRef[item];
-      //   });
+      const { validate } = Form.useForm(customFieldsModelRef.value, customFieldsRulesRef.value);
       validate()
-        .then(async () => {
+        .then(async (value) => {
+          console.log(value, knowledgeCustomFields.value, customFieldsModelRef.value);
+          Object.keys(customFieldsModelRef.value)
+            .forEach((item) => {
+              const customFieldItem = knowledgeCustomFields.value.find(
+                (customFieldItem) => customFieldItem.key === item
+              );
+              console.log(customFieldItem);
+              if (customFieldItem) {
+                customFieldItem.value = customFieldsModelRef.value[item];
+              }
+            });
           const result = await KnowledgeApiService.saveFields({
             knowledgeEntityId: draftKnowledgeEntityId?.value || '',
             customFields: knowledgeCustomFields.value
@@ -148,7 +160,9 @@ export default defineComponent({
       handleSaveCustomField,
       knowledgeCustomFields,
       customFieldsValidateInfo,
-      customFieldsModelRef
+      customFieldsModelRef,
+      customFieldsRulesRef,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE
     };
   },
   components: {
@@ -162,50 +176,19 @@ export default defineComponent({
     AntTextArea: Input.TextArea,
     AntDatePicker: DatePicker,
     AntRow: Row,
-    AntCol: Col
+    AntCol: Col,
+    AntEmpty: Empty
   },
 });
 </script>
 <style lang="scss" scoped>
 @import '../../style/common.scss';
-
-.custom-field-box {
-  padding: 0 15px 15px 15px;
-  background: #FFFFFF;
-  max-width: 850px;
-  margin: 0 auto 15px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
-
-  .header {
-    height: 50px;
-    line-height: 50px;
-    padding: 0 20px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid $borderColor;
-
-    .title {
-      font-size: 18px;
-    }
-
-    .right {
-      display: flex;
-      gap: 10px;
-    }
-  }
-
-  .content {
-    padding-top: 15px;
-  }
-}
+@import "./style/knowledge.edit.scss";
 
 .custom-form-item {
   &::v-deep(.ant-form-item-label) {
     width: 100px;
   }
-
 }
 
 .dynamic-delete-button {

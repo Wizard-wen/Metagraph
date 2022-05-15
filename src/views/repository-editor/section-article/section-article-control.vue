@@ -32,7 +32,6 @@ import {
   FindControl,
   ToggleTaskControl,
   FontSizeControl,
-  ParseTextControl,
   RedoControl,
   UndoControl,
   SaveControl,
@@ -46,6 +45,7 @@ import {
   UploadImageControl,
   ToggleStrikeControl
 } from '@/components/tiptap-text-editor/controls';
+import ParseTextControl from './controls/parse-text-control.vue';
 
 export default defineComponent({
   name: 'section.article.control',

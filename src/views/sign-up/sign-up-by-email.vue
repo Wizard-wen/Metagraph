@@ -166,7 +166,7 @@ export default defineComponent({
           const result = await UserApiService.register(signUpFormState);
           if (result.data) {
             message.info('注册成功，请登录！');
-            await router.push('/login');
+            router.push('/login').then();
           }
           if (result.message) {
             message.error('注册时出现问题！');

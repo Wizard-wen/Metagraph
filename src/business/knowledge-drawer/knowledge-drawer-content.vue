@@ -6,11 +6,11 @@
     :visible="isVisible"
     @close="handleClose">
     <ant-spin :spinning="isLoading">
-      <div v-if="draftKnowledgePreviewModel" class="preview-content">
+      <div v-if="draftKnowledgePreviewModel && type === 'draft'" class="preview-content">
         <knowledge-preview-component
           :preview-model="draftKnowledgePreviewModel"></knowledge-preview-component>
       </div>
-      <div v-if="publishedKnowledgePreviewModel" class="preview-content">
+      <div v-if="publishedKnowledgePreviewModel && type === 'published'" class="preview-content">
         <knowledge-preview-component
           :preview-model="publishedKnowledgePreviewModel"></knowledge-preview-component>
       </div>

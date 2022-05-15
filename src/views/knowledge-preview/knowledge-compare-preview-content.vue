@@ -98,16 +98,16 @@
 <script lang="ts">
 import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
 import {
-  computed, defineComponent, onMounted, PropType, toRaw, toRef
+  computed, defineComponent, PropType, toRef
 } from 'vue';
 import {
-  Divider, Col, Row, Tag
+  Col, Row, Tag
 } from 'ant-design-vue';
 import DescriptionItem from '../../business/knowledge-drawer/description-item.vue';
 import TiptapReadonly from '../repository-editor/section-article/tiptap-readonly.vue';
 
 export default defineComponent({
-  name: 'knowledge-preview-content',
+  name: 'knowledge-compare-preview-content',
   props: {
     knowledge: {
       type: Object as PropType<{

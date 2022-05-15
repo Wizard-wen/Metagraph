@@ -27,7 +27,6 @@
           <ViewIcon @click="handleClickEntityItem(item, 'view')"></ViewIcon>
         </div>
       </div>
-
       <div
         class="list-item"
         v-for="item in unpublishedDraftKnowledgeList"
@@ -40,7 +39,6 @@
           <EditIcon @click="handleClickEntityItem(item, 'draft')"></EditIcon>
         </div>
       </div>
-
     </div>
   </div>
   <create-or-bind-knowledge-modal
@@ -56,16 +54,16 @@ import {
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined, StarOutlined, SnippetsOutlined } from '@ant-design/icons-vue';
-import type { EntityCompletelyListItemType, KnowledgeModelType, KnowledgeResponseType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
 import {
   repositoryBindEntityList,
   unpublishedDraftKnowledgeList,
   RepositoryEditor
-} from '@/views/repository-editor/repository-editor';
-import { knowledgeDrawerState } from '@/business';
-import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+} from '@/views/repository-editor/model/repository-editor';
+import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { useStore } from '@/store';
 import { ViewIcon, EditIcon } from '@/components/icons';
+import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import CreateOrBindKnowledgeModal from '../create-or-bind-knowledge-modal/create-or-bind-knowledge-modal.vue';
 
 export default defineComponent({
@@ -82,6 +80,7 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const repositoryEditor = new RepositoryEditor();
+    const knowledgePreview = new KnowledgePreview();
     const editable = inject(isEditableKey, ref(false));
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const entityList = computed(() => repositoryBindEntityList.target
@@ -103,8 +102,7 @@ export default defineComponent({
       type: 'view' | 'edit' | 'draft'
     ): void {
       if (type === 'view') {
-        knowledgeDrawerState.entityId = item.entity.id;
-        knowledgeDrawerState.isShow = true;
+        knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'published');
       } else if (type === 'draft') {
         router.push({
           name: 'KnowledgeEdit',
@@ -149,16 +147,18 @@ export default defineComponent({
 
 .entity-list {
   .add-control {
-    padding: 10px 15px 0 15px;
+    padding: 10px 15px 5px 15px;
 
     .add-entity-button {
       width: 100%;
+      font-size: 12px;
+      border-radius: 4px;
     }
   }
 
   .entity-list-content {
     height: calc(100vh - 140px);
-    padding: 10px 15px 0 15px;
+    padding: 10px 0;
     overflow-y: auto;
 
     .list-item {
@@ -169,6 +169,7 @@ export default defineComponent({
       text-indent: 5px;
       display: flex;
       justify-content: space-between;
+      padding: 0 15px;
 
       &:hover {
         @include list-item-highlight;

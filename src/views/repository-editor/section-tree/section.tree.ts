@@ -3,123 +3,138 @@
  * @date  2021/11/22 00:04
  */
 
-import { JSONContent } from '@tiptap/vue-3';
+import { SectionTreeNodeUIType } from '@/api.service/no.auth/section.no.auth.api.service';
+import { IndexdbService } from '@/service/indexdb.service';
+import type { JSONContent } from '@tiptap/vue-3';
 import { message } from 'ant-design-vue';
-import { SelectEvent } from 'ant-design-vue/es/tree/Tree';
-import { SectionModelType } from 'metagraph-constant';
-import type { SectionTreeNodeType } from 'metagraph-constant';
-import { reactive } from 'vue';
-import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
+import type {
+  EntityCompletelyListItemType,
+  KnowledgeResponseType,
+  SectionModelType
+} from 'metagraph-constant';
+import { reactive, ref } from 'vue';
 import { tiptapInitData } from '@/store/constant';
 import {
   EntityApiService,
   SectionApiService,
   SectionNoAuthApiService
 } from '@/api.service';
-import { MutationEnum, store } from '@/store';
+
+export type SectionOperationType =
+  'Section'
+  | 'Knowledge'
+  | 'Exercise'
+  | 'ChangeSection'
+  | 'Delete';
 
 export const sectionModalData = reactive<{
-  entityType: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection';
-  title: '创建章节' | '修改章节' | '绑定实体';
+  entityType: SectionOperationType;
+  title: '创建单元' | '修改单元' | '绑定知识点';
   parentSectionId?: string;
   parentSectionName?: string;
-  sectionName: string;
-  selectedEntityId: string;
   entityOptionList: { key: string; label: string; value: string }[];
   isConfirmLoading: boolean;
 }>({
   entityType: 'Section',
-  title: '创建章节',
-  sectionName: '',
+  title: '创建单元',
   entityOptionList: [],
-  selectedEntityId: '',
   isConfirmLoading: false
 });
 
-export const sectionTree = reactive<{
-  tree: SectionTreeNodeType[],
-  selectedTreeNodes: string[],
-  selectedTreeEntityNodes: string[],
-  selectedTreeSectionNodes: string[]
-}>({
-  tree: [],
-  selectedTreeNodes: [],
-  selectedTreeEntityNodes: [],
-  selectedTreeSectionNodes: []
+export const sectionModalForm = reactive({
+  sectionName: '',
+  selectedEntityId: ''
 });
 
-export const sectionArticle = reactive<{
+export const sectionModalFormRules = ref({});
+
+export const sectionTree = reactive<{
+  tree: SectionTreeNodeUIType[],
+  selectedTreeNodes: string[]
+}>({
+  tree: [],
+  selectedTreeNodes: []
+});
+
+export const currentSectionNode = reactive<{
   title: string;
   content: JSONContent;
   contentHtml: string;
   sectionId: string;
+  entityList: EntityCompletelyListItemType[];
 }>({
   title: '',
   content: tiptapInitData,
   contentHtml: '',
-  sectionId: ''
+  sectionId: '',
+  entityList: []
 });
 
-// eslint-disable-next-line import/no-mutable-exports
-export let sectionArticleTiptapTextEditor: SectionArticleTiptapTextEditor | undefined;
-
 export class SectionTreeService {
-  static initEditor(repositoryEntityId: string, editable: boolean): void {
-    sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
-      repositoryEntityId,
-      editable
-    );
-    sectionArticleTiptapTextEditor.initEditor();
-  }
-
+  /**
+   *
+   * @param repositoryEntityId 知识库entity id
+   * @param selectedSectionId 可选，如果是页面刷新会传入一个初始化的sectionId
+   */
   async getSectionTree(repositoryEntityId: string, selectedSectionId?: string): Promise<void> {
-    const response = await SectionNoAuthApiService.getSectionTree({ repositoryEntityId });
+    const response = await SectionNoAuthApiService.getNormalSectionTree({ repositoryEntityId });
     if (response.data) {
       sectionTree.tree = response.data;
       if (response.data.length) {
         const currentSectionId = selectedSectionId ?? response.data[0].key;
-        await sectionArticleTiptapTextEditor?.initData({
-          sectionId: currentSectionId
-        });
         // 如果section存在，那么选中第一个，获取section article
-        await this.getSectionContent(currentSectionId);
-        sectionArticleTiptapTextEditor?.setContent(sectionArticle.content);
+        await this.setSectionContent(currentSectionId, repositoryEntityId);
         sectionTree.selectedTreeNodes = [currentSectionId];
-        sectionTree.selectedTreeSectionNodes = [currentSectionId];
       } else {
         sectionTree.selectedTreeNodes = [];
-        sectionTree.selectedTreeSectionNodes = [];
       }
     }
   }
 
   async selectTreeNode(params: {
     selectedKeys: string[],
-    info: SelectEvent
-  }, isEditable: boolean): Promise<void> {
+    repositoryEntityId: string
+  }): Promise<void> {
     sectionTree.selectedTreeNodes = params.selectedKeys;
-    if (params.info.node.dataRef.section) {
-      // 如果点击的是section
-      // 切换section tree之前应该保存之前的section article
-      await sectionArticleTiptapTextEditor?.updateSection(params.selectedKeys[0], isEditable);
-      // 将当前选中的key赋值给section list
-      sectionTree.selectedTreeSectionNodes = params.selectedKeys;
-      // 清空当前选中的entity list
-      sectionTree.selectedTreeEntityNodes = [];
-    } else {
-      // 如果点击的是entity
-      sectionTree.selectedTreeEntityNodes = params.selectedKeys;
+    // 如果点击的是section
+    // 切换section tree之前应该保存之前的section article
+    if (params.selectedKeys.length) {
+      await this.setSectionContent(params.selectedKeys[0], params.repositoryEntityId);
     }
   }
 
-  private async getSectionContent(sectionId: string): Promise<void> {
+  /**
+   * 获取section content
+   * @param sectionId 单元id
+   * @param repositoryEntityId
+   * @private
+   */
+  async setSectionContent(sectionId: string, repositoryEntityId: string): Promise<void> {
     const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
     if (result.data) {
-      sectionArticle.content = JSON.parse(result.data.article.content);
-      sectionArticle.contentHtml = result.data.article.contentHtml;
-      sectionArticle.title = result.data.article.title;
-      sectionArticle.sectionId = sectionId;
+      currentSectionNode.content = JSON.parse(result.data.article.content);
+      currentSectionNode.contentHtml = result.data.article.contentHtml;
+      currentSectionNode.title = result.data.article.title;
+      currentSectionNode.sectionId = sectionId;
+      currentSectionNode.entityList = result.data.entityList;
+      await IndexdbService.getInstance()
+        .put('repository', {
+          id: sectionId,
+          name: currentSectionNode.title,
+          content: currentSectionNode.contentHtml,
+          sectionId,
+          repositoryEntityId
+        });
     }
+  }
+
+  initSectionView() {
+    currentSectionNode.title = '';
+    currentSectionNode.content = tiptapInitData;
+    currentSectionNode.contentHtml = '';
+    currentSectionNode.sectionId = '';
+    currentSectionNode.entityList = [];
+    sectionTree.selectedTreeNodes = [];
   }
 
   async saveSectionArticle(params: {
@@ -128,88 +143,121 @@ export class SectionTreeService {
   }): Promise<void> {
     const result = await SectionApiService.saveSectionArticle({
       ...params,
-      sectionId: sectionArticle.sectionId
+      sectionId: currentSectionNode.sectionId
     });
     if (result.code !== 0) {
       message.error('文章保存失败！');
     }
   }
 
-  async createSection(repositoryEntityId: string): Promise<void> {
+  async createSection(repositoryEntityId: string): Promise<{
+    entityId?: string,
+    sectionId?: string
+  }> {
+    let sectionModel: SectionModelType | undefined;
     if (sectionModalData.entityType === 'Section') {
-      await SectionApiService.createSectionTree({
-        name: sectionModalData.sectionName,
+      const result = await SectionApiService.createSectionTree({
+        name: sectionModalForm.sectionName,
         repositoryEntityId,
         parentId: sectionModalData.parentSectionId
       });
+      if (result.data) {
+        sectionModel = result.data;
+      }
     } else if (sectionModalData.entityType === 'ChangeSection') {
       if (!sectionModalData.parentSectionId) {
-        return;
+        return {};
       }
-      await SectionApiService.updateSectionTree({
-        name: sectionModalData.sectionName,
+      const result = await SectionApiService.updateSectionTree({
+        name: sectionModalForm.sectionName,
         id: sectionModalData.parentSectionId
       });
+      if (result.data) {
+        sectionModel = result.data;
+      }
     } else {
       if (!sectionModalData.parentSectionId) {
-        return;
+        return {};
       }
       await SectionApiService.bindSectionEntity({
-        entityId: sectionModalData.selectedEntityId,
+        entityId: sectionModalForm.selectedEntityId,
         entityType: sectionModalData.entityType as 'Knowledge',
         repositoryEntityId,
         sectionId: sectionModalData.parentSectionId
       });
+      return {
+        entityId: sectionModalForm.selectedEntityId
+      };
     }
-    await this.getSectionTree(repositoryEntityId);
+    return {
+      sectionId: sectionModel?.id
+    };
   }
 
-  // async getSectionContentByKey(key: string): Promise<void> {
-  //   console.log('切换section item，执行获取section content ');
-  //   await store.dispatch(ActionEnum.GET_SECTION_CONTENT, {
-  //     sectionId: key
-  //   });
-  // }
-
+  /**
+   * 初始化单元model数据
+   * @param params
+   */
   async initSectionModal(params: {
-    type: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection',
+    type: SectionOperationType,
     section?: SectionModelType,
     isRoot?: boolean
   }): Promise<void> {
     sectionModalData.entityType = params.type;
-    sectionModalData.selectedEntityId = '';
-    sectionModalData.sectionName = '';
     sectionModalData.parentSectionId = params.section?.id;
     sectionModalData.parentSectionName = params.section?.name;
     if (sectionModalData.entityType === 'Section') {
-      sectionModalData.title = '创建章节';
+      sectionModalData.title = '创建单元';
+      sectionModalForm.sectionName = '';
+      sectionModalFormRules.value = {
+        sectionName: [{
+          required: true,
+          message: '请输入章节名称',
+          trigger: 'blur'
+        }, {
+          min: 3,
+          max: 15,
+          message: '单元名称应当在3-15个字符',
+          trigger: 'blur'
+        }],
+      };
     }
     if (sectionModalData.entityType === 'ChangeSection') {
-      sectionModalData.title = '修改章节';
-      sectionModalData.sectionName = params?.section?.name || '';
+      sectionModalData.title = '修改单元';
+      sectionModalForm.sectionName = params?.section?.name || '';
     }
     if (sectionModalData.entityType === 'Knowledge') {
-      sectionModalData.title = '绑定实体';
+      sectionModalData.title = '绑定知识点';
+      sectionModalForm.selectedEntityId = '';
+      sectionModalFormRules.value = {
+        selectedEntityId: [{
+          required: true,
+          message: '请选择绑定的实体',
+          trigger: 'change'
+        }],
+      };
       await this.initEntityOptionList();
-    }
-    if (params.isRoot) {
-      store.commit(MutationEnum.SET_SELECTED_TREE_NODE_KEYS, { key: [] });
     }
   }
 
-  async initEntityOptionList(): Promise<void> {
+  /**
+   * 初始化单元可绑定实体
+   * @private
+   */
+  private async initEntityOptionList(): Promise<void> {
     const result = await EntityApiService.getEntityList({
-      name: sectionModalData.selectedEntityId,
+      // name: sectionModalData.selectedEntityId,
       entityType: sectionModalData.entityType,
       pageIndex: 0,
       pageSize: 80
     });
     if (result.data) {
-      sectionModalData.entityOptionList = result.data.list.map((item: any) => ({
-        key: item.entity.id,
-        label: item.content.name,
-        value: item.entity.id
-      }));
+      sectionModalData.entityOptionList = result.data
+        .list.map((item: EntityCompletelyListItemType) => ({
+          key: item.entity.id,
+          label: (item.content as KnowledgeResponseType).name,
+          value: item.entity.id
+        }));
     }
   }
 }

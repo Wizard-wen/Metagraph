@@ -70,18 +70,6 @@ export class KnowledgeApiService {
     });
   }
 
-  static async getPublishedKnowledgePreview(params: {
-    publishedKnowledgeEntityId: string;
-  }): Promise<PublicApiResponseType<{
-    entity: EntityCompletelyListItemType;
-    mentionList: EntityCompletelyListItemType[];
-  }>> {
-    return RequestNewUntil.post<KnowledgeAuthedApi.GetPublishedKnowledgePreview>({
-      apiPath: '/knowledge/published/preview',
-      requestBody: params
-    });
-  }
-
   static async getDraftKnowledgeMentionedList(params: {
     knowledgeEntityId: string;
   }): Promise<PublicApiResponseType<EntityCompletelyListItemType[]>> {
@@ -100,16 +88,6 @@ export class KnowledgeApiService {
   }>> {
     return RequestNewUntil.post<KnowledgeAuthedApi.PublishDraftKnowledge>({
       apiPath: '/knowledge/draft/publish',
-      requestBody: params
-    });
-  }
-
-  static async getLatestVersion(params: {
-    publishedKnowledgeEntityId: string;
-    // draftKnowledgeEntityId: string;
-  }): Promise<PublicApiResponseType<number>> {
-    return RequestNewUntil.post<KnowledgeAuthedApi.GetLatestVersion>({
-      apiPath: '/knowledge/getLatestVersion',
       requestBody: params
     });
   }

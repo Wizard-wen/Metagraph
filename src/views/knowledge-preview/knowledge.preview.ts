@@ -3,20 +3,24 @@
  * @date  2022/5/4 19:51
  */
 import { KnowledgeApiService, KnowledgeNoAuthApiService } from '@/api.service';
+import { knowledgeDrawerState } from '@/business';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { ref } from 'vue';
 
 // 知识点发布状态
 export const previewKnowledgePublishStatus = ref<string>('未发布');
 
+// 草稿知识点预览
 export const draftKnowledgePreviewModel = ref<{
   entity: EntityCompletelyListItemType,
   mentionList: EntityCompletelyListItemType[]
-}>();
+} | undefined>();
+
+// 已发布知识点预览
 export const publishedKnowledgePreviewModel = ref<{
   entity: EntityCompletelyListItemType,
   mentionList: EntityCompletelyListItemType[]
-}>();
+} | undefined>();
 
 // 知识点被引用次数
 export const publishedKnowledgeMentioned = ref<{
@@ -39,6 +43,20 @@ export class KnowledgePreview {
     await this.getDraftKnowledgePreview(draftKnowledgeEntityId);
   }
 
+  handleShowKnowledgeDrawer(entityId: string, type: 'published' | 'draft') {
+    knowledgeDrawerState.entityId = entityId;
+    knowledgeDrawerState.isShow = true;
+    knowledgeDrawerState.type = type;
+  }
+
+  handleCloseKnowledgeDrawer() {
+    knowledgeDrawerState.isShow = false;
+    knowledgeDrawerState.entityId = undefined;
+    knowledgeDrawerState.type = undefined;
+    draftKnowledgePreviewModel.value = undefined;
+    publishedKnowledgePreviewModel.value = undefined;
+  }
+
   /**
    * 获取已发布知识点最新版本
    * @param params
@@ -51,7 +69,7 @@ export class KnowledgePreview {
       previewKnowledgePublishStatus.value = '未发布';
       return;
     }
-    const result = await KnowledgeApiService.getLatestVersion({
+    const result = await KnowledgeNoAuthApiService.getLatestVersion({
       publishedKnowledgeEntityId: params.publishedKnowledgeEntityId
     });
     if (result.data) {
@@ -80,7 +98,7 @@ export class KnowledgePreview {
   }
 
   async getPublishedKnowledgePreview(publishedKnowledgeEntityId: string): Promise<void> {
-    const result = await KnowledgeApiService.getPublishedKnowledgePreview({
+    const result = await KnowledgeNoAuthApiService.getPublishedKnowledgePreview({
       publishedKnowledgeEntityId
     });
     if (result.data) {

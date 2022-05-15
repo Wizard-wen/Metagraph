@@ -100,6 +100,7 @@ import {
 } from './model/knowledge.edit';
 
 export default defineComponent({
+  name: 'knowledge-base-message-form',
   components: {
     DomainSelectModal,
     EditOutlined,

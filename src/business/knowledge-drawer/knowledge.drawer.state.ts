@@ -7,8 +7,10 @@ import { reactive } from 'vue';
 
 export const knowledgeDrawerState = reactive<{
   isShow: boolean,
-  entityId: string
+  type?: 'published' | 'draft',
+  entityId?: string
 }>({
   isShow: false,
-  entityId: ''
+  type: undefined,
+  entityId: undefined
 });

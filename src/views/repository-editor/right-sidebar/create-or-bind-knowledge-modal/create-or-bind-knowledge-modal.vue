@@ -3,7 +3,7 @@
     :width="1200"
     wrapClassName="full-modal"
     v-if="isModalVisible"
-    title="绑定知识点"
+    title="查找知识点"
     :maskClosable="false"
     :footer="null"
     :visible="isModalVisible"
@@ -14,11 +14,24 @@
     <ant-spin :spinning="isLoading">
       <div class="modal-content">
         <div class="search">
-          <ant-input
-            class="search-input"
-            v-model:value="searchText"
-            @change="handleChange"></ant-input>
-          <ant-button @click="createNewDraftKnowledge">创建</ant-button>
+          <div class="search-container">
+            <ant-input
+              :allowClear="true"
+              class="search-input"
+              v-model:value="searchText"
+              @change="handleChange"></ant-input>
+            <ant-button
+              v-if="searchText"
+              type="primary"
+              :disabled="isCreateDraftKnowledgeFormShow"
+              @click="handleShowCreateDraftKnowledgeForm">创建
+            </ant-button>
+          </div>
+          <create-draft-knowledge-form
+            @cancel="handleCancelCreateDraftKnowledge"
+            @submit="handleCreateCreateDraftKnowledge($event)"
+            v-if="isCreateDraftKnowledgeFormShow"
+            :init-name="searchText"></create-draft-knowledge-form>
         </div>
         <div class="list-box">
           <div v-if="searchData.target.length" class="list-content">
@@ -49,8 +62,12 @@
 </template>
 
 <script lang="ts">
+import { IndexdbService } from '@/service/indexdb.service';
+import CreateDraftKnowledgeForm
+  from '@/views/repository-editor/right-sidebar/create-or-bind-knowledge-modal/create-draft-knowledge-form.vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { debounce } from 'lodash';
+import { KnowledgeResponseType } from 'metagraph-constant';
 import {
   defineComponent, toRef, watch, ref, onMounted, inject, createVNode
 } from 'vue';
@@ -58,8 +75,9 @@ import {
   Modal, message, Input, Button, Spin
 } from 'ant-design-vue';
 import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { BindIcon } from '@/components/icons';
+import { useRouter } from 'vue-router';
 import {
   CreateOrBindKnowledgeModal,
   searchText, searchData, bindEntityIdList,
@@ -69,6 +87,7 @@ import {
 export default defineComponent({
   name: 'create-or-bind-knowledge-modal',
   components: {
+    CreateDraftKnowledgeForm,
     KnowledgeListItem,
     BindIcon,
     AntModal: Modal,
@@ -86,12 +105,14 @@ export default defineComponent({
     }
   },
   setup(props, context) {
+    const router = useRouter();
     const isModalVisible = toRef(props, 'isModalVisible');
     const searchValue = toRef(props, 'searchValue');
     const createOrBindKnowledgeModal = new CreateOrBindKnowledgeModal();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const isModalShow = ref(false);
     const modalConfirmLoading = ref(false);
+    const isCreateDraftKnowledgeFormShow = ref(false);
     isLoading.value = true;
     watch(isModalVisible, async (newValue) => {
       if (newValue) {
@@ -104,11 +125,25 @@ export default defineComponent({
     const handleModalCancel = () => {
       context.emit('close');
     };
-    const createNewDraftKnowledge = async () => {
-      if (searchText.value === '') {
-        message.error('知识点名称不能为空！');
-        return;
-      }
+
+
+
+    function handleCancelCreateDraftKnowledge() {
+      isCreateDraftKnowledgeFormShow.value = false;
+    }
+
+    function handleShowCreateDraftKnowledgeForm() {
+      isCreateDraftKnowledgeFormShow.value = true;
+    }
+
+    async function createNewDraftKnowledge(params: {
+      name: string;
+      knowledgeBaseTypeId: string
+    }) {
+      // if (searchText.value === '') {
+      //   message.error('知识点名称不能为空！');
+      //   return;
+      // }
       Modal.confirm({
         title: '确定创建新知识点吗?',
         okText: '确定',
@@ -118,15 +153,47 @@ export default defineComponent({
         content: '',
         async onOk() {
           modalConfirmLoading.value = true;
-          await createOrBindKnowledgeModal.createNewDraftKnowledge(repositoryEntityId.value);
+          const result = await createOrBindKnowledgeModal
+            .createNewDraftKnowledge({
+              ...params,
+              repositoryEntityId: repositoryEntityId.value
+            });
           modalConfirmLoading.value = false;
+          if (result) {
+            const knowledgeContent = result.content as KnowledgeResponseType;
+            await IndexdbService.getInstance()
+              .put('knowledge', {
+                id: result.entity.id,
+                name: knowledgeContent.name,
+                description: knowledgeContent.description ?? '',
+                entityId: result.entity.id,
+                type: 'draft',
+                knowledgeKey: knowledgeContent.knowledgeKey
+              });
+            router.push({
+              name: 'KnowledgeEdit',
+              query: {
+                draftKnowledgeEntityId: result.entity.id,
+                repositoryEntityId: repositoryEntityId.value,
+              }
+            })
+              .then();
+          }
           context.emit('close');
         },
         async onCancel() {
           message.info('取消创建!');
         },
       });
-    };
+    }
+
+    async function handleCreateCreateDraftKnowledge(event: {
+      name: string;
+      knowledgeBaseTypeId: string
+    }) {
+      console.log(event);
+      await createNewDraftKnowledge(event);
+    }
 
     const handleBindKnowledgeToRepository = async (entityId: string) => {
       modalConfirmLoading.value = true;
@@ -147,6 +214,7 @@ export default defineComponent({
     const handleChange = debounce(async () => {
       if (searchText.value === '') {
         searchText.value = undefined;
+        isCreateDraftKnowledgeFormShow.value = false;
       }
       searchData.target = [];
       currentPage.value = 1;
@@ -183,15 +251,19 @@ export default defineComponent({
       isLoading,
       handleChange,
       handleLoadMore,
-      createNewDraftKnowledge,
       handleBindKnowledgeToRepository,
-
+      isCreateDraftKnowledgeFormShow,
+      handleCreateCreateDraftKnowledge,
+      handleCancelCreateDraftKnowledge,
+      handleShowCreateDraftKnowledgeForm
     };
   }
 });
 </script>
 
 <style scoped lang="scss">
+@import "../../../../style/common.scss";
+
 .full-modal {
   &::v-deep(.ant-modal) {
     max-width: 100%;
@@ -218,14 +290,22 @@ export default defineComponent({
   margin: 0 auto;
 
   .search {
-    height: 32px;
-    display: flex;
-    margin-bottom: 18px;
-    gap: 20px;
 
-    .search-input {
-      width: 300px;
+    .search-container {
+      display: flex;
+      margin-bottom: 18px;
+      gap: 20px;
+
+      .search-input {
+        width: 300px;
+      }
     }
+
+    min-height: 49px;
+
+    padding-bottom: 17px;
+    border-bottom: 1px solid $borderColor;
+
   }
 
   .list-box {

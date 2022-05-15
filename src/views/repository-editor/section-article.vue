@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="article-control" v-if="editable && editor
-    && sectionTree.selectedTreeSectionNodes.length">
+    && sectionTree.selectedTreeNodes.length">
       <section-article-control
         :editor="editor"
         @fontSizeChange="changeArticleFontSize($event)"
@@ -27,9 +27,8 @@
     <!--      :disabled="false"/>-->
     <div class="article-container" :style="{
     height: editable ? 'calc(100vh - 116px)' : 'calc(100vh - 60px)' }">
-      <div class="editor-range" v-if="editable && sectionTree.selectedTreeSectionNodes.length">
+      <div class="editor-range" v-if="editable && sectionTree.selectedTreeNodes.length">
         <div class="editor-container"
-             ref="contentRef"
              :style="{
               width: (paddingValue[1] - paddingValue[0]) + 'px',
               left: paddingValue[0] + 'px',
@@ -43,63 +42,45 @@
         </div>
       </div>
       <ant-empty
-        v-if="editable && !sectionTree.selectedTreeSectionNodes.length"
+        v-if="editable && !sectionTree.selectedTreeNodes.length"
         :image="simpleImage">
         <ant-button type="primary">创建章节</ant-button>
       </ant-empty>
-      <div class="editor-container-view" v-if="!editable" ref="contentRef">
+      <div class="editor-container-view" v-if="!editable">
         <editor-content
-          v-if="editor && sectionArticle.contentHtml" class="tip-tap-editor"
+          v-if="editor && currentSectionNode.contentHtml" class="tip-tap-editor"
           :editor="editor"/>
         <ant-empty v-else :image="simpleImage"/>
       </div>
     </div>
-
-    <!--    <bubble-menu-->
-    <!--      v-if="editor"-->
-    <!--      class="bubble-menu"-->
-    <!--      :tippy-options="{ duration: 100 }"-->
-    <!--      :editor="editor"-->
-    <!--    >-->
-    <!--      <button @click="getFocusContent">get</button>-->
-    <!--      <button @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
-    <!--        Bold-->
-    <!--      </button>-->
-    <!--      <button @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
-    <!--        Italic-->
-    <!--      </button>-->
-    <!--      <button @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
-    <!--        Strike-->
-    <!--      </button>-->
-    <!--    </bubble-menu>-->
+    <section-article-bubble-menu
+    v-if="editor" :editor="editor"></section-article-bubble-menu>
   </div>
 </template>
 
 <script lang="ts">
-
+import SectionArticleBubbleMenu from '@/views/repository-editor/section-article/section-article-bubble-menu.vue';
 import {
-  defineComponent, ref, onUnmounted, onMounted, toRef, reactive, inject
+  defineComponent, ref, toRef, reactive, inject, PropType
 } from 'vue';
 import {
+  Editor,
   EditorContent,
-  // BubbleMenu,
 } from '@tiptap/vue-3';
 import { Empty, message, Button } from 'ant-design-vue';
-import { repositoryEntityIdKey } from '@/views/repository-editor/provide.type';
+import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import SectionArticleControl from './section-article/section-article-control.vue';
 import ArticleLimit from './section-article/article-limit.vue';
 import {
-  sectionArticle,
+  currentSectionNode,
   sectionTree,
-  sectionArticleTiptapTextEditor,
-  SectionTreeService,
 } from './section-tree/section.tree';
 
 export default defineComponent({
-  name: 'section-article',
+  name: 'section-article-tip-tap',
   components: {
+    SectionArticleBubbleMenu,
     EditorContent,
-    // BubbleMenu,
     SectionArticleControl,
     ArticleLimit,
     AntEmpty: Empty,
@@ -110,13 +91,18 @@ export default defineComponent({
       required: true,
       type: Boolean
     },
+    editor: {
+      type: Object as PropType<Editor>,
+      required: true
+    },
     entityId: {
       required: true,
       type: String
     }
   },
-  emits: ['clickMention', 'mention'],
+  emits: ['clickMention', 'mention', 'save'],
   setup(props, context) {
+    const editor = toRef(props, 'editor');
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const editable = toRef(props, 'editable');
     const limit = ref(30000);
@@ -136,7 +122,6 @@ export default defineComponent({
         label: '816px'
       }
     });
-    const contentRef = ref<Element>();
     const mentionKnowledge = reactive<{
       id: string;
       name: string;
@@ -144,16 +129,6 @@ export default defineComponent({
       id: '',
       name: ''
     });
-    SectionTreeService.initEditor(repositoryEntityId.value, editable.value);
-    const editor = sectionArticleTiptapTextEditor?.editor;
-
-    function getFocusContent() {
-      console.log(editor?.value?.chain()
-        .focus());
-      const node = editor?.value?.state;
-      console.log(node);
-    }
-
     async function handleClickMentionItem(event: Event) {
       console.log('click');
       const target = event?.target as HTMLSpanElement;
@@ -168,34 +143,15 @@ export default defineComponent({
     }
 
     // 存储单元文章
-    const saveSectionArticle = async () => {
+    async function saveSectionArticle() {
       if (editor?.value) {
-        const result = await sectionArticleTiptapTextEditor?.saveContent({
+        context.emit('save', {
           content: editor.value.getJSON(),
           contentHtml: editor.value.getHTML()
         });
-        if (result) {
-          message.success('保存成功！');
-        }
       }
-    };
-
-    onMounted(async () => {
-      if (contentRef.value) {
-        console.log('bind');
-        contentRef.value?.addEventListener('click', handleClickMentionItem);
-      }
-    });
-    onUnmounted(() => {
-      if (contentRef.value) {
-        contentRef.value?.removeEventListener('click', handleClickMentionItem);
-      }
-      sectionArticleTiptapTextEditor?.destroy();
-    });
-
+    }
     return {
-      editor,
-      sectionArticleTiptapTextEditor,
       limit,
       saveSectionArticle,
       changeArticleFontSize,
@@ -203,11 +159,9 @@ export default defineComponent({
       paddingValue,
       paddingFormatter,
       paddingMarks,
-      sectionArticle,
+      currentSectionNode,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      contentRef,
-      sectionTree,
-      getFocusContent
+      sectionTree
     };
   }
 });

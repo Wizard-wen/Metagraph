@@ -91,7 +91,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/knowledge/preview',
     name: 'KnowledgePreview',
-    component: () => import('@/views/knowledge-preview.vue')
+    component: () => import('@/views/knowledge-preview.page.vue')
   },
   {
     path: '/login',

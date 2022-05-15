@@ -88,7 +88,7 @@ export default defineComponent({
       (item) => (item.content as RepositoryModelType).name.includes(searchText.value)
     ) || []);
     const goCreateRepositoryPage = async () => {
-      await router.push('/repository/edit');
+      router.push('/repository/edit').then();
     };
     const goRepositoryEditorPage = async (item: EntityCompletelyListItemType) => {
       router.push({

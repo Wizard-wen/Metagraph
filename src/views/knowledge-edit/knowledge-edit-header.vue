@@ -62,7 +62,6 @@ import { Editor } from '@tiptap/vue-3';
 import {
   Button, Modal, Tag, message
 } from 'ant-design-vue';
-import { KnowledgeResponseType } from 'metagraph-constant';
 import { useRouter } from 'vue-router';
 import {
   createVNode, defineComponent, inject, PropType, ref, toRef
@@ -73,7 +72,6 @@ import { GoBackIcon } from '@/components/icons';
 import {
   CommentControlButton,
   StarControlButton,
-  knowledgeDrawerState
 } from '@/business';
 import {
   knowledgeName,
@@ -87,6 +85,8 @@ import {
   publishedKnowledgeEntityIdInjectKey,
   isCompareModalShow
 } from './model/knowledge.edit';
+
+import { KnowledgePreview } from '../knowledge-preview/knowledge.preview';
 
 export default defineComponent({
   name: 'knowledge-editor-header',
@@ -111,6 +111,7 @@ export default defineComponent({
     const router = useRouter();
     const editor = toRef(props, 'editor');
     const knowledgeEdit = new KnowledgeEdit();
+    const knowledgePreview = new KnowledgePreview();
 
     const compareLoading = ref(false);
     const drawerLoading = ref(false);
@@ -160,6 +161,9 @@ export default defineComponent({
             repositoryEntityId: repositoryEntityId.value
           });
           if (result) {
+            await knowledgeEdit.setLatestVersionStatus({
+              publishedKnowledgeEntityId: result.publishedKnowledgeEntityId
+            });
             router.push({
               name: 'KnowledgeEdit',
               query: {
@@ -180,7 +184,6 @@ export default defineComponent({
 
     async function handleOpenKnowledgeDrawer() {
       drawerLoading.value = true;
-      console.log(editor.value.getJSON());
       await knowledgeEdit.handleSaveSectionArticle({
         content: editor.value.getJSON(),
         contentHtml: editor.value.getHTML(),
@@ -188,8 +191,7 @@ export default defineComponent({
       });
       drawerLoading.value = false;
       if (knowledge.value?.entity.id) {
-        knowledgeDrawerState.entityId = knowledge.value.entity.id;
-        knowledgeDrawerState.isShow = true;
+        knowledgePreview.handleShowKnowledgeDrawer(knowledge.value.entity.id, 'draft');
       }
     }
 

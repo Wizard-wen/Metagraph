@@ -9,7 +9,7 @@ import Mention from '@tiptap/extension-mention';
 import { Editor, VueRenderer } from '@tiptap/vue-3';
 import tippy, { Instance } from 'tippy.js';
 import { computed } from 'vue';
-import MentionList from '@/views/repository-editor/tiptap/mention.list.vue';
+import MentionList from '@/components/tiptap-text-editor/mention.list.vue';
 
 const knowledgeList = computed(() => store.state.repositoryEditor.repositoryEntityList);
 const CustomMention = Mention.extend({

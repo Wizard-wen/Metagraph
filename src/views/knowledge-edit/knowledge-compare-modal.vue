@@ -1,7 +1,7 @@
 <template>
   <ant-modal
     :width="1000"
-    title="对比线上版本"
+    title="线上&草稿版本对比"
     okText="确定"
     cancelText="取消"
     :visible="isModalVisible"
@@ -12,17 +12,17 @@
     <ant-spin :spinning="isLoading">
       <div style="display: block">
         <div style="display: flex; gap: 10px" v-if="compareData">
-          <knowledge-preview-content
+          <knowledge-compare-preview-content
             style="width: 50%"
             :type="'draft'"
             :edit="compareData?.edit"
             :compare="compareData?.add"
-            :knowledge="compareData?.draft"></knowledge-preview-content>
-          <knowledge-preview-content
+            :knowledge="compareData?.draft"></knowledge-compare-preview-content>
+          <knowledge-compare-preview-content
             style="width: 50%"
             :type="'published'"
             :compare="compareData?.delete"
-            :knowledge="compareData?.published"></knowledge-preview-content>
+            :knowledge="compareData?.published"></knowledge-compare-preview-content>
         </div>
       </div>
     </ant-spin>
@@ -36,13 +36,13 @@ import {
 import {
   defineComponent, onMounted, ref, toRef
 } from 'vue';
-import KnowledgePreviewContent from '../knowledge-preview/knowledge-preview-content.vue';
+import KnowledgeComparePreviewContent from '../knowledge-preview/knowledge-compare-preview-content.vue';
 import { KnowledgeEdit, compareData } from './model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-compare-modal',
   components: {
-    KnowledgePreviewContent,
+    KnowledgeComparePreviewContent,
     AntModal: Modal,
     AntSpin: Spin,
   },

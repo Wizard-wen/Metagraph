@@ -1,3 +1,9 @@
+/**
+ * @author wizard
+ * @date 2021/11:26
+ * @description 打包后dist测试
+ */
+
 const express = require('express');
 const path = require('path');
 const os = require('os');
@@ -16,8 +22,8 @@ try {
       }
     });
   }
-} catch (e) {
-  console.log(e);
+} catch (error) {
+  console.log(error);
   localWlanHost = 'localhost';
 }
 

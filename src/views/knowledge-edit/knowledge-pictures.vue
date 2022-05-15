@@ -57,40 +57,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import '../../style/common.scss';
-
-.custom-field-box {
-  padding: 0 15px 15px 15px;
-  background: #FFFFFF;
-  max-width: 850px;
-  margin: 0 auto;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .05);
-
-  .header {
-    height: 50px;
-    line-height: 50px;
-    padding: 0 20px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid $borderColor;
-
-    .title {
-      font-size: 18px;
-    }
-
-    .right {
-      display: flex;
-      gap: 10px;
-    }
-  }
-
-  .content {
-    padding-top: 15px;
-    height: 300px;
-  }
-}
+@import "./style/knowledge.edit.scss";
 
 /* you can make up upload button and sample style by using stylesheets */
 .ant-upload-select-picture-card i {

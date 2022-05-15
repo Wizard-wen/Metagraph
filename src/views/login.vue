@@ -93,7 +93,7 @@ export default defineComponent({
           });
           if (response.data) {
             store.commit(MutationEnum.SET_USER_MODEL, { userModel: response.data });
-            await router.push('/');
+            router.push('/').then();
           } else {
             message.error(response?.message || '登录时出现问题！');
           }
@@ -107,14 +107,14 @@ export default defineComponent({
     };
 
     const register = async () => {
-      await router.push('/signup');
+      router.push('/signup').then();
     };
 
     const goHomePage = async () => {
-      await router.replace({
+      router.replace({
         path: '/',
         force: true
-      });
+      }).then();
     };
     return {
       formRef,

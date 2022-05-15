@@ -5,9 +5,8 @@
 
 import { message } from 'ant-design-vue';
 import { computed, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import type {
-  EntityCompletelyListItemType, KnowledgeResponseType
+  EntityCompletelyListItemType
 } from 'metagraph-constant';
 import {
   EntityApiService,
@@ -15,12 +14,12 @@ import {
   RepositoryApiService,
   RepositoryNoAuthApiService
 } from '@/api.service';
-import { repositoryBindEntityList } from '../../repository-editor';
+import { repositoryBindEntityList } from '../../model/repository-editor';
 
 export const searchText = ref<string | undefined>(undefined);
 export const searchData = reactive<{
   target:(EntityCompletelyListItemType & { hasBind: boolean })[]
-    }>({ target: [] });
+}>({ target: [] });
 export const bindEntityIdList = reactive<{ target: string[] }>({
   target: []
 });
@@ -30,28 +29,25 @@ export const currentPage = ref(1);
 export const isLoading = ref(true);
 
 export class CreateOrBindKnowledgeModal {
-  router = useRouter();
-
-  async createNewDraftKnowledge(repositoryEntityId: string): Promise<void> {
+  async createNewDraftKnowledge(params: {
+    repositoryEntityId: string,
+    knowledgeBaseTypeId: string,
+    name: string
+  }): Promise<EntityCompletelyListItemType | undefined> {
     if (searchText.value === undefined) {
-      return;
+      return undefined;
     }
     const result = await KnowledgeApiService.createDraftKnowledge({
-      knowledgeBaseTypeId: '606fe62050a08412400387e5',
-      repositoryEntityId,
-      name: searchText.value
+      // knowledgeBaseTypeId: '606fe62050a08412400387e5',
+      // repositoryEntityId,
+      // name: searchText.value
+      ...params
     });
     if (!result.data) {
       message.error('创建新的知识点时出错！');
-      return;
+      return undefined;
     }
-    await this.router.push({
-      name: 'KnowledgeEdit',
-      query: {
-        draftKnowledgeEntityId: result.data.entity.id,
-        repositoryEntityId,
-      }
-    });
+    return result.data;
   }
 
   async handleBindKnowledgeToRepository(params: {
@@ -77,7 +73,8 @@ export class CreateOrBindKnowledgeModal {
     if (result.data) {
       const list = result.data.list.map((item: EntityCompletelyListItemType) => ({
         ...item,
-        hasBind: !!repositoryBindEntityList.target.find((binItem) => binItem.entity.id === item.entity.id)
+        hasBind: !!repositoryBindEntityList.target
+          .find((binItem) => binItem.entity.id === item.entity.id)
       }));
       searchData.target = searchData.target.concat(list);
       total.value = result.data.total;
