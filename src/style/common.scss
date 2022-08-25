@@ -1,12 +1,22 @@
-$fontColor: #24292e;
+
 * {
   box-sizing: border-box;
 }
 
-
 input {
   outline: none;
 }
+
+
+.clearFix:before,
+.clearFix:after {
+  content: '.';
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
 
 
 .position-relative {
@@ -18,24 +28,48 @@ input {
 }
 
 .no-break-line-text {
-  overflow:hidden; //超出的文本隐藏
-  text-overflow:ellipsis; //溢出用省略号显示
-  white-space:nowrap; //溢出不换行
+  overflow: hidden; //超出的文本隐藏
+  text-overflow: ellipsis; //溢出用省略号显示
+  white-space: nowrap; //溢出不换行
 }
 
+$fontColor: #24292e;
 $themeColor: #d14424;
 $textColor: #41464b;
-$borderColor: #eee;
 $lightGray: #f9f9f9;
+
 $backgroundColor: #f5f6f7;
-$highlightBackgroundColor: #1790ff;
+
 $boxShadow: 3px 3px 3px rgba(#000, 0.15);
 $borderRadius: 2px;
 
-.custom-tip-tap-image {
-  display: block;
-  margin: 0 auto;
-}
+
+// 字体大小
+$placeholderFontSize: 12px;
+$contentFontSize: 12px;
+$titleFontSize: 14px;
+$iconFontSize: 12px;
+
+// 字体颜色
+
+$titleFontColor: #24292f;
+
+// border颜色
+//$borderColor: #eee;
+
+$borderColor: #f0f0f0;
+
+//------背景色-----
+$tabBackgroundColor: #f9f9f9;
+// 通用header 背景色
+$headerBackgroundColor: #fafbfc;
+// 页面底色
+//$contentBackgroundColor: #f5f6f7;
+$contentBackgroundColor: #fafafa;
+// list item高亮背景色
+$highlightBackgroundColor: #1790ff;
+// 富文本
+$textBackgroundColor: #FFF;
 
 @mixin list-item-highlight {
   background: $highlightBackgroundColor;
@@ -47,6 +81,7 @@ $borderRadius: 2px;
   ::v-deep(.ant-input) {
     background: #FFFFFF !important;
     -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+
     &:focus {
       background: #FFFFFF !important;
       -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
@@ -55,9 +90,8 @@ $borderRadius: 2px;
 }
 
 .custom-date-picker {
-  z-index: 10000!important;
+  z-index: 10000 !important;
 }
-
 
 .grabbing * {
   cursor: grabbing !important;

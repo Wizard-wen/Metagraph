@@ -8,7 +8,7 @@
     </div>
     <div class="list-container">
       <div class="search-result">
-        <div class="count">{{total}}个结果</div>
+        <div class="count">{{ total }}个结果</div>
       </div>
       <template
         :key="index"
@@ -30,7 +30,6 @@
   </div>
 </template>
 <script lang="ts">
-import RouterMenuList from '@/github.style.component/router-menu-list/router-menu-list.vue';
 import { searchData } from '@/views/main/metegraph.header';
 import { Pagination } from 'ant-design-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
@@ -41,8 +40,11 @@ import {
   NavigationGuardNext, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter
 } from 'vue-router';
 import { EntityNoAuthApiService } from '@/api.service';
-import RepositoryListItem from '@/github.style.component/repository-list-item/repository-list-item.vue';
-import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
+import {
+  KnowledgeListItem,
+  RepositoryListItem,
+  RouterMenuList
+} from '@/github.style.component';
 
 export default defineComponent({
   name: 'repository-list',
@@ -104,7 +106,6 @@ export default defineComponent({
       });
       repositoryList.value = result.data?.list ?? [];
       total.value = result.data?.total || 0;
-      console.log(repositoryList);
       next();
     });
     onMounted(async () => {
@@ -125,7 +126,7 @@ export default defineComponent({
       repositoryList.value = result.data?.list ?? [];
       total.value = result.data?.total || 0;
     });
-    const onPaginationChange = async (page: number, pageSize: number) => {
+    const onPaginationChange = async (page: number) => {
       const result = await EntityNoAuthApiService.getSearchList({
         pageIndex: page - 1,
         pageSize: 10,
@@ -178,11 +179,13 @@ export default defineComponent({
 
   .list-container {
     flex: 1;
+
     .search-result {
       display: flex;
       justify-content: space-between;
       height: 55px;
       border-bottom: 1px solid #d8dee4;;
+
       .count {
         font-size: 18px;
         line-height: 35px;

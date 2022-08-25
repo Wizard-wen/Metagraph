@@ -11,7 +11,9 @@
         </div>
         <div class="des">{{ repository.content.description }}</div>
         <div class="tag" v-if="repository.content.domain.length">
-          <ant-tag v-for="item in repository.content.domain">
+          <ant-tag
+            :key="index"
+            v-for="(item, index) in repository.content.domain">
             {{ item.domainBaseTypeName }}-{{ item.domainName }}
           </ant-tag>
         </div>

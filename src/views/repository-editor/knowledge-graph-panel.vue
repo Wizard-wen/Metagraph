@@ -91,6 +91,7 @@ export default defineComponent({
       isExtendTreeGraphShow,
       isPreTreeGraphShow,
       isModalVisible,
+      graph,
       handleZoomInGraph,
       handleZoomOutGraph,
       knowledgeEdgeFormRules,

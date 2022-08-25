@@ -1,12 +1,12 @@
 <template>
   <div class="operation-icon" @click="toggleTask">
     <div class="icon">
-      <CodeIcon
+      <ScheduleOutlined
         class="icon-svg"
         :class="{ 'is-active': editor.isActive('taskList') }"/>
     </div>
     <div class="name">
-      task
+      任务
     </div>
   </div>
 </template>
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { Editor } from '@tiptap/vue-3';
 import { defineEmits, defineProps, PropType } from 'vue';
-import { CodeIcon } from '@/components/icons';
+import { ScheduleOutlined } from '@ant-design/icons-vue';
 
 const props = defineProps({
   editor: {

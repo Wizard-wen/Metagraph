@@ -85,7 +85,7 @@ import {
   entityRelationEdges,
   isKnowledgeRelationLoading
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
-import { repositoryBindEntityList } from '../model/repository-editor';
+import { repositoryBindEntityList } from '../model/repository.editor';
 
 export default defineComponent({
   name: 'knowledge-connection',
@@ -95,7 +95,7 @@ export default defineComponent({
   },
   setup() {
     const repositoryEntityIdList = computed(
-      () => repositoryBindEntityList.target.map((item) => item.entity.id)
+      () => repositoryBindEntityList.value.map((item) => item.entity.id)
     );
     const toolbarElementList = [
       {
@@ -195,6 +195,7 @@ export default defineComponent({
         padding: 0;
         line-height: 35px;
         height: 35px;
+        font-size: 14px;
       }
 
       & ::v-deep(.ant-card-body) {

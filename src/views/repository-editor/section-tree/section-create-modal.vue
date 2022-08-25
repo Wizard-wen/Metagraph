@@ -6,7 +6,7 @@
     cancelText="取消"
     :confirm-loading="sectionModalData.isConfirmLoading"
     @ok="handleCreateSection"
-    @cancel="handleCloseModal('')">
+    @cancel="handleCloseModal({})">
     <div class="section-name-container" v-if="sectionModalData.parentSectionName">
       <div v-if="sectionModalData.entityType === 'Knowledge'">
         当前单元是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
@@ -52,7 +52,7 @@ import {
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import {
   sectionModalData, SectionTreeService, sectionModalForm, sectionModalFormRules
-} from './section.tree';
+} from '../model/section.tree';
 
 export default defineComponent({
   name: 'section-create-modal',

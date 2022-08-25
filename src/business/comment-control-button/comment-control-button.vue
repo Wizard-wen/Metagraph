@@ -4,7 +4,7 @@
     :title="'评论'"
     :total="count">
     <template #icon>
-      <comment-icon></comment-icon>
+      <CommentOutlined/>
     </template>
   </social-action-button>
   <metagraph-drawer
@@ -20,16 +20,17 @@
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
+import { CommentOutlined } from '@ant-design/icons-vue';
 import EntityComment from '@/business/entity-comment/entity-comment.vue';
-import { SocialActionButton, MetagraphDrawer, CommentIcon } from '@/components';
+import { SocialActionButton, MetagraphDrawer } from '@/components';
 
 export default defineComponent({
   name: 'comment-control-button',
   components: {
     EntityComment,
+    CommentOutlined,
     SocialActionButton,
-    MetagraphDrawer,
-    CommentIcon
+    MetagraphDrawer
   },
   props: {
     count: {

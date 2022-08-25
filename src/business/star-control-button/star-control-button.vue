@@ -5,7 +5,7 @@
     :title="hasStar ? '取消' : '点赞'"
     :total="count">
     <template #icon>
-      <star-icon></star-icon>
+      <StarOutlined/>
     </template>
   </social-action-button>
   <metagraph-drawer
@@ -25,9 +25,10 @@ import {
   defineComponent, PropType, ref, toRef
 } from 'vue';
 import { message } from 'ant-design-vue';
+import { StarOutlined } from '@ant-design/icons-vue';
 import { StarApiService } from '@/api.service';
 import EntityStar from '@/business/entity-star/entity-star.vue';
-import { StarIcon, MetagraphDrawer, SocialActionButton } from '../../components';
+import { MetagraphDrawer, SocialActionButton } from '@/components';
 
 export default defineComponent({
   name: 'star-control-button',
@@ -35,7 +36,7 @@ export default defineComponent({
     EntityStar,
     SocialActionButton,
     MetagraphDrawer,
-    StarIcon
+    StarOutlined
   },
   props: {
     isOwner: {

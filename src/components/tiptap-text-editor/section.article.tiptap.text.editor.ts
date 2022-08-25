@@ -8,50 +8,66 @@ import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Range } from '@tiptap/core';
 import { JSONContent } from '@tiptap/vue-3';
-import { message, Modal } from 'ant-design-vue';
+import { Modal } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
-import { EditorView } from 'prosemirror-view';
 import { createVNode } from 'vue';
 import {
   SectionTreeService
-} from '@/views/repository-editor/section-tree/section.tree';
+} from '@/views/repository-editor/model/section.tree';
 import { AbstractTiptapTextEditor } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
-import {
-  RepositoryNoAuthApiService, SectionApiService
-} from '@/api.service';
 
 export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
-  limit = 1000;
+  protected limit = 1000;
 
+  // 当前section
   private sectionId?: string;
 
   constructor(
     private readonly repositoryEntityId: string,
-    protected readonly editable: boolean
+    protected readonly editable: boolean,
+    private readonly sectionTreeService: SectionTreeService
   ) {
-    super(repositoryEntityId, 'Repository');
+    super();
   }
 
-  private repositoryEntityList?: EntityCompletelyListItemType[];
+  /**
+   * 将section内容更新到本地(更新频率较快，所以持久化到本地)
+   * @param params
+   * @protected
+   */
+  protected async saveToIndexDB(params: {
+    content: JSONContent,
+    contentHtml: string
+  }): Promise<void> {
+    if (this.sectionId) {
+      await IndexdbService.getInstance()
+        .update('repository', this.sectionId, {
+          content: params.contentHtml,
+        });
+    }
+  }
 
   /**
-   * 改变section节点
-   * @param sectionId
-   * @param isEditable
-   * @param sectionName
+   * 在改变section前保存上一个section的内容
+   * @param params
    */
-  async updateAndSaveSection(sectionId: string, isEditable: boolean, sectionName?: string): Promise<void> {
+  async saveSectionContentBeforeUpdate(params: {
+    sectionId: string,
+    isEditable: boolean,
+    sectionName?: string
+  }): Promise<void> {
     // editable 的情况下更新section 之前先保存之前的section
-    if (isEditable && this.editor.value?.getJSON() && this.editor.value?.getHTML()) {
-      await this.save({
-        content: this.editor.value?.getJSON(),
-        contentHtml: this.editor.value?.getHTML()
-      });
+    if (params.isEditable && this.editor.value?.getJSON() && this.editor.value?.getHTML()) {
       if (this.sectionId) {
+        await this.sectionTreeService.saveSectionArticle({
+          sectionId: this.sectionId,
+          content: this.editor.value?.getJSON(),
+          contentHtml: this.editor.value?.getHTML()
+        });
         await IndexdbService.getInstance()
           .put('repository', {
             id: this.sectionId,
-            name: sectionName ?? '',
+            name: params.sectionName ?? '',
             content: this.editor.value?.getHTML(),
             sectionId: this.sectionId,
             repositoryEntityId: this.repositoryEntityId
@@ -59,60 +75,28 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
       }
     }
     // 更新section id
-    this.sectionId = sectionId;
+    this.updateCurrentSectionId(params.sectionId);
   }
 
-  updateSection(sectionId: string): void {
+  /**
+   * 更新当前的选中的section id
+   * @param sectionId
+   */
+  updateCurrentSectionId(sectionId?: string): void {
     // 更新section id
     this.sectionId = sectionId;
   }
 
-  protected async save(params: {
-    content: JSONContent,
-    contentHtml: string
-  }): Promise<boolean> {
-    // eslint-disable-next-line no-return-await
-    return await this.handleSaveSectionArticle(params);
-  }
-
-  async saveContent(params: {
-    content: JSONContent,
-    contentHtml: string
-  }): Promise<boolean> {
-    // eslint-disable-next-line no-return-await
-    return await this.save(params);
-  }
-
-  private async getRepositoryBindList(): Promise<void> {
-    const result = await RepositoryNoAuthApiService
-      .getRepositoryBindEntityList(this.repositoryEntityId);
-    if (result.data) {
-      this.repositoryEntityList = result.data;
-    }
-  }
-
-  async initData(params: { sectionId: string }): Promise<void> {
+  /**
+   * 初始化异步数据
+   * @param params
+   */
+  async initData(params: {
+    sectionId: string,
+    repositoryEntityList: EntityCompletelyListItemType[]
+  }): Promise<void> {
     this.sectionId = params.sectionId;
-    await this.getRepositoryBindList();
-    this.setMentionKnowledgeList(this.repositoryEntityList ?? []);
-  }
-
-  private async handleSaveSectionArticle(params: {
-    content: JSONContent,
-    contentHtml: string
-  }): Promise<boolean> {
-    if (!this.sectionId) {
-      return false;
-    }
-    const result = await SectionApiService.saveSectionArticle({
-      ...params,
-      sectionId: this.sectionId
-    });
-    if (result.code !== 0) {
-      message.error('文章保存失败！');
-      return false;
-    }
-    return true;
+    this.setMentionKnowledgeList(params.repositoryEntityList);
   }
 
   handleMention(params: {
@@ -131,12 +115,12 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
       icon: createVNode(ExclamationCircleOutlined),
       content: '',
       async onOk() {
-        that.success(params.range, {
+        that.handleMentionedSuccess(params.range, {
           id: params.id,
           name: params.name
         });
         if (that.sectionId) {
-          await SectionApiService.bindSectionEntity({
+          await that.sectionTreeService.bindSectionEntity({
             entityId: params.id,
             entityType: 'Knowledge',
             repositoryEntityId: that.repositoryEntityId,
@@ -145,7 +129,9 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
           if (!that.editor.value?.getJSON() || !that.editor.value?.getHTML()) {
             throw new Error('cannot get editor content');
           }
-          await that.save({
+          // 保存section article
+          await that.sectionTreeService.saveSectionArticle({
+            sectionId: that.sectionId,
             content: that.editor.value?.getJSON(),
             contentHtml: that.editor.value?.getHTML()
           });
@@ -155,12 +141,14 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
         }
       },
       async onCancel() {
-        const json = that.fail(params.range, {
+        const json = that.handleMentionFailed(params.range, {
           id: params.id,
           name: params.name
         });
-        if (json) {
-          await that.save({
+        if (json && that.sectionId) {
+          // 保存section article
+          await that.sectionTreeService.saveSectionArticle({
+            sectionId: that.sectionId,
             content: json,
             contentHtml: params.contentHtml
           });

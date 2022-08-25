@@ -1,44 +1,55 @@
 <template>
-  <div class="repository-item">
+  <div class="activity-list-item">
     <ant-avatar
       :size="32"
-      class="icon"
+      class="user-avatar"
       v-if="activityItem.user.avatar"
       :src="activityItem.user.avatar"></ant-avatar>
-    <div class="content">
+    <div class="activity-content">
       <activity-item-title :activity-item="activityItem"></activity-item-title>
-      <div class="box">
+      <div class="activity-box">
         <div class="name-content">
+          <ant-tooltip placement="left" title="知识库" arrow-point-at-center>
+            <div class="name-icon">
+              <BookOutlined/>
+            </div>
+          </ant-tooltip>
           <div class="name" @click="goRepositoryPage($event)">
             {{ activityItem.entity.content.name }}
           </div>
-          <ant-tag color="#41b883">知识库</ant-tag>
+          <metagraph-tag class="type-tag-gap" :title="'知识库'"></metagraph-tag>
         </div>
-        <div class="des">{{ activityItem.entity.content.description }}</div>
-        <div class="tag" v-if="activityItem.entity.content.domain.length">
-          <ant-tag v-for="item in activityItem.entity.content.domain">
-            {{ item.domainBaseTypeName }}-{{ item.domainName }}
-          </ant-tag>
+        <div class="description-text">
+          {{ activityItem.entity.content.description }}
+        </div>
+        <div class="tag-content" v-if="activityItem.entity.content.domain.length">
+          <metagraph-tag
+            :key="index"
+            v-for="(item, index) in activityItem.entity.content.domain"
+            :title="item.domainName"></metagraph-tag>
         </div>
         <div class="others">
           <div class="star">
-            <StarOutlined style="margin-right: 8px"/>
-            <div>{{ activityItem.entity.star }}</div>
+            <StarOutlined class="star-icon"/>
+            {{ activityItem.entity.star }}
           </div>
           <div class="star">
-            <CommentIcon style="margin-right: 8px"/>
-            <div>{{ activityItem.entity.comment }}</div>
+            <CommentOutlined class="star-icon"/>
+            {{ activityItem.entity.comment }}
           </div>
           <div class="updatedAt">更新于 {{ date }}</div>
         </div>
-        <ant-button
+        <metagraph-button
           v-if="isLogin"
           class="control-btn star-btn"
-          :loading="isStarButtonDisabled"
-          @click="addStar($event, activityItem.entity.hasStared)"
-          :type="activityItem.entity.hasStared ? 'primary': 'default'"
-        >{{ activityItem.entity.hasStared ? '已点赞' : '点赞' }}
-        </ant-button>
+          :title="'点赞'"
+          :isLoading="isStarButtonDisabled"
+          @click="addStar($event, activityItem.entity.hasStared)">
+          <template #icon>
+            <star-filled class="icon-gap-5" v-if="activityItem.entity.hasStared"/>
+            <star-outlined class="icon-gap-5" v-else/>
+          </template>
+        </metagraph-button>
       </div>
     </div>
   </div>
@@ -48,19 +59,21 @@
 import type {
   ActivityModelType, EntityCompletelyListItemType, StarResponseType, UserModelType
 } from 'metagraph-constant';
+import { MetagraphButton, MetagraphTag } from 'metagraph-ui';
 import {
   defineComponent, toRef, PropType, computed, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  message, Button, Avatar, Tag
+  message, Button, Avatar, Tag, Tooltip
 } from 'ant-design-vue';
-import { StarOutlined } from '@ant-design/icons-vue';
+import {
+  StarOutlined, StarFilled, CommentOutlined, BookOutlined
+} from '@ant-design/icons-vue';
 import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';
-import { CommentIcon } from '@/components/icons';
 import { PublicApiResponseType } from '@/utils';
 
 export default defineComponent({
@@ -68,10 +81,15 @@ export default defineComponent({
   components: {
     ActivityItemTitle,
     StarOutlined,
-    CommentIcon,
+    StarFilled,
+    CommentOutlined,
+    BookOutlined,
+    AntTooltip: Tooltip,
     AntButton: Button,
     AntAvatar: Avatar,
-    AntTag: Tag
+    AntTag: Tag,
+    MetagraphButton,
+    MetagraphTag
   },
   props: {
     activityItem: {
@@ -148,113 +166,5 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.repository-item {
-  padding: 16px 0;
-  border-bottom: 1px solid #eaecef;
-  display: flex;
-  max-width: 1000px;
-  width: 100%;
-  margin: 0 auto;
-
-  .icon {
-    margin-right: 15px;
-  }
-
-  .content {
-    width: 100%;
-
-    .title {
-      font-weight: bold;
-      height: 32px;
-      line-height: 32px;
-      text-align: left;
-      cursor: pointer;
-      width: max-content;
-
-      &:hover {
-        color: #0969DA;
-      }
-    }
-
-    .box {
-      position: relative;
-      text-align: left;
-      margin-top: 8px;
-      border-radius: 6px;
-      border: 1px solid #e1e4e8;
-      background: #fff;
-      padding: 16px;
-
-      .name-content {
-        height: 30px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 10px;
-
-        .name {
-          height: 30px;
-          line-height: 30px;
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 16px;
-        }
-      }
-
-      .des {
-        margin-top: 4px;
-        min-height: 20px;
-      }
-
-      .tag {
-        line-height: 22px;
-        padding: 5px 0;
-      }
-
-      .others {
-        margin-top: 8px;
-        display: flex;
-        align-items: center;
-
-        .star {
-          margin-right: 16px;
-          display: flex;
-          align-items: center;
-          line-height: 22px;
-        }
-
-        .updatedAt {
-          margin-right: 16px;
-          line-height: 22px;
-        }
-      }
-
-      .control-btn {
-        position: absolute;
-        padding: 2px 12px;
-        font-size: 12px;
-        line-height: 18px;
-        border: 1px solid #1b1f2326;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-
-        &::v-deep(.ant-btn) {
-          height: 28px;
-        }
-      }
-
-      .plan-btn {
-        top: 16px;
-        right: 76px;
-      }
-
-      .star-btn {
-        top: 16px;
-        right: 16px;
-      }
-    }
-  }
-}
+@import "activity.scss";
 </style>

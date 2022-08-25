@@ -55,7 +55,7 @@ export class DomainSelector {
     const response = await DomainNoAuthApiService.getDomainBaseTypeList();
     if (response.data) {
       domainBaseTypeList.target = response.data;
-      domainBaseTypeId.value = domainBaseTypeList.target[0].id;
+      // domainBaseTypeId.value = domainBaseTypeList.target[0].id;
     }
   }
 }

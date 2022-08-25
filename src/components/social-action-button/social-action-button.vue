@@ -32,7 +32,8 @@ export default defineComponent({
       emit('total');
     };
     return {
-      handleAction, handleTotalClick
+      handleAction,
+      handleTotalClick
     };
   }
 });
@@ -40,6 +41,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "../../style/common.scss";
+
 .action-button {
   &:hover {
     cursor: pointer;
@@ -54,14 +56,18 @@ export default defineComponent({
 
   .action {
     height: 28px;
-    padding: 0 8px;
+    line-height: 28px;
+    padding: 0 6px;
     display: flex;
-    gap: 5px;
+    gap: 3px;
     align-items: center;
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
     border: 1px solid $borderColor;
 
+    .title {
+      font-size: 12px;
+    }
   }
 
   .total {

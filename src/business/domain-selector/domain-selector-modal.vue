@@ -10,18 +10,23 @@
     @cancel="handleModalCancel"
     @ok="handleModalOk">
     <ant-spin :spinning="isLoading">
-      <div class="domain-tag-list" v-if="domainList.length">
+      <div class="tag-title">
+        已选择领域
+      </div>
+      <div class="domain-tag-list" v-if="domain.target.length">
         <ant-tag
+          :visible="true"
           closable
           @close="handleDeleteDomainTag(index)"
           :key="index"
-          v-for="(item, index) in domainList">
+          v-for="(item, index) in domain.target">
           {{ item.domainName || '-' }}
         </ant-tag>
       </div>
+      <ant-divider></ant-divider>
       <div class="domain-form-box">
         <ant-select
-          style="width: 120px;"
+          style="width: 140px;"
           @change="handleDomainBaseTypeChange"
           v-model:value="domainBaseTypeId"
           placeholder="请选择领域类型">
@@ -44,7 +49,7 @@
 
 <script lang="ts">
 import {
-  Button, Cascader, Modal, Select, Spin, Tag
+  Button, Cascader, Modal, Select, Spin, Tag, Divider
 } from 'ant-design-vue';
 import {
   defineComponent, onMounted, PropType, ref, toRef, computed
@@ -66,7 +71,8 @@ export default defineComponent({
     AntSelect: Select,
     AntSelectOption: Select.Option,
     AntTag: Tag,
-    AntModal: Modal
+    AntModal: Modal,
+    AntDivider: Divider
   },
   emits: ['close'],
   props: {
@@ -74,7 +80,7 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
-    domainList: {
+    selectedDomainList: {
       type: Array as PropType<{
         domainId: string[];
         domainName?: string,
@@ -85,7 +91,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const modalConfirmLoading = ref(false);
-    const initDomainList = toRef(props, 'domainList');
+    const initDomainList = toRef(props, 'selectedDomainList');
     domain.target = initDomainList.value;
     const isLoading = ref(false);
     const domainSelect = new DomainSelector();
@@ -114,7 +120,13 @@ export default defineComponent({
       });
     }
 
-    function addDomain(): void {
+    async function handleDomainBaseTypeChange(event: string) {
+      isLoading.value = true;
+      await domainSelect.getDomainTree(event);
+      isLoading.value = false;
+    }
+
+    async function addDomain(): Promise<void> {
       if (!domainBaseTypeId.value) {
         return;
       }
@@ -124,21 +136,24 @@ export default defineComponent({
         domainBaseTypeId: domainBaseTypeId.value
       });
       domainIdList.target = [];
-      domainBaseTypeId.value = '';
+      domainBaseTypeId.value = enabledDomainList.value.length ? enabledDomainList.value[0].id : undefined;
+      if (domainBaseTypeId.value) {
+        await handleDomainBaseTypeChange(domainBaseTypeId.value);
+      }
     }
 
-    function handleDeleteDomainTag(index: number): void {
+    async function handleDeleteDomainTag(index: number): Promise<void> {
       domain.target.splice(index, 1);
-    }
-
-    async function handleDomainBaseTypeChange(event: any) {
-      isLoading.value = true;
-      await domainSelect.getDomainTree(event);
-      isLoading.value = false;
+      domainBaseTypeId.value = enabledDomainList.value.length ? enabledDomainList.value[0].id : undefined;
+      if (domainBaseTypeId.value) {
+        await handleDomainBaseTypeChange(domainBaseTypeId.value);
+      }
     }
 
     onMounted(async () => {
+      console.log(domainBaseTypeId.value);
       await domainSelect.getDomainBaseTypeList();
+      domainBaseTypeId.value = enabledDomainList.value[0].id;
       if (domainBaseTypeId.value) {
         await domainSelect.getDomainTree(domainBaseTypeId.value);
       }
@@ -164,6 +179,13 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+.tag-title {
+  height: 36px;
+  line-height: 36px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .domain-tag-list {
   display: flex;
   justify-content: flex-start;

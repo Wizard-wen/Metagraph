@@ -22,7 +22,7 @@
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
 import {
   createVNode, inject, ref, defineComponent
 } from 'vue';
@@ -63,10 +63,11 @@ export default defineComponent({
 
     function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string }) {
       console.log(item);
+      const knowledgeContent = item.content as KnowledgeResponseType;
       Modal.confirm({
         title: '确定删除知识点关联吗',
         icon: createVNode(ExclamationCircleOutlined),
-        content: `确定要删除与知识点"${item.content.name}"的关联吗?`,
+        content: `确定要删除与知识点"${knowledgeContent.name}"的关联吗?`,
         okText: '确定',
         cancelText: '取消',
         async onOk() {
@@ -82,7 +83,7 @@ export default defineComponent({
     }
 
     function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
-      knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'punlished');
+      knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'published');
     }
 
     return {

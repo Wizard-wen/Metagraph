@@ -7,6 +7,7 @@
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 module.exports = {
+  runtimeCompiler: true,
   css: {
     loaderOptions: {
       less: {

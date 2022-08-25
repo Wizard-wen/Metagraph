@@ -1,4 +1,4 @@
-.normal-control-button {
+.normal-control-button-1 {
     appearance: none;
     background-color: #fafbfc;
     border: 1px solid rgba(27, 31, 35, 0.15);
@@ -26,34 +26,34 @@
     word-wrap: break-word;
 }
 
-.normal-control-button:hover {
+.normal-control-button-1:hover {
     background-color: #f3f4f6;
     text-decoration: none;
     transition-duration: 0.1s;
 }
 
-.normal-control-button:disabled {
+.normal-control-button-1:disabled {
     background-color: #fafbfc;
     border-color: rgba(27, 31, 35, 0.15);
     color: #959da5;
     cursor: default;
 }
 
-.normal-control-button:active {
+.normal-control-button-1:active {
     background-color: #edeff2;
     box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
     transition: none 0s;
 }
 
-.normal-control-button:focus {
+.normal-control-button-1:focus {
     outline: 1px transparent;
 }
 
-.normal-control-button:before {
+.normal-control-button-1:before {
     display: none;
 }
 
-.normal-control-button::-webkit-details-marker {
+.normal-control-button-1::-webkit-details-marker {
     display: none;
 }
 

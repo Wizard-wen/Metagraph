@@ -31,7 +31,7 @@ import {
   defineComponent, reactive, ref, toRef
 } from 'vue';
 import {
-  Button, Form, Input, Select, Space, Radio
+  Button, Form, Input, Space, Radio
 } from 'ant-design-vue';
 
 export default defineComponent({
@@ -119,6 +119,6 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>

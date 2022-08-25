@@ -45,6 +45,7 @@
               </ant-dropdown>
             </template>
           </ant-tree>
+          <empty-view v-else></empty-view>
         </div>
       </div>
     </div>
@@ -68,12 +69,13 @@
           </div>
         </div>
       </div>
-      <ant-empty :image="simpleImage" v-else></ant-empty>
+      <empty-view v-else></empty-view>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import EmptyView from '@/components/empty-view/empty-view.vue';
 import {
   FolderOutlined,
   PlusOutlined, SnippetsOutlined
@@ -83,22 +85,22 @@ import {
   defineComponent, ref, inject
 } from 'vue';
 import {
-  Tree, Dropdown, Menu, Button, Empty
+  Tree, Dropdown, Menu, Button
 } from 'ant-design-vue';
 import { isEditableKey } from '@/views/repository-editor/model/provide.type';
 import { ViewIcon } from '@/components/icons';
 import {
   sectionTree,
   currentSectionNode
-} from '@/views/repository-editor/section-tree/section.tree';
+} from '@/views/repository-editor/model/section.tree';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 
 export default defineComponent({
   name: 'section-tree',
   components: {
+    EmptyView,
     PlusOutlined,
     ViewIcon,
-    AntEmpty: Empty,
     SnippetsOutlined,
     FolderOutlined,
     AntTree: Tree,
@@ -125,16 +127,16 @@ export default defineComponent({
       emit('selectSection', selectedKeys);
     }
 
-    const handleContextMenuClick = (
+    function handleContextMenuClick(
       treeKey: string,
       menuKey: 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete',
       section?: SectionModelType
-    ) => {
+    ) {
       openCreateSectionModal({
         type: menuKey,
         section
       });
-    };
+    }
 
     function handleClickEntityItem(item: EntityCompletelyListItemType) {
       knowledgePreview.handleShowKnowledgeDrawer(
@@ -147,12 +149,11 @@ export default defineComponent({
       handleContextMenuClick,
       openCreateSectionModal,
       handleSelectedTreeNode,
+      handleClickEntityItem,
       isCreateSectionModalShown,
       isEditable,
       sectionTree,
-      currentSectionNode,
-      handleClickEntityItem,
-      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      currentSectionNode
     };
   }
 });
@@ -166,7 +167,7 @@ export default defineComponent({
 
   .tree-container {
     height: 50%;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $borderColor;
 
     .header {
       height: 32px;
@@ -174,12 +175,13 @@ export default defineComponent({
       font-size: 12px;
       text-align: center;
       width: 100%;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid $borderColor;
       background: #f9f9f9;
     }
 
     .control {
       padding: 10px 15px 0 15px;
+
       .add-section-button {
         width: 100%;
         font-size: 12px;
@@ -196,7 +198,6 @@ export default defineComponent({
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      //padding-left: 10px;
     }
   }
 
@@ -211,7 +212,7 @@ export default defineComponent({
       text-align: center;
       width: 100%;
       background: #f9f9f9;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid $borderColor;
     }
 
     .section-bind-scroll-container {

@@ -40,7 +40,7 @@ import {
   defineComponent
 } from 'vue';
 import { Spin, Pagination } from 'ant-design-vue';
-import RepositoryListItem from '@/github.style.component/repository-list-item/repository-list-item.vue';
+import { RepositoryListItem } from '@/github.style.component';
 import { useStore } from '@/store';
 import HomePageActivityListItem from '@/views/home-page/home-page-main-list/home-page-activity-list-item.vue';
 import { HomePage, repositoryList, activityList } from '@/views/home-page/home.page';
@@ -83,12 +83,12 @@ export default defineComponent({
   .content {
     width: 100%;
     max-width: 1400px;
-    margin: 50px auto 50px;
+    margin: 16px auto 50px;
     .activity-title {
       text-align: left;
       height: 30px;
       line-height: 30px;
-      font-size: 16px;
+      font-size: 14px;
       color: #242930;
     }
   }

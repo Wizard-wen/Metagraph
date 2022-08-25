@@ -7,7 +7,6 @@ import { knowledgeDrawerState } from '@/business';
 import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { JSONContent } from '@tiptap/vue-3';
-import { EditorView } from 'prosemirror-view';
 import { Range } from '@tiptap/core';
 import { Modal } from 'ant-design-vue';
 import { createVNode } from 'vue';
@@ -18,33 +17,27 @@ import {
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
-  limit = 600;
+  protected limit = 600;
 
-  editable = true;
-
-  private knowledgeEdit = new KnowledgeEdit();
+  protected editable = true;
 
   constructor(
     private readonly params: {
       repositoryEntityId: string,
       // 只有正式发布后才有entity id
       knowledgeEntityId: string,
-      hasPublished: boolean
-    }
+      hasPublished: boolean,
+    },
+    private readonly knowledgeEdit: KnowledgeEdit
   ) {
-    super(params.knowledgeEntityId, 'Knowledge');
+    super();
   }
 
-  handleClick(view: EditorView, pos: number, event: MouseEvent): void {
-    console.log('click', view, pos, event);
-  }
-
-  protected async save(params: {
+  protected async saveToIndexDB(params: {
     content: JSONContent,
     contentHtml: string
-  }): Promise<boolean> {
-    console.log('do save---');
-    const result = await IndexdbService.getInstance()
+  }): Promise<void> {
+    await IndexdbService.getInstance()
       .update(
         'knowledge',
         this.params.knowledgeEntityId,
@@ -52,7 +45,6 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
           description: params.contentHtml
         }
       );
-    return !!result;
   }
 
   async initData(): Promise<void> {
@@ -68,10 +60,11 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   }): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
-    const entity = mentionedKnowledge.list.find((item) => item.entity.id === params.id);
+    const entity = mentionedKnowledge.list
+      .find((item) => item.entity.id === params.id);
     if (entity) {
       // 如果已经绑定了知识点，就
-      that.success(params.range, {
+      that.handleMentionedSuccess(params.range, {
         id: params.id,
         name: params.name
       });
@@ -85,7 +78,7 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
       okText: '确定',
       cancelText: '取消',
       async onOk() {
-        that.success(params.range, {
+        that.handleMentionedSuccess(params.range, {
           id: params.id,
           name: params.name
         });
@@ -108,7 +101,7 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
         });
       },
       async onCancel() {
-        that.fail(params.range, {
+        that.handleMentionFailed(params.range, {
           id: params.id,
           name: params.name
         });

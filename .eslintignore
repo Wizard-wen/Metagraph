@@ -11,3 +11,4 @@ server
 
 vue.config.js
 npm-publish-cli.js
+deploy.js

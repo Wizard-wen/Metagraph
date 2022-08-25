@@ -2,7 +2,6 @@
   <ant-modal
     :width="1200"
     wrapClassName="full-modal"
-    v-if="isModalVisible"
     title="查找知识点"
     :maskClosable="false"
     :footer="null"
@@ -16,6 +15,7 @@
         <div class="search">
           <div class="search-container">
             <ant-input
+              placeholder="请输入要查找的知识点"
               :allowClear="true"
               class="search-input"
               v-model:value="searchText"
@@ -33,27 +33,29 @@
             v-if="isCreateDraftKnowledgeFormShow"
             :init-name="searchText"></create-draft-knowledge-form>
         </div>
-        <div class="list-box">
-          <div v-if="searchData.target.length" class="list-content">
-            <knowledge-list-item
-              :key="index"
-              v-for="(item, index) in searchData.target"
-              :repository="item">
-              <template #control>
-                <div class="control-btn banner-item" v-if="!item.hasBind">
-                  <bind-icon class="icon"></bind-icon>
-                  <div
-                    class="text"
-                    @click="handleBindKnowledgeToRepository(item.entity.id)">绑定
+        <div class="list-container">
+          <div class="list-box">
+            <div v-if="searchData.target.length" class="list-content">
+              <knowledge-list-item
+                :key="index"
+                v-for="(item, index) in searchData.target"
+                :repository="item">
+                <template #control>
+                  <div class="control-btn banner-item" v-if="!item.hasBind">
+                    <bind-icon class="icon"></bind-icon>
+                    <div
+                      class="text"
+                      @click="handleBindKnowledgeToRepository(item.entity.id)">绑定
+                    </div>
                   </div>
-                </div>
-              </template>
-            </knowledge-list-item>
-          </div>
-          <div class="load-content" v-if="searchData.target.length && totalPage > currentPage">
-            <ant-button @click="handleLoadMore">
-              加载更多
-            </ant-button>
+                </template>
+              </knowledge-list-item>
+            </div>
+            <div class="load-content" v-if="searchData.target.length && totalPage > currentPage">
+              <ant-button @click="handleLoadMore">
+                加载更多
+              </ant-button>
+            </div>
           </div>
         </div>
       </div>
@@ -63,8 +65,6 @@
 
 <script lang="ts">
 import { IndexdbService } from '@/service/indexdb.service';
-import CreateDraftKnowledgeForm
-  from '@/views/repository-editor/right-sidebar/create-or-bind-knowledge-modal/create-draft-knowledge-form.vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { debounce } from 'lodash';
 import { KnowledgeResponseType } from 'metagraph-constant';
@@ -74,10 +74,12 @@ import {
 import {
   Modal, message, Input, Button, Spin
 } from 'ant-design-vue';
-import KnowledgeListItem from '@/github.style.component/knowledge-list-item/knowledge-list-item.vue';
+import { KnowledgeListItem } from '@/github.style.component';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { BindIcon } from '@/components/icons';
 import { useRouter } from 'vue-router';
+import CreateDraftKnowledgeForm
+  from './create-draft-knowledge-form.vue';
 import {
   CreateOrBindKnowledgeModal,
   searchText, searchData, bindEntityIdList,
@@ -126,8 +128,6 @@ export default defineComponent({
       context.emit('close');
     };
 
-
-
     function handleCancelCreateDraftKnowledge() {
       isCreateDraftKnowledgeFormShow.value = false;
     }
@@ -140,10 +140,6 @@ export default defineComponent({
       name: string;
       knowledgeBaseTypeId: string
     }) {
-      // if (searchText.value === '') {
-      //   message.error('知识点名称不能为空！');
-      //   return;
-      // }
       Modal.confirm({
         title: '确定创建新知识点吗?',
         okText: '确定',
@@ -191,11 +187,10 @@ export default defineComponent({
       name: string;
       knowledgeBaseTypeId: string
     }) {
-      console.log(event);
       await createNewDraftKnowledge(event);
     }
 
-    const handleBindKnowledgeToRepository = async (entityId: string) => {
+    async function handleBindKnowledgeToRepository(entityId: string) {
       modalConfirmLoading.value = true;
       await createOrBindKnowledgeModal.handleBindKnowledgeToRepository({
         repositoryEntityId: repositoryEntityId.value,
@@ -203,7 +198,7 @@ export default defineComponent({
       });
       modalConfirmLoading.value = false;
       context.emit('close');
-    };
+    }
 
     async function getEntityList() {
       modalConfirmLoading.value = true;
@@ -221,14 +216,13 @@ export default defineComponent({
       await getEntityList();
     }, 300);
 
-    const handleLoadMore = async () => {
+    async function handleLoadMore() {
       currentPage.value += 1;
       await getEntityList();
-    };
+    }
     onMounted(async () => {
       await createOrBindKnowledgeModal.getRepositoryBindEntityList(repositoryEntityId.value);
       if (searchValue.value) {
-        console.log(searchValue.value);
         searchText.value = searchValue.value;
       } else {
         searchText.value = '';
@@ -284,12 +278,15 @@ export default defineComponent({
 }
 
 .modal-content {
-  height: 600px;
+  height: 640px;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
 
   .search {
+    min-height: 49px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid $borderColor;
 
     .search-container {
       display: flex;
@@ -300,69 +297,66 @@ export default defineComponent({
         width: 300px;
       }
     }
-
-    min-height: 49px;
-
-    padding-bottom: 17px;
-    border-bottom: 1px solid $borderColor;
-
   }
 
-  .list-box {
-    height: 550px;
-    overflow-y: auto;
+  .list-container {
+    padding: 20px 0;
 
-    .list-content {
-      .banner-item {
-        font-size: 14px;
-        display: flex;
-        height: 25px;
-        gap: 5px;
-        align-items: center;
+    .list-box {
+      height: 550px;
+      overflow-y: auto;
 
-        .span-color {
-          display: inline-block;
-          height: 12px;
-          width: 12px;
-          border-radius: 50%;
-          background: #2ea44f;
-          margin-right: 5px;
-        }
-
-        .icon {
+      .list-content {
+        .banner-item {
           font-size: 14px;
-        }
-
-        .text {
-          font-size: 14px;
-        }
-      }
-
-      .control-btn {
-        position: absolute;
-        padding: 2px 12px;
-        font-size: 12px;
-        line-height: 18px;
-        top: 16px;
-        right: 16px;
-        border: 1px solid #1b1f2326;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-
-        &::v-deep(.ant-btn) {
+          display: flex;
           height: 28px;
+          gap: 5px;
+          align-items: center;
+
+          .span-color {
+            display: inline-block;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #2ea44f;
+            margin-right: 5px;
+          }
+
+          .icon {
+            font-size: 12px;
+          }
+
+          .text {
+            font-size: 12px;
+          }
+        }
+
+        .control-btn {
+          position: absolute;
+          padding: 2px 8px;
+          font-size: 12px;
+          line-height: 24px;
+          top: 16px;
+          right: 16px;
+          border: 1px solid #1b1f2326;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+
+          &::v-deep(.ant-btn) {
+            height: 28px;
+          }
         }
       }
-    }
 
-    .load-content {
-      text-align: center;
-      margin-top: 12px;
-      height: 32px;
-      line-height: 32px;
+      .load-content {
+        text-align: center;
+        margin-top: 12px;
+        height: 32px;
+        line-height: 32px;
+      }
     }
   }
-
 }
 </style>

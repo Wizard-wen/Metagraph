@@ -2,57 +2,38 @@
   <ant-spin :spinning="ownRepositoryList.isLoading">
     <div class="home-aside">
       <div class="user">
-        <ant-avatar :src="userModel?.avatar || ''"></ant-avatar>
+        <ant-avatar :size="20" :src="userModel?.avatar || ''"></ant-avatar>
         <div class="name">{{ userModel?.name || '-' }}</div>
       </div>
-      <div class=repo-content>
-        <div class="repo-list">
-          <div class="repo-header" id="step2" data-homepage="2">
-            知识库列表
-            <ant-button
-              type="primary"
-              class="new-btn"
-              :size="'small'" @click="goCreateRepositoryPage">
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              创建
-            </ant-button>
-          </div>
-          <div class="search" id="step3" data-homepage="3">
-            <ant-input
-              v-model:value="searchText"
-              type="text"
-              placeholder="查找您的知识库..."
-              class="search-input"></ant-input>
-          </div>
-          <div class="repository-list-container">
-            <ant-list size="small" :data-source="filteredRepositoryList">
-              <template #renderItem="{ item }">
-                <ant-list-item>
-                  <div class="repo-item" @click="goRepositoryEditorPage(item)">
-                    <div class="icon">
-                      <img :src="item.author.avatar" height="20" width="20" alt="">
-                    </div>
-                    <span class="user-name">{{ item.author.name }}</span>
-                    &nbsp;/&nbsp;
-                    <span class="repository-name">{{ item.content.name }}</span>
-                    <clone-icon
-                      style="margin-left: 5px;"
-                      v-if="item.content.cloneFromRepositoryEntityId"></clone-icon>
-                  </div>
-                </ant-list-item>
-              </template>
-            </ant-list>
-          </div>
+      <div class=repository-content>
+        <div class="repository-header" id="step2" data-homepage="2">
+          知识库列表
+          <metagraph-button
+            @click="goCreateRepositoryPage"
+            :title="'创建'">
+            <template #icon>
+              <PlusOutlined style="margin-right: 4px;"/>
+            </template>
+          </metagraph-button>
         </div>
+        <div class="search-container" id="step3" data-homepage="3">
+          <ant-input
+            v-model:value="searchText"
+            type="text"
+            placeholder="查找您的知识库..."
+            class="search-input"></ant-input>
+        </div>
+        <home-aside-list
+          :filtered-repository-list="filteredRepositoryList"></home-aside-list>
       </div>
     </div>
   </ant-spin>
 </template>
 
 <script lang="ts">
+import HomeAsideList from '@/views/home-page/home-page-aside/home-aside-list.vue';
 import { RepositoryModelType } from 'metagraph-constant';
+import { MetagraphButton } from 'metagraph-ui';
 import {
   computed,
   defineComponent, ref
@@ -60,24 +41,21 @@ import {
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import {
-  Spin, List, Input, Button, Avatar
+  Spin, Input, Button, Avatar
 } from 'ant-design-vue';
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { CloneIcon } from '@/components/icons';
 import { useStore } from '@/store';
 import { ownRepositoryList } from './home.page';
 
 export default defineComponent({
   name: 'home-page-aside',
   components: {
-    CloneIcon,
+    HomeAsideList,
     PlusOutlined,
     AntSpin: Spin,
-    AntList: List,
-    AntListItem: List.Item,
     AntInput: Input,
     AntAvatar: Avatar,
-    AntButton: Button
+    AntButton: Button,
+    MetagraphButton
   },
   setup() {
     const router = useRouter();
@@ -87,26 +65,18 @@ export default defineComponent({
     const filteredRepositoryList = computed(() => ownRepositoryList.list?.filter(
       (item) => (item.content as RepositoryModelType).name.includes(searchText.value)
     ) || []);
-    const goCreateRepositoryPage = async () => {
-      router.push('/repository/edit').then();
-    };
-    const goRepositoryEditorPage = async (item: EntityCompletelyListItemType) => {
-      router.push({
-        name: 'RepositoryEditor',
-        query: {
-          repositoryEntityId: item.entity.id,
-          type: 'edit'
-        }
-      }).then();
-    };
+
+    async function goCreateRepositoryPage() {
+      router.push('/repository/edit')
+        .then();
+    }
+
     return {
       goCreateRepositoryPage,
-      goRepositoryEditorPage,
       ownRepositoryList,
       filteredRepositoryList,
       userModel,
-      searchText,
-      // isLoading
+      searchText
     };
   }
 });
@@ -116,110 +86,81 @@ export default defineComponent({
 @import '../../style/common.scss';
 
 .home-aside {
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   height: calc(100vh - 55px);
-  width: 330px;
+  width: 100%;
   padding: 0 18px;
-  background: #fff;
+  background: #FFF;
   overflow-y: auto;
 
   .user {
     display: flex;
+    align-items: center;
     padding: 16px 0;
     margin-bottom: 24px;
+    //margin-top: 16px;
     border-bottom: 1px solid #eaecef;
 
     .name {
-      height: 32px;
-      font-size: 16px;
-      line-height: 32px;
+      height: 22px;
+      font-size: 14px;
+      line-height: 22px;
       text-align: left;
-      margin-left: 15px;
+      margin-left: 10px;
       font-weight: 600;
     }
   }
 
-  .repo-content {
+  .repository-content {
     margin-bottom: 16px;
 
-    .repo-list {
-      .repo-header {
-        height: 28px;
+    .repository-header {
+      height: 26px;
+      display: flex;
+      font-size: 14px;
+      font-weight: 600;
+      align-items: center;
+      justify-content: space-between;
+
+      .create-btn {
         display: flex;
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 4px;
         align-items: center;
-        justify-content: space-between;
-
-        .new-btn {
-          border-radius: 4px;
-          height: 28px;
-          line-height: 28px;
-          //background: #41B884;
-          //color: #FFF;
-        }
-
-        //::v-deep(.ant-btn) {
-        //  .anticon + span {
-        //    margin-left: 3px;
-        //  }
-        //}
+        border-radius: 4px;
+        height: 26px;
+        line-height: 26px;
+        font-size: 12px;
       }
 
-      .search {
+      ::v-deep(.ant-btn) {
+        .anticon + span {
+          display: inline-block;
+          height: 26px;
+          margin-left: 3px;
+        }
+      }
+    }
+
+    .search-container {
+      margin-bottom: 8px;
+      margin-top: 8px;
+
+      .search-input {
         margin-bottom: 16px;
-        margin-top: 8px;
-
-        .search-input {
-          margin-bottom: 16px;
-          display: block;
-          width: 100%;
-          background: #fff;
-          padding: 5px 12px;
-          font-size: 14px;
-          line-height: 20px;
-          color: $fontColor;
-          vertical-align: middle;
-          border: 1px solid #e1e4e8;
-          border-radius: 6px;
-          outline: none;
-        }
-      }
-
-      .repository-list-container {
-      }
-
-      .repo-item {
-        display: flex;
-        align-items: center;
-        font-weight: 600;
+        display: block;
         width: 100%;
+        background: #fff;
+        padding: 5px 12px;
         font-size: 14px;
-        line-height: 22px;
-        cursor: pointer;
+        line-height: 20px;
+        color: $fontColor;
+        vertical-align: middle;
+        border: 1px solid #e1e4e8;
+        border-radius: 6px;
+        outline: none;
 
-        .icon {
-          margin-right: 8px;
-
-          img {
-            border-radius: 50%;
-          }
+        &::placeholder {
+          font-size: 12px;
         }
-
-        .user-name {
-          max-width: 125px
-        }
-
-        .repository-name {
-          max-width: 260px
-        }
-      }
-
-      .load-more {
-        margin-top: 8px;
-        width: 100%;
-        text-align: left;
-        cursor: pointer;
       }
     }
   }
