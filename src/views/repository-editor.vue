@@ -1,41 +1,44 @@
 <template>
   <ant-spin :spinning="isRepositoryEditorLoading" class="repository-page">
-    <repository-editor-header
-      @viewChange="handleChangeView"
-      :view-status="viewStatus"
-      :saving-status="isSaving"
-      v-if="repositoryModel.target"
-    ></repository-editor-header>
-    <div class="editable">
-      <div class="section-view">
-        <template v-if="viewStatus === 'section'">
-          <section-tree
-            @createSection="handleOpenCreateSectionModal"
-            @selectSection="handleSelectSection"></section-tree>
-          <div class="text-content">
-            <section-article-tip-tap
-              v-if="repositoryEntityId && editor"
-              :entityId="repositoryEntityId"
-              :editable="isEditable"
-              :editor="editor"
-              @refreshSection="handleCreateSection"
+    <div style="overflow: hidden; height: 100vh">
+      <repository-editor-header
+        @viewChange="handleChangeView"
+        :view-status="viewStatus"
+        :saving-status="isSaving"
+        v-if="repositoryModel.target"
+      ></repository-editor-header>
+      <div class="editable">
+        <div class="section-view">
+          <template v-if="viewStatus === 'section'">
+            <section-tree
               @createSection="handleOpenCreateSectionModal"
-              @save="saveSectionArticle"
-              @clickMention="handleClickMention($event)"
-              @mention="handleMention($event)">
-            </section-article-tip-tap>
+              @selectSection="handleSelectSection"></section-tree>
+            <div class="text-content">
+              <section-article-tip-tap
+                v-if="repositoryEntityId && editor"
+                :entityId="repositoryEntityId"
+                :editable="isEditable"
+                :editor="editor"
+                @refreshSection="handleCreateSection"
+                @createSection="handleOpenCreateSectionModal"
+                @save="saveSectionArticle"
+                @clickMention="handleClickMention($event)"
+                @mention="handleMention($event)">
+              </section-article-tip-tap>
+            </div>
+          </template>
+          <template v-else>
+            <div class="graph-content">
+              <knowledge-graph-panel></knowledge-graph-panel>
+            </div>
+          </template>
+          <div class="right-sidebar">
+            <right-sidebar @refreshSection="handleCreateSection"></right-sidebar>
           </div>
-        </template>
-        <template v-else>
-          <div class="graph-content">
-            <knowledge-graph-panel></knowledge-graph-panel>
-          </div>
-        </template>
-        <div class="right-sidebar">
-          <right-sidebar @refreshSection="handleCreateSection"></right-sidebar>
         </div>
       </div>
     </div>
+
   </ant-spin>
   <section-create-modal
     v-if="isCreateSectionModalShown"
@@ -428,7 +431,7 @@ export default defineComponent({
 
 .repository-page {
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: hidden;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 

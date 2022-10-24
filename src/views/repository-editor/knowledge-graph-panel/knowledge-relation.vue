@@ -207,7 +207,7 @@ export default defineComponent({
 
       .card-content {
         height: 100%;
-        overflow: scroll;
+        overflow-y: auto;
       }
 
       .dnd-rect {

@@ -194,7 +194,7 @@ export default defineComponent({
 
   .content {
     font-size: 13px;
-    overflow: scroll;
+    overflow-y: auto;
   }
 }
 </style>
