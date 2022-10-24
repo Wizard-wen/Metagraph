@@ -199,8 +199,8 @@
 </template>
 
 <script>
-import 'vue-cropper/dist/index.css'
-import { VueCropper }  from "vue-cropper";
+import 'vue-cropper/dist/index.css';
+import { VueCropper } from 'vue-cropper';
 
 export default {
   data() {

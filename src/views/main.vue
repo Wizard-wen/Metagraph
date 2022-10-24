@@ -1,7 +1,9 @@
 <template>
   <ant-spin :spinning="spinning">
-    <metagraph-header></metagraph-header>
-    <router-view></router-view>
+    <div class="page-container">
+      <metagraph-header></metagraph-header>
+      <router-view></router-view>
+    </div>
   </ant-spin>
 </template>
 
@@ -26,3 +28,10 @@ export default defineComponent({
   }
 });
 </script>
+<style lang="scss" scoped>
+.page-container {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+</style>

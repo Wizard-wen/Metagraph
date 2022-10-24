@@ -86,7 +86,7 @@ export default defineComponent({
     flex: 1;
     min-width: 500px;
     height: calc(100vh - 56px);
-    overflow: scroll;
+    overflow-y: scroll;
   }
 
   .explore {
