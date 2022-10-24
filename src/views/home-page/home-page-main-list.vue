@@ -30,6 +30,10 @@
         v-model:current="activityList.current"
         :total="activityList.total"
         @change="onActivityPaginationChange"/>
+      <div style="height: 100px;line-height: 100px;">
+        <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
+      </div>
+
     </div>
   </ant-spin>
 </template>
@@ -78,7 +82,7 @@ export default defineComponent({
 .home-main {
   padding: 0 32px;
   margin-top: 16px;
-  margin-bottom: 150px;
+  margin-bottom: 50px;
 
   .content {
     width: 100%;
