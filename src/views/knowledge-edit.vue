@@ -2,13 +2,14 @@
   <ant-spin :spinning="isLoading">
     <div class="knowledge-edit">
       <knowledge-edit-header v-if="editor" :editor="editor"></knowledge-edit-header>
+      <network-status-alert></network-status-alert>
       <div class="knowledge-content">
         <knowledge-mentioned-list class="panel"></knowledge-mentioned-list>
         <div class="knowledge-editor">
           <knowledge-article-control-toolbar
+            v-if="editor" :editor="editor"
             @fontSizeChange="changeArticleFontSize($event)"
-            @save="saveKnowledgeArticle"
-            v-if="editor" :editor="editor"></knowledge-article-control-toolbar>
+            @save="saveKnowledgeArticle"></knowledge-article-control-toolbar>
           <div class="knowledge-editor-content">
             <knowledge-description
               v-if="editor"
@@ -48,6 +49,7 @@
 </template>
 
 <script lang="ts">
+import NetworkStatusAlert from '@/components/network-status-alert/network-status-alert.vue';
 import { IndexdbService } from '@/service/indexdb.service';
 import KnowledgeDescription from '@/views/knowledge-edit/knowledge-description.vue';
 import SelectKnowledgeCoverModal from '@/views/knowledge-edit/select-knowledge-cover-modal.vue';
@@ -93,6 +95,7 @@ import {
 export default defineComponent({
   name: 'knowledge-edit',
   components: {
+    NetworkStatusAlert,
     KnowledgeDescription,
     SelectKnowledgeCoverModal,
     KnowledgeDrawerContent,
@@ -140,16 +143,18 @@ export default defineComponent({
     /**
      * 初始化knowledge tiptap editor
      */
+    const knowledgeEdit = new KnowledgeEdit();
     const knowledgeTiptapTextEditor = new KnowledgeTiptapTextEditor({
       repositoryEntityId: repositoryEntityId.value,
       knowledgeEntityId: draftKnowledgeEntityId.value,
       hasPublished: !!publishedKnowledgeEntityId.value
-    });
-    knowledgeTiptapTextEditor.initEditor();
+    }, knowledgeEdit);
+    knowledgeTiptapTextEditor.initEditorInstance();
     const { editor } = knowledgeTiptapTextEditor;
-    const knowledgeEdit = new KnowledgeEdit();
     // 知识点描述字数统计
-    const descriptionCharacters = computed(() => editor.value?.storage.characterCount.characters());
+    const descriptionCharacters = computed(
+      () => editor.value?.storage.characterCount.characters()
+    );
 
     async function saveKnowledgeArticle() {
       if (editor.value) {
@@ -254,6 +259,7 @@ export default defineComponent({
       }
       next();
     });
+
     onMounted(async () => {
       window.onbeforeunload = (event: any) => '关闭前的提示';
       isLoading.value = true;

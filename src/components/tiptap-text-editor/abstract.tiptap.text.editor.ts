@@ -3,17 +3,16 @@
  * @date  2021/12/7 21:42
  */
 
-import { IndexdbService } from '@/service/indexdb.service';
 import { Range, Editor as CoreEditor } from '@tiptap/core';
 import {
   EntityCompletelyListItemType,
   KnowledgeModelType,
-  PublicEntityType
 } from 'metagraph-constant';
 import { Node as ProsemirrorNode } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
+import Placeholder from '@tiptap/extension-placeholder';
 import StarterKit from '@tiptap/starter-kit';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import {
@@ -22,31 +21,25 @@ import {
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import tippy, { Instance } from 'tippy.js';
 import { Ref } from 'vue';
+import { debounce } from 'lodash';
 import { lowlight } from 'lowlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
-import { tiptapInitData } from '@/store/constant';
-import MentionList from '@/components/tiptap-text-editor/mention.list.vue';
-import { debounce } from 'lodash';
-import { CustomMention } from './tiptap.custom.mention';
-import CodeBlockContainer from './code-block-container.vue';
+import MentionList from './components/mention-list.vue';
+import { CustomMention } from './components/tiptap.custom.mention';
+import CodeBlockContainer from './components/code-block-container.vue';
+import TableOfContent from './components/table.of.content';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
 
-  timer?: number;
-
+  // 可引用知识点列表
   mentionKnowledgeList!: EntityCompletelyListItemType[];
 
-  // eslint-disable-next-line no-useless-constructor
-  protected constructor(
-    private readonly entityId: string,
-    private readonly entityType: PublicEntityType,
-  ) {
-  }
-
+  // 字数限制
   protected abstract limit?: number;
 
+  // 是否可编辑
   protected abstract editable: boolean;
 
   /**
@@ -54,13 +47,13 @@ export abstract class AbstractTiptapTextEditor {
    * @param params
    * @protected
    */
-  protected abstract save(params: {
+  protected abstract saveToIndexDB(params: {
     content: JSONContent,
     contentHtml: string
-  }): Promise<boolean>;
+  }): Promise<void>;
 
   /**
-   * 初始化数据
+   * 初始化异步数据
    */
   abstract initData(params?: { [key: string]: any }): void;
 
@@ -77,7 +70,7 @@ export abstract class AbstractTiptapTextEditor {
   }): void;
 
   /**
-   * 点击mention 元素
+   * 点击mention元素
    * @param params
    */
   abstract handleClickMentionItem(params: {
@@ -89,11 +82,15 @@ export abstract class AbstractTiptapTextEditor {
    * 更新数据
    * @param content
    */
-  setContent(content: JSONContent): void {
+  setContent(content?: JSONContent): void {
     if (!this.editor?.value) {
       return;
     }
-    this.editor.value?.commands.setContent(content);
+    if (content) {
+      this.editor.value?.commands.setContent(content);
+    } else {
+      this.editor.value?.commands.setContent(null);
+    }
   }
 
   /**
@@ -101,7 +98,7 @@ export abstract class AbstractTiptapTextEditor {
    * @param range
    * @param customCommandProps
    */
-  success(range: Range, customCommandProps: {
+  handleMentionedSuccess(range: Range, customCommandProps: {
     id: string,
     name: string
   }): undefined | JSONContent {
@@ -135,7 +132,7 @@ export abstract class AbstractTiptapTextEditor {
    * @param range
    * @param customCommandProps
    */
-  fail(range: Range, customCommandProps: {
+  handleMentionFailed(range: Range, customCommandProps: {
     id: string,
     name: string
   }): undefined | JSONContent {
@@ -164,31 +161,22 @@ export abstract class AbstractTiptapTextEditor {
   }
 
   /**
-   * 初始化编辑器
-   * @param articleContent
+   * 初始化编辑器对象
    */
-  initEditor(articleContent?: JSONContent): void {
+  initEditorInstance(): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
-
     this.editor = useEditor({
       editable: this.editable,
-      content: articleContent ?? tiptapInitData,
       onUpdate: debounce(({
         editor
       }) => {
-        if (_this.entityType === 'Knowledge') {
-          IndexdbService.getInstance()
-            .update(
-              'knowledge',
-              _this.entityId,
-              {
-                description: editor.getHTML()
-              }
-            )
-            .then((data: number) => {
-              console.log(data, '----- update by key down');
-            });
+        // 当内容更新后，持久化数据到本地
+        if (editor.getHTML() && editor.getJSON()) {
+          _this.saveToIndexDB({
+            content: editor.getJSON(),
+            contentHtml: editor.getHTML()
+          }).then();
         }
       }, 1000),
       editorProps: {
@@ -213,11 +201,15 @@ export abstract class AbstractTiptapTextEditor {
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
         }),
+        Placeholder.configure({
+          placeholder: 'you can write now...',
+        }),
         TaskList,
         TaskItem.extend({
           // content: 'inline*',
           nested: true,
         }),
+        TableOfContent,
         CodeBlockLowlight
           .extend({
             addNodeView() {
@@ -265,7 +257,7 @@ export abstract class AbstractTiptapTextEditor {
                 onKeyDown(suggestionProps: SuggestionKeyDownProps) {
                   return component.ref?.onKeyDown(suggestionProps) as boolean;
                 },
-                onExit(suggestionProps: SuggestionProps) {
+                onExit() {
                   popup[0].destroy();
                   component.destroy();
                 },
@@ -294,12 +286,9 @@ export abstract class AbstractTiptapTextEditor {
   }
 
   /**
-   * 销毁编辑器
+   * 销毁编辑器对象
    */
   destroy(): void {
     this.editor.value?.destroy();
-    if (this.timer) {
-      window.clearInterval(this.timer);
-    }
   }
 }

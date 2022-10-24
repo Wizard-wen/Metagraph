@@ -23,7 +23,8 @@ import {
   KnowledgeNoAuthApiService,
   RepositoryApiService
 } from '@/api.service';
-import { RepositoryEditor } from '../model/repository-editor';
+import { RepositoryEditor } from '../model/repository.editor';
+import './custom-edge-tooltip/test.tooltip';
 
 type CustomEdgeType = {
   isInnerRepository: boolean;
@@ -53,7 +54,7 @@ export const websocketService = ref<WebsocketService>();
 export function initWebSocket(): void {
   websocketService.value = new WebsocketService(
     // ConfigService.websocketBaseURL,
-    process.env.VUE_APP_API_WEBSOCKET_BASE_URL,
+    process.env.VUE_APP_API_WEBSOCKET_BASE_URL!,
     [
       {
         event: 'graph',
@@ -78,6 +79,7 @@ export class KnowledgeGraphData {
 
   async initData(repositoryEntityId: string, hasAuth: boolean): Promise<void> {
     this.initGraph();
+
     if (!graph.value) {
       return;
     }
@@ -574,14 +576,14 @@ export class KnowledgeGraphData {
         },
       },
       // todo tooltip for vue
-      // tools: [
-      //   {
-      //     name: 'tooltip',
-      //     args: {
-      //       tooltip: 'Tooltip Content',
-      //     },
-      //   },
-      // ],
+      tools: [
+        {
+          name: 'tooltip',
+          args: {
+            tooltip: 'Tooltip Content',
+          },
+        },
+      ],
     }));
   }
 

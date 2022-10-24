@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home-page">
     <div class="aside" v-if="isLogin" id="step1" data-homepage="1">
       <home-page-aside data-title="Welcome!" data-intro="Hello World! 👋"></home-page-aside>
     </div>
@@ -61,21 +61,31 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 @import "../style/intro.custom.css";
+@import "../style/common.scss";
 
-.home {
-  height: calc(100vh - 55px);
+.home-page {
+  height: calc(100vh - 56px);
   width: 100%;
-  background: #f6f8fa;
+  background: $contentBackgroundColor;
   display: flex;
 
-  .aside {
-    width: 330px;
+  @media screen and (max-width: 1920px) {
+    .aside {
+      width: 265px;
+      border-right: 1px solid $borderColor;
+    }
+  }
+  @media screen and (min-width: 1920px) {
+    .aside {
+      width: 285px;
+      border-right: 1px solid $borderColor;
+    }
   }
 
   .content {
     flex: 1;
     min-width: 500px;
-    height: calc(100vh - 55px);
+    height: calc(100vh - 56px);
     overflow: scroll;
   }
 

@@ -1,9 +1,9 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Pingfang SC", "Microsoft Yahei", "WenQuanYi Micro Hei", 'PingFangSC-Medium', sans-serif;
-    font-size: .14rem;
-    user-select: none;
-    overflow-x: hidden;
-    background: transparent !important;
+    /*font-size: .14rem;*/
+    /*user-select: none;*/
+    /*overflow-x: hidden;*/
+    /*background: transparent !important;*/
 }
 
 * {
@@ -91,14 +91,7 @@ textarea {
     }
 }
 
-.clearFix:before,
-.clearFix:after {
-    content: '.';
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
-}
+
 
 .html_file p {
     font: 18px/32px "Microsoft Yahei";
@@ -123,16 +116,6 @@ input[type=search]::-webkit-search-cancel-button {
     background-color: #262626;
 }
 
-/* *::-webkit-scrollbar {
-    width: 4px;
-}
-*::-webkit-scrollbar-thumb {
-    background-color: rgba(136,136,136,0.1);
-    border-radius: 4px;
-}
-*:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(136,136,136,0.4);
-} */
 
 body .el-table th.gutter{
     display: table-cell!important;

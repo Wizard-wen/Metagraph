@@ -1,6 +1,8 @@
 <template>
   <div class="repository-list-item">
-    <repository-list-icon class="repo-icon"></repository-list-icon>
+    <div class="repo-icon">
+      <repository-list-icon style="font-size: 18px;"></repository-list-icon>
+    </div>
     <div class="content">
       <div class="title">
         <span @click="goUserProfilePage">{{ repository.author.name }}</span>
@@ -31,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { Tag } from 'ant-design-vue';
+import  { Tag } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import {
   computed, defineComponent, PropType, toRef
@@ -66,7 +68,8 @@ export default defineComponent({
           repositoryEntityId: repository.value.entity.id,
           type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
         }
-      }).then();
+      })
+        .then();
     };
     const goUserProfilePage = async () => {
       router.push({
@@ -74,7 +77,8 @@ export default defineComponent({
         query: {
           id: repository.value.author.id
         }
-      }).then();
+      })
+        .then();
     };
     return {
       goRepositoryPage,
@@ -92,7 +96,7 @@ export default defineComponent({
   border-bottom: 1px solid #d8dee4;
 
   .repo-icon {
-    font-size: 18px;
+    line-height: 25px;
     margin-right: 5px;
   }
 

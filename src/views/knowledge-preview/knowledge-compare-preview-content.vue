@@ -80,9 +80,9 @@
       </template>
     </div>
     <p class="h2-level-title-style">知识点描述</p>
-    <tiptap-readonly
+    <tiptap-editor-readonly
       class="custom-tiptap-readonly"
-      :article-content="knowledge.model.description"></tiptap-readonly>
+      :article-content="knowledge.model.description"></tiptap-editor-readonly>
     <p class="h2-level-title-style">概念图册</p>
     <div class="content">
       <img
@@ -103,8 +103,8 @@ import {
 import {
   Col, Row, Tag
 } from 'ant-design-vue';
-import DescriptionItem from '../../business/knowledge-drawer/description-item.vue';
-import TiptapReadonly from '../repository-editor/section-article/tiptap-readonly.vue';
+import TiptapEditorReadonly from '@/components/tiptap-text-editor/tiptap-editor-readonly.vue';
+import DescriptionItem from '@/business/knowledge-drawer/description-item.vue';
 
 export default defineComponent({
   name: 'knowledge-compare-preview-content',
@@ -132,7 +132,7 @@ export default defineComponent({
       type: String as PropType<'draft' | 'published'>,
     }
   },
-  setup(props, { emit }) {
+  setup(props) {
     const knowledgeModel = toRef(props, 'knowledge');
     const type = toRef(props, 'type');
     const customFields = computed(() => knowledgeModel.value?.model.customField || []);
@@ -144,7 +144,7 @@ export default defineComponent({
     };
   },
   components: {
-    TiptapReadonly,
+    TiptapEditorReadonly,
     DescriptionItem,
     AntCol: Col,
     AntRow: Row,
@@ -205,6 +205,7 @@ export default defineComponent({
 
 .edit-back {
   background: #ddf4ff;
+
   &:after {
     position: absolute;
     right: 5px;

@@ -10,12 +10,13 @@
   </ant-button>
   <domain-select-modal
     v-if="isDomainModalVisible"
-    :domain-list="modelValue"
+    :selected-domain-list="modelValue"
     :isModalVisible="isDomainModalVisible"
     @close="handleDomainModalClose($event)"></domain-select-modal>
 </template>
 
 <script lang="ts">
+import { domainBaseTypeId } from '@/business/domain-selector/domain.selector';
 import { EditOutlined } from '@ant-design/icons-vue';
 import { Button, Tag } from 'ant-design-vue';
 import { defineComponent, PropType, ref } from 'vue';
@@ -52,6 +53,8 @@ export default defineComponent({
       domainBaseTypeId: string;
     }[]>();
     const handleOpenDomainModal = () => {
+      domainBaseTypeId.value = undefined;
+      console.log(domainBaseTypeId.value)
       isDomainModalVisible.value = true;
     };
 
@@ -71,6 +74,7 @@ export default defineComponent({
     return {
       isDomainModalVisible,
       domainListProp,
+      domainBaseTypeId,
       handleOpenDomainModal,
       handleDomainModalClose
     };

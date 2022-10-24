@@ -51,7 +51,7 @@ export function guide(params: {
       nextLabel: '下一步 &rarr;',
       doneLabel: '我知道了',
       tooltipClass: 'custom-intro-tooltip',
-      buttonClass: 'normal-control-button',
+      buttonClass: 'normal-control-button-1',
       showProgress: false,
       scrollToElement: false,
       steps: stepList

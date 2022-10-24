@@ -1,0 +1,16 @@
+
+.control-button-content {
+  padding: 10px 15px 5px 15px;
+
+  .full-button-style {
+    width: 100%;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+}
+
+.right-sidebar-content {
+  height: calc(100vh - 135px);
+  padding: 10px 0;
+  overflow-y: auto;
+}

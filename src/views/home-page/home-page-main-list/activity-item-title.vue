@@ -37,7 +37,11 @@
 </template>
 
 <script lang="ts">
-import type { ActivityModelType, EntityCompletelyListItemType, UserModelType } from 'metagraph-constant';
+import type {
+  ActivityModelType,
+  EntityCompletelyListItemType,
+  UserModelType
+} from 'metagraph-constant';
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 import { Popover, Avatar } from 'ant-design-vue';
@@ -102,6 +106,7 @@ export default defineComponent({
     font-weight: bolder;
     margin-right: 5px;
     cursor: pointer;
+    line-height: 1.5;
 
     &:hover {
       color: #0969DA;
@@ -110,9 +115,8 @@ export default defineComponent({
 }
 
 .title {
-  font-weight: bold;
-  height: 32px;
-  line-height: 32px;
+  //height: 32px;
+  line-height: 1.5;
   text-align: left;
   cursor: pointer;
   width: max-content;
@@ -126,10 +130,13 @@ export default defineComponent({
   .inner-title-name {
     margin-right: 5px;
     padding-left: 15px;
+    line-height: 1.5;
     flex: 1;
   }
 
   .link-icon {
+    font-size: 12px;
+
     &:hover {
       cursor: pointer;
       color: #0969DA;

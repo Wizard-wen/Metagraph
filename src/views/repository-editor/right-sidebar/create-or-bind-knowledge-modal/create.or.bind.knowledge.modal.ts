@@ -14,7 +14,7 @@ import {
   RepositoryApiService,
   RepositoryNoAuthApiService
 } from '@/api.service';
-import { repositoryBindEntityList } from '../../model/repository-editor';
+import { repositoryBindEntityList } from '../../model/repository.editor';
 
 export const searchText = ref<string | undefined>(undefined);
 export const searchData = reactive<{
@@ -73,7 +73,7 @@ export class CreateOrBindKnowledgeModal {
     if (result.data) {
       const list = result.data.list.map((item: EntityCompletelyListItemType) => ({
         ...item,
-        hasBind: !!repositoryBindEntityList.target
+        hasBind: !!repositoryBindEntityList.value
           .find((binItem) => binItem.entity.id === item.entity.id)
       }));
       searchData.target = searchData.target.concat(list);

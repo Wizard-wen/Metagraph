@@ -6,7 +6,7 @@
         :class="{ 'is-active': editor.isActive('blockquote') }"/>
     </div>
     <div class="name">
-      块引用
+      引用
     </div>
   </div>
 </template>

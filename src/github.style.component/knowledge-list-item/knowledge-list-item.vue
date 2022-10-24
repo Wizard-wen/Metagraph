@@ -18,7 +18,10 @@
       <div class="description" v-html="repository.content.descriptionHTML">
       </div>
       <div class="tag-list">
-        <ant-tag v-for="item in repository.tag">{{item.name}}</ant-tag>
+        <ant-tag
+          v-for="(item, index) in repository.tag"
+          :key="index">{{ item.name }}
+        </ant-tag>
       </div>
       <div class="banner">
         <div class="banner-item">
@@ -121,6 +124,7 @@ export default defineComponent({
       align-items: center;
       gap: 5px;
     }
+
     .type-tag {
       display: inline-block;
       height: 22px;
@@ -128,7 +132,7 @@ export default defineComponent({
     }
 
     .description {
-      @include tiptap-style;
+      @include raw-html-tiptap-style;
       padding: 5px 10px;
     }
 

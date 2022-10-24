@@ -1,16 +1,25 @@
 <template>
   <div class="explore-box">
-    <h2 class="explore-header">热门知识库</h2>
-    <div class="explore-item" v-for="item in hotRepositoryList">
+    <div class="explore-header">热门知识库</div>
+    <div
+      class="explore-item"
+      :style="{'padding-top': index === 0 ? '4px' : '8px'}"
+      :key="index"
+      v-for="(item, index) in hotRepositoryList">
       <div class="title" @click="goRepositoryPage(item)">
         {{ item.author.name }} / {{ item.content.name }}
       </div>
-      <div class="description">{{ item.content.description }}</div>
+      <div class="description-text">{{ item.content.description }}</div>
+      <div class="tag-content" v-if="item.content.domain.length">
+        <metagraph-tag
+          :key="tagIndex"
+          v-for="(domainItem, tagIndex) in item.content.domain"
+          :title="domainItem.domainName"></metagraph-tag>
+      </div>
       <div class="action">
         <div class="action-item">
-          <StarOutlined
-            style="margin-right: 8px"/>
-          <span>{{ item.star }}</span>
+          <StarOutlined class="action-star"/>
+          {{ item.star }}
         </div>
       </div>
     </div>
@@ -21,6 +30,7 @@
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { computed, defineComponent } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
+import { MetagraphTag } from 'metagraph-ui';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { hotRepositoryList } from './home.page';
@@ -28,7 +38,8 @@ import { hotRepositoryList } from './home.page';
 export default defineComponent({
   name: 'home-page-hot-list',
   components: {
-    StarOutlined
+    StarOutlined,
+    MetagraphTag
   },
   setup() {
     const router = useRouter();
@@ -42,7 +53,8 @@ export default defineComponent({
           repositoryEntityId: item.entity.id,
           type: item.author.id === userModel.value?.id ? 'edit' : 'view'
         }
-      }).then();
+      })
+        .then();
     }
 
     return {
@@ -58,11 +70,13 @@ export default defineComponent({
   width: 300px;
   padding-left: 24px;
   padding-right: 24px;
-  margin-top: 32px;
+  margin-top: 16px;
 
   .explore-header {
     font-size: 14px;
+    line-height: 1.5;
     text-align: left;
+    color: #242930;
   }
 
   .explore-item {
@@ -76,17 +90,27 @@ export default defineComponent({
       cursor: pointer;
     }
 
-    .description {
-      margin-bottom: 8px;
-      //padding-right: 30px;
+    .description-text {
+      font-size: 12px;
+      margin-top: 4px;
+      min-height: 20px;
+      color: #57606A;
     }
 
     .action {
       display: flex;
+      align-items: center;
       justify-content: flex-start;
+      margin-top: 4px;
 
       .action-item {
-        margin-right: 10px;
+        margin-right: 12px;
+        line-height: 1.5;
+        font-size: 14px;
+
+        .action-icon {
+          margin-right: 2px;
+        }
       }
     }
   }

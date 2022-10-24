@@ -18,6 +18,8 @@
               :entityId="repositoryEntityId"
               :editable="isEditable"
               :editor="editor"
+              @refreshSection="handleCreateSection"
+              @createSection="handleOpenCreateSectionModal"
               @save="saveSectionArticle"
               @clickMention="handleClickMention($event)"
               @mention="handleMention($event)">
@@ -29,8 +31,8 @@
             <knowledge-graph-panel></knowledge-graph-panel>
           </div>
         </template>
-        <div class="style-panel">
-          <right-sidebar></right-sidebar>
+        <div class="right-sidebar">
+          <right-sidebar @refreshSection="handleCreateSection"></right-sidebar>
         </div>
       </div>
     </div>
@@ -52,12 +54,12 @@ import { IndexdbService } from '@/service/indexdb.service';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import type { JSONContent } from '@tiptap/vue-3';
-import { SectionModelType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, SectionModelType } from 'metagraph-constant';
 import {
   defineComponent, ref, onUnmounted, provide, onMounted, createVNode
 } from 'vue';
 import {
-  LocationQueryValue, onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter
+  onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter
 } from 'vue-router';
 import {
   Empty, message, Modal, Spin
@@ -67,23 +69,25 @@ import {
   sectionModalData,
   SectionTreeService,
   SectionOperationType
-} from '@/views/repository-editor/section-tree/section.tree';
+} from '@/views/repository-editor/model/section.tree';
 import {
   RepositoryEditor,
   repositoryModel,
   sectionEntityId,
   isPublicRepository,
-  isRepositoryEditorLoading
-} from '@/views/repository-editor/model/repository-editor';
-import { SectionArticleTiptapTextEditor } from '@/components/tiptap-text-editor/section.article.tiptap.text.editor';
+  isRepositoryEditorLoading, repositoryBindEntityList
+} from '@/views/repository-editor/model/repository.editor';
+import { SectionArticleTiptapTextEditor } from '@/components';
 import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
-import SectionCreateModal from '@/views/repository-editor/section-tree/section-create-modal.vue';
-import RightSidebar from './repository-editor/right-sidebar.vue';
-import SectionTree from './repository-editor/section-tree.vue';
-import SectionArticleTipTap from './repository-editor/section-article.vue';
-import KnowledgeGraphPanel from './repository-editor/knowledge-graph-panel.vue';
+import {
+  RightSidebar,
+  SectionTree,
+  SectionArticleTipTap,
+  KnowledgeGraphPanel,
+  RepositoryEditorHeader,
+  SectionCreateModal
+} from './repository-editor/index';
 import { isEditableKey, repositoryEntityIdKey } from './repository-editor/model/provide.type';
-import RepositoryEditorHeader from './repository-editor/repository-editor-header.vue';
 
 export default defineComponent({
   name: 'repository-editor',
@@ -103,7 +107,6 @@ export default defineComponent({
     // 当前知识库entityId
     const repositoryEntityId = ref<string>(route.query.repositoryEntityId as string);
     const isEditable = ref<boolean>((route.query.type as string) === 'edit');
-    const sectionId = ref(route.query.sectionId as LocationQueryValue);
     const sectionTreeService = new SectionTreeService();
     provide(repositoryEntityIdKey, repositoryEntityId);
     provide(isEditableKey, isEditable);
@@ -115,9 +118,10 @@ export default defineComponent({
     const isCreateSectionModalShown = ref(false);
     const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
       repositoryEntityId.value,
-      isEditable.value
+      isEditable.value,
+      sectionTreeService
     );
-    sectionArticleTiptapTextEditor.initEditor();
+    sectionArticleTiptapTextEditor.initEditorInstance();
     const { editor } = sectionArticleTiptapTextEditor;
 
     // 切换视图状态
@@ -144,11 +148,11 @@ export default defineComponent({
       })
         .then();
       if (selectedKeys.length) {
-        await sectionArticleTiptapTextEditor?.updateAndSaveSection(
-          selectedKeys[0],
-          isEditable.value,
-          currentSectionNode.title
-        );
+        await sectionArticleTiptapTextEditor?.saveSectionContentBeforeUpdate({
+          sectionId: selectedKeys[0],
+          isEditable: isEditable.value,
+          sectionName: currentSectionNode.title
+        });
       }
       // 切换tree node
       await sectionTreeService.selectTreeNode({
@@ -182,10 +186,14 @@ export default defineComponent({
               id: params.section.id
             });
             if (result.code === 0) {
+              // 删除indexDB中的section
               await IndexdbService.getInstance()
                 .remove('repository', params.section.id);
+              // 清空section tree
               sectionTreeService.initSectionView();
+              // 重新初始化section tree
               await sectionTreeService.getSectionTree(repositoryEntityId.value);
+              // 刷新路由
               router.replace({
                 name: 'RepositoryEditor',
                 query: {
@@ -196,13 +204,21 @@ export default defineComponent({
                 force: true
               })
                 .then();
-              sectionArticleTiptapTextEditor.updateSection(currentSectionNode.sectionId);
-              // 初始化富文本内容
-              await sectionArticleTiptapTextEditor?.initData({
-                sectionId: currentSectionNode.sectionId
-              });
-              // 更新富文本
-              sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
+              if (currentSectionNode.sectionId) {
+                const repositoryEntityList = repositoryBindEntityList.value.map(
+                  (item) => item as EntityCompletelyListItemType
+                );
+                // 初始化富文本内容
+                await sectionArticleTiptapTextEditor?.initData({
+                  sectionId: currentSectionNode.sectionId,
+                  repositoryEntityList
+                });
+                // 更新富文本
+                sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
+              } else {
+                sectionArticleTiptapTextEditor.updateCurrentSectionId(undefined);
+                sectionArticleTiptapTextEditor?.setContent();
+              }
             }
           },
           async onCancel() {
@@ -233,12 +249,11 @@ export default defineComponent({
         })
           .then();
         // 切换section tree之前应该保存之前的section article
-        await sectionArticleTiptapTextEditor?.updateAndSaveSection(
-          params.sectionId,
-          true,
-          currentSectionNode.title
-        );
-        console.log(params.sectionId, '-----params');
+        await sectionArticleTiptapTextEditor?.saveSectionContentBeforeUpdate({
+          sectionId: params.sectionId,
+          isEditable: true,
+          sectionName: currentSectionNode.title
+        });
         await sectionTreeService.getSectionTree(repositoryEntityId.value, params.sectionId);
         // 切换tree node
         // 更新富文本
@@ -281,6 +296,7 @@ export default defineComponent({
       // 取消导航并停留在同一页面上
       const result = await handleRouteLeaveConfirm();
       if (result) {
+        isRepositoryEditorLoading.value = true;
         const description = editor.value?.getHTML();
         const descriptionInIndexDB = await IndexdbService.getInstance()
           .get('repository', currentSectionNode.sectionId);
@@ -290,9 +306,11 @@ export default defineComponent({
         if (editor.value) {
           await sectionTreeService.saveSectionArticle({
             content: editor.value.getJSON(),
-            contentHtml: editor.value.getHTML()
+            contentHtml: editor.value.getHTML(),
+            sectionId: currentSectionNode.sectionId
           });
         }
+        isRepositoryEditorLoading.value = false;
         return result;
       }
       return false;
@@ -302,6 +320,7 @@ export default defineComponent({
       isRepositoryEditorLoading.value = true;
       const sectionId = route.query.sectionId as string;
       await Promise.all([
+        repositoryEditorService.getAlternativeKnowledgeList(repositoryEntityId.value),
         repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
         repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
         sectionTreeService.getSectionTree(repositoryEntityId.value, sectionId ?? undefined)
@@ -310,11 +329,16 @@ export default defineComponent({
         await repositoryEditorService.getOwnDraftKnowledgeList(repositoryEntityId.value);
       }
       // 初始化富文本内容
-      await sectionArticleTiptapTextEditor?.initData({
-        sectionId: currentSectionNode.sectionId
-      });
-      // 初始化富文本内容
-      sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
+      if (currentSectionNode.sectionId) {
+        await sectionArticleTiptapTextEditor?.initData({
+          sectionId: currentSectionNode.sectionId,
+          repositoryEntityList: repositoryBindEntityList.value.map(
+            (item) => item as EntityCompletelyListItemType
+          )
+        });
+        // 初始化富文本内容
+        sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
+      }
       isRepositoryEditorLoading.value = false;
       document.addEventListener('contextmenu', preventContextmenu);
     });
@@ -336,7 +360,7 @@ export default defineComponent({
       }
 
       if (to.query.sectionId !== from.query.sectionId) {
-        console.log(to.query.sectionId, from.query.sectionId);
+        // todo
       }
     });
 
@@ -355,7 +379,8 @@ export default defineComponent({
       isSaving.value = 'saving...';
       await sectionTreeService.saveSectionArticle({
         content: params.content,
-        contentHtml: params.contentHtml
+        contentHtml: params.contentHtml,
+        sectionId: currentSectionNode.sectionId
       });
       isSaving.value = 'saved';
       setTimeout(() => {
@@ -404,6 +429,7 @@ export default defineComponent({
 .repository-page {
   height: 100vh;
   overflow-y: auto;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .editable {
@@ -421,27 +447,20 @@ export default defineComponent({
     }
 
     .text-content {
-      width: calc(100% - 520px);
+      width: calc(100% - 480px);
       height: 100%;
     }
 
     .graph-content {
-      width: calc(100% - 300px);
+      width: calc(100% - 260px);
       height: calc(100vh - 56px);
     }
 
-    .style-panel {
-      width: 300px;
+    .right-sidebar {
+      width: 260px;
       height: 100%;
       background-color: #fff;
     }
   }
-
-  .text-content {
-    //height: calc(100vh - 56px);
-    //overflow-y: auto;
-  }
-
 }
-
 </style>

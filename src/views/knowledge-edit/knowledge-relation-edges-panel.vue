@@ -14,7 +14,7 @@
             {{ item.item.content.name }}
           </div>
         </div>
-        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
+        <empty-view v-else></empty-view>
       </ant-collapse-panel>
       <ant-collapse-panel key="2" header="知识库外前置知识点" :disabled="false">
         <div class="card-content" v-if="knowledgeEdges.target.preOuterList.length">
@@ -26,7 +26,7 @@
             {{ item.item.content.name }}
           </div>
         </div>
-        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
+        <empty-view v-else></empty-view>
       </ant-collapse-panel>
       <ant-collapse-panel key="3" header="知识库内导出知识点">
         <div class="card-content" v-if="knowledgeEdges.target.extendInnerList.length">
@@ -38,7 +38,7 @@
             {{ item.item.content.name }}
           </div>
         </div>
-        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
+        <empty-view v-else></empty-view>
       </ant-collapse-panel>
       <ant-collapse-panel key="4" header="知识库外导出知识点">
         <div class="card-content" v-if="knowledgeEdges.target.extendOuterList.length">
@@ -50,14 +50,15 @@
             {{ item.item.content.name }}
           </div>
         </div>
-        <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
+        <empty-view v-else></empty-view>
       </ant-collapse-panel>
     </ant-collapse>
-    <ant-empty :image="simpleImage" description="暂无数据" v-else></ant-empty>
+    <empty-view v-else></empty-view>
   </div>
 </template>
 
 <script lang="ts">
+import EmptyView from '@/components/empty-view/empty-view.vue';
 import { Collapse, Empty } from 'ant-design-vue';
 import { ref, defineComponent } from 'vue';
 import { knowledgeEdges } from './model/knowledge.edit';
@@ -65,7 +66,7 @@ import { knowledgeEdges } from './model/knowledge.edit';
 export default defineComponent({
   name: 'knowledge-relation-edges-panel',
   components: {
-    AntEmpty: Empty,
+    EmptyView,
     AntCollapse: Collapse,
     AntCollapsePanel: Collapse.Panel
   },

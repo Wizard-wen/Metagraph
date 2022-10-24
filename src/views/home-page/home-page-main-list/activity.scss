@@ -1,0 +1,143 @@
+@import '../../../style/tiptap.common.scss';
+
+@mixin box-shadow-style {
+  box-shadow: 0 0 1px -1px rgb(0 0 0 / 8%), 0 1px 2px 0 rgb(0 0 0 / 4%), 0 2px 4px 1px rgb(0 0 0 / 2%);
+}
+
+@mixin active-box-shadow-style {
+  box-shadow: 0 1px 4px -2px rgb(0 0 0 / 13%), 0 2px 8px 0 rgb(0 0 0 / 8%), 0 8px 16px 4px rgb(0 0 0 / 4%);
+}
+
+
+.activity-list-item {
+  padding: 16px 0;
+  display: flex;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.user-avatar {
+  margin-right: 10px;
+}
+
+.activity-content {
+  width: 100%;
+}
+
+.activity-box {
+  position: relative;
+  text-align: left;
+  margin-top: 8px;
+  border-radius: 6px;
+  background: #fff;
+  padding: 16px;
+  @include box-shadow-style;
+
+  &:hover {
+    @include active-box-shadow-style;
+  }
+}
+
+.name-content {
+  height: 30px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+
+  .name-icon {
+    font-size: 16px;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+
+  .name {
+    line-height: 1.5;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .type-tag-gap {
+    margin-left: 15px;
+  }
+}
+
+// 文字型描述
+.description-text {
+  margin-top: 4px;
+  min-height: 20px;
+  color: #57606A;
+}
+
+// 富文本描述
+.description-content {
+  margin: 10px 0;
+  border: 1px solid #d0d7de;
+  border-radius: 5px;
+  background: #ffffff;
+}
+
+.tag-content {
+  line-height: 22px;
+  padding: 5px 0;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  .custom-tag {
+    font-size: 12px;
+    border-radius: 12px;
+    padding: 2px 8px;
+    width: max-content;
+    line-height: 1.5;
+    border: 1px solid #d0d7de;
+  }
+}
+
+.others {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+
+  .star {
+    margin-right: 12px;
+    line-height: 1.5;
+    font-size: 14px;
+
+    .star-icon {
+      margin-right: 2px;
+    }
+  }
+
+  .updatedAt {
+    margin-right: 16px;
+    line-height: 1.5;
+    font-size: 12px;
+  }
+}
+
+.control-btn {
+  position: absolute;
+  font-weight: bold;
+
+  &::v-deep(.ant-btn) {
+    height: 28px;
+  }
+}
+
+.plan-btn {
+  top: 16px;
+  right: 82px;
+}
+
+.star-btn {
+  top: 16px;
+  right: 16px;
+}
+
+.icon-gap-5 {
+  margin-right: 4px;
+}

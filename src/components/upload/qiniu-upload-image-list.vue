@@ -95,7 +95,6 @@ export default defineComponent({
     }
 
     function handleRemove(item: KnowledgePicturesFrontendType) {
-      console.log(item);
       Modal.confirm({
         title: '删除图片',
         icon: createVNode(ExclamationCircleOutlined),

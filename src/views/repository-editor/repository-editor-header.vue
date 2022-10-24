@@ -27,6 +27,7 @@
     <div class="right">
       <ant-button
         type="primary"
+        style="height: 28px; padding: 0 12px; font-size: 12px;"
         v-if="isCloneButtonShow"
         :loading="isCloning"
         @click="handleOpenCloneModal">克隆
@@ -73,7 +74,7 @@ import RepositoryViewChange from '@/views/repository-editor/repository-editor-he
 import { StarControlButton, CommentControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { EditIcon } from '@/components/icons';
-import { repositoryModel, RepositoryEditor } from './model/repository-editor';
+import { repositoryModel, RepositoryEditor } from './model/repository.editor';
 
 export default defineComponent({
   name: 'repository-editor-header',
@@ -233,15 +234,16 @@ export default defineComponent({
       display: flex;
       height: 32px;
       line-height: 32px;
-      font-size: 18px;
+      font-size: 16px;
       align-items: center;
 
       .name {
-        font-weight: 400;
+        font-weight: 600;
       }
 
       .edit-icon {
-        font-size: 20px;
+        margin-left: 5px;
+        font-size: 18px;
 
         &:hover {
           cursor: pointer;
@@ -263,6 +265,7 @@ export default defineComponent({
 
   .right {
     display: flex;
+    align-items: center;
     gap: 20px;
 
     .view-switch {

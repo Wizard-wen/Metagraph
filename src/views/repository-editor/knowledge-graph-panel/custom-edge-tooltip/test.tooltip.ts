@@ -3,15 +3,14 @@
  * @date  2022/1/11 14:45
  */
 import { EdgeView, Graph, ToolsView } from '@antv/x6';
-import { Tooltip } from 'ant-design-vue';
-import { createApp, App } from 'vue';
+import { createApp, App, createRenderer } from 'vue';
 import TestTooltip from './test-tooltip.vue';
 
 export interface TooltipToolOptions extends ToolsView.ToolItem.Options {
   tooltip?: string
 }
 
-class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
+export class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
   private knob!: HTMLDivElement;
 
   app!: App;
@@ -44,6 +43,7 @@ class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
     // )
     // }
     if (visible) {
+      console.log('visible');
       this.app = createApp(TestTooltip, {
         content: this.options.tooltip
       });
@@ -52,7 +52,7 @@ class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
     }
   }
 
-  private onMosueEnter({ e }: { e: MouseEvent }) {
+  private onMouseEnter({ e }: { e: MouseEvent }) {
     console.log('show tooltip', e);
     this.updatePosition(e);
     this.toggleTooltip(true);
@@ -69,7 +69,7 @@ class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
   }
 
   delegateEvents() {
-    this.cellView.on('cell:mouseenter', this.onMosueEnter, this);
+    this.cellView.on('cell:mouseenter', this.onMouseEnter, this);
     this.cellView.on('cell:mouseleave', this.onMouseLeave, this);
     this.cellView.on('cell:mousemove', this.onMouseMove, this);
     return super.delegateEvents();
@@ -90,7 +90,7 @@ class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
   }
 
   protected onRemove() {
-    this.cellView.off('cell:mouseenter', this.onMosueEnter, this);
+    this.cellView.off('cell:mouseenter', this.onMouseEnter, this);
     this.cellView.off('cell:mouseleave', this.onMouseLeave, this);
     this.cellView.off('cell:mousemove', this.onMouseMove, this);
   }

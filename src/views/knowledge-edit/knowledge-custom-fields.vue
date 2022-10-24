@@ -24,29 +24,33 @@
             :key="item.key">
             <ant-form-item
               v-bind="customFieldsValidateInfo[item.key]"
-              class="custom-form-item"
+              class="custom-field-item"
               :label="item.label"
               :name="item.key"
               :rules="customFieldsRulesRef[item.key]"
               required>
               <ant-date-picker
                 v-model:value="customFieldsModelRef[item.key]"
-                style="width: 80%; margin-right: 8px"
+                class="form-item-gap"
+                style="width: 80%;"
                 v-if="item.type === 'Date'"/>
               <ant-input
                 v-if="item.type === 'Input'"
                 v-model:value="customFieldsModelRef[item.key]"
                 :placeholder="`请输入${item.label}`"
-                style="width: 80%; margin-right: 8px"/>
+                class="form-item-gap"
+                style="width: 80%;"/>
               <ant-text-area
                 v-if="item.type === 'Textarea'"
                 v-model:value="customFieldsModelRef[item.key]"
                 :placeholder="`请输入${item.label}`"
-                style="max-width: calc(100% - 60px); margin-right: 8px"></ant-text-area>
-              <MinusCircleOutlined
-                style="font-size: 16px"
-                class="dynamic-delete-button"
+                class="form-item-gap"
+                style="max-width: calc(100% - 60px);"></ant-text-area>
+              <DeleteOutlined
+                class="dynamic-operate-button dynamic-operate-button-gap"
                 @click="removeField(item)"/>
+              <EditOutlined
+                class="dynamic-operate-button"/>
             </ant-form-item>
           </ant-col>
         </ant-row>
@@ -63,7 +67,10 @@
     :isModalVisible="isFieldModalVisible"></add-field-modal>
 </template>
 <script lang="ts">
-import { ExclamationCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import {
+  ExclamationCircleOutlined, EditOutlined, PlusOutlined,
+  DeleteOutlined
+} from '@ant-design/icons-vue';
 import {
   message, Form, Modal, Input, Button, DatePicker, Row, Col, Empty
 } from 'ant-design-vue';
@@ -167,7 +174,8 @@ export default defineComponent({
   },
   components: {
     AddFieldModal,
-    MinusCircleOutlined,
+    DeleteOutlined,
+    EditOutlined,
     PlusOutlined,
     AntForm: Form,
     AntFormItem: Form.Item,
@@ -185,26 +193,34 @@ export default defineComponent({
 @import '../../style/common.scss';
 @import "./style/knowledge.edit.scss";
 
-.custom-form-item {
+.custom-field-item {
   &::v-deep(.ant-form-item-label) {
     width: 100px;
   }
 }
 
-.dynamic-delete-button {
+.form-item-gap {
+  margin-right: 6px;
+}
+
+.dynamic-operate-button {
   cursor: pointer;
   position: relative;
   top: 4px;
-  font-size: 24px;
   color: #999;
   transition: all 0.3s;
+  font-size: 16px;
 }
 
-.dynamic-delete-button:hover {
+.dynamic-operate-button-gap {
+  margin-right: 3px;
+}
+
+.dynamic-operate-button:hover {
   color: #777;
 }
 
-.dynamic-delete-button[disabled] {
+.dynamic-operate-button[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
 }

@@ -60,9 +60,9 @@
   </div>
 
   <p class="h2-level-title-style">知识点描述</p>
-  <tiptap-readonly
+  <tiptap-editor-readonly
     class="custom-tiptap-readonly"
-    :article-content="previewModel.entity.content.description"></tiptap-readonly>
+    :article-content="previewModel.entity.content.description"></tiptap-editor-readonly>
   <p class="h2-level-title-style">概念图册</p>
   <div class="picture-content content-padding" v-if="provider !== 'page'">
     <img
@@ -119,8 +119,8 @@ import {
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { LinkOutlined } from '@ant-design/icons-vue';
-import DescriptionItem from '../../business/knowledge-drawer/description-item.vue';
-import TiptapReadonly from '../repository-editor/section-article/tiptap-readonly.vue';
+import TiptapEditorReadonly from '@/components/tiptap-text-editor/tiptap-editor-readonly.vue';
+import DescriptionItem from '@/business/knowledge-drawer/description-item.vue';
 
 export default defineComponent({
   name: 'knowledge-preview-component',
@@ -137,7 +137,7 @@ export default defineComponent({
     }
   },
   components: {
-    TiptapReadonly,
+    TiptapEditorReadonly,
     DescriptionItem,
     AntCol: Col,
     AntRow: Row,
