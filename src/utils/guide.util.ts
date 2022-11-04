@@ -1,6 +1,7 @@
 /**
- * @author songxiwen
+ * @author wizard.song
  * @date  2022/3/4 16:54
+ * @description 新手引导
  */
 
 import introJs, { Step } from 'intro.js';

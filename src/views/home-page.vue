@@ -30,7 +30,6 @@ export default defineComponent({
     HomePageAside
   },
   setup() {
-    console.log(process.env.VUE_APP_TITLE);
     const store = useStore();
     const homePage = new HomePage();
     const isLogin = computed(() => store.state.user.isLogin);

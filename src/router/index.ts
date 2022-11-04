@@ -4,9 +4,9 @@
  */
 
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { CryptoUtil } from '@/utils/crypto-util';
 import Main from '../views/main.vue';
 import Settings from '../views/settings.vue';
-import Repository from '../views/repository.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,22 +20,18 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/home-page.vue')
       },
       {
-        path: 'repo',
-        component: Repository
-      },
-      {
         path: '/repository/list',
         name: 'RepositoryList',
         component: () => import('@/views/repository-list.vue')
       },
       {
         path: '/repository/edit',
-        name: 'CreateRepository',
+        name: 'RepositoryEdit',
         component: () => import('@/views/repository-edit.vue')
       },
       {
         path: 'profile',
-        name: 'UserProfile',
+        name: 'PersonalProfile',
         component: () => import('@/views/personal-profile.vue')
       },
       {
@@ -91,7 +87,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/knowledge/preview',
     name: 'KnowledgePreview',
-    component: () => import('@/views/knowledge-preview.page.vue')
+    component: () => import('@/views/knowledge-preview.page.vue'),
+    beforeEnter: (to, from) => {
+      // 解密路由参数
+      const { iv, key } = CryptoUtil.generateAesKeys('123', '456');
+      const result = CryptoUtil.decrypt(<string>to.query?.t ?? '', { iv, key });
+      to.query = {
+        ...to.query,
+        ...JSON.parse(result)
+      };
+      return true;
+    }
+    ,
   },
   {
     path: '/login',

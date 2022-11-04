@@ -29,12 +29,10 @@ export default defineComponent({
   color: rgba(0, 0, 0, 0.65);
 
   .title {
-    //width: 110px;
-    //text-align: right;
     line-height: 32px;
     margin-right: 8px;
     display: inline-block;
-    color: rgba(0, 0, 0, 0.85);
+    font-weight: 600;
   }
 
   .content {

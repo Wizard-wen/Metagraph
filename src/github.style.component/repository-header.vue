@@ -63,7 +63,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import "../../style/common.scss";
+@import "../style/common";
 
 .repo-header {
   padding-top: 16px;

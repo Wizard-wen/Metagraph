@@ -1,6 +1,7 @@
 /**
- * @author songxiwen
+ * @author wizard.song
  * @date  2022/5/10 15:57
+ * @description 网络测速
  */
 
 export class NetworkUtil {
@@ -16,14 +17,14 @@ export class NetworkUtil {
 
   time = 5000;
 
-  speedStauts?: number;
+  speedStatus?: number;
 
   getConnectState() {
     return navigator.onLine ? 1 : 0;
   }
 
-  getSpeedStauts() {
-    return this.speedStauts;
+  getSpeedStatus() {
+    return this.speedStatus;
   }
 
   startSpeed() {
@@ -31,15 +32,17 @@ export class NetworkUtil {
       window.clearInterval(this.speedInterval);
     }
     this.speedInterval = undefined;
-    if (this.getConnectState() == 1) {
+    // eslint-disable-next-line eqeqeq
+    if (this.getConnectState() === 1) {
       this.speedInterval = window.setInterval(() => {
         const start = new Date().getTime();
-        if (this.getConnectState() == 1) {
+        // eslint-disable-next-line eqeqeq
+        if (this.getConnectState() === 1) {
           // const img = document.getElementById('networkSpeedImage');
-          const img = new Image();
+          const image = new Image();
           try {
-            img.src = `http://www.baidu.com/img/baidu_jgylogo3.gif?_t=${new Date().getTime()}`;
-            img.onload = () => {
+            image.src = `http://www.baidu.com/img/baidu_jgylogo3.gif?_t=${new Date().getTime()}`;
+            image.onload = () => {
               const end = new Date().getTime();
               const delta = end - start;
               console.info('delta====>', delta);

@@ -43,13 +43,13 @@ export class KnowledgePreview {
     await this.getDraftKnowledgePreview(draftKnowledgeEntityId);
   }
 
-  handleShowKnowledgeDrawer(entityId: string, type: 'published' | 'draft') {
+  handleShowKnowledgeDrawer(entityId: string, type: 'published' | 'draft'): void {
     knowledgeDrawerState.entityId = entityId;
     knowledgeDrawerState.isShow = true;
     knowledgeDrawerState.type = type;
   }
 
-  handleCloseKnowledgeDrawer() {
+  handleCloseKnowledgeDrawer(): void {
     knowledgeDrawerState.isShow = false;
     knowledgeDrawerState.entityId = undefined;
     knowledgeDrawerState.type = undefined;

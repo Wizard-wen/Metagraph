@@ -4,7 +4,7 @@
     <div class="bottom-message">
       <div class="limit-container">
         <tiptap-editor-article-limit
-          v-if="editor"
+          v-if="editor && editable"
           :current="characterCount"
           :limit="limit"></tiptap-editor-article-limit>
       </div>

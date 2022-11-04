@@ -63,20 +63,22 @@
 
 <script lang="ts">
 import AddToPlanButton from '@/business/add-to-plan-button/add-to-plan-button.vue';
-import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
 import type {
-  ActivityModelType, EntityCompletelyListItemType, StarResponseType, UserModelType
+  ActivityModelType,
+  EntityCompletelyListItemType,
+  StarResponseType,
+  UserModelType
 } from 'metagraph-constant';
 import {
-  defineComponent, toRef, PropType, computed, ref
+  computed, defineComponent, PropType, ref, toRef
 } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  message, Button, Avatar, Tag, Tooltip
+  Avatar, message, Tooltip
 } from 'ant-design-vue';
 import { MetagraphButton, MetagraphTag } from 'metagraph-ui';
 import {
-  StarOutlined, StarFilled, CommentOutlined, ReadOutlined
+  CommentOutlined, ReadOutlined, StarFilled, StarOutlined
 } from '@ant-design/icons-vue';
 import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import { useStore } from '@/store';
@@ -84,11 +86,11 @@ import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';
 import { PublicApiResponseType } from '@/utils';
 import TiptapEditorReadonly from '@/components/tiptap-text-editor/tiptap-editor-readonly.vue';
+import { RouterUtil } from '@/utils/router.util';
 
 export default defineComponent({
   name: 'activity-knowledge-item',
   components: {
-    SocialActionButton,
     MetagraphTag,
     AddToPlanButton,
     ActivityItemTitle,
@@ -96,9 +98,7 @@ export default defineComponent({
     StarOutlined,
     StarFilled,
     CommentOutlined,
-    AntButton: Button,
     AntAvatar: Avatar,
-    AntTag: Tag,
     MetagraphButton,
     ReadOutlined,
     AntTooltip: Tooltip
@@ -135,17 +135,13 @@ export default defineComponent({
       });
     };
 
-    function goProfilePage(id: string) {
-      const { href } = router.resolve({
-        path: '/knowledge/preview',
-        query: {
-          publishedKnowledgeEntityId: activityItem.value.entity.entity.id
-        }
+    function goProfilePage() {
+      RouterUtil.openNewPage('/knowledge/preview', {
+        publishedKnowledgeEntityId: activityItem.value.entity.entity.id
       });
-      window.open(href, '_blank');
     }
 
-    const addStar = async (event: MouseEvent, status: boolean) => {
+    async function addStar(event: MouseEvent, status: boolean) {
       event.stopPropagation();
       isStarButtonDisabled.value = true;
       let result: PublicApiResponseType<void | StarResponseType>;
@@ -193,59 +189,4 @@ export default defineComponent({
 @import '../../../style/tiptap.common.scss';
 @import "activity.scss";
 @import "../../../style/common.scss";
-
-//.repository-item {
-//  padding: 16px 0;
-//  border-bottom: 1px solid $borderColor;
-//  display: flex;
-//  max-width: 1000px;
-//  width: 100%;
-//
-//  //.icon {
-//  //  margin-right: 10px;
-//  //}
-//
-//  .content {
-//    width: 100%;
-//
-//    .title {
-//      font-weight: bold;
-//      height: 32px;
-//      line-height: 32px;
-//      text-align: left;
-//      cursor: pointer;
-//      width: max-content;
-//
-//      &:hover {
-//        color: #0969DA;
-//      }
-//    }
-//
-//    .control-btn {
-//      position: absolute;
-//      padding: 2px 12px;
-//      font-size: 12px;
-//      line-height: 18px;
-//      border: 1px solid #1b1f2326;
-//      border-radius: 6px;
-//      cursor: pointer;
-//      font-weight: bold;
-//
-//      &::v-deep(.ant-btn) {
-//        height: 28px;
-//      }
-//    }
-//
-//    .plan-btn {
-//      top: 16px;
-//      right: 76px;
-//    }
-//
-//    .star-btn {
-//      top: 16px;
-//      right: 16px;
-//    }
-//  }
-//}
-
 </style>

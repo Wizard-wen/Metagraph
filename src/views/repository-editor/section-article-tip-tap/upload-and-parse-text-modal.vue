@@ -48,9 +48,12 @@
           v-if="articleText">
           <p>{{ articleText }}</p>
         </div>
+        <empty-view v-else></empty-view>
       </ant-tabs-pane>
       <ant-tabs-pane key="2" tab="关键词" class="tab-content">
-        <ant-list class="doc-keyword" size="small" bordered :data-source="keywords">
+        <ant-list
+          class="doc-keyword"
+          size="small" bordered :data-source="keywords" v-if="keywords.length">
           <template #renderItem="{ item }">
             <ant-list-item class="custom-list-item">
               <div class="left">
@@ -61,6 +64,7 @@
             </ant-list-item>
           </template>
         </ant-list>
+        <empty-view v-else></empty-view>
       </ant-tabs-pane>
     </ant-tabs>
     <template #footer>
@@ -85,17 +89,24 @@
 </template>
 
 <script lang="ts">
+import {Button, Form, Input, List, Modal, Tabs, Tag} from 'ant-design-vue';
+import {FileEnum, SectionModelType} from 'metagraph-constant';
+import {CloseOutlined, UploadOutlined} from '@ant-design/icons-vue';
+import {defineComponent, inject, ref} from 'vue';
+import EmptyView from '@/components/empty-view/empty-view.vue';
+import {repositoryEntityIdKey} from '../model/provide.type';
 import {
-  Button, List, Modal, Tabs, Tag, Input, Form
-} from 'ant-design-vue';
-import { FileEnum, SectionModelType } from 'metagraph-constant';
-import { CloseOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { defineComponent, inject, ref } from 'vue';
-import { repositoryEntityIdKey } from '../model/provide.type';
-import {
-  keywords, UploadAndParseTextService,
-  textFileForm, textFileFormRef, textFileFormRules, articleText, isShowOperation,
-  isShowOperationButton, textParsingStatus, uploadButtonText, suffixText
+  articleText,
+  isShowOperation,
+  isShowOperationButton,
+  keywords,
+  suffixText,
+  textFileForm,
+  textFileFormRef,
+  textFileFormRules,
+  textParsingStatus,
+  UploadAndParseTextService,
+  uploadButtonText
 } from '../model/upload.and.parse.text.service';
 
 export default defineComponent({
@@ -110,6 +121,7 @@ export default defineComponent({
     CloseOutlined,
     UploadOutlined,
     AntTabs: Tabs,
+    EmptyView,
     AntList: List,
     AntInput: Input,
     AntListItem: List.Item,
@@ -121,7 +133,7 @@ export default defineComponent({
     AntFormItem: Form.Item
   },
   emits: ['close'],
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const uploadAndParseTextService = new UploadAndParseTextService();
     const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
     const activeTab = ref('1');
@@ -225,8 +237,8 @@ export default defineComponent({
       textFileForm,
       isShowOperation,
       suffixText,
-      labelCol: { span: 3 },
-      wrapperCol: { offset: 0 },
+      labelCol: {span: 3},
+      wrapperCol: {offset: 0},
     };
   }
 });
@@ -277,7 +289,7 @@ export default defineComponent({
 .tab-content {
   min-height: 400px;
   max-height: 500px;
-  overflow: scroll;
+  overflow-y: auto;
   width: 100%;
 }
 

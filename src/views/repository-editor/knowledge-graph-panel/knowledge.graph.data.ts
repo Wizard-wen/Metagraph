@@ -12,7 +12,6 @@ import {
   KnowledgeModelType
 } from 'metagraph-constant';
 import { createVNode, reactive, ref } from 'vue';
-import { ConfigService } from '@/config/config.service';
 import { WebsocketService } from '@/service/websocket.service';
 import {
   KnowledgeGraphPanel,
@@ -53,7 +52,6 @@ export const websocketService = ref<WebsocketService>();
 
 export function initWebSocket(): void {
   websocketService.value = new WebsocketService(
-    // ConfigService.websocketBaseURL,
     process.env.VUE_APP_API_WEBSOCKET_BASE_URL!,
     [
       {

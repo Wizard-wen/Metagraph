@@ -3,8 +3,6 @@
  * @date  2021/9/11 22:08
  */
 
-console.log(process.env.VUE_APP_API_BASE_URL);
-
 export class ConfigService {
   private static apiLocalBaseURL = 'http://localhost:7250/';
 

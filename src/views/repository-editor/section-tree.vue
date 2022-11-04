@@ -2,7 +2,7 @@
   <div class="section-tree">
     <div class="tree-container">
       <div class="header">单元树</div>
-      <div class="control">
+      <div class="control" v-if="isEditable">
         <ant-button
           v-if="isEditable"
           class="add-section-button"
@@ -15,7 +15,7 @@
           创建顶级单元
         </ant-button>
       </div>
-      <div class="tree-scroll-content">
+      <div class="tree-scroll-content" :class="[isEditable ? 'edit-height' : 'readonly-height']">
         <div class="tree-content">
           <ant-tree
             v-if="sectionTree.tree.length"
@@ -64,7 +64,7 @@
               {{ item.content.name }}
             </div>
             <div class="control">
-              <ViewIcon @click="handleClickEntityItem(item, 'draft')"></ViewIcon>
+              <ViewIcon @click="handleClickEntityItem(item)"></ViewIcon>
             </div>
           </div>
         </div>
@@ -190,8 +190,16 @@ export default defineComponent({
     }
 
     .tree-scroll-content {
-      height: calc(100% - 74px);
+      //height: calc(100% - 74px);
       padding: 10px 0;
+    }
+
+    .readonly-height {
+      height: calc(100% - 32px);
+
+    }
+    .edit-height{
+      height: calc(100% - 74px);
     }
 
     .tree-content {

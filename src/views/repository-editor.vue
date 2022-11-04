@@ -38,7 +38,6 @@
         </div>
       </div>
     </div>
-
   </ant-spin>
   <section-create-modal
     v-if="isCreateSectionModalShown"
@@ -65,7 +64,7 @@ import {
   onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter
 } from 'vue-router';
 import {
-  Empty, message, Modal, Spin
+  message, Modal, Spin
 } from 'ant-design-vue';
 import {
   currentSectionNode,
@@ -76,8 +75,8 @@ import {
 import {
   RepositoryEditor,
   repositoryModel,
-  sectionEntityId,
-  isPublicRepository,
+  // sectionEntityId,
+  // isPublicRepository,
   isRepositoryEditorLoading, repositoryBindEntityList
 } from '@/views/repository-editor/model/repository.editor';
 import { SectionArticleTiptapTextEditor } from '@/components';
@@ -296,6 +295,9 @@ export default defineComponent({
     }
 
     onBeforeRouteLeave(async () => {
+      if (!isEditable.value) {
+        return true;
+      }
       // 取消导航并停留在同一页面上
       const result = await handleRouteLeaveConfirm();
       if (result) {
@@ -322,13 +324,14 @@ export default defineComponent({
     onMounted(async () => {
       isRepositoryEditorLoading.value = true;
       const sectionId = route.query.sectionId as string;
+      // 无需权限的接口请求
       await Promise.all([
-        repositoryEditorService.getAlternativeKnowledgeList(repositoryEntityId.value),
         repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
         repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
         sectionTreeService.getSectionTree(repositoryEntityId.value, sectionId ?? undefined)
       ]);
       if (isEditable.value) {
+        await repositoryEditorService.getAlternativeKnowledgeList(repositoryEntityId.value);
         await repositoryEditorService.getOwnDraftKnowledgeList(repositoryEntityId.value);
       }
       // 初始化富文本内容
@@ -405,22 +408,22 @@ export default defineComponent({
       isRepositoryEditorLoading,
       repositoryModel,
       viewStatus,
-      saveSectionArticle,
       isEditable,
-      sectionEntityId,
       repositoryEntityId,
-      handleMention,
-      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      isPublicRepository,
-      handleChangeView,
-      handleClickMention,
       isSaving,
       knowledgeDrawerState,
+      isCreateSectionModalShown,
+      // sectionEntityId,
+      // simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      // isPublicRepository,
+      handleChangeView,
+      handleClickMention,
+      handleMention,
+      saveSectionArticle,
       handleCloseKnowledgeDrawer,
       handleSelectSection,
       handleOpenCreateSectionModal,
-      handleCreateSection,
-      isCreateSectionModalShown
+      handleCreateSection
     };
   }
 });

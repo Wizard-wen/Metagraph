@@ -8,11 +8,11 @@ import { MutationEnum, store } from '@/store';
 import { ErrorDetailSystemApiService } from '@/api.service/system/error.detail.system.api.service';
 import router from '@/router';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ConfigService } from '@/config/config.service';
 import { PublicApiResponseType } from '@/utils/request.util';
+
+console.info(`当前环境为：${process.env.VUE_APP_API_BASE_URL}`);
 // 请求拦截
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
-  // config.baseURL = ConfigService.apiBaseURL;
   config.baseURL = process.env.VUE_APP_API_BASE_URL;
   config.headers = {
     ...config.headers,
@@ -23,7 +23,7 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
 // 响应拦截
 axios.interceptors.response.use((response: AxiosResponse<PublicApiResponseType<any>>) => {
   // 捕捉业务级错误
-  if (response.config.url?.includes(ConfigService.apiBaseURL) && response.data.code !== 0) {
+  if (response.config.url?.includes(process.env.VUE_APP_API_BASE_URL!) && response.data.code !== 0) {
     message.error(response.data?.message ?? 'server unknown error');
   }
   if (response.data.code === 70006) {
