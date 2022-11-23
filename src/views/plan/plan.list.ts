@@ -16,6 +16,14 @@ export const plan = ref<{
   total: 0
 });
 
+export const planFilterObject = ref<{
+  pageSize: number,
+  currentPage: number
+}>({
+  pageSize: 8,
+  currentPage: 0
+});
+
 export class PlanList {
   async getPlanList(): Promise<void> {
     const result = await PlanApiService.getList();

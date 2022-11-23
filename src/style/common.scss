@@ -41,7 +41,8 @@ $lightGray: #f9f9f9;
 $backgroundColor: #f5f6f7;
 
 $boxShadow: 3px 3px 3px rgba(#000, 0.15);
-$borderRadius: 2px;
+
+$borderRadius: 4px;
 
 
 // 字体大小
@@ -51,15 +52,15 @@ $titleFontSize: 14px;
 $iconFontSize: 12px;
 
 // 字体颜色
-
 $titleFontColor: #24292f;
 
 // border颜色
-//$borderColor: #eee;
-
 $borderColor: #f0f0f0;
 
 //------背景色-----
+// hover背景色
+$hoverBackColor: #eff0f0;
+
 $tabBackgroundColor: #f9f9f9;
 // 通用header 背景色
 $headerBackgroundColor: #fafbfc;

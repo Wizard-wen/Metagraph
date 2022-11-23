@@ -14,8 +14,7 @@
         :allowClear="true"
         v-model:value="searchData.text"
         placeholder="请输入搜索内容..."
-        @search="handleSearch"
-        style="width: 260px"></ant-input-search>
+        @search="handleSearch($event)"></ant-input-search>
       <div class="banner-list">
         <div
           class="text-button"
@@ -24,7 +23,7 @@
           class="text-button"
           @click="goPLanListPage">学习计划</div>
         <div
-          class="text-button">灵感</div>
+          class="text-button" @click="goInspirationPage">灵感</div>
         <div
           class="text-button">反馈</div>
         <div
@@ -39,7 +38,7 @@
         </div>
         <template #overlay>
           <ant-menu>
-            <ant-menu-item @click="goCreateRepoPage" style="font-size: 12px">
+            <ant-menu-item @click="goCreateRepoPage" class="menu-item-style">
               <BookOutlined/>
               新建知识库
             </ant-menu-item>
@@ -71,7 +70,7 @@
             <template #overlay>
               <ant-menu>
                 <ant-menu-item
-                  style="font-size: 12px;"
+                  class="menu-item-style"
                   @click="goRepositoryPage">
                   <BookOutlined/>
                   我的知识库
@@ -111,16 +110,14 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onMounted
+  computed, defineComponent
 } from 'vue';
-import {
-  NavigationGuardNext, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter
-} from 'vue-router';
+import { useRouter } from 'vue-router';
 import {
   Avatar, Dropdown, Menu, Button, Input
 } from 'ant-design-vue';
 import {
-  PlusOutlined, FireOutlined, BookOutlined, ReadOutlined, DownOutlined, SettingOutlined,
+  FireOutlined, BookOutlined, ReadOutlined, DownOutlined, SettingOutlined,
   ScheduleOutlined, StarOutlined, BellOutlined, UserOutlined, AimOutlined, PoweroffOutlined,
   PlusCircleOutlined
 } from '@ant-design/icons-vue';
@@ -133,7 +130,6 @@ export default defineComponent({
     BellOutlined,
     UserOutlined,
     AimOutlined,
-    PlusOutlined,
     PlusCircleOutlined,
     SettingOutlined,
     ScheduleOutlined,
@@ -152,14 +148,16 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const route = useRoute();
     const store = useStore();
     const isLogin = computed(() => store.state.user.isLogin);
     const userModel = computed(() => store.state.user.user);
-
     const token = computed(() => store.state.user.token);
     const goSignInPage = async () => {
       router.push('/login')
+        .then();
+    };
+    const goInspirationPage = async () => {
+      router.push('/inspiration')
         .then();
     };
     const goCreateRepoPage = async () => {
@@ -238,7 +236,7 @@ export default defineComponent({
       searchData.value.type = '';
       searchData.value.activeIndex = 0;
     };
-    const handleSearch = async (event: any) => {
+    const handleSearch = async (event: string) => {
       searchData.value.text = event;
       router.push({
         path: '/repository/list',
@@ -264,19 +262,6 @@ export default defineComponent({
       })
         .then();
     };
-    onBeforeRouteUpdate((
-      to: RouteLocationNormalized,
-      from: RouteLocationNormalized,
-      next: NavigationGuardNext
-    ) => {
-      console.log(to, from, '----- header');
-      next();
-    });
-    onMounted(() => {
-      if (route.path === '/repository/list') {
-        console.log(route);
-      }
-    });
     return {
       goSignInPage,
       goCreateRepoPage,
@@ -288,6 +273,7 @@ export default defineComponent({
       goHomePage,
       goRepositoryPage,
       signOut,
+      goInspirationPage,
       token,
       goKnowledgeMap,
       user: userModel,
@@ -351,7 +337,7 @@ export default defineComponent({
     }
 
     .input-search-style {
-      width: 220px;
+      width: 260px;
       margin-left: 60px;
       margin-right: 20px;
     }
@@ -359,14 +345,16 @@ export default defineComponent({
     .banner-list {
       padding: 0 12px;
       display: flex;
-      gap: 20px;
+      gap: 5px;
 
       .text-button {
         font-weight: 600;
+        padding: 5px 10px;
         cursor: pointer;
+        border-radius: 4px;
 
-        &：hover {
-
+        &:hover {
+          background: $hoverBackColor;
         }
       }
     }

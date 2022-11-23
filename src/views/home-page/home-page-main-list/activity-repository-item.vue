@@ -9,25 +9,25 @@
       <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="activity-box">
         <div class="name-content">
-          <ant-tooltip placement="left" title="知识库" arrow-point-at-center>
-            <div class="name-icon">
-              <BookOutlined/>
-            </div>
-          </ant-tooltip>
+<!--          <ant-tooltip placement="left" title="知识库" arrow-point-at-center>-->
+<!--            <div class="name-icon">-->
+<!--              <BookOutlined/>-->
+<!--            </div>-->
+<!--          </ant-tooltip>-->
           <div class="name" @click="goRepositoryPage($event)">
             {{ activityItem.entity.content.name }}
           </div>
-          <metagraph-tag class="type-tag-gap" :title="'知识库'"></metagraph-tag>
+<!--          <metagraph-tag class="type-tag-gap" :title="'知识库'"></metagraph-tag>-->
         </div>
         <div class="description-text">
           {{ activityItem.entity.content.description }}
         </div>
-        <div class="tag-content" v-if="activityItem.entity.content.domain.length">
-          <metagraph-tag
-            :key="index"
-            v-for="(item, index) in activityItem.entity.content.domain"
-            :title="item.domainName"></metagraph-tag>
-        </div>
+<!--        <div class="tag-content" v-if="activityItem.entity.content.domain.length">-->
+<!--          <metagraph-tag-->
+<!--            :key="index"-->
+<!--            v-for="(item, index) in activityItem.entity.content.domain"-->
+<!--            :title="item.domainName"></metagraph-tag>-->
+<!--        </div>-->
         <div class="others">
           <div class="star">
             <StarOutlined class="star-icon"/>

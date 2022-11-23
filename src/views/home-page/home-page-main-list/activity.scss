@@ -42,7 +42,7 @@
   height: 30px;
   width: 100%;
   display: flex;
-  align-items: center;
+  //align-items: center;
   justify-content: flex-start;
   gap: 5px;
 
@@ -73,9 +73,9 @@
 
 // 富文本描述
 .description-content {
-  margin: 10px 0;
-  border: 1px solid #d0d7de;
-  border-radius: 5px;
+  //margin: 10px 0;
+  //border: 1px solid #d0d7de;
+  //border-radius: 5px;
   background: #ffffff;
 }
 
@@ -98,7 +98,7 @@
 }
 
 .others {
-  margin-top: 4px;
+  margin-top: 8px;
   display: flex;
   align-items: center;
 
@@ -121,7 +121,7 @@
 
 .control-btn {
   position: absolute;
-  font-weight: bold;
+  //font-weight: bold;
 
   &::v-deep(.ant-btn) {
     height: 28px;

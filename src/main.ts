@@ -16,6 +16,7 @@ import Contextmenu from './directives/contextmenu';
 import Hide from './directives/hide';
 import './api.service/config/request.intercepter';
 import 'metagraph-ui/dist/style.css';
+import './router/router.interceptor';
 
 const app = createApp(App);
 // 引入全局directive

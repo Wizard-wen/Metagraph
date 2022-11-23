@@ -6,29 +6,20 @@
     <div class="plan-list-header">
       <ant-button type="primary" @click="openCreateModal()">创建</ant-button>
     </div>
-    <ant-list :grid="{ gutter: 16, column: 4 }" :data-source="plan.list">
-      <template #renderItem="{ item }">
-        <ant-list-item>
-          <ant-badge style="display: block" :dot="!!item.status" :color="item.statusColor">
-            <ant-card :title="item.name" class="custom-plan-card">
-              <ant-card-meta>
-                <template #description>
-                  <div class="card-description-item">计划日期: {{ item.planDate }}</div>
-                  <div class="card-description-item">截止日期: {{ item.deadlineDate }}</div>
-                </template>
-              </ant-card-meta>
-              <template class="ant-card-actions" #actions>
-                <setting-outlined key="setting" @click="openCreateModal(item.id)"/>
-                <edit-outlined key="edit" @click="goPlanBoard(item.id)"/>
-                <ellipsis-outlined key="ellipsis"/>
-              </template>
-            </ant-card>
-          </ant-badge>
-        </ant-list-item>
-      </template>
-    </ant-list>
+    <div class="card-list-content">
+      <plan-item-card
+        @clickTitle="goPlanBoard"
+        @edit="openCreateModal"
+        v-for="(item, index) in plan.list"
+        :key="index"
+        :plan-item="item"></plan-item-card>
+    </div>
+    <ant-pagination
+      :pageSize="planFilterObject.pageSize"
+      v-model:current="planFilterObject.currentPage"
+      :total="plan.total"
+      @change="onPageChange"/>
   </div>
-
   <plan-edit-modal
     v-if="isPlanEditModalShown"
     :plan-id="planId"
@@ -36,74 +27,47 @@
     @close="handleCloseModal"></plan-edit-modal>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import PlanEditModal from '@/views/plan/plan-edit-modal.vue';
-// import PlanItemCard from '@/views/plan/plan-item-card.vue';
-import {
-  List, Card, Button, Space, Badge
-} from 'ant-design-vue';
-import { SettingOutlined, EditOutlined, EllipsisOutlined } from '@ant-design/icons-vue';
-import { PlanList, plan } from '@/views/plan/plan.list';
-import { defineComponent, onMounted, ref } from 'vue';
+import PlanItemCard from '@/views/plan/plan-item-card.vue';
+import { Button as AntButton, Pagination as AntPagination } from 'ant-design-vue';
+import { plan, planFilterObject, PlanList } from '@/views/plan/plan.list';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  name: 'plan-list',
-  components: {
-    // PlanItemCard,
-    PlanEditModal,
-    AntSpace: Space,
-    AntBadge: Badge,
-    AntList: List,
-    AntListItem: List.Item,
-    AntCard: Card,
-    AntCardMeta: Card.Meta,
-    AntButton: Button,
-    SettingOutlined,
-    EditOutlined,
-    EllipsisOutlined,
-  },
-  setup() {
-    const planList = new PlanList();
-    const router = useRouter();
-    const isPlanEditModalShown = ref(false);
-    const planId = ref();
-    onMounted(async () => {
-      await planList.getPlanList();
-    });
-
-    function openCreateModal(id?: string) {
-      console.log(id);
-      isPlanEditModalShown.value = true;
-      if (id) {
-        planId.value = id;
-      }
-    }
-
-    async function handleCloseModal() {
-      isPlanEditModalShown.value = false;
-      await planList.getPlanList();
-    }
-
-    async function goPlanBoard(id: string) {
-      router.push({
-        path: '/planBoard',
-        query: {
-          id
-        }
-      }).then();
-    }
-
-    return {
-      plan,
-      planId,
-      openCreateModal,
-      isPlanEditModalShown,
-      handleCloseModal,
-      goPlanBoard
-    };
-  }
+const planList = new PlanList();
+const router = useRouter();
+const isPlanEditModalShown = ref(false);
+const planId = ref();
+onMounted(async () => {
+  await planList.getPlanList();
 });
+
+function onPageChange() {
+  // todo
+}
+
+function openCreateModal(id?: string) {
+  console.log(id);
+  isPlanEditModalShown.value = true;
+  if (id) {
+    planId.value = id;
+  }
+}
+
+async function handleCloseModal() {
+  isPlanEditModalShown.value = false;
+  await planList.getPlanList();
+}
+
+async function goPlanBoard(id: string) {
+  router.push({
+    path: '/planBoard',
+    query: {
+      id
+    }
+  }).then();
+}
 </script>
 
 <style scoped lang="scss">
@@ -126,6 +90,12 @@ export default defineComponent({
     align-items: center;
     justify-content: flex-start;
     margin-bottom: 20px;
+  }
+
+  .card-list-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
   }
 
   .custom-plan-card {

@@ -2,7 +2,7 @@
   <ant-modal
     style="position: relative"
     :width="800"
-    title="编辑计划"
+    :title="planId ? '编辑计划' : '创建计划'"
     okText="确定"
     cancelText="取消"
     :visible="isModalVisible"
@@ -10,7 +10,6 @@
     :zIndex="9999"
     @cancel="handleModalCancel"
     @ok="handleModalOk">
-    <div></div>
     <ant-form
       ref="formRef"
       :rules="rules"

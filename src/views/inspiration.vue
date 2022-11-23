@@ -1,13 +1,13 @@
 <template>
+<div>
 
+</div>
 </template>
 
-<script>
-export default {
-  name: 'inspiration'
-};
+<script lang="ts" setup>
+
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>

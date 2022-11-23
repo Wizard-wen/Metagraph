@@ -8,15 +8,15 @@
       <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="activity-box">
         <div class="name-content">
-          <ant-tooltip placement="left" title="知识点" arrow-point-at-center>
-            <div class="name-icon">
-              <ReadOutlined/>
-            </div>
-          </ant-tooltip>
+<!--          <ant-tooltip placement="left" title="知识点" arrow-point-at-center>-->
+<!--            <div class="name-icon">-->
+<!--              <ReadOutlined/>-->
+<!--            </div>-->
+<!--          </ant-tooltip>-->
           <div class="name" @click="goProfilePage">
             {{ activityItem.entity.content.name }}
           </div>
-          <metagraph-tag class="type-tag-gap" :title="'知识点'"></metagraph-tag>
+<!--          <metagraph-tag class="type-tag-gap" :title="'知识点'"></metagraph-tag>-->
         </div>
         <div class="description-content">
           <tiptap-editor-readonly

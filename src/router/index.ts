@@ -37,12 +37,18 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'planList',
         name: 'PlanList',
-        component: () => import('@/views/plan/plan-list.vue')
+        component: () => import('@/views/plan/plan-list.vue'),
+        meta: { requiresAuth: true }
       },
       {
         path: 'planBoard',
         name: 'planBoard',
         component: () => import('@/views/plan/plan-board.vue')
+      },
+      {
+        path: 'inspiration',
+        name: 'inspiration',
+        component: () => import('@/views/inspiration.vue')
       },
       {
         path: 'settings',
