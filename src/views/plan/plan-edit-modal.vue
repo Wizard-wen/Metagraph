@@ -1,7 +1,7 @@
 <template>
   <ant-modal
     style="position: relative"
-    :width="800"
+    :width="600"
     :title="planId ? '编辑计划' : '创建计划'"
     okText="确定"
     cancelText="取消"
@@ -30,7 +30,7 @@
           :format="dateFormat" v-model:value="formState.deadlineDate"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="description" label="描述" name="description">
-        <ant-input v-model:value="formState.description"/>
+        <ant-textarea  v-model:value="formState.description"/>
       </ant-form-item>
     </ant-form>
   </ant-modal>
@@ -72,7 +72,8 @@ export default defineComponent({
     AntForm: Form,
     AntFormItem: Form.Item,
     AntInput: Input,
-    AntDatePicker: DatePicker
+    AntDatePicker: DatePicker,
+    AntTextarea: Input.TextArea
   },
   setup(props, context) {
     const formRef = ref();

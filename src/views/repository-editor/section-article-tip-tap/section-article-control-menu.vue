@@ -19,6 +19,7 @@
       <upload-image-control :editor="editor"></upload-image-control>
       <toggle-task-control :editor="editor"></toggle-task-control>
       <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>
+      <font-size-select></font-size-select>
     </div>
   </div>
   <upload-and-parse-text-modal
@@ -53,6 +54,7 @@ import {
 import UploadAndParseTextModal from './upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
 import { UploadAndParseTextService } from '../model/upload.and.parse.text.service';
+import FontSizeSelect from '@/components/tiptap-text-editor/controls/font-size-select.vue';
 
 export default defineComponent({
   name: 'section-article-control',
@@ -63,6 +65,7 @@ export default defineComponent({
     }
   },
   components: {
+    FontSizeSelect,
     ToggleTaskControl,
     SaveControl,
     FontSizeControl,

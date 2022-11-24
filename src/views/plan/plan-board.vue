@@ -140,7 +140,7 @@
         </ant-form>
       </ant-col>
     </ant-row>
-
+    <plan-progress></plan-progress>
   </ant-spin>
   <plan-item-edit-modal
     v-if="isShowModal && planBoard.data"
@@ -172,10 +172,12 @@ import {
   planBoard, PlanBoard, planFormState, planBindEntityList, isLoading
 } from './plan.board';
 import PlanItemView from './plan-item-view.vue';
+import PlanProgress from '@/views/plan/plan-board/plan-progress.vue';
 
 export default defineComponent({
   name: 'plan-board',
   components: {
+    PlanProgress,
     PlanItemEditModal,
     draggable,
     AntRow: Row,

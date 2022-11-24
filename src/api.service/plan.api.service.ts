@@ -3,14 +3,18 @@
  * @date  2022/4/6 16:14
  */
 
-import { ApiPathEnum } from '@/api.service/config/api.config';
-import { PublicApiResponseType, RequestUtil } from '@/utils';
-import {
+import type { PublicApiResponseType } from '@/utils';
+import type {
+  CreatePlanItemType,
   EntityCompletelyListItemType,
+  PlanAuthApi,
   PlanEntityModelType,
-  PlanItemModelType,
-  PlanModelType, PublicEntityType
+  PlanItemModelType, PlanListItemType,
+  PlanModelType,
+  PlanTreeType,
+  PublicEntityType
 } from 'metagraph-constant';
+import { RequestNewUntil } from '@/utils/request.new.until';
 
 export type CreatePlanType = {
   name: string;
@@ -19,66 +23,48 @@ export type CreatePlanType = {
   planDate?: Date;
 }
 
-type CreatePlanItemType = {
-  planId: string;
-  name: string;
-  priority: 1 | 2 | 3 | 4 | 5;
-  description?: string;
-  planDate?: Date;
-  deadlineDate?: Date;
-}
-
-type CreatePlanItemParamsType = {
-  item: CreatePlanItemType,
-  itemEntity?: {
-    entityId: string;
-    entityType: PublicEntityType;
-  }
-}
-
-export type PlanTreeType = ({
-  children?: PlanItemModelType[]
-} & PlanModelType)[]
-
-type UpdatePlanItemParamsType = {
-  status?: 'todo' | 'doing' | 'done'
-} & Partial<CreatePlanItemType>;
-
 export class PlanApiService {
-  static async getList(): Promise<PublicApiResponseType<{
-    list: PlanModelType[],
+  static async getList(params: {
+    pageIndex: number,
+    pageSize: number
+  }): Promise<PublicApiResponseType<{
+    list: PlanListItemType[],
     total: number
   }>> {
-    return RequestUtil.post<undefined, {
-      list: PlanModelType[],
-      total: number
-    }>({
-      apiPath: ApiPathEnum.GetPlanList,
-      requestBody: undefined
+    return RequestNewUntil.post<PlanAuthApi.GetPlanList>({
+      apiPath: '/plan/getList',
+      requestBody: params
     });
   }
 
-  static async createPlan(params: CreatePlanType): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<CreatePlanType, void>({
-      apiPath: ApiPathEnum.CreatePlan,
+  static async createPlan(params: {
+    name: string,
+    description?: string,
+    deadlineDate?: Date,
+    planDate?: Date
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<PlanAuthApi.CreatePlan>({
+      apiPath: '/plan/create',
       requestBody: params
     });
   }
 
   static async getPlanTree(): Promise<PublicApiResponseType<PlanTreeType>> {
-    return RequestUtil.post<void, PlanTreeType>({
-      apiPath: ApiPathEnum.GetPlanTree,
+    return RequestNewUntil.post<PlanAuthApi.GetPlanTree>({
+      apiPath: '/plan/getTree',
       requestBody: undefined
     });
   }
 
   static async updatePlan(params: {
     id: string;
-  } & Partial<CreatePlanType>): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      id: string;
-    } & Partial<CreatePlanType>, void>({
-      apiPath: ApiPathEnum.UpdatePlan,
+    name?: string;
+    description?: string;
+    deadlineDate?: Date;
+    planDate?: Date;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<PlanAuthApi.UpdatePlan>({
+      apiPath: '/plan/update',
       requestBody: params
     });
   }
@@ -86,10 +72,8 @@ export class PlanApiService {
   static async getPlanDetail(params: {
     id: string;
   }): Promise<PublicApiResponseType<PlanModelType>> {
-    return RequestUtil.post<{
-      id: string;
-    }, PlanModelType>({
-      apiPath: ApiPathEnum.GetPlanDetail,
+    return RequestNewUntil.post<PlanAuthApi.GetPlanDetail>({
+      apiPath: '/plan/getDetail',
       requestBody: params
     });
   }
@@ -108,39 +92,31 @@ export class PlanApiService {
       entity: EntityCompletelyListItemType
     }[]
   }>> {
-    return RequestUtil.post<{
-      id: string;
-    }, {
-      plan: PlanModelType,
-      planItemList: {
-        item: PlanItemModelType;
-        entityList: EntityCompletelyListItemType[];
-        entityIdList: string[]
-      }[],
-      entityList: {
-        planEntityModel: PlanEntityModelType,
-        entity: EntityCompletelyListItemType
-      }[]
-    }>({
-      apiPath: ApiPathEnum.GetPlan,
+    return RequestNewUntil.post<PlanAuthApi.GetPlan>({
+      apiPath: '/plan/get',
       requestBody: params
     });
   }
 
-  static async createPlanItem(params: CreatePlanItemParamsType): Promise<PublicApiResponseType<PlanModelType>> {
-    return RequestUtil.post<CreatePlanItemParamsType, PlanModelType>({
-      apiPath: ApiPathEnum.CreatePlanItem,
+  static async createPlanItem(params: {
+    item: CreatePlanItemType,
+    itemEntity?: {
+      entityId: string;
+      entityType: PublicEntityType;
+    }
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<PlanAuthApi.CreatePlanItem>({
+      apiPath: '/plan/item/create',
       requestBody: params
     });
   }
 
   static updatePlanItem(params: {
     id: string;
-  } & UpdatePlanItemParamsType): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      id: string;
-    } & UpdatePlanItemParamsType, void>({
-      apiPath: ApiPathEnum.UpdatePlanItem,
+    status?: 'todo' | 'doing' | 'done'
+  } & Partial<CreatePlanItemType>): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<PlanAuthApi.UpdatePlanItem>({
+      apiPath: '/plan/item/update',
       requestBody: params
     });
   }
@@ -148,10 +124,8 @@ export class PlanApiService {
   static getPlanItemDetail(params: {
     id: string;
   }): Promise<PublicApiResponseType<PlanItemModelType>> {
-    return RequestUtil.post<{
-      id: string;
-    }, PlanItemModelType>({
-      apiPath: ApiPathEnum.GetPlanItemDetail,
+    return RequestNewUntil.post<PlanAuthApi.GetPlanItemDetail>({
+      apiPath: '/plan/item/getDetail',
       requestBody: params
     });
   }
@@ -162,13 +136,8 @@ export class PlanApiService {
     entityId: string;
     entityType: PublicEntityType;
   }): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      planId: string;
-      planItemId?: string;
-      entityId: string;
-      entityType: PublicEntityType;
-    }, void>({
-      apiPath: ApiPathEnum.BindToPlanItem,
+    return RequestNewUntil.post<PlanAuthApi.BindEntityToPlanItem>({
+      apiPath: '/plan/item/bind/entity',
       requestBody: params
     });
   }
@@ -178,12 +147,8 @@ export class PlanApiService {
     planItemId: string;
     entityId: string;
   }): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      planId: string;
-      planItemId: string;
-      entityId: string;
-    }, void>({
-      apiPath: ApiPathEnum.UnbindFromPlanItem,
+    return RequestNewUntil.post<PlanAuthApi.UnbindEntityToPlanItem>({
+      apiPath: '/plan/item/unbind/entity',
       requestBody: params
     });
   }
@@ -192,11 +157,8 @@ export class PlanApiService {
     planId: string;
     entityId: string;
   }): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      planId: string;
-      entityId: string;
-    }, void>({
-      apiPath: ApiPathEnum.UnbindEntityFromPlan,
+    return RequestNewUntil.post<PlanAuthApi.UnbindEntityFromPlan>({
+      apiPath: '/plan/unbind/entity',
       requestBody: params
     });
   }

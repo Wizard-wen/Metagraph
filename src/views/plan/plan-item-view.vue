@@ -5,7 +5,7 @@
          @mouseenter="isShow = true" @mouseleave="isShow = false">
       <EditOutlined v-if="isShow" class="control" @click="handleClickEdit"/>
       <div class="priority-tags">
-        <div v-for="item in planItem.priority"
+        <div v-for="(item ,index) in planItem.priority" :key="index"
              class="priority-tag-item"
              :class="planItem.status + '-tag-color'"></div>
       </div>
@@ -79,8 +79,9 @@ export default defineComponent({
 
   .content {
     background: #FFF;
-    padding-top: 3px;
+    //padding-top: 3px;
     position: relative;
+    min-height: 50px;
 
     &:hover {
       cursor: pointer;
@@ -93,13 +94,14 @@ export default defineComponent({
     }
 
     .priority-tags {
-      height: 24px;
+      height: 7px;
       display: flex;
-      gap: 5px;
+      align-items: center;
+      //gap: 5px;
       max-width: 200px;
 
       .priority-tag-item {
-        height: 12px;
+        height: 4px;
         width: 20%;
         max-width: 32px;
         background: rgb(204, 51, 51);
@@ -127,7 +129,7 @@ export default defineComponent({
     }
 
     .entity-list {
-      background: #f5f5f5;
+      //background: #f5f5f5;
       padding-top: 8px;
       display: flex;
       justify-content: flex-start;

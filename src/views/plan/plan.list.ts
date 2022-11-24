@@ -5,7 +5,7 @@
 import { PlanApiService } from '@/api.service/plan.api.service';
 import { CommonUtil } from '@/utils';
 import { message } from 'ant-design-vue';
-import { PlanModelType } from 'metagraph-constant';
+import { PlanListItemType } from 'metagraph-constant';
 import { ref } from 'vue';
 
 export const plan = ref<{
@@ -18,17 +18,20 @@ export const plan = ref<{
 
 export const planFilterObject = ref<{
   pageSize: number,
-  currentPage: number
+  pageNumber: number
 }>({
   pageSize: 8,
-  currentPage: 0
+  pageNumber: 1
 });
 
 export class PlanList {
   async getPlanList(): Promise<void> {
-    const result = await PlanApiService.getList();
+    const result = await PlanApiService.getList({
+      pageSize: planFilterObject.value.pageSize,
+      pageIndex: planFilterObject.value.pageNumber - 1
+    });
     if (result.data) {
-      plan.value.list = result.data.list.map((item: PlanModelType) => {
+      plan.value.list = result.data.list.map((item: PlanListItemType) => {
         let status;
         let statusColor;
         if (item.deadlineDate) {

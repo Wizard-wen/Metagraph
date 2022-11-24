@@ -14,11 +14,14 @@
         :key="index"
         :plan-item="item"></plan-item-card>
     </div>
-    <ant-pagination
-      :pageSize="planFilterObject.pageSize"
-      v-model:current="planFilterObject.currentPage"
-      :total="plan.total"
-      @change="onPageChange"/>
+    <div class="pagination-box">
+      <ant-pagination
+        class="pagination"
+        :pageSize="planFilterObject.pageSize"
+        v-model:current="planFilterObject.pageNumber"
+        :total="plan.total"
+        @change="onPageChange"/>
+    </div>
   </div>
   <plan-edit-modal
     v-if="isPlanEditModalShown"
@@ -96,6 +99,12 @@ async function goPlanBoard(id: string) {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+  }
+
+  .pagination-box {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
   }
 
   .custom-plan-card {

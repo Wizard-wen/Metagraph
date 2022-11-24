@@ -40,11 +40,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/plan/plan-list.vue'),
         meta: { requiresAuth: true }
       },
-      {
-        path: 'planBoard',
-        name: 'planBoard',
-        component: () => import('@/views/plan/plan-board.vue')
-      },
+
       {
         path: 'inspiration',
         name: 'inspiration',
@@ -73,6 +69,16 @@ const routes: Array<RouteRecordRaw> = [
         ]
       }
     ]
+  },
+  {
+    path: '/planBoard',
+    name: 'planBoard',
+    component: () => import('@/views/plan/plan-board.vue')
+  },
+  {
+    path: '/studyBoard',
+    name: 'studyBoard',
+    component: () => import('@/views/plan/plan-study-board.vue')
   },
   {
     path: '/repository/editor',

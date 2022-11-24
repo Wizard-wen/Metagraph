@@ -15,43 +15,100 @@
         <div class="list-container">
           <div class="list-item">
             <div class="circle"></div>
-            已完成16
+            已完成{{ planItem.progress.done }}
           </div>
           <div class="list-item">
             <div class="circle"></div>
-            进行中5
+            进行中{{ planItem.progress.doing }}
           </div>
           <div class="list-item">
             <div class="circle"></div>
-            未开始20
+            未开始{{ planItem.progress.todo }}
           </div>
         </div>
-        <a-tooltip title="3 done / 3 in progress / 4 to do">
-          <a-progress :width="90" :percent="60" :success-percent="30" type="circle"/>
+        <a-tooltip :title="progressDesc">
+          <a-progress
+            :width="90" :percent="totalRate" :success-percent="successRate"
+            type="circle"/>
         </a-tooltip>
       </div>
       <div class="bottom">
         <div class="deadline">
-          剩余28天
+          {{ lastTime }}
         </div>
-        <div class="status-tag">26个知识点</div>
+        <div class="status-tag">{{ planItem.entityCount }}个知识点</div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { PlanModelType } from 'metagraph-constant';
-import { defineEmits, defineProps, PropType } from 'vue';
+import { PlanListItemType, PlanModelType } from 'metagraph-constant';
+import { computed, defineEmits, defineProps, PropType } from 'vue';
 import { EditOutlined } from '@ant-design/icons-vue';
 import { Progress as AProgress, Tooltip as ATooltip } from 'ant-design-vue';
+import { ceil } from 'lodash';
 
-defineProps({
+// startDate 活动开始日期
+// endDate 活动截止日期
+function endDistance(startDate: Date, endDate: Date): string {
+  // 获取相差毫秒数
+  const leftTime = endDate.getTime() - startDate.getTime();
+  // 转化时间
+
+  // 1000毫秒 = 1秒
+  // 60秒 = 1分钟
+  // 60分钟 = 1小时
+  // 60小时 = 1日
+  const d = Math.floor(leftTime / 1000 / 60 / 60 / 24);
+
+  // 所以利用 % 求余运算符，就可以将其 除于小时或小时或分数 然后将余数赋值，见下例
+  // 天数剩下的余数就是剩下的小时
+  const h = Math.floor((leftTime / 1000 / 60 / 60) % 24);
+
+  // 小时剩下的余数就是剩下的分钟
+  const m = Math.floor((leftTime / 1000 / 60) % 60);
+
+  // 分数剩下的余数就是剩下的秒数
+  const s = Math.floor((leftTime / 1000) % 60);
+  if (d < 0 || h < 0 || m < 0 || s < 0) {
+    return '已过期';
+  }
+  if (d > 0) {
+    return `剩余${d}天`;
+  }
+  if (d === 0 && h > 0) {
+    return `剩余${h}小时`;
+  }
+  return '即将到期';
+}
+
+const props = defineProps({
   planItem: {
-    type: Object as PropType<PlanModelType>,
+    type: Object as PropType<PlanListItemType>,
     required: true
   }
 });
+
+const successRate = computed(() => {
+  if (props.planItem.progress.total > 0) {
+    return ceil(props.planItem.progress.done / props.planItem.progress.total, 2) * 100;
+  }
+  return 0;
+});
+
+const totalRate = computed(() => {
+  if (props.planItem.progress.total > 0) {
+    return ceil((props.planItem.progress.done + props.planItem.progress.doing) / props.planItem.progress.total, 2) * 100;
+  }
+  return 0;
+});
+const progressDesc = computed(() => `
+${props.planItem.progress.done} done /
+${props.planItem.progress.doing} in progress /
+${props.planItem.progress.todo} to do`);
+
+const lastTime = computed(() => props.planItem.deadlineDate ? endDistance(new Date(), new Date(props.planItem.deadlineDate)) : '');
 
 const emit = defineEmits(['clickTitle', 'edit']);
 
@@ -95,7 +152,7 @@ function handleEdit(item: PlanModelType) {
         display: flex;
         align-items: center;
         justify-content: center;
-
+        border-radius: 4px;
         &:hover {
           cursor: pointer;
           background: $hoverBackColor;

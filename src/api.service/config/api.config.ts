@@ -143,21 +143,6 @@ export enum ApiPathEnum {
    */
   CreateErrorDetail = '/system/errorDetail/create',
   /**
-   * plan
-   */
-  CreatePlan = '/plan/create',
-  GetPlanTree = '/plan/getTree',
-  GetPlanList = '/plan/getList',
-  UpdatePlan = '/plan/update',
-  GetPlanDetail = '/plan/getDetail',
-  GetPlan = '/plan/get',
-  CreatePlanItem = '/plan/item/create',
-  UpdatePlanItem = '/plan/item/update',
-  GetPlanItemDetail = '/plan/item/getDetail',
-  BindToPlanItem = '/plan/item/bind/entity',
-  UnbindFromPlanItem = '/plan/item/unbind/entity',
-  UnbindEntityFromPlan = '/plan/unbind/entity',
-  /**
    * activity
    */
   GetActivityList = '/activity/getList'

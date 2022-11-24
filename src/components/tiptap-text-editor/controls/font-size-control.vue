@@ -24,19 +24,19 @@ export default defineComponent({
     const articleFontSize = ref('14');
     const fontSizeList = reactive([
       {
-        label: '12',
+        label: '12px',
         value: '12'
       },
       {
-        label: '14',
+        label: '14px',
         value: '14'
       },
       {
-        label: '16',
+        label: '16px',
         value: '16'
       },
       {
-        label: '18',
+        label: '18px',
         value: '18'
       }
     ]);
@@ -55,22 +55,22 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .font-size-select {
-  &::v-deep(.ant-select-arrow) {
-    right: 3px;
-    height: 8px;
-    width: 8px;
-  }
-
-  &::v-deep(.ant-select-selector) {
-    padding: 0 7px!important;
-  }
-
-  &::v-deep(.ant-select-selection-item){
-    padding-right: 5px!important;
-  }
-  &::v-deep(svg){
-    height: 8px;
-    width: 8px;
-  }
+  //&::v-deep(.ant-select-arrow) {
+  //  right: 3px;
+  //  height: 8px;
+  //  width: 8px;
+  //}
+  //
+  //&::v-deep(.ant-select-selector) {
+  //  padding: 0 7px!important;
+  //}
+  //
+  //&::v-deep(.ant-select-selection-item){
+  //  padding-right: 5px!important;
+  //}
+  //&::v-deep(svg){
+  //  height: 8px;
+  //  width: 8px;
+  //}
 }
 </style>
