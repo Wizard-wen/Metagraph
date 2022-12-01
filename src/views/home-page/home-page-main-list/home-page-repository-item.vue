@@ -6,14 +6,14 @@
         {{ repository.author.name }}
       </div>
       <div class="box">
-        <div class="name" @click="goRepositoryPage($event)">
+        <div class="name" @click="goRepositoryPage">
           {{ repository.content.name }}
         </div>
         <div class="des">{{ repository.content.description }}</div>
         <div class="tag" v-if="repository.content.domain.length">
           <ant-tag
             :key="index"
-            v-for="(item, index) in repository.content.domain">
+            v-for="(item, index) in repositoryDomainList">
             {{ item.domainBaseTypeName }}-{{ item.domainName }}
           </ant-tag>
         </div>
@@ -41,108 +41,92 @@
   </div>
 </template>
 
-<script lang="ts">
-import type { EntityCompletelyListItemType, StarResponseType } from 'metagraph-constant';
-import {
-  defineComponent, toRef, PropType, computed, ref
-} from 'vue';
+<script lang="ts" setup>
+import type {
+  EntityCompletelyListItemType,
+  RepositoryModelType,
+  StarResponseType
+} from 'metagraph-constant';
+import { computed, defineProps, PropType, ref, toRef } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  message, Button, Avatar, Tag
-} from 'ant-design-vue';
+import { Avatar as AntAvatar, Button as AntButton, message, Tag as AntTag } from 'ant-design-vue';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
 import { StarApiService } from '@/api.service/star.api.service';
 import { CommentIcon } from '@/components/icons';
 import { PublicApiResponseType } from '@/utils';
+import { RouterUtil } from '@/utils/router.util';
 
-export default defineComponent({
-  name: 'home-page-repository-item',
-  components: {
-    StarOutlined,
-    CommentIcon,
-    AntButton: Button,
-    AntAvatar: Avatar,
-    AntTag: Tag
-  },
-  props: {
-    repository: {
-      type: Object as PropType<EntityCompletelyListItemType>,
-      required: true
-    }
-  },
-  setup(props) {
-    const store = useStore();
-    const router = useRouter();
-    const repository = toRef(props, 'repository');
-    const isLogin = computed(() => store.state.user.isLogin);
-    const date = computed(() => CommonUtil.formatDate(
-      new Date(repository.value.content.updatedAt),
-      'yyyy-MM-dd hh:mm:ss'
-    ));
-    const isStarButtonDisabled = ref(false);
-    const userModel = computed(() => store.state.user.user);
-    const goRepositoryPage = () => {
-      router.push({
-        name: 'RepositoryEditor',
-        query: {
-          repositoryEntityId: repository.value.entity.id,
-          type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
-        }
-      });
-    };
-    const addStar = async (event: MouseEvent, status: boolean) => {
-      event.stopPropagation();
-      isStarButtonDisabled.value = true;
-      let result: PublicApiResponseType<void | StarResponseType>;
-      if (status) {
-        result = await StarApiService.cancel({
-          entityId: repository.value.entity.id,
-          entityType: 'Repository'
-        });
-      } else {
-        result = await StarApiService.create({
-          entityId: repository.value.entity.id,
-          entityType: 'Repository'
-        });
-      }
-      if (result.code === 0) {
-        if (status) {
-          repository.value.hasStared = false;
-          if (repository.value.star > 0) {
-            repository.value.star -= 1;
-          } else {
-            repository.value.star = 0;
-          }
-        } else {
-          repository.value.hasStared = true;
-          repository.value.star += 1;
-        }
-      } else {
-        message.error(status ? '取消点赞失败' : '点赞失败');
-      }
-      isStarButtonDisabled.value = false;
-    };
-    const goUserProfilePage = () => {
-      router.push({
-        path: '/profile',
-        query: {
-          id: repository.value.author.id
-        }
-      })
-        .then();
-    };
-    return {
-      goRepositoryPage,
-      addStar,
-      isLogin,
-      date,
-      goUserProfilePage,
-      isStarButtonDisabled
-    };
+const props = defineProps({
+  repository: {
+    type: Object as PropType<EntityCompletelyListItemType>,
+    required: true
   }
 });
+
+const repositoryDomainList = computed(
+  () => (props.repository.content as RepositoryModelType).domain
+);
+const store = useStore();
+const router = useRouter();
+const repository = toRef(props, 'repository');
+const isLogin = computed(() => store.state.user.isLogin);
+const date = computed(() => CommonUtil.formatDate(
+  new Date(repository.value.content.updatedAt),
+  'yyyy-MM-dd hh:mm:ss'
+));
+const isStarButtonDisabled = ref(false);
+const userModel = computed(() => store.state.user.user);
+
+const goRepositoryPage = () => {
+  RouterUtil.openNewPage('/repository/editor', {
+    repositoryEntityId: repository.value.entity.id,
+    type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
+  });
+};
+const addStar = async (event: MouseEvent, status: boolean) => {
+  event.stopPropagation();
+  isStarButtonDisabled.value = true;
+  let result: PublicApiResponseType<void | StarResponseType>;
+  if (status) {
+    result = await StarApiService.cancel({
+      entityId: repository.value.entity.id,
+      entityType: 'Repository'
+    });
+  } else {
+    result = await StarApiService.create({
+      entityId: repository.value.entity.id,
+      entityType: 'Repository'
+    });
+  }
+  if (result.code === 0) {
+    if (status) {
+      repository.value.hasStared = false;
+      if (repository.value.star > 0) {
+        repository.value.star -= 1;
+      } else {
+        repository.value.star = 0;
+      }
+    } else {
+      repository.value.hasStared = true;
+      repository.value.star += 1;
+    }
+  } else {
+    message.error(status ? '取消点赞失败' : '点赞失败');
+  }
+  isStarButtonDisabled.value = false;
+};
+const goUserProfilePage = () => {
+  router.push({
+    path: '/profile',
+    query: {
+      id: repository.value.author.id
+    }
+  })
+    .then();
+};
+
 </script>
 
 <style scoped lang="scss">

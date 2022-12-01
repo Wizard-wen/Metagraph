@@ -22,34 +22,29 @@
   </template>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import type {
-  ActivityModelType, EntityCompletelyListItemType, UserModelType
+  ActivityModelType,
+  EntityCompletelyListItemType,
+  UserModelType
 } from 'metagraph-constant';
-import {
-  defineComponent, PropType
-} from 'vue';
-import ActivityFollowUserItem from '@/views/home-page/home-page-main-list/activity-follow-user-item.vue';
-import ActivityKnowledgeItem from '@/views/home-page/home-page-main-list/activity-knowledge-item.vue';
-import ActivityRepositoryItem from '@/views/home-page/home-page-main-list/activity-repository-item.vue';
+import { defineProps, PropType } from 'vue';
+import ActivityFollowUserItem
+  from '@/views/home-page/home-page-main-list/activity-follow-user-item.vue';
+import ActivityKnowledgeItem
+  from '@/views/home-page/home-page-main-list/activity-knowledge-item.vue';
+import ActivityRepositoryItem
+  from '@/views/home-page/home-page-main-list/activity-repository-item.vue';
 
-export default defineComponent({
-  name: 'home-page-activity-list-item',
-  components: {
-    ActivityKnowledgeItem,
-    ActivityRepositoryItem,
-    ActivityFollowUserItem,
-  },
-  props: {
-    activityItem: {
-      type: Object as PropType<{
-        user: UserModelType,
-        entity?: EntityCompletelyListItemType,
-        followedUser?: UserModelType,
-        content: ActivityModelType
-      }>,
-      required: true
-    }
+defineProps({
+  activityItem: {
+    type: Object as PropType<{
+      user: UserModelType,
+      entity?: EntityCompletelyListItemType,
+      followedUser?: UserModelType,
+      content: ActivityModelType
+    }>,
+    required: true
   }
 });
 </script>

@@ -6,6 +6,7 @@ import { reactive, UnwrapRef, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import { RepositoryApiService } from '@/api.service';
+import { RouterUtil } from '@/utils/router.util';
 
 export const repositoryFormRef = ref();
 export interface RepositoryFormStateType {
@@ -97,14 +98,10 @@ export class RepositoryEdit {
     });
     if (response.data) {
       message.success('知识库创建成功！');
-      this.router.push({
-        path: '/repository/editor',
-        query: {
-          repositoryEntityId: response.data.entity.id,
-          type: 'edit'
-        }
-      })
-        .then();
+      RouterUtil.openNewPage('/repository/editor', {
+        repositoryEntityId: response.data.entity.id,
+        type: 'edit'
+      });
     }
   }
 

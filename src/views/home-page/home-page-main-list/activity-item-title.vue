@@ -36,59 +36,40 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import type {
   ActivityModelType,
   EntityCompletelyListItemType,
   UserModelType
 } from 'metagraph-constant';
-import { defineComponent, PropType } from 'vue';
+import { defineProps, PropType } from 'vue';
 import { useRouter } from 'vue-router';
-import { Popover, Avatar } from 'ant-design-vue';
-import {
-  EmailIcon,
-  LocationIcon,
-  LinkIcon,
-  WechatIcon
-} from '@/components/icons';
+import { Avatar as AntAvatar, Popover as AntPopover } from 'ant-design-vue';
+import { EmailIcon, LinkIcon, LocationIcon, WechatIcon } from '@/components/icons';
 
-export default defineComponent({
-  name: 'activity-item-title',
-  props: {
-    activityItem: {
-      type: Object as PropType<{
-        user: UserModelType,
-        entity?: EntityCompletelyListItemType,
-        followedUser?: UserModelType,
-        content: ActivityModelType
-      }>,
-      required: true
-    }
-  },
-  components: {
-    EmailIcon,
-    LocationIcon,
-    LinkIcon,
-    WechatIcon,
-    AntPopover: Popover,
-    AntAvatar: Avatar
-  },
-  setup() {
-    const router = useRouter();
-    const goUserProfilePage = (id: string) => {
-      router.push({
-        path: '/profile',
-        query: {
-          id
-        }
-      })
-        .then();
-    };
-    return {
-      goUserProfilePage
-    };
+defineProps({
+  activityItem: {
+    type: Object as PropType<{
+      user: UserModelType,
+      entity?: EntityCompletelyListItemType,
+      followedUser?: UserModelType,
+      content: ActivityModelType
+    }>,
+    required: true
   }
 });
+
+const router = useRouter();
+
+function goUserProfilePage(id: string) {
+  router.push({
+    path: '/profile',
+    query: {
+      id
+    }
+  })
+    .then();
+}
 </script>
 
 <style scoped lang="scss">

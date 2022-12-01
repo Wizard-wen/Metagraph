@@ -3,10 +3,10 @@
     <div class="aside" v-if="isLogin" id="step1" data-homepage="1">
       <home-page-aside data-title="Welcome!" data-intro="Hello World! 👋"></home-page-aside>
     </div>
-    <div class="content" id="step4" data-homepage="4">
-      <home-page-main-list></home-page-main-list>
-    </div>
-    <div class="explore">
+    <div class="right-side" id="step4" data-homepage="4">
+      <div class="list-content">
+        <home-page-main-list></home-page-main-list>
+      </div>
       <home-page-hot-list></home-page-hot-list>
     </div>
   </div>
@@ -14,13 +14,11 @@
 
 <script lang="ts">
 import 'intro.js/introjs.css';
-import {
-  computed, defineComponent, onMounted, nextTick
-} from 'vue';
+import { computed, defineComponent, nextTick, onMounted } from 'vue';
 import { guide } from '@/utils/guide.util';
 import { HomePage } from '@/views/home-page/home.page';
 import { useStore } from '@/store';
-import { HomePageMainList, HomePageHotList, HomePageAside } from './home-page/index';
+import { HomePageAside, HomePageHotList, HomePageMainList } from './home-page/index';
 
 export default defineComponent({
   name: 'HomePage',
@@ -81,15 +79,14 @@ export default defineComponent({
     }
   }
 
-  .content {
+  .right-side {
     flex: 1;
-    min-width: 500px;
     height: calc(100vh - 56px);
     overflow-y: scroll;
-  }
+    display: flex;
+    .list-content {
 
-  .explore {
-    width: 300px;
+    }
   }
 }
 </style>

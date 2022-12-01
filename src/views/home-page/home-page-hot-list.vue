@@ -26,43 +26,29 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { computed, defineComponent } from 'vue';
+import { computed } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { MetagraphTag } from 'metagraph-ui';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { hotRepositoryList } from './home.page';
 
-export default defineComponent({
-  name: 'home-page-hot-list',
-  components: {
-    StarOutlined,
-    MetagraphTag
-  },
-  setup() {
-    const router = useRouter();
-    const store = useStore();
-    const userModel = computed(() => store.state.user.user);
+const router = useRouter();
+const store = useStore();
+const userModel = computed(() => store.state.user.user);
 
-    async function goRepositoryPage(item: EntityCompletelyListItemType) {
-      router.push({
-        name: 'RepositoryEditor',
-        query: {
-          repositoryEntityId: item.entity.id,
-          type: item.author.id === userModel.value?.id ? 'edit' : 'view'
-        }
-      })
-        .then();
+async function goRepositoryPage(item: EntityCompletelyListItemType) {
+  router.push({
+    name: 'RepositoryEditor',
+    query: {
+      repositoryEntityId: item.entity.id,
+      type: item.author.id === userModel.value?.id ? 'edit' : 'view'
     }
-
-    return {
-      hotRepositoryList,
-      goRepositoryPage
-    };
-  }
-});
+  })
+    .then();
+}
 </script>
 
 <style scoped lang="scss">

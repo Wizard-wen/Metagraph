@@ -24,7 +24,6 @@
         !item.content.cloneFromRepositoryEntityId"/>
         </ant-tooltip>
         <div class="repository-name">
-<!--          <span>{{ item.author.name }}</span>/-->
           <span>{{ item.content.name }}</span>
         </div>
       </div>
@@ -32,47 +31,28 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { EntityCompletelyListItemType } from 'metagraph-constant';
-import { defineComponent, PropType } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineProps, PropType } from 'vue';
 import { BookOutlined, LockOutlined } from '@ant-design/icons-vue';
-import { Tooltip } from 'ant-design-vue';
+import { Tooltip as AntTooltip } from 'ant-design-vue';
 import { CloneIcon } from '@/components/icons';
+import { RouterUtil } from '@/utils/router.util';
 
-export default defineComponent({
-  name: 'home-aside-list',
-  components: {
-    CloneIcon,
-    BookOutlined,
-    LockOutlined,
-    AntTooltip: Tooltip
-  },
-  props: {
-    filteredRepositoryList: {
-      type: Array as PropType<EntityCompletelyListItemType[]>,
-      required: true
-    }
-  },
-  setup() {
-    const router = useRouter();
-
-    async function goRepositoryEditorPage(item: EntityCompletelyListItemType) {
-      router.push({
-        path: '/repository/editor',
-        query: {
-          repositoryEntityId: item.entity.id,
-          type: 'edit'
-        }
-      })
-        .then();
-    }
-
-    return {
-      goRepositoryEditorPage
-    };
+defineProps({
+  filteredRepositoryList: {
+    type: Array as PropType<EntityCompletelyListItemType[]>,
+    required: true
   }
 });
+
+async function goRepositoryEditorPage(item: EntityCompletelyListItemType) {
+  RouterUtil.openNewPage('/repository/editor', {
+    repositoryEntityId: item.entity.id,
+    type: 'edit'
+  });
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -85,24 +65,17 @@ export default defineComponent({
   font-size: 14px;
   cursor: pointer;
   color: #24292f;
+  padding-left: 12px;
 
-  .icon {
-    margin-right: 8px;
-
-    img {
-      border-radius: 50%;
-    }
+  &:hover {
+    border-radius: 4px;
+    background: #eff0f0;
   }
 
   .repository-name {
     flex: 1;
     text-align: left;
     padding-left: 4px;
-
-    &:hover {
-      border-radius: 4px;
-      background: #eff0f0;
-    }
   }
 }
 </style>

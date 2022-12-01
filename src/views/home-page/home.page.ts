@@ -85,7 +85,7 @@ export class HomePage {
       activityList.list = result.data.list;
       activityList.total = result.data.total;
     } else {
-      message.error('获取仓库数据时失败！');
+      message.error('获取知识库数据时失败！');
     }
     activityList.isLoading = false;
   }

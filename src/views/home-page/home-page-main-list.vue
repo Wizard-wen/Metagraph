@@ -30,52 +30,33 @@
         v-model:current="activityList.current"
         :total="activityList.total"
         @change="onActivityPaginationChange"/>
-      <div style="height: 100px;line-height: 100px;">
+      <div class="icp-message" style="height: 100px;line-height: 100px;">
         <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
       </div>
-
     </div>
   </ant-spin>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {
-  computed,
-  defineComponent
+  computed
 } from 'vue';
-import { Spin, Pagination } from 'ant-design-vue';
+import { Spin as AntSpin, Pagination as AntPagination } from 'ant-design-vue';
 import { RepositoryListItem } from '@/github.style.component';
 import { useStore } from '@/store';
 import HomePageActivityListItem from '@/views/home-page/home-page-main-list/home-page-activity-list-item.vue';
 import { HomePage, repositoryList, activityList } from '@/views/home-page/home.page';
 
-export default defineComponent({
-  name: 'home-page-main-list',
-  components: {
-    RepositoryListItem,
-    HomePageActivityListItem,
-    AntSpin: Spin,
-    AntPagination: Pagination
-  },
-  setup() {
-    const store = useStore();
-    const homePage = new HomePage();
-    const isLogin = computed(() => store.state.user.isLogin);
-    const onRepositoryPaginationChange = async (page: number) => {
-      await homePage.getRepositoryList(page);
-    };
-    const onActivityPaginationChange = async (page: number) => {
-      await homePage.getActivityList(page);
-    };
-    return {
-      isLogin,
-      repositoryList,
-      activityList,
-      onRepositoryPaginationChange,
-      onActivityPaginationChange
-    };
-  }
-});
+const store = useStore();
+const homePage = new HomePage();
+const isLogin = computed(() => store.state.user.isLogin);
+const onRepositoryPaginationChange = async (page: number) => {
+  await homePage.getRepositoryList(page);
+};
+const onActivityPaginationChange = async (page: number) => {
+  await homePage.getActivityList(page);
+};
+
 </script>
 
 <style scoped lang="scss">
@@ -99,6 +80,14 @@ export default defineComponent({
 
   .pagination {
     width: 100%;
+  }
+  .icp-message {
+    height: 100px;
+    line-height: 100px;
+    a {
+      font-size: 12px;
+      color: #a9a9a9;
+    }
   }
 }
 </style>

@@ -8,15 +8,15 @@
       <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="activity-box">
         <div class="name-content">
-<!--          <ant-tooltip placement="left" title="知识点" arrow-point-at-center>-->
-<!--            <div class="name-icon">-->
-<!--              <ReadOutlined/>-->
-<!--            </div>-->
-<!--          </ant-tooltip>-->
+          <!--          <ant-tooltip placement="left" title="知识点" arrow-point-at-center>-->
+          <!--            <div class="name-icon">-->
+          <!--              <ReadOutlined/>-->
+          <!--            </div>-->
+          <!--          </ant-tooltip>-->
           <div class="name" @click="goProfilePage">
             {{ activityItem.entity.content.name }}
           </div>
-<!--          <metagraph-tag class="type-tag-gap" :title="'知识点'"></metagraph-tag>-->
+          <!--          <metagraph-tag class="type-tag-gap" :title="'知识点'"></metagraph-tag>-->
         </div>
         <div class="description-content">
           <tiptap-editor-readonly
@@ -50,7 +50,7 @@
           v-if="isLogin"
           @click="addStar($event, activityItem.entity.hasStared)"
           :title="'点赞'"
-          :isLoading="isStarButtonDisabled">
+          :is-loading="isStarButtonDisabled">
           <template #icon>
             <star-filled v-if="activityItem.entity.hasStared"/>
             <star-outlined v-else/>
@@ -61,7 +61,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import AddToPlanButton from '@/business/add-to-plan-button/add-to-plan-button.vue';
 import type {
   ActivityModelType,
@@ -69,17 +69,10 @@ import type {
   StarResponseType,
   UserModelType
 } from 'metagraph-constant';
-import {
-  computed, defineComponent, PropType, ref, toRef
-} from 'vue';
-import { useRouter } from 'vue-router';
-import {
-  Avatar, message, Tooltip
-} from 'ant-design-vue';
+import { computed, defineProps, PropType, ref, toRef } from 'vue';
+import { Avatar as AntAvatar, message } from 'ant-design-vue';
 import { MetagraphButton, MetagraphTag } from 'metagraph-ui';
-import {
-  CommentOutlined, ReadOutlined, StarFilled, StarOutlined
-} from '@ant-design/icons-vue';
+import { CommentOutlined, StarFilled, StarOutlined } from '@ant-design/icons-vue';
 import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
@@ -88,101 +81,65 @@ import { PublicApiResponseType } from '@/utils';
 import TiptapEditorReadonly from '@/components/tiptap-text-editor/tiptap-editor-readonly.vue';
 import { RouterUtil } from '@/utils/router.util';
 
-export default defineComponent({
-  name: 'activity-knowledge-item',
-  components: {
-    MetagraphTag,
-    AddToPlanButton,
-    ActivityItemTitle,
-    TiptapEditorReadonly,
-    StarOutlined,
-    StarFilled,
-    CommentOutlined,
-    AntAvatar: Avatar,
-    MetagraphButton,
-    ReadOutlined,
-    AntTooltip: Tooltip
-  },
-  props: {
-    activityItem: {
-      type: Object as PropType<{
-        user: UserModelType,
-        entity: EntityCompletelyListItemType,
-        followedUser?: UserModelType,
-        content: ActivityModelType
-      }>,
-      required: true
-    }
-  },
-  setup(props) {
-    const store = useStore();
-    const router = useRouter();
-    const activityItem = toRef(props, 'activityItem');
-    const isLogin = computed(() => store.state.user.isLogin);
-    const date = computed(() => CommonUtil.formatDate(
-      new Date(activityItem.value.entity.content.updatedAt),
-      'yyyy-MM-dd hh:mm:ss'
-    ));
-    const isStarButtonDisabled = ref(false);
-    const userModel = computed(() => store.state.user.user);
-    const goRepositoryPage = () => {
-      router.push({
-        name: 'RepositoryEditor',
-        query: {
-          repositoryEntityId: activityItem.value.entity.entity.id,
-          type: activityItem.value.entity.author.id === userModel.value?.id ? 'edit' : 'view'
-        }
-      });
-    };
-
-    function goProfilePage() {
-      RouterUtil.openNewPage('/knowledge/preview', {
-        publishedKnowledgeEntityId: activityItem.value.entity.entity.id
-      });
-    }
-
-    async function addStar(event: MouseEvent, status: boolean) {
-      event.stopPropagation();
-      isStarButtonDisabled.value = true;
-      let result: PublicApiResponseType<void | StarResponseType>;
-      if (status) {
-        result = await StarApiService.cancel({
-          entityId: activityItem.value.entity.entity.id,
-          entityType: 'Knowledge'
-        });
-      } else {
-        result = await StarApiService.create({
-          entityId: activityItem.value.entity.entity.id,
-          entityType: 'Knowledge'
-        });
-      }
-      if (result.code === 0) {
-        if (status) {
-          activityItem.value.entity.hasStared = false;
-          if (activityItem.value.entity.star > 0) {
-            activityItem.value.entity.star -= 1;
-          } else {
-            activityItem.value.entity.star = 0;
-          }
-        } else {
-          activityItem.value.entity.hasStared = true;
-          activityItem.value.entity.star += 1;
-        }
-      } else {
-        message.error(status ? '取消点赞失败' : '点赞失败');
-      }
-      isStarButtonDisabled.value = false;
-    };
-    return {
-      goRepositoryPage,
-      addStar,
-      goProfilePage,
-      isLogin,
-      date,
-      isStarButtonDisabled
-    };
+const props = defineProps({
+  activityItem: {
+    type: Object as PropType<{
+      user: UserModelType,
+      entity: EntityCompletelyListItemType,
+      followedUser?: UserModelType,
+      content: ActivityModelType
+    }>,
+    required: true
   }
 });
+const store = useStore();
+const activityItem = toRef(props, 'activityItem');
+const isLogin = computed(() => store.state.user.isLogin);
+const date = computed(() => CommonUtil.formatDate(
+  new Date(activityItem.value.entity.content.updatedAt),
+  'yyyy-MM-dd hh:mm:ss'
+));
+const isStarButtonDisabled = ref(false);
+
+function goProfilePage() {
+  RouterUtil.openNewPage('/knowledge/preview', {
+    publishedKnowledgeEntityId: activityItem.value.entity.entity.id
+  });
+}
+
+async function addStar(event: MouseEvent, status: boolean) {
+  event.stopPropagation();
+  isStarButtonDisabled.value = true;
+  let result: PublicApiResponseType<void | StarResponseType>;
+  if (status) {
+    result = await StarApiService.cancel({
+      entityId: activityItem.value.entity.entity.id,
+      entityType: 'Knowledge'
+    });
+  } else {
+    result = await StarApiService.create({
+      entityId: activityItem.value.entity.entity.id,
+      entityType: 'Knowledge'
+    });
+  }
+  if (result.code === 0) {
+    if (status) {
+      activityItem.value.entity.hasStared = false;
+      if (activityItem.value.entity.star > 0) {
+        activityItem.value.entity.star -= 1;
+      } else {
+        activityItem.value.entity.star = 0;
+      }
+    } else {
+      activityItem.value.entity.hasStared = true;
+      activityItem.value.entity.star += 1;
+    }
+  } else {
+    message.error(status ? '取消点赞失败' : '点赞失败');
+  }
+  isStarButtonDisabled.value = false;
+}
+
 </script>
 
 <style scoped lang="scss">

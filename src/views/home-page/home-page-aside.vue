@@ -21,7 +21,11 @@
             v-model:value="searchText"
             type="text"
             placeholder="查找您的知识库..."
-            class="search-input"></ant-input>
+            class="search-input">
+            <template #prefix>
+              <search-outlined />
+            </template>
+          </ant-input>
         </div>
         <home-aside-list
           :filtered-repository-list="filteredRepositoryList"></home-aside-list>
@@ -30,56 +34,34 @@
   </ant-spin>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import HomeAsideList from '@/views/home-page/home-page-aside/home-aside-list.vue';
 import { RepositoryModelType } from 'metagraph-constant';
 import { MetagraphButton } from 'metagraph-ui';
 import {
-  computed,
-  defineComponent, ref
+  computed, ref
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { PlusOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import {
-  Spin, Input, Button, Avatar
+  Spin as AntSpin, Input as AntInput, Avatar as AntAvatar
 } from 'ant-design-vue';
 import { useStore } from '@/store';
 import { ownRepositoryList } from './home.page';
 
-export default defineComponent({
-  name: 'home-page-aside',
-  components: {
-    HomeAsideList,
-    PlusOutlined,
-    AntSpin: Spin,
-    AntInput: Input,
-    AntAvatar: Avatar,
-    AntButton: Button,
-    MetagraphButton
-  },
-  setup() {
-    const router = useRouter();
-    const store = useStore();
-    const userModel = computed(() => store.state.user.user);
-    const searchText = ref<string>('');
-    const filteredRepositoryList = computed(() => ownRepositoryList.list?.filter(
-      (item) => (item.content as RepositoryModelType).name.includes(searchText.value)
-    ) || []);
+const router = useRouter();
+const store = useStore();
+const userModel = computed(() => store.state.user.user);
+const searchText = ref<string>('');
+const filteredRepositoryList = computed(() => ownRepositoryList.list?.filter(
+  (item) => (item.content as RepositoryModelType).name.includes(searchText.value)
+) || []);
 
-    async function goCreateRepositoryPage() {
-      router.push('/repository/edit')
-        .then();
-    }
+async function goCreateRepositoryPage() {
+  router.push('/repository/edit')
+    .then();
+}
 
-    return {
-      goCreateRepositoryPage,
-      ownRepositoryList,
-      filteredRepositoryList,
-      userModel,
-      searchText
-    };
-  }
-});
 </script>
 
 <style scoped lang="scss">
@@ -145,15 +127,13 @@ export default defineComponent({
       margin-top: 8px;
 
       .search-input {
-        margin-bottom: 16px;
-        display: block;
+        margin-bottom: 8px;
         width: 100%;
         background: #fff;
         padding: 5px 12px;
         font-size: 14px;
         line-height: 20px;
         color: $fontColor;
-        vertical-align: middle;
         border: 1px solid #e1e4e8;
         border-radius: 6px;
         outline: none;
