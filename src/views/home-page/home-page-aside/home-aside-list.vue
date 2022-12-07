@@ -2,26 +2,22 @@
   <div class="repository-list-container">
     <template
       :key="index"
-      v-for="(item, index) in filteredRepositoryList">
+      v-for="(item, index) in asideList">
       <div class="repo-item" @click="goRepositoryEditorPage(item)">
         <ant-tooltip placement="topLeft" title="克隆知识库" arrow-point-at-center>
           <clone-icon
-            style="margin-right: 4px;"
-            v-if="item.content.cloneFromRepositoryEntityId"></clone-icon>
+            class="icon-style"
+            v-if="item.type === 'clone'"></clone-icon>
         </ant-tooltip>
         <ant-tooltip placement="topLeft" title="私有知识库" arrow-point-at-center>
           <LockOutlined
-            v-if="
-        item.content.type === 'private' &&
-        !item.content.cloneFromRepositoryEntityId"
-            style="margin-right: 4px;"/>
+            class="icon-style"
+            v-if="item.type === 'private'"/>
         </ant-tooltip>
         <ant-tooltip placement="topLeft" title="公有知识库" arrow-point-at-center>
           <BookOutlined
-            style="margin-right: 4px;"
-            v-if="
-        item.content.type === 'public' &&
-        !item.content.cloneFromRepositoryEntityId"/>
+            class="icon-style"
+            v-if="item.type === 'public'"/>
         </ant-tooltip>
         <div class="repository-name">
           <span>{{ item.content.name }}</span>
@@ -32,19 +28,40 @@
 </template>
 
 <script lang="ts" setup>
-import { EntityCompletelyListItemType } from 'metagraph-constant';
-import { defineProps, PropType } from 'vue';
+import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
+import { computed, defineProps, PropType } from 'vue';
 import { BookOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { Tooltip as AntTooltip } from 'ant-design-vue';
 import { CloneIcon } from '@/components/icons';
 import { RouterUtil } from '@/utils/router.util';
 
-defineProps({
+const props = defineProps({
   filteredRepositoryList: {
     type: Array as PropType<EntityCompletelyListItemType[]>,
     required: true
   }
 });
+
+const asideList = computed<(EntityCompletelyListItemType & {
+    type: 'private' | 'clone' | 'public'
+  })[]>(() => props.filteredRepositoryList.map((item) => {
+    const content = item.content as RepositoryModelType;
+    let type: 'private' | 'clone' | 'public' = 'private';
+    if (content.cloneFromRepositoryEntityId) {
+      type = 'clone';
+    }
+
+    if (content.type === 'private' && !content.cloneFromRepositoryEntityId) {
+      type = 'private';
+    }
+    if (content.type === 'public' && !content.cloneFromRepositoryEntityId) {
+      type = 'public';
+    }
+    return {
+      ...item,
+      type
+    };
+  }));
 
 async function goRepositoryEditorPage(item: EntityCompletelyListItemType) {
   RouterUtil.openNewPage('/repository/editor', {
@@ -70,6 +87,10 @@ async function goRepositoryEditorPage(item: EntityCompletelyListItemType) {
   &:hover {
     border-radius: 4px;
     background: #eff0f0;
+  }
+
+  .icon-style {
+    margin-right: 4px;
   }
 
   .repository-name {

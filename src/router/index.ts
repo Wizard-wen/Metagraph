@@ -10,6 +10,11 @@ import Settings from '../views/settings.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
+    path: '/first',
+    name: 'FirstPage',
+    component: () => import('@/views/first-page.vue'),
+  },
+  {
     path: '/',
     redirect: '/',
     name: 'Main',

@@ -1,13 +1,13 @@
 <template>
   <div class="home-page">
     <div class="aside" v-if="isLogin" id="step1" data-homepage="1">
-      <home-page-aside data-title="Welcome!" data-intro="Hello World! 👋"></home-page-aside>
+      <home-page-aside  data-title="Welcome!" data-intro="Hello World! 👋"></home-page-aside>
     </div>
     <div class="right-side" id="step4" data-homepage="4">
       <div class="list-content">
-        <home-page-main-list></home-page-main-list>
+        <home-page-main-list class="test-1"></home-page-main-list>
+        <home-page-hot-list></home-page-hot-list>
       </div>
-      <home-page-hot-list></home-page-hot-list>
     </div>
   </div>
 </template>
@@ -83,9 +83,10 @@ export default defineComponent({
     flex: 1;
     height: calc(100vh - 56px);
     overflow-y: scroll;
-    display: flex;
-    .list-content {
 
+    .list-content {
+      width: 100%;
+      display: flex;
     }
   }
 }

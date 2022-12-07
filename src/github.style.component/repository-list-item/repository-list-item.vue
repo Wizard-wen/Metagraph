@@ -91,6 +91,7 @@ export default defineComponent({
 <style scoped lang="scss">
 .repository-list-item {
   width: 100%;
+  max-width: 1000px ;
   padding: 24px 0;
   display: flex;
   border-bottom: 1px solid #d8dee4;

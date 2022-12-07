@@ -9,9 +9,9 @@ import type { InjectionKey } from 'vue';
 import createPersistedState from 'vuex-persistedstate';
 import {
   globalModule,
-  repositoryEditorModule,
+  // repositoryEditorModule,
   userModule,
-  repositoryListModule
+  // repositoryListModule
 } from '@/store/modules';
 import { RootStateType } from '@/store/type';
 
@@ -27,8 +27,8 @@ const dataState = createPersistedState({
 
 export const store = createStore({
   modules: {
-    repositoryEditor: repositoryEditorModule,
-    repositoryList: repositoryListModule,
+    // repositoryEditor: repositoryEditorModule,
+    // repositoryList: repositoryListModule,
     user: userModule,
     global: globalModule
   },

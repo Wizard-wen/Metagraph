@@ -1,51 +1,48 @@
 <template>
-  <ant-spin :spinning="repositoryList.isLoading">
-    <div class="home-main">
-      <div class="content">
-        <template v-if="isLogin">
-          <div class="activity-title">全部动态</div>
-          <home-page-activity-list-item
-            :key="index"
-            :activity-item="item"
-            v-for="(item, index) in activityList.list"></home-page-activity-list-item>
-        </template>
-        <template v-else>
-          <repository-list-item
-            :key="index"
-            :repository="item"
-            v-for="(item, index) in repositoryList.list"></repository-list-item>
-        </template>
-      </div>
-      <ant-pagination
-        v-if="!isLogin"
-        class="pagination"
-        :pageSize="10"
-        v-model:current="repositoryList.current"
-        :total="repositoryList.total"
-        @change="onRepositoryPaginationChange"/>
-      <ant-pagination
-        v-if="isLogin"
-        class="pagination"
-        :pageSize="10"
-        v-model:current="activityList.current"
-        :total="activityList.total"
-        @change="onActivityPaginationChange"/>
-      <div class="icp-message" style="height: 100px;line-height: 100px;">
-        <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
-      </div>
+  <div class="home-main">
+    <div class="content">
+      <template v-if="isLogin">
+        <div class="activity-title">全部动态</div>
+        <home-page-activity-list-item
+          :key="index"
+          :activity-item="item"
+          v-for="(item, index) in activityList.list"></home-page-activity-list-item>
+        <ant-pagination
+          v-if="isLogin"
+          class="pagination"
+          :pageSize="10"
+          v-model:current="activityList.current"
+          :total="activityList.total"
+          @change="onActivityPaginationChange"/>
+      </template>
+      <template v-else>
+        <repository-list-item
+          :key="index"
+          :repository="item"
+          v-for="(item, index) in repositoryList.list"></repository-list-item>
+        <ant-pagination
+          v-if="!isLogin"
+          class="pagination"
+          :pageSize="10"
+          v-model:current="repositoryList.current"
+          :total="repositoryList.total"
+          @change="onRepositoryPaginationChange"/>
+      </template>
     </div>
-  </ant-spin>
+    <div class="icp-message" style="height: 100px;line-height: 100px;">
+      <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import {
-  computed
-} from 'vue';
-import { Spin as AntSpin, Pagination as AntPagination } from 'ant-design-vue';
+import { computed } from 'vue';
+import { Pagination as AntPagination } from 'ant-design-vue';
 import { RepositoryListItem } from '@/github.style.component';
 import { useStore } from '@/store';
-import HomePageActivityListItem from '@/views/home-page/home-page-main-list/home-page-activity-list-item.vue';
-import { HomePage, repositoryList, activityList } from '@/views/home-page/home.page';
+import HomePageActivityListItem
+  from '@/views/home-page/home-page-main-list/home-page-activity-list-item.vue';
+import { activityList, HomePage, repositoryList } from '@/views/home-page/home.page';
 
 const store = useStore();
 const homePage = new HomePage();
@@ -68,7 +65,8 @@ const onActivityPaginationChange = async (page: number) => {
   .content {
     width: 100%;
     max-width: 1400px;
-    margin: 16px auto 50px;
+    margin: 16px auto 0;
+
     .activity-title {
       text-align: left;
       height: 30px;
@@ -79,11 +77,14 @@ const onActivityPaginationChange = async (page: number) => {
   }
 
   .pagination {
+    margin-top: 50px;
     width: 100%;
   }
+
   .icp-message {
     height: 100px;
     line-height: 100px;
+
     a {
       font-size: 12px;
       color: #a9a9a9;
