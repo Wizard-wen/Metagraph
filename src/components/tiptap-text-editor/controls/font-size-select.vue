@@ -1,9 +1,9 @@
 <template>
   <a-dropdown :trigger="['click']">
-    <a-tooltip :title="'调整字号'" :getPopupContainer="getPopupContainer" :overlayClassName="'custom-tool-tip'">
+    <a-tooltip :title="'调整字号'" :getPopupContainer="getPopupContainer" placement="bottom" :overlayClassName="'custom-tool-tip'">
       <div class="selector-box">
         {{ currentSize }}
-        <CaretDownOutlined/>
+        <CaretDownOutlined style="font-size: 12px"/>
       </div>
     </a-tooltip>
     <template #overlay>
@@ -113,6 +113,7 @@ function getPopupContainer(triggerNode: any) {
   padding: 4px 6px;
   gap: 10px;
   cursor: pointer;
+  border-radius: 4px;
 
   &:hover {
     background: $hoverBackColor;

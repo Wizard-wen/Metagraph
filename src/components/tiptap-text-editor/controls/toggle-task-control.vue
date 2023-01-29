@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { Editor } from '@tiptap/vue-3';
-import { defineEmits, defineProps, PropType } from 'vue';
+import { defineProps, PropType } from 'vue';
 import { ScheduleOutlined } from '@ant-design/icons-vue';
 
 const props = defineProps({
