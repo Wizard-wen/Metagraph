@@ -12,6 +12,7 @@ import { Node as ProsemirrorNode } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
+import TextStyle from '@tiptap/extension-text-style';
 import Placeholder from '@tiptap/extension-placeholder';
 import StarterKit from '@tiptap/starter-kit';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
@@ -29,6 +30,7 @@ import MentionList from './components/mention-list.vue';
 import { CustomMention } from './components/tiptap.custom.mention';
 import CodeBlockContainer from './components/code-block-container.vue';
 import TableOfContent from './components/table.of.content';
+import { FontSize } from '@/components/tiptap-text-editor/controls/font.size.extension';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -197,6 +199,7 @@ export abstract class AbstractTiptapTextEditor {
       },
       extensions: [
         StarterKit,
+        TextStyle,
         Image,
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
@@ -210,6 +213,7 @@ export abstract class AbstractTiptapTextEditor {
           nested: true,
         }),
         TableOfContent,
+        FontSize,
         CodeBlockLowlight
           .extend({
             addNodeView() {

@@ -24,15 +24,12 @@
       </div>
     </div>
     <div class="page-1">
-      <div class="desc-content">
-
-      </div>
       <Transition name="page1">
         <div v-if="isPage1Show" class="image-content">
           <img width="500" :src="FirstImage" alt="">
         </div>
       </Transition>
-
+      <div class="desc-content"></div>
     </div>
     <div ref="sticky" class="sticky">
       <div class="box-content">
@@ -232,7 +229,7 @@ $text-primary: #262626;
 }
 
 .page1-enter-from {
-  transform: translateX(116px);
+  transform: translateX(-116px);
 }
 
 .page1-leave-to {

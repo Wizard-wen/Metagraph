@@ -1,7 +1,8 @@
 <template>
-  <a-dropdown :trigger="['click']">
-    <a-tooltip :title="'调整字号'" :getPopupContainer="getPopupContainer" :overlayClassName="'custom-tool-tip'">
-      <div class="selector-box">
+  <a-dropdown :trigger="['click']" v-model:visible="visible" :disabled="!isParagraph">
+    <a-tooltip :trigger="['click']" :title="'调整字号'" :getPopupContainer="getPopupContainer"
+               :overlayClassName="'custom-tool-tip'" placement="bottom">
+      <div class="selector-box" :class="{'disabled-style': !isParagraph}" @click="editor.chain().focus()">
         {{ currentSize }}
         <CaretDownOutlined/>
       </div>
@@ -24,10 +25,26 @@
 <script lang="ts" setup>
 import { Dropdown as ADropdown, Tooltip as ATooltip } from 'ant-design-vue';
 import { CaretDownOutlined, CheckOutlined } from '@ant-design/icons-vue';
-import { computed, defineEmits, reactive, ref } from 'vue';
+import { computed, defineEmits, defineProps, PropType, reactive, ref, VNodeChild } from 'vue';
+import { Editor } from '@tiptap/vue-3';
 
+const visible = ref(false);
 const emit = defineEmits(['fontSizeChange']);
 const articleFontSize = ref('14');
+
+interface MenuInfo {
+  key: string;
+  keyPath: string[];
+  item: VNodeChild;
+  domEvent: MouseEvent;
+}
+
+const props = defineProps({
+  editor: {
+    type: Object as PropType<Editor>,
+    required: true
+  }
+});
 
 const fontSizeList = reactive([
   {
@@ -50,8 +67,15 @@ const fontSizeList = reactive([
 const currentSize = computed(
   () => fontSizeList.find((item) => item.value === articleFontSize.value)?.label
 );
+
+const isParagraph = computed(() => props.editor.isActive('paragraph'));
+
 const handleFontSizeChange = (value: string) => {
   articleFontSize.value = value;
+
+  props.editor.chain().focus().setMark('textStyle', { fontSize: '20px' }).run();
+  console.log('value', value)
+  visible.value = false;
   emit('fontSizeChange', { value });
 };
 
@@ -63,22 +87,41 @@ function getPopupContainer(triggerNode: any) {
 
 <style lang="scss">
 @import "../../../style/common.scss";
+
+.disabled-style {
+  opacity: .2;
+  cursor: not-allowed!important;
+}
 .custom-tool-tip {
+  border-radius: 6px;
+
   .ant-tooltip-arrow {
-    display: none!important;
+    display: none !important;
   }
+
+  .ant-tooltip-inner {
+    border-radius: 6px !important;
+  }
+
   &::v-deep(.ant-tooltip-arrow) {
-    display: none!important;
+    display: none !important;
+  }
+
+  &::v-deep(.ant-tooltip-inner) {
+    border-radius: 6px !important;
   }
 }
+
 /* 提示框 */
 .ant-tooltip-inner {
-  background-color:red;
+  background-color: red;
 }
+
 /* 小箭头 */
- .ant-tooltip-arrow::before {
+.ant-tooltip-arrow::before {
 
 }
+
 .list {
   padding: 10px 0;
   width: 100px;

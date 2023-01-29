@@ -18,8 +18,10 @@
       <parse-text-control></parse-text-control>
       <upload-image-control :editor="editor"></upload-image-control>
       <toggle-task-control :editor="editor"></toggle-task-control>
+      <button @click="setParaFontSize">加粗</button>
       <font-size-control @fontSizeChange="handleFontSizeChange($event)"></font-size-control>
-      <font-size-select></font-size-select>
+      <font-size-select :editor="editor"></font-size-select>
+      <text-level-select :editor="editor"></text-level-select>
     </div>
   </div>
   <upload-and-parse-text-modal
@@ -55,6 +57,7 @@ import UploadAndParseTextModal from './upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
 import { UploadAndParseTextService } from '../model/upload.and.parse.text.service';
 import FontSizeSelect from '@/components/tiptap-text-editor/controls/font-size-select.vue';
+import TextLevelSelect from '@/components/tiptap-text-editor/controls/text-level-select.vue';
 
 export default defineComponent({
   name: 'section-article-control',
@@ -65,6 +68,7 @@ export default defineComponent({
     }
   },
   components: {
+    TextLevelSelect,
     FontSizeSelect,
     ToggleTaskControl,
     SaveControl,
@@ -99,6 +103,11 @@ export default defineComponent({
       emit('fontSizeChange', params);
     }
 
+    function setParaFontSize() {
+      // props.editor.chain().focus().setMark('textStyle', { fontSize: '20px' }).run();
+      (props.editor.commands as any).setFontSize('22');
+    }
+
     async function handleCloseParseWordModal(params: {
       type: 'Section' | 'void' | 'Alternative'
       sectionModel?: SectionModelType
@@ -116,7 +125,8 @@ export default defineComponent({
       saveSectionArticle,
       handleFontSizeChange,
       handleCloseParseWordModal,
-      isParseWordModalShow
+      isParseWordModalShow,
+      setParaFontSize
     };
   }
 });

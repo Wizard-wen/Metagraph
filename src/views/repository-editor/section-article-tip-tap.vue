@@ -31,9 +31,12 @@
               right: (816 - paddingValue[1] + 'px')
             }"
              v-if="editable">
+<!--          <editor-content-->
+<!--            v-if="editable && editor"-->
+<!--            :style="{fontSize: articleFontSize + 'px'}"-->
+<!--            class="tip-tap-editor" :editor="editor"/>-->
           <editor-content
             v-if="editable && editor"
-            :style="{fontSize: articleFontSize + 'px'}"
             class="tip-tap-editor" :editor="editor"/>
         </div>
       </div>
@@ -55,8 +58,8 @@
         <empty-view v-else></empty-view>
       </div>
     </div>
-    <section-article-bubble-menu
-      v-if="editor" :editor="editor"></section-article-bubble-menu>
+<!--    <section-article-bubble-menu-->
+<!--      v-if="editor" :editor="editor"></section-article-bubble-menu>-->
   </div>
 </template>
 
