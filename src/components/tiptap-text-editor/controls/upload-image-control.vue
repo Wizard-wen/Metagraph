@@ -1,11 +1,10 @@
 <template>
   <div class="operation-icon" @click="handleUploadImage">
-    <div class="icon">
-      <ImageIcon class="icon-svg"/>
-    </div>
-    <div class="name">
-      图片
-    </div>
+    <operation-tooltip :desc="'上传图片'">
+      <div class="icon">
+        <ImageIcon class="icon-svg"/>
+      </div>
+    </operation-tooltip>
   </div>
   <upload-cropper-modal
     v-if="isUploadImageModalShow"
@@ -15,48 +14,34 @@
     @close="handleUploadImageModalClose($event)"></upload-cropper-modal>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { Editor } from '@tiptap/vue-3';
-import {
-  PropType, ref, defineComponent, toRef
-} from 'vue';
+import { defineProps, PropType, ref } from 'vue';
 import { ImageIcon } from '@/components/icons';
 import UploadCropperModal from '@/components/upload/upload-cropper-modal.vue';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
-export default defineComponent({
-  props: {
-    editor: {
-      type: Object as PropType<Editor>,
-      required: true
-    }
-  },
-  components: {
-    UploadCropperModal,
-    ImageIcon
-  },
-  setup(props) {
-    const editor = toRef(props, 'editor');
-    const isUploadImageModalShow = ref(false);
-    const handleUploadImage = async () => {
-      isUploadImageModalShow.value = true;
-    };
-    const handleUploadImageModalClose = (event?: { url: string }) => {
-      isUploadImageModalShow.value = false;
-      if (event) {
-        editor.value?.chain()
-          .focus()
-          .setImage({ src: event.url })
-          .run();
-      }
-    };
 
-    return {
-      isUploadImageModalShow,
-      handleUploadImage,
-      handleUploadImageModalClose
-    };
+const props = defineProps({
+  editor: {
+    type: Object as PropType<Editor>,
+    required: true
   }
 });
+const isUploadImageModalShow = ref(false);
+const handleUploadImage = async () => {
+  isUploadImageModalShow.value = true;
+};
+const handleUploadImageModalClose = (event?: { url: string }) => {
+  isUploadImageModalShow.value = false;
+  if (event) {
+    props.editor.chain()
+      .focus()
+      .setImage({ src: event.url })
+      .run();
+  }
+};
+
 
 </script>
 <style scoped lang="scss">

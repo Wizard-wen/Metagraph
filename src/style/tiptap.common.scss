@@ -248,30 +248,45 @@
 
 // tiptap operation
 .operation-icon {
-  padding: 0 5px;
-  height: 42px;
+  margin-left: 8px;
   cursor: pointer;
-
   .icon {
-    width: 20px;
-    height: 20px;
-    margin: 4px auto 0;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 4px;
     text-align: center;
+    &:hover {
+      background: #e7e9e8;
+    }
 
     .is-active {
-      color: #000;
+      background: #000;
     }
 
     .icon-svg {
-      font-size: 18px;
+      font-size: 16px;
     }
+    color: #000;
+  }
+}
 
-    color: #b5b5bb;
+.custom-tool-tip {
+  border-radius: 6px;
+
+  .ant-tooltip-arrow {
+    display: none !important;
   }
 
-  .name {
-    font-size: 12px;
-    margin-top: 1px;
-    line-height: 16px;
+  .ant-tooltip-inner {
+    border-radius: 6px !important;
+  }
+
+  &::v-deep(.ant-tooltip-arrow) {
+    display: none !important;
+  }
+
+  &::v-deep(.ant-tooltip-inner) {
+    border-radius: 6px !important;
   }
 }

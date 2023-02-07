@@ -1,11 +1,10 @@
 <template>
   <div class="operation-icon" @click="undo">
+    <operation-tooltip :desc="'撤销'">
     <div class="icon">
       <UndoOutlined viewBox="0 0 1024 1024" class="icon-svg"/>
     </div>
-    <div class="name">
-      撤销
-    </div>
+    </operation-tooltip>
   </div>
 </template>
 
@@ -13,6 +12,7 @@
 import { Editor } from '@tiptap/vue-3';
 import { defineEmits, defineProps, PropType } from 'vue';
 import { UndoOutlined } from '@ant-design/icons-vue';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
 const props = defineProps({
   editor: {

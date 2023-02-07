@@ -2,35 +2,40 @@
   <a-dropdown
     :trigger="['click']"
     :overlayClassName="'dropdown-overlay'"
-    v-model:visible="visible"
-    :disabled="!isParagraph">
-    <a-tooltip
-      v-if="isParagraph"
-      :trigger="['hover']"
-      :title="'调整字号'"
-      :getPopupContainer="getPopupContainer"
-      :overlayClassName="'custom-tool-tip'"
-      placement="bottom">
-      <div class="selector-box" :class="{'disabled-style': !isParagraph}"
-           @click="editor.chain().focus()">
-        {{ currentSize }}
-        <CaretDownOutlined/>
-      </div>
-    </a-tooltip>
-    <div v-else class="selector-box" :class="{'disabled-style': !isParagraph}"
-         @click="editor.chain().focus()">
-      {{ currentSize }}
-      <CaretDownOutlined/>
+    v-model:visible="visible">
+<!--    <a-tooltip-->
+<!--      :trigger="['hover']"-->
+<!--      :title="'对齐方式'"-->
+<!--      :getPopupContainer="getPopupContainer"-->
+<!--      :overlayClassName="'custom-tool-tip'"-->
+<!--      placement="bottom">-->
+<!--      <div class="selector-box"-->
+<!--           @click="editor.chain().focus()">-->
+<!--&lt;!&ndash;        {{ currentSize }}&ndash;&gt;-->
+<!--        <component :is="currentSize"></component>-->
+<!--      </div>-->
+<!--    </a-tooltip>-->
+    <div class="operation-icon" @click="editor.chain().focus()">
+      <operation-tooltip :desc="'加粗'">
+        <div class="icon">
+<!--          <BoldOutlined-->
+<!--            class="icon-svg"-->
+<!--            :class="{ 'is-active': editor.isActive('bold') }"/>-->
+          <component
+            :is="currentSize"
+            class="icon-svg"
+            :class="{ 'is-active': editor.isActive('bold') }"></component>
+        </div>
+      </operation-tooltip>
     </div>
     <template #overlay>
       <div class="list">
         <div
-          @click="handleFontSizeChange(item.value)"
+          @click="handleAlignWayChange(item.value)"
           class="list-item"
           :key="index"
-          v-for="(item, index) in fontSizeList">
-          <CheckOutlined class="check-icon" v-if="articleFontSize === item.value"/>
-          {{ item.label }}
+          v-for="(item, index) in alignWayList">
+          <component :is="item.component"></component>
         </div>
       </div>
     </template>
@@ -42,10 +47,12 @@ import { Dropdown as ADropdown, Tooltip as ATooltip } from 'ant-design-vue';
 import { CaretDownOutlined, CheckOutlined } from '@ant-design/icons-vue';
 import { computed, defineEmits, defineProps, PropType, reactive, ref, VNodeChild } from 'vue';
 import { Editor } from '@tiptap/vue-3';
+import { AlignLeftIcon, AlignRightIcon, AlignCenterIcon } from '@/components/icons';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
 const visible = ref(false);
 const emit = defineEmits(['fontSizeChange']);
-const articleFontSize = ref('14');
+const alignWay = ref('left');
 
 interface MenuInfo {
   key: string;
@@ -61,32 +68,36 @@ const props = defineProps({
   }
 });
 
-const fontSizeList = reactive([
+const alignWayList = reactive([
   {
-    label: '12px',
-    value: '12'
+    label: '左对齐',
+    value: 'left',
+    component: 'AlignLeftIcon'
   },
   {
-    label: '14px',
-    value: '14'
+    label: '中间对齐',
+    value: 'center',
+    component: 'AlignCenterIcon'
   },
   {
-    label: '16px',
-    value: '16'
+    label: '右对齐',
+    value: 'right',
+    component: 'AlignRightIcon'
   },
   {
-    label: '18px',
-    value: '18'
+    label: '两端对齐',
+    value: 'justify',
+    component: 'AlignLeftIcon'
   }
 ]);
 const currentSize = computed(
-  () => fontSizeList.find((item) => item.value === articleFontSize.value)?.label
+  () => alignWayList.find((item) => item.value === alignWay.value)?.component
 );
 
 const isParagraph = computed(() => props.editor.isActive('paragraph'));
 
-const handleFontSizeChange = (value: string) => {
-  articleFontSize.value = value;
+const handleAlignWayChange = (value: string) => {
+  alignWay.value = value;
 
   props.editor.chain().focus().setMark('textStyle', { fontSize: '20px' }).run();
   console.log('value', value);

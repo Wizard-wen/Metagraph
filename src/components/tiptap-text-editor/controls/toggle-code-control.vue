@@ -1,45 +1,34 @@
 <template>
   <div class="operation-icon" @click="toggleCode">
-    <div class="icon">
-      <code-icon
-        class="icon-svg"
-        :class="{ 'is-active': editor.isActive('codeBlock') }"/>
-    </div>
-    <div class="name">
-      代码段
-    </div>
+    <operation-tooltip :desc="'代码段'">
+      <div class="icon">
+        <code-icon
+          class="icon-svg"
+          :class="{ 'is-active': editor.isActive('codeBlock') }"/>
+      </div>
+    </operation-tooltip>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { Editor } from '@tiptap/vue-3';
-import {
-  PropType, defineComponent, toRef
-} from 'vue';
+import { defineProps, PropType } from 'vue';
 import { CodeIcon } from '@/components/icons';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
-export default defineComponent({
-  props: {
-    editor: {
-      type: Object as PropType<Editor>,
-      required: true
-    }
-  },
-  components: { CodeIcon },
-  setup(props) {
-    const editor = toRef(props, 'editor');
-    function toggleCode() {
-      editor.value?.chain()
-        .focus()
-        .toggleCodeBlock()
-        .run();
-    }
-
-    return {
-      toggleCode
-    };
+const props = defineProps({
+  editor: {
+    type: Object as PropType<Editor>,
+    required: true
   }
 });
+
+function toggleCode() {
+  props.editor.chain()
+    .focus()
+    .toggleCodeBlock()
+    .run();
+}
 
 </script>
 <style scoped lang="scss">

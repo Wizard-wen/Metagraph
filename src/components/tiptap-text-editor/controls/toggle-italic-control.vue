@@ -1,13 +1,12 @@
 <template>
   <div class="operation-icon" @click="toggleItalic">
+    <operation-tooltip :desc="'倾斜'">
     <div class="icon">
       <ItalicOutlined
         class="icon-svg"
         :class="{ 'is-active': editor.isActive('italic') }"/>
     </div>
-    <div class="name">
-      倾斜
-    </div>
+    </operation-tooltip>
   </div>
 </template>
 
@@ -15,6 +14,8 @@
 import { Editor } from '@tiptap/vue-3';
 import { defineEmits, defineProps, PropType } from 'vue';
 import { ItalicOutlined } from '@ant-design/icons-vue';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
+
 
 const props = defineProps({
   editor: {

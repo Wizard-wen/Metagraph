@@ -1,13 +1,12 @@
 <template>
   <div class="operation-icon" @click="toggleBold">
-    <div class="icon">
-      <BoldOutlined
-        class="icon-svg"
-        :class="{ 'is-active': editor.isActive('bold') }"/>
-    </div>
-    <div class="name">
-      加粗
-    </div>
+    <operation-tooltip :desc="'加粗'">
+      <div class="icon">
+        <BoldOutlined
+          class="icon-svg"
+          :class="{ 'is-active': editor.isActive('bold') }"/>
+      </div>
+    </operation-tooltip>
   </div>
 </template>
 
@@ -15,6 +14,7 @@
 import { Editor } from '@tiptap/vue-3';
 import { defineEmits, defineProps, PropType } from 'vue';
 import { BoldOutlined } from '@ant-design/icons-vue';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
 const props = defineProps({
   editor: {

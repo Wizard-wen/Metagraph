@@ -1,13 +1,12 @@
 <template>
   <div class="operation-icon" @click="toggleBlockquote">
+    <operation-tooltip :desc="'引用'">
     <div class="icon">
       <quote
         class="icon-svg"
         :class="{ 'is-active': editor.isActive('blockquote') }"/>
     </div>
-    <div class="name">
-      引用
-    </div>
+    </operation-tooltip>
   </div>
 </template>
 
@@ -15,6 +14,7 @@
 import { Editor } from '@tiptap/vue-3';
 import { defineEmits, defineProps, PropType } from 'vue';
 import { Quote } from '@/components/icons';
+import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
 const props = defineProps({
   editor: {

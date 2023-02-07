@@ -1,5 +1,5 @@
 <template>
-  <a-dropdown :trigger="['click']" v-model:visible="visible">
+  <a-dropdown :trigger="['click']" :overlayClassName="'dropdown-overlay'" v-model:visible="visible">
     <a-tooltip :title="'正文与标题'" :getPopupContainer="getPopupContainer"
                :overlayClassName="'custom-tool-tip'" placement="bottom">
       <div class="selector-box">
@@ -11,11 +11,14 @@
       <div class="list">
         <div
           @click="handleFontSizeChange(item.value)"
-          class="list-item"
+          :class="['list-item', 'list-item-' + index]"
           :key="index"
           v-for="(item, index) in textLevelList">
           <CheckOutlined class="check-icon" v-if="currentTextLevel === item.value"/>
-          {{ item.label }}
+          <div class="check-box" v-else></div>
+          <div class="content">
+            {{ item.label }}
+          </div>
         </div>
       </div>
     </template>
@@ -44,15 +47,15 @@ const textLevelList = reactive([
     value: '0'
   },
   {
-    label: '标题一',
+    label: '标题1',
     value: '1'
   },
   {
-    label: '标题二',
+    label: '标题2',
     value: '2'
   },
   {
-    label: '标题三',
+    label: '标题3',
     value: '3'
   }
 ]);
@@ -100,5 +103,80 @@ function toggleHeading(level: 1 | 2 | 3) {
 </script>
 
 <style scoped lang="scss">
+@import "../../../style/common.scss";
 
+.selector-box {
+  min-width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 6px;
+  gap: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-left: 8px;
+
+  &:hover {
+    background: $hoverBackColor;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+}
+
+.list {
+  padding: 10px 0;
+  min-width: 100px;
+  width: max-content;
+  border: 1px solid $borderColor;
+  border-radius: $borderRadius;
+  background: #fff;
+  cursor: pointer;
+}
+
+.list-item {
+  padding-left: 10px;
+  padding-right: 25px;
+  min-height: 30px;
+  height: max-content;
+  line-height: 1.5;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  .check-box {
+    min-width: 24px;
+    height: max-content;
+  }
+  .check-icon {
+    font-size: 14px;
+    margin-right: 10px;
+  }
+  .content {
+    text-align: left;
+  }
+
+  &:hover {
+    background: $hoverBackColor;
+  }
+}
+
+.list-item-1 {
+  font-size: 24px;
+  line-height: 48px;
+  font-weight: bold;
+}
+
+.list-item-2 {
+  font-size: 18px;
+  line-height: 36px;
+  font-weight: bold;
+}
+
+.list-item-3 {
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: bold;
+}
 </style>

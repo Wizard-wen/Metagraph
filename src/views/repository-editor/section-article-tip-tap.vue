@@ -31,13 +31,13 @@
               right: (816 - paddingValue[1] + 'px')
             }"
              v-if="editable">
-<!--          <editor-content-->
-<!--            v-if="editable && editor"-->
-<!--            :style="{fontSize: articleFontSize + 'px'}"-->
-<!--            class="tip-tap-editor" :editor="editor"/>-->
           <editor-content
             v-if="editable && editor"
+            :style="{fontSize: articleFontSize + 'px'}"
             class="tip-tap-editor" :editor="editor"/>
+<!--          <editor-content-->
+<!--            v-if="editable && editor"-->
+<!--            class="tip-tap-editor" :editor="editor"/>-->
         </div>
       </div>
       <empty-view v-if="editable && !sectionTree.selectedTreeNodes.length">

@@ -36,6 +36,9 @@ import WechatIcon from './wechat-icon.vue';
 import OverviewIcon from './overview-icon.vue';
 import KnowledgeIcon from './knowledge-icon.vue';
 import CloneIcon from './clone-icon.vue';
+import AlignLeftIcon from './align-left-icon.vue';
+import AlignRightIcon from './align-center-icon.vue';
+import AlignCenterIcon from './align-right-icon.vue';
 
 export {
   ArrowDownIcon,
@@ -70,5 +73,8 @@ export {
   WechatIcon,
   OverviewIcon,
   KnowledgeIcon,
-  CloneIcon
+  CloneIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+  AlignCenterIcon
 };
