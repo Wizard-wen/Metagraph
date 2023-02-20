@@ -4,30 +4,21 @@
     :overlayClassName="'dropdown-overlay'"
     v-model:visible="visible">
     <div class="operation-icon" @click="editor.chain().focus()">
-      <operation-tooltip :desc="currentSize.label">
+      <operation-tooltip :desc="''">
         <div class="selector-box">
           <div class="icon">
-            <component
-              :is="currentSize.component"
+            <BgColorIcon
               class="icon-svg"
-              :class="{ 'is-active': editor.isActive('bold') }"></component>
+              :class="{ 'is-active': editor.isActive('bold') }"/>
           </div>
           <CaretDownOutlined class="down-arrow-style"/>
         </div>
       </operation-tooltip>
     </div>
     <template #overlay>
+      <color-picker v-model="currentColor"></color-picker>
       <div class="list">
-        <operation-tooltip
-          :key="index"
-          v-for="(item, index) in alignWayList"
-          :desc="item.label">
-          <div
-            @click="handleAlignWayChange(item.value)"
-            class="list-item">
-            <component :is="item.component"></component>
-          </div>
-        </operation-tooltip>
+
       </div>
     </template>
   </a-dropdown>
@@ -36,15 +27,12 @@
 <script lang="ts" setup>
 import { Dropdown as ADropdown } from 'ant-design-vue';
 import { CaretDownOutlined } from '@ant-design/icons-vue';
-import { computed, defineProps, markRaw, PropType, reactive, ref, watch } from 'vue';
+import { defineProps, PropType, ref, watch } from 'vue';
 import { Editor } from '@tiptap/vue-3';
-import {
-  AlignCenterIcon,
-  AlignJustifyIcon,
-  AlignLeftIcon,
-  AlignRightIcon
-} from '@/components/icons';
+import { BgColorIcon } from '@/components/icons';
 import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
+
+import ColorPicker from '@/components/color-picker/index.vue';
 
 const visible = ref(false);
 const alignWay = ref('left');
@@ -56,56 +44,23 @@ const props = defineProps({
   }
 });
 
-const currentAlignLevel = computed(() => {
-  if (props.editor.isActive({ textAlign: 'left' })) {
-    return 'left';
+// rgb转hex色码
+function hex(data: string | number) {
+  const rgbtransfer16 = Number(data).toString(16).toUpperCase();
+  if (rgbtransfer16.length < 2) {
+    return `0${rgbtransfer16}`;
   }
-  if (props.editor.isActive({ textAlign: 'center' })) {
-    return 'center';
-  }
-  if (props.editor.isActive({ textAlign: 'right' })) {
-    return 'right';
-  }
-  if (props.editor.isActive({ textAlign: 'justify' })) {
-    return 'justify';
-  }
-  return 'left';
+  return rgbtransfer16;
+}
+
+const currentSize = ref();
+const currentColor = ref();
+
+watch(currentColor, (value) => {
+  console.log(value);
 });
-
-const alignWayList = reactive([
-  {
-    label: '左对齐',
-    value: 'left',
-    component: markRaw(AlignLeftIcon)
-  },
-  {
-    label: '中间对齐',
-    value: 'center',
-    component: markRaw(AlignCenterIcon)
-  },
-  {
-    label: '右对齐',
-    value: 'right',
-    component: markRaw(AlignRightIcon)
-  },
-  {
-    label: '两端对齐',
-    value: 'justify',
-    component: markRaw(AlignJustifyIcon)
-  }
-]);
-const currentSize = computed(
-  () => alignWayList.find((item) => item.value === alignWay.value)
-);
-
-watch(currentAlignLevel, (value) => {
-  alignWay.value = value;
-});
-
 const handleAlignWayChange = (value: string) => {
   alignWay.value = value;
-  props.editor.chain().focus().setTextAlign(value).run();
-  console.log('value', value);
   visible.value = false;
 };
 

@@ -278,7 +278,7 @@ export default defineComponent({
     clear: both; /* 清除左右浮动 */
     height: max-content;
     padding: 0;
-    //width: 195px; /* 必须定义宽度 */
+    width: 195px; /* 必须定义宽度 */
     word-break: break-word; /* 文本行的任意字内断开 */
     word-wrap: break-word; /* IE */
     white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */

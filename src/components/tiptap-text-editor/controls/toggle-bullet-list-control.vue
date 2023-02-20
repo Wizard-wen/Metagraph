@@ -1,10 +1,10 @@
 <template>
   <div class="operation-icon" @click="toggleBulletList">
     <operation-tooltip :desc="'无序列表'">
-      <div class="icon">
+      <div class="icon" :class="{ 'is-active': editor.isActive('bulletList') }">
         <UnorderedListOutlined
           class="icon-svg"
-          :class="{ 'is-active': editor.isActive('bulletList') }"/>
+          />
       </div>
     </operation-tooltip>
   </div>

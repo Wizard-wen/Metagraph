@@ -213,6 +213,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "./color-picker.scss";
 .color-picker {
   position: relative;
   width: 240px;

@@ -1,3 +1,4 @@
+@import "./common.scss";
 // tiptap style
 @mixin tiptap-bubble-menu-style {
   .bubble-menu {
@@ -261,13 +262,16 @@
     }
 
     .is-active {
-      background: #000;
+      background: $hoverBackColor;
     }
 
     .icon-svg {
       font-size: 16px;
     }
     color: #000;
+  }
+  .is-active {
+    background: $hoverBackColor;
   }
 }
 
@@ -289,4 +293,10 @@
   &::v-deep(.ant-tooltip-inner) {
     border-radius: 6px !important;
   }
+}
+
+
+.down-arrow-style {
+  font-size: 12px;
+  color: #8c8c8c;
 }

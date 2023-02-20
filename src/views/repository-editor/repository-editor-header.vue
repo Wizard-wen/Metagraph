@@ -5,8 +5,8 @@
         <img src="/hogwarts-logo.webp" height="32" width="32" alt="">
       </div>
       <div class="title">
-        <div class="name">{{ repositoryModel.target.author.name }}</div>
-        &nbsp;/&nbsp;
+<!--        <div class="name">{{ repositoryModel.target.author.name }}</div>-->
+        &nbsp;
         <div class="name">{{ repositoryModel.target.content.name }}</div>
         <edit-icon
           v-if="repositoryModel.target.author.id === currentUserModel?.id"
@@ -223,7 +223,7 @@ export default defineComponent({
 
   .left {
     display: flex;
-    gap: 15px;
+    gap: 10px;
 
     .logo {
       cursor: pointer;
@@ -254,7 +254,7 @@ export default defineComponent({
       .repository-type-tag {
         height: 24px;
         border-radius: 4px;
-        margin-left: 10px;
+        margin-left: 6px;
       }
 
       .saving-status {

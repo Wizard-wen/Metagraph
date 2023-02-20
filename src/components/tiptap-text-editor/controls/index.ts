@@ -23,6 +23,10 @@ import ToggleStrikeControl
 import UndoControl from '@/components/tiptap-text-editor/controls/undo-control.vue';
 import UploadImageControl from '@/components/tiptap-text-editor/controls/upload-image-control.vue';
 import ToggleTaskControl from '@/components/tiptap-text-editor/controls/toggle-task-control.vue';
+import FontSizeSelect from '@/components/tiptap-text-editor/controls/font-size-select.vue';
+import TextLevelSelect from '@/components/tiptap-text-editor/controls/text-level-select.vue';
+import AlignControl from '@/components/tiptap-text-editor/controls/align-control.vue';
+import BackColorControl from '@/components/tiptap-text-editor/controls/back-color-control.vue';
 
 export {
   FindControl,
@@ -39,5 +43,9 @@ export {
   ToggleCodeControl,
   UploadImageControl,
   ToggleStrikeControl,
-  ToggleTaskControl
+  ToggleTaskControl,
+  FontSizeSelect,
+  TextLevelSelect,
+  AlignControl,
+  BackColorControl
 };

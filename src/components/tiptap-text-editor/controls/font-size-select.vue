@@ -14,13 +14,13 @@
       <div class="selector-box" :class="{'disabled-style': !isParagraph}"
            @click="editor.chain().focus()">
         {{ currentSize }}
-        <CaretDownOutlined/>
+        <CaretDownOutlined class="down-arrow-style"/>
       </div>
     </a-tooltip>
     <div v-else class="selector-box" :class="{'disabled-style': !isParagraph}"
          @click="editor.chain().focus()">
       {{ currentSize }}
-      <CaretDownOutlined/>
+      <CaretDownOutlined class="down-arrow-style"/>
     </div>
     <template #overlay>
       <div class="list">
@@ -102,7 +102,7 @@ function getPopupContainer(triggerNode: any) {
 
 <style lang="scss" scoped>
 @import "../../../style/common.scss";
-
+@import "../../../style/tiptap.common.scss";
 .disabled-style {
   opacity: .2;
   cursor: not-allowed !important;

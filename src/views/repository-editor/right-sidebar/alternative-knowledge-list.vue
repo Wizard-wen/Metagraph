@@ -45,22 +45,18 @@
 
 <script lang="ts">
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import {
-  defineComponent, inject, ref, createVNode
-} from 'vue';
-import {
-  Modal, message, Collapse, Tag, Button
-} from 'ant-design-vue';
+import { createVNode, defineComponent, inject, ref } from 'vue';
+import { Button, Collapse, message, Modal, Tag } from 'ant-design-vue';
 import {
   CaretRightOutlined,
-  ExclamationCircleOutlined,
   DeleteOutlined,
+  ExclamationCircleOutlined,
   PlusCircleOutlined,
   UploadOutlined
 } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { RepositoryEditor, alternative } from '../model/repository.editor';
+import { alternative, RepositoryEditor } from '../model/repository.editor';
 
 export default defineComponent({
   name: 'alternative-knowledge-list',
@@ -126,7 +122,8 @@ export default defineComponent({
 @import "right-sidebar.scss";
 
 .custom-collapse {
-  border: none;
+  border-radius: 6px;
+  border-left: none;
 
   &::v-deep(.ant-collapse-header) {
     text-align: left;

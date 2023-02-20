@@ -4,7 +4,7 @@
                :overlayClassName="'custom-tool-tip'" placement="bottom">
       <div class="selector-box">
         {{ currentTextLevelLabel }}
-        <CaretDownOutlined/>
+        <CaretDownOutlined class="down-arrow-style"/>
       </div>
     </a-tooltip>
     <template #overlay>
@@ -104,13 +104,13 @@ function toggleHeading(level: 1 | 2 | 3) {
 
 <style scoped lang="scss">
 @import "../../../style/common.scss";
-
+@import "../../../style/tiptap.common.scss";
 .selector-box {
-  min-width: 80px;
+  min-width: 72px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: 4px 6px;
+  padding: 4px 4px 4px 8px;
   gap: 10px;
   cursor: pointer;
   border-radius: 6px;

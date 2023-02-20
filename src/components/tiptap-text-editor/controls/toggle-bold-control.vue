@@ -1,10 +1,10 @@
 <template>
   <div class="operation-icon" @click="toggleBold">
     <operation-tooltip :desc="'加粗'">
-      <div class="icon">
+      <div class="icon" :class="{ 'is-active': editor.isActive('bold') }">
         <BoldOutlined
           class="icon-svg"
-          :class="{ 'is-active': editor.isActive('bold') }"/>
+          />
       </div>
     </operation-tooltip>
   </div>

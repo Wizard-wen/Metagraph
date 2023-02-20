@@ -15,6 +15,7 @@ import Image from '@tiptap/extension-image';
 import TextStyle from '@tiptap/extension-text-style';
 import Placeholder from '@tiptap/extension-placeholder';
 import StarterKit from '@tiptap/starter-kit';
+import TextAlign from '@tiptap/extension-text-align';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import {
   Editor, JSONContent, useEditor, VueNodeViewRenderer, VueRenderer,
@@ -199,6 +200,9 @@ export abstract class AbstractTiptapTextEditor {
       },
       extensions: [
         StarterKit,
+        TextAlign.configure({
+          types: ['heading', 'paragraph'],
+        }),
         TextStyle,
         Image,
         CharacterCount.configure({

@@ -1,10 +1,10 @@
 <template>
   <div class="operation-icon" @click="toggleCode">
     <operation-tooltip :desc="'代码段'">
-      <div class="icon">
+      <div class="icon" :class="{ 'is-active': editor.isActive('codeBlock') }">
         <code-icon
           class="icon-svg"
-          :class="{ 'is-active': editor.isActive('codeBlock') }"/>
+          />
       </div>
     </operation-tooltip>
   </div>

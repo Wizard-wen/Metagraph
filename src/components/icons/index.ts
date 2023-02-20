@@ -37,8 +37,10 @@ import OverviewIcon from './overview-icon.vue';
 import KnowledgeIcon from './knowledge-icon.vue';
 import CloneIcon from './clone-icon.vue';
 import AlignLeftIcon from './align-left-icon.vue';
-import AlignRightIcon from './align-center-icon.vue';
-import AlignCenterIcon from './align-right-icon.vue';
+import AlignRightIcon from './align-right-icon.vue';
+import AlignCenterIcon from './align-center-icon.vue';
+import AlignJustifyIcon from './align-justify-icon.vue';
+import BgColorIcon from './bg-color-icon.vue';
 
 export {
   ArrowDownIcon,
@@ -76,5 +78,7 @@ export {
   CloneIcon,
   AlignLeftIcon,
   AlignRightIcon,
-  AlignCenterIcon
+  AlignCenterIcon,
+  AlignJustifyIcon,
+  BgColorIcon
 };

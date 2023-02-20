@@ -8,7 +8,6 @@
       <text-level-select :editor="editor"></text-level-select>
       <font-size-select @fontSizeChange="handleFontSizeChange($event)"
                         :editor="editor"></font-size-select>
-
       <toggle-bold-control :editor="editor"></toggle-bold-control>
       <toggle-italic-control :editor="editor"></toggle-italic-control>
       <toggle-strike-control :editor="editor"></toggle-strike-control>
@@ -17,6 +16,7 @@
       <toggle-bullet-list-control :editor="editor"></toggle-bullet-list-control>
       <toggle-ordered-list-control :editor="editor"></toggle-ordered-list-control>
       <div class="line"></div>
+      <back-color-control :editor="editor"></back-color-control>
       <toggle-blockquote-control :editor="editor"></toggle-blockquote-control>
       <toggle-code-control :editor="editor"></toggle-code-control>
       <find-control :editor="editor"></find-control>
@@ -34,30 +34,30 @@
 <script setup lang="ts">
 import { Editor } from '@tiptap/vue-3';
 import { SectionModelType } from 'metagraph-constant';
-import { defineComponent, PropType, ref } from 'vue';
+import { PropType, ref } from 'vue';
 import {
+  AlignControl,
   FindControl,
-  FontSizeControl,
+  FontSizeSelect,
   RedoControl,
   SaveControl,
+  TextLevelSelect,
   ToggleBlockquoteControl,
   ToggleBoldControl,
   ToggleBulletListControl,
   ToggleCodeControl,
-  ToggleHeadingControl,
   ToggleItalicControl,
   ToggleOrderedListControl,
   ToggleStrikeControl,
   ToggleTaskControl,
   UndoControl,
-  UploadImageControl
+  UploadImageControl,
+  BackColorControl
 } from '@/components/tiptap-text-editor/controls';
 import UploadAndParseTextModal from './upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
 import { UploadAndParseTextService } from '../model/upload.and.parse.text.service';
-import FontSizeSelect from '@/components/tiptap-text-editor/controls/font-size-select.vue';
-import TextLevelSelect from '@/components/tiptap-text-editor/controls/text-level-select.vue';
-import AlignControl from '@/components/tiptap-text-editor/controls/align-control.vue';
+
 const isParseWordModalShow = ref(false);
 const uploadAndParseTextService = new UploadAndParseTextService();
 const props = defineProps({
@@ -66,7 +66,8 @@ const props = defineProps({
     required: true
   }
 });
-const emit = defineEmits(['save', 'fontSizeChange', 'refreshSection'])
+const emit = defineEmits(['save', 'fontSizeChange', 'refreshSection']);
+
 // 保存文章
 function saveSectionArticle() {
   emit('save');
@@ -161,14 +162,16 @@ async function handleCloseParseWordModal(params: {
 
 <style scoped lang="scss">
 @import "../../../style/common.scss";
+
 .operator {
   padding: 2px 0;
-  height: 46px;
+  height: 50px;
   width: 100%;
 
   .operator-container {
     display: flex;
     max-width: 840px;
+    border-bottom: 1px solid $hoverBackColor;
     height: 100%;
     align-items: center;
     //justify-content: space-between;

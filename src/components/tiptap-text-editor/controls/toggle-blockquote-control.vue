@@ -1,10 +1,10 @@
 <template>
   <div class="operation-icon" @click="toggleBlockquote">
     <operation-tooltip :desc="'引用'">
-    <div class="icon">
+    <div class="icon" :class="{ 'is-active': editor.isActive('blockquote') }">
       <quote
         class="icon-svg"
-        :class="{ 'is-active': editor.isActive('blockquote') }"/>
+        />
     </div>
     </operation-tooltip>
   </div>
