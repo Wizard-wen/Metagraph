@@ -27,9 +27,9 @@ import { computed, nextTick, onMounted } from 'vue';
 import { guide } from '@/utils/guide.util';
 import { HomePage } from '@/views/home-page/home.page';
 import { useStore } from '@/store';
-import { HomePageAside, HomePageHotList } from './home-page/index';
 import NoAuthMainList from '@/views/home-page/no-auth-main-list.vue';
 import AuthedMainList from '@/views/home-page/authed-main-list.vue';
+import { HomePageAside, HomePageHotList } from './home-page/index';
 
 const store = useStore();
 const homePage = new HomePage();
