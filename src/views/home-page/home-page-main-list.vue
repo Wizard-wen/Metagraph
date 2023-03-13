@@ -2,31 +2,10 @@
   <div class="home-main">
     <div class="content">
       <template v-if="isLogin">
-        <div class="activity-title">全部动态</div>
-        <home-page-activity-list-item
-          :key="index"
-          :activity-item="item"
-          v-for="(item, index) in activityList.list"></home-page-activity-list-item>
-        <ant-pagination
-          v-if="isLogin"
-          class="pagination"
-          :pageSize="10"
-          v-model:current="activityList.current"
-          :total="activityList.total"
-          @change="onActivityPaginationChange"/>
+        <authed-main-list></authed-main-list>
       </template>
       <template v-else>
-        <repository-list-item
-          :key="index"
-          :repository="item"
-          v-for="(item, index) in repositoryList.list"></repository-list-item>
-        <ant-pagination
-          v-if="!isLogin"
-          class="pagination"
-          :pageSize="10"
-          v-model:current="repositoryList.current"
-          :total="repositoryList.total"
-          @change="onRepositoryPaginationChange"/>
+        <no-auth-main-list></no-auth-main-list>
       </template>
     </div>
     <div class="icp-message" style="height: 100px;line-height: 100px;">
@@ -37,23 +16,12 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { Pagination as AntPagination } from 'ant-design-vue';
-import { RepositoryListItem } from '@/github.style.component';
 import { useStore } from '@/store';
-import HomePageActivityListItem
-  from '@/views/home-page/home-page-main-list/home-page-activity-list-item.vue';
-import { activityList, HomePage, repositoryList } from '@/views/home-page/home.page';
+import NoAuthMainList from '@/views/home-page/no-auth-main-list.vue';
+import AuthedMainList from '@/views/home-page/authed-main-list.vue';
 
 const store = useStore();
-const homePage = new HomePage();
 const isLogin = computed(() => store.state.user.isLogin);
-const onRepositoryPaginationChange = async (page: number) => {
-  await homePage.getRepositoryList(page);
-};
-const onActivityPaginationChange = async (page: number) => {
-  await homePage.getActivityList(page);
-};
-
 </script>
 
 <style scoped lang="scss">
