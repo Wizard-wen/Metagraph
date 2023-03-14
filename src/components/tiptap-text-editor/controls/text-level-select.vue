@@ -82,10 +82,15 @@ const currentTextLevel = computed(() => {
   }
   return '0';
 });
-const currentTextLevelLabel = computed(() => textLevelList.find(item => item.value === currentTextLevel.value)?.label);
+const currentTextLevelLabel = computed(
+  () => textLevelList.find((item: {
+    label: string;
+    value: string;
+  }) => item.value === currentTextLevel.value)?.label
+);
 type LevelType = 1 | 2 | 3 | 4 | 5 | 6;
 const handleFontSizeChange = (value: string) => {
-  if(value === '1') return;
+  if (value === '1') return;
   visible.value = false;
   if (value !== '0') {
     props.editor.chain()
