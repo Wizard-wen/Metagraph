@@ -102,7 +102,7 @@ const date = computed(() => CommonUtil.formatDate(
 const isStarButtonDisabled = ref(false);
 
 function goProfilePage() {
-  RouterUtil.openNewPage('/knowledge/preview', {
+  RouterUtil.jumpToBlankPage('/knowledge/preview', {
     publishedKnowledgeEntityId: activityItem.value.entity.entity.id
   });
 }

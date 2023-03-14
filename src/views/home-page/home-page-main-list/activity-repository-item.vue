@@ -9,25 +9,13 @@
       <activity-item-title :activity-item="activityItem"></activity-item-title>
       <div class="activity-box">
         <div class="name-content">
-          <!--          <ant-tooltip placement="left" title="知识库" arrow-point-at-center>-->
-          <!--            <div class="name-icon">-->
-          <!--              <BookOutlined/>-->
-          <!--            </div>-->
-          <!--          </ant-tooltip>-->
           <div class="name" @click="goRepositoryPage">
             {{ activityItem.entity.content.name }}
           </div>
-          <!--          <metagraph-tag class="type-tag-gap" :title="'知识库'"></metagraph-tag>-->
         </div>
         <div class="description-text">
           {{ activityItem.entity.content.description }}
         </div>
-        <!--        <div class="tag-content" v-if="activityItem.entity.content.domain.length">-->
-        <!--          <metagraph-tag-->
-        <!--            :key="index"-->
-        <!--            v-for="(item, index) in activityItem.entity.content.domain"-->
-        <!--            :title="item.domainName"></metagraph-tag>-->
-        <!--        </div>-->
         <div class="others">
           <div class="star">
             <StarOutlined class="star-icon"/>
@@ -37,7 +25,7 @@
             <CommentOutlined class="star-icon"/>
             {{ activityItem.entity.comment }}
           </div>
-          <div class="updatedAt">更新于 {{ date }}</div>
+          <div class="updatedAt">{{ date }}</div>
         </div>
         <metagraph-button
           v-if="isLogin"
@@ -64,7 +52,6 @@ import type {
 } from 'metagraph-constant';
 import { MetagraphButton } from 'metagraph-ui';
 import { computed, defineProps, PropType, ref, toRef } from 'vue';
-import { useRouter } from 'vue-router';
 import { Avatar as AntAvatar, message } from 'ant-design-vue';
 import { CommentOutlined, StarFilled, StarOutlined } from '@ant-design/icons-vue';
 import ActivityItemTitle from '@/views/home-page/home-page-main-list/activity-item-title.vue';
@@ -87,17 +74,15 @@ const props = defineProps({
 });
 
 const store = useStore();
-const router = useRouter();
 const activityItem = toRef(props, 'activityItem');
 const isLogin = computed(() => store.state.user.isLogin);
-const date = computed(() => CommonUtil.formatDate(
-  new Date(activityItem.value.entity.content.updatedAt),
-  'yyyy-MM-dd hh:mm:ss'
+const date = computed(() => CommonUtil.timeAgo(
+  new Date(activityItem.value.entity.content.updatedAt).getTime()
 ));
 const isStarButtonDisabled = ref(false);
 const userModel = computed(() => store.state.user.user);
 const goRepositoryPage = () => {
-  RouterUtil.openNewPage('/repository/editor', {
+  RouterUtil.jumpToBlankPage('/repository/editor', {
     repositoryEntityId: activityItem.value.entity.entity.id,
     type: activityItem.value.entity.author.id === userModel.value?.id ? 'edit' : 'view'
   });

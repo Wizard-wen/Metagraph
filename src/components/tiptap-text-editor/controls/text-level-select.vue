@@ -2,7 +2,7 @@
   <a-dropdown :trigger="['click']" :overlayClassName="'dropdown-overlay'" v-model:visible="visible">
     <a-tooltip :title="'正文与标题'" :getPopupContainer="getPopupContainer"
                :overlayClassName="'custom-tool-tip'" placement="bottom">
-      <div class="selector-box">
+      <div class="selector-box" :class="{'disabled-style': currentTextLevel === '1'}">
         {{ currentTextLevelLabel }}
         <CaretDownOutlined class="down-arrow-style"/>
       </div>
@@ -11,7 +11,7 @@
       <div class="list">
         <div
           @click="handleFontSizeChange(item.value)"
-          :class="['list-item', 'list-item-' + index]"
+          :class="['list-item', 'list-item-' + index, {'disabled-style': index === 1}]"
           :key="index"
           v-for="(item, index) in textLevelList">
           <CheckOutlined class="check-icon" v-if="currentTextLevel === item.value"/>
@@ -47,16 +47,20 @@ const textLevelList = reactive([
     value: '0'
   },
   {
-    label: '标题1',
+    label: '正文标题',
     value: '1'
   },
   {
-    label: '标题2',
+    label: '标题1',
     value: '2'
   },
   {
-    label: '标题3',
+    label: '标题2',
     value: '3'
+  },
+  {
+    label: '标题3',
+    value: '4'
   }
 ]);
 
@@ -73,11 +77,15 @@ const currentTextLevel = computed(() => {
   if (props.editor.isActive('heading', { level: 3 })) {
     return '3';
   }
+  if (props.editor.isActive('heading', { level: 4 })) {
+    return '4';
+  }
   return '0';
 });
 const currentTextLevelLabel = computed(() => textLevelList.find(item => item.value === currentTextLevel.value)?.label);
 type LevelType = 1 | 2 | 3 | 4 | 5 | 6;
 const handleFontSizeChange = (value: string) => {
+  if(value === '1') return;
   visible.value = false;
   if (value !== '0') {
     props.editor.chain()
@@ -94,7 +102,7 @@ function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
 }
 
-function toggleHeading(level: 1 | 2 | 3) {
+function toggleHeading(level: 2 | 3 | 4) {
   props.editor.chain()
     .focus()
     .toggleHeading({ level })
@@ -105,8 +113,14 @@ function toggleHeading(level: 1 | 2 | 3) {
 <style scoped lang="scss">
 @import "../../../style/common.scss";
 @import "../../../style/tiptap.common.scss";
+
+.disabled-style {
+  opacity: .2;
+  cursor: not-allowed !important;
+}
+
 .selector-box {
-  min-width: 72px;
+  min-width: 96px;
   display: flex;
   justify-content: space-between;
   align-items: center;

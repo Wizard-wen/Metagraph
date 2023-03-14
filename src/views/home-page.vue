@@ -1,20 +1,19 @@
 <template>
   <div class="home-page">
     <div class="aside" v-if="isLogin" id="step1" data-homepage="1">
-      <home-page-aside data-title="Welcome!" data-intro="Hello World! 👋"></home-page-aside>
+      <left-aside-list data-title="Welcome!" data-intro="Hello World! 👋"></left-aside-list>
     </div>
     <div class="right-side" id="step4" data-homepage="4">
-      <div class="list-container">
-        <div class="list-content authed-list-content" v-if="isLogin">
-          <authed-main-list></authed-main-list>
-          <home-page-hot-list></home-page-hot-list>
-        </div>
-        <div class="list-content no-auth-list-content" v-else>
-          <no-auth-main-list></no-auth-main-list>
-          <home-page-hot-list></home-page-hot-list>
-        </div>
-        <div class="icp-message" style="height: 100px;line-height: 100px;">
-          <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
+      <div class="container">
+        <div class="content authed-list-content">
+          <div class="list-content">
+            <authed-main-list  v-if="isLogin"></authed-main-list>
+            <no-auth-main-list v-else></no-auth-main-list>
+            <div class="icp-message">
+              <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
+            </div>
+          </div>
+          <hot-list></hot-list>
         </div>
       </div>
     </div>
@@ -25,21 +24,25 @@
 import 'intro.js/introjs.css';
 import { computed, nextTick, onMounted } from 'vue';
 import { guide } from '@/utils/guide.util';
-import { HomePage } from '@/views/home-page/home.page';
+import {
+  getActivityList,
+  getHotList,
+  getOwnRepositoryList,
+  getRepositoryList
+} from '@/views/home-page/home.page';
 import { useStore } from '@/store';
 import NoAuthMainList from '@/views/home-page/no-auth-main-list.vue';
 import AuthedMainList from '@/views/home-page/authed-main-list.vue';
-import { HomePageAside, HomePageHotList } from './home-page/index';
+import { LeftAsideList, HotList } from './home-page/index';
 
 const store = useStore();
-const homePage = new HomePage();
 const isLogin = computed(() => store.state.user.isLogin);
 onMounted(async () => {
   if (isLogin.value) {
     await Promise.all([
-      homePage.getHotList(),
-      homePage.getOwnRepositoryList(),
-      homePage.getActivityList()
+      getHotList(),
+      getOwnRepositoryList(),
+      getActivityList()
     ]);
     await nextTick(() => {
       guide({
@@ -48,8 +51,8 @@ onMounted(async () => {
     });
   } else {
     await Promise.all([
-      homePage.getHotList(),
-      homePage.getRepositoryList()
+      getHotList(),
+      getRepositoryList()
     ]);
   }
 });
@@ -82,11 +85,17 @@ onMounted(async () => {
     height: calc(100vh - 56px);
     overflow-y: scroll;
 
-    .list-container {
+    .container {
       width: 100%;
 
-      .list-content {
+      .content {
+        margin: 0 auto;
+        width: max-content;
         display: flex;
+        padding-top: 30px;
+        .list-content {
+
+        }
       }
 
       .authed-list-content {

@@ -216,7 +216,15 @@
   & ::v-deep(.ProseMirror) {
     text-align: left;
     outline: none;
-    padding: 20px;
+    //padding: 20px;
+
+    .is-empty::before {
+      content: attr(data-placeholder);
+      float: left;
+      color: #ced4da;
+      pointer-events: none;
+      height: 0;
+    }
 
     p {
       margin-bottom: 0.5em;

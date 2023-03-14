@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { Editor } from '@tiptap/vue-3';
 import { SectionModelType } from 'metagraph-constant';
-import { PropType, ref } from 'vue';
+import { PropType, ref, defineProps, defineEmits } from 'vue';
 import {
   AlignControl,
   FindControl,
@@ -60,7 +60,7 @@ import { UploadAndParseTextService } from '../model/upload.and.parse.text.servic
 
 const isParseWordModalShow = ref(false);
 const uploadAndParseTextService = new UploadAndParseTextService();
-const props = defineProps({
+defineProps({
   editor: {
     type: Object as PropType<Editor>,
     required: true
@@ -167,6 +167,7 @@ async function handleCloseParseWordModal(params: {
   padding: 2px 0;
   height: 50px;
   width: 100%;
+  background: #FFF;
 
   .operator-container {
     display: flex;

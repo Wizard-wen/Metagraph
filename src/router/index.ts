@@ -89,16 +89,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/repository/editor',
     name: 'RepositoryEditor',
     component: () => import('@/views/repository-editor.vue'),
-    beforeEnter: (to, from) => {
-      // 解密路由参数
-      const { iv, key } = CryptoUtil.generateAesKeys('123', '456');
-      const result = CryptoUtil.decrypt(<string>to.query?.t ?? '', { iv, key });
-      to.query = {
-        ...to.query,
-        ...JSON.parse(result)
-      };
-      return true;
-    }
   },
   {
     path: '/knowledge/map',
@@ -115,17 +105,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/knowledge/preview',
     name: 'KnowledgePreview',
     component: () => import('@/views/knowledge-preview.page.vue'),
-    beforeEnter: (to, from) => {
-      // 解密路由参数
-      const { iv, key } = CryptoUtil.generateAesKeys('123', '456');
-      const result = CryptoUtil.decrypt(<string>to.query?.t ?? '', { iv, key });
-      to.query = {
-        ...to.query,
-        ...JSON.parse(result)
-      };
-      return true;
-    }
-    ,
   },
   {
     path: '/login',

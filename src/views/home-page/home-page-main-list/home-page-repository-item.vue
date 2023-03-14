@@ -80,7 +80,7 @@ const isStarButtonDisabled = ref(false);
 const userModel = computed(() => store.state.user.user);
 
 const goRepositoryPage = () => {
-  RouterUtil.openNewPage('/repository/editor', {
+  RouterUtil.jumpToBlankPage('/repository/editor', {
     repositoryEntityId: repository.value.entity.id,
     type: repository.value.author.id === userModel.value?.id ? 'edit' : 'view'
   });

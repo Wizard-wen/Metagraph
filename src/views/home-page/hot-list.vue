@@ -23,11 +23,16 @@
         </div>
       </div>
     </div>
+
+    <div v-if="!hotRepositoryList.length">
+      <ant-skeleton v-for="item in 3" :key="item" active />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import { Skeleton as AntSkeleton } from 'ant-design-vue';
 import { computed } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { MetagraphTag } from 'metagraph-ui';

@@ -98,7 +98,7 @@ export class RepositoryEdit {
     });
     if (response.data) {
       message.success('知识库创建成功！');
-      RouterUtil.openNewPage('/repository/editor', {
+      RouterUtil.jumpToBlankPage('/repository/editor', {
         repositoryEntityId: response.data.entity.id,
         type: 'edit'
       });

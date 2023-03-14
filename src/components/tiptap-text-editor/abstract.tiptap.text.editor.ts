@@ -3,13 +3,11 @@
  * @date  2021/12/7 21:42
  */
 
-import { Range, Editor as CoreEditor } from '@tiptap/core';
-import {
-  EntityCompletelyListItemType,
-  KnowledgeModelType,
-} from 'metagraph-constant';
+import { Editor as CoreEditor, Range } from '@tiptap/core';
+import { EntityCompletelyListItemType, KnowledgeModelType, } from 'metagraph-constant';
 import { Node as ProsemirrorNode } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
+import Document from '@tiptap/extension-document';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
 import TextStyle from '@tiptap/extension-text-style';
@@ -17,9 +15,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
-import {
-  Editor, JSONContent, useEditor, VueNodeViewRenderer, VueRenderer,
-} from '@tiptap/vue-3';
+import { Editor, JSONContent, useEditor, VueNodeViewRenderer, VueRenderer, } from '@tiptap/vue-3';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import tippy, { Instance } from 'tippy.js';
 import { Ref } from 'vue';
@@ -171,9 +167,7 @@ export abstract class AbstractTiptapTextEditor {
     const _this = this;
     this.editor = useEditor({
       editable: this.editable,
-      onUpdate: debounce(({
-        editor
-      }) => {
+      onUpdate: debounce(({ editor}) => {
         // 当内容更新后，持久化数据到本地
         if (editor.getHTML() && editor.getJSON()) {
           _this.saveToIndexDB({
@@ -182,6 +176,10 @@ export abstract class AbstractTiptapTextEditor {
           }).then();
         }
       }, 1000),
+      onTransaction({ editor, transaction }) {
+        // The editor state has changed.
+        console.log(transaction);
+      },
       editorProps: {
         handleClickOn(
           view: EditorView,
@@ -199,7 +197,12 @@ export abstract class AbstractTiptapTextEditor {
         },
       },
       extensions: [
-        StarterKit,
+        Document.extend({
+          content: 'heading block*',
+        }),
+        StarterKit.configure({
+          document: false,
+        }),
         TextAlign.configure({
           types: ['heading', 'paragraph'],
         }),
@@ -209,7 +212,13 @@ export abstract class AbstractTiptapTextEditor {
           limit: _this.limit ?? 30000,
         }),
         Placeholder.configure({
-          placeholder: 'you can write now...',
+          placeholder: ({ node }) => {
+            if (node.type.name === 'heading') {
+              return '请输入标题...';
+            }
+
+            return '请输入内容...';
+          },
         }),
         TaskList,
         TaskItem.extend({

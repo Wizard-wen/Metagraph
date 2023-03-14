@@ -64,7 +64,7 @@ const asideList = computed<(EntityCompletelyListItemType & {
   }));
 
 async function goRepositoryEditorPage(item: EntityCompletelyListItemType) {
-  RouterUtil.openNewPage('/repository/editor', {
+  RouterUtil.jumpToBlankPage('/repository/editor', {
     repositoryEntityId: item.entity.id,
     type: 'edit'
   });

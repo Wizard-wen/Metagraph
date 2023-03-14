@@ -4,6 +4,9 @@
       :key="index"
       :repository="item"
       v-for="(item, index) in repositoryList.list"></repository-list-item>
+    <div v-if="!repositoryList.list.length">
+      <ant-skeleton v-for="item in 10" :key="item" active/>
+    </div>
     <ant-pagination
       v-if="!isLogin"
       class="pagination"
@@ -16,28 +19,25 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { Pagination as AntPagination } from 'ant-design-vue';
+import { Pagination as AntPagination, Skeleton as AntSkeleton } from 'ant-design-vue';
 import { RepositoryListItem } from '@/github.style.component';
 import { useStore } from '@/store';
 
-import { HomePage, repositoryList } from '@/views/home-page/home.page';
+import { getRepositoryList, repositoryList } from '@/views/home-page/home.page';
 
 const store = useStore();
-const homePage = new HomePage();
 const isLogin = computed(() => store.state.user.isLogin);
 
 async function onRepositoryPaginationChange(page: number) {
-  await homePage.getRepositoryList(page);
+  await getRepositoryList(page);
 }
 </script>
 
 <style scoped lang="scss">
 .no-auth-list {
-  width: 100%;
-  min-width: 1000px;
-  max-width: 1100px;
-  margin: 16px auto 0;
+  width: 1000px;
 }
+
 .pagination {
   margin-top: 50px;
   width: 100%;

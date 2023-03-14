@@ -52,52 +52,50 @@ export const ownRepositoryList = reactive<{
   current: 1,
 });
 
-export class HomePage {
-  async getRepositoryList(page?: number): Promise<void> {
-    repositoryList.isLoading = true;
-    const result = await RepositoryNoAuthApiService.getList({
-      pageIndex: page ? page - 1 : repositoryList.current - 1,
-      pageSize: 10
-    });
-    if (result.data) {
-      repositoryList.list = result.data.list ?? [];
-      repositoryList.total = result.data.total;
-    } else {
-      message.error('获取知识库数据时失败！');
-    }
-    repositoryList.isLoading = false;
+export async function getRepositoryList(page?: number): Promise<void> {
+  repositoryList.isLoading = true;
+  const result = await RepositoryNoAuthApiService.getList({
+    pageIndex: page ? page - 1 : repositoryList.current - 1,
+    pageSize: 10
+  });
+  if (result.data) {
+    repositoryList.list = result.data.list ?? [];
+    repositoryList.total = result.data.total;
+  } else {
+    message.error('获取知识库数据时失败！');
   }
+  repositoryList.isLoading = false;
+}
 
-  async getHotList(): Promise<void> {
-    const result = await RepositoryNoAuthApiService.getHotList();
-    if (result.data) {
-      hotRepositoryList.value = result.data;
-    }
+export async function getHotList(): Promise<void> {
+  const result = await RepositoryNoAuthApiService.getHotList();
+  if (result.data) {
+    hotRepositoryList.value = result.data;
   }
+}
 
-  async getActivityList(page?: number): Promise<void> {
-    activityList.isLoading = true;
-    const result = await ActivityApiService.getList({
-      pageIndex: page ? page - 1 : activityList.current - 1,
-      pageSize: 10
-    });
-    if (result.data) {
-      activityList.list = result.data.list;
-      activityList.total = result.data.total;
-    } else {
-      message.error('获取知识库数据时失败！');
-    }
-    activityList.isLoading = false;
+export async function getActivityList(page?: number): Promise<void> {
+  activityList.isLoading = true;
+  const result = await ActivityApiService.getList({
+    pageIndex: page ? page - 1 : activityList.current - 1,
+    pageSize: 10
+  });
+  if (result.data) {
+    activityList.list = result.data.list;
+    activityList.total = result.data.total;
+  } else {
+    message.error('获取知识库数据时失败！');
   }
+  activityList.isLoading = false;
+}
 
-  async getOwnRepositoryList(): Promise<void> {
-    ownRepositoryList.isLoading = true;
-    const result = await RepositoryApiService.getOwnRepositoryList();
-    if (result.data) {
-      ownRepositoryList.list = result.data;
-    } else {
-      message.error('获取知识库数据时失败！');
-    }
-    ownRepositoryList.isLoading = false;
+export async function getOwnRepositoryList(): Promise<void> {
+  ownRepositoryList.isLoading = true;
+  const result = await RepositoryApiService.getOwnRepositoryList();
+  if (result.data) {
+    ownRepositoryList.list = result.data;
+  } else {
+    message.error('获取知识库数据时失败！');
   }
+  ownRepositoryList.isLoading = false;
 }
