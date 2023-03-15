@@ -172,11 +172,13 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../../style/common.scss";
 @import "../../style/tiptap.common.scss";
+
 .section-article-container {
   height: calc(100vh - 56px);
-  background: $contentBackgroundColor;
+  background: $editorBackgroundColor;
   width: 100%;
   position: relative;
+
   .section-article {
     text-align: left;
     height: 100%;
@@ -209,6 +211,7 @@ export default defineComponent({
       position: absolute;
       top: 0;
     }
+
     .editor-container {
       width: 750px;
       margin: 70px auto 28px;
@@ -228,6 +231,7 @@ export default defineComponent({
         height: max-content;
         margin: 0 auto;
       }
+
       .editor-container {
         width: 750px;
         margin: 0 auto;

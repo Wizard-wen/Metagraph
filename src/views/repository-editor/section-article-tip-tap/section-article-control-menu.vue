@@ -22,7 +22,7 @@
       <find-control :editor="editor"></find-control>
       <parse-text-control></parse-text-control>
       <upload-image-control :editor="editor"></upload-image-control>
-      <toggle-task-control :editor="editor"></toggle-task-control>
+      <toggle-task-control style="margin-right: 10px;" :editor="editor"></toggle-task-control>
     </div>
   </div>
   <upload-and-parse-text-modal
@@ -91,91 +91,23 @@ async function handleCloseParseWordModal(params: {
   isParseWordModalShow.value = false;
 }
 
-
-// export default defineComponent({
-//   name: 'section-article-control',
-//   props: {
-//     editor: {
-//       type: Object as PropType<Editor>,
-//       required: true
-//     }
-//   },
-//   components: {
-//     AlignControl,
-//     TextLevelSelect,
-//     FontSizeSelect,
-//     ToggleTaskControl,
-//     SaveControl,
-//     FontSizeControl,
-//     UploadImageControl,
-//     ParseTextControl,
-//     FindControl,
-//     ToggleCodeControl,
-//     ToggleHeadingControl,
-//     ToggleBlockquoteControl,
-//     ToggleOrderedListControl,
-//     ToggleBulletListControl,
-//     ToggleBoldControl,
-//     ToggleItalicControl,
-//     ToggleStrikeControl,
-//     RedoControl,
-//     UndoControl,
-//     UploadAndParseTextModal
-//   },
-//   emits: ['save', 'fontSizeChange', 'refreshSection'],
-//   setup(props, { emit }) {
-//     const isParseWordModalShow = ref(false);
-//     const uploadAndParseTextService = new UploadAndParseTextService();
-//
-//     // 保存文章
-//     function saveSectionArticle() {
-//       emit('save');
-//     }
-//
-//     // 改变文章字体大小
-//     function handleFontSizeChange(params: { value: string }) {
-//       emit('fontSizeChange', params);
-//     }
-//
-//     async function handleCloseParseWordModal(params: {
-//       type: 'Section' | 'void' | 'Alternative'
-//       sectionModel?: SectionModelType
-//     }) {
-//       if (params.type === 'Section' && params.sectionModel) {
-//         emit('refreshSection', {
-//           sectionId: params.sectionModel.id
-//         });
-//       }
-//       uploadAndParseTextService.clearData();
-//       isParseWordModalShow.value = false;
-//     }
-//
-//     return {
-//       saveSectionArticle,
-//       handleFontSizeChange,
-//       handleCloseParseWordModal,
-//       isParseWordModalShow
-//     };
-//   }
-// });
 </script>
 
 <style scoped lang="scss">
 @import "../../../style/common.scss";
 
 .operator {
-  padding: 2px 0;
-  height: 50px;
   width: 100%;
-  background: #FFF;
 
   .operator-container {
+    padding: 2px 0;
     display: flex;
-    max-width: 840px;
     border-bottom: 1px solid $hoverBackColor;
-    height: 100%;
+    height: 50px;
+    width: max-content;
+    background: #FFF;
+    justify-content: center;
     align-items: center;
-    //justify-content: space-between;
     margin: 0 auto;
   }
 }
