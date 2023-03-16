@@ -12,7 +12,7 @@
       <div class="article-control"
            v-if="editable
          && editor
-         && sectionTree.selectedTreeNodes.length">
+         && sectionTree.selectedSectionId">
         <section-article-control-menu
           :editor="editor"
           @refreshSection="handleCreateSectionByParseText"
@@ -21,13 +21,13 @@
       </div>
       <div class="editor-container"
            ref="editorContainer"
-           v-if="editable && sectionTree.selectedTreeNodes.length">
+           v-if="editable && sectionTree.selectedSectionId">
         <editor-content
           v-if="editable && editor"
           :style="{fontSize: articleFontSize + 'px'}"
           class="tip-tap-editor" :editor="editor"/>
       </div>
-      <empty-view v-if="editable && !sectionTree.selectedTreeNodes.length">
+      <empty-view v-if="editable && !sectionTree.selectedSectionId">
         <template #content>
           <ant-button
             @click="createTopSection" type="primary">
@@ -40,133 +40,98 @@
       </empty-view>
     </div>
   </div>
-
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { Editor, EditorContent, } from '@tiptap/vue-3';
-import { Button } from 'ant-design-vue';
-import { computed, defineComponent, onMounted, onUnmounted, PropType, ref, toRef } from 'vue';
-import { currentSectionNode, sectionTree } from './model/section.tree';
+import { Editor, EditorContent } from '@tiptap/vue-3';
+import { Button as AntButton } from 'ant-design-vue';
 import {
-  SectionArticleBubbleMenu,
+  computed,
+  defineEmits,
+  defineProps,
+  onMounted,
+  onUnmounted,
+  PropType,
+  ref,
+  toRef
+} from 'vue';
+import { sectionTree } from './model/section.tree';
+import {
   SectionArticleControlMenu,
   TiptapEditorArticleLimit
 } from './section-article-tip-tap/index';
 
-export default defineComponent({
-  name: 'section-article-tip-tap',
-  components: {
-    EmptyView,
-    SectionArticleBubbleMenu,
-    EditorContent,
-    SectionArticleControlMenu,
-    TiptapEditorArticleLimit,
-    AntButton: Button,
-    PlusOutlined
+const props = defineProps({
+  editable: {
+    required: true,
+    type: Boolean
   },
-  props: {
-    editable: {
-      required: true,
-      type: Boolean
-    },
-    editor: {
-      type: Object as PropType<Editor>,
-      required: true
-    },
-    entityId: {
-      required: true,
-      type: String
-    }
+  editor: {
+    type: Object as PropType<Editor>,
+    required: true
   },
-  emits: ['clickMention', 'mention', 'save', 'createSection', 'refreshSection'],
-  setup(props, context) {
-    const editor = toRef(props, 'editor');
-    const limit = ref(1000);
-    const articleFontSize = ref('14');
-    const changeArticleFontSize = (event: { value: string }) => {
-      articleFontSize.value = event.value;
-    };
-    const paddingValue = ref<number[]>([0, 816]);
-    const paddingFormatter = (value: number) => `${value}px`;
-    const paddingMarks = ref<Record<number, any>>({
-      0: {
-        style: { left: '-20px' },
-        label: '0px'
-      },
-      816: {
-        style: { right: '0px' },
-        label: '816px'
-      }
-    });
-    const editorContainer = ref();
-
-    const characterCount = computed(() => editor.value.storage.characterCount.characters());
-
-    // 存储单元文章
-    async function saveSectionArticleByUser() {
-      if (editor?.value) {
-        context.emit('save', {
-          content: editor.value.getJSON(),
-          contentHtml: editor.value.getHTML()
-        });
-      }
-    }
-
-    async function createTopSection() {
-      context.emit('createSection', {
-        isRoot: true,
-        type: 'Section'
-      });
-    }
-
-    function handleCreateSectionByParseText(params: {
-      sectionId: string
-    }) {
-      context.emit('refreshSection', params);
-    }
-
-    const editorWidth = ref(0);
-
-    function handleWindowResize() {
-      const editorHeight = editorContainer.value.scrollHeight;
-      editorWidth.value = Math.floor((editorHeight * 210) / 297);
-    }
-
-    function initEditorSize() {
-      const windowHeight = window.innerHeight - 116;
-      editorWidth.value = Math.floor((windowHeight * 210) / 297);
-    }
-
-    onMounted(() => {
-      window.addEventListener('resize', handleWindowResize);
-      initEditorSize();
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener('resize', handleWindowResize);
-    });
-
-    return {
-      limit,
-      saveSectionArticleByUser,
-      changeArticleFontSize,
-      articleFontSize,
-      paddingValue,
-      paddingFormatter,
-      paddingMarks,
-      currentSectionNode,
-      handleCreateSectionByParseText,
-      sectionTree,
-      characterCount,
-      createTopSection,
-      editorContainer,
-      editorWidth
-    };
+  entityId: {
+    required: true,
+    type: String
   }
 });
+const emit = defineEmits(['clickMention', 'mention', 'save', 'createSection', 'refreshSection']);
+const editor = toRef(props, 'editor');
+const limit = ref(1000);
+const articleFontSize = ref('14');
+const changeArticleFontSize = (event: { value: string }) => {
+  articleFontSize.value = event.value;
+};
+const editorContainer = ref();
+
+const characterCount = computed(() => editor.value.storage.characterCount.characters());
+
+// 存储单元文章
+async function saveSectionArticleByUser() {
+  if (editor?.value) {
+    emit('save', {
+      content: editor.value.getJSON(),
+      contentHtml: editor.value.getHTML()
+    });
+  }
+}
+
+async function createTopSection() {
+  emit('createSection', {
+    isRoot: true,
+    type: 'Section'
+  });
+}
+
+function handleCreateSectionByParseText(params: {
+  sectionId: string
+}) {
+  emit('refreshSection', params);
+}
+
+const editorWidth = ref(0);
+
+function handleWindowResize() {
+  const editorHeight = editorContainer.value.scrollHeight;
+  editorWidth.value = Math.floor((editorHeight * 210) / 297);
+}
+
+function initEditorSize() {
+  const windowHeight = window.innerHeight - 116;
+  editorWidth.value = Math.floor((windowHeight * 210) / 297);
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleWindowResize);
+  initEditorSize();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleWindowResize);
+});
+
 </script>
 
 <style lang="scss" scoped>

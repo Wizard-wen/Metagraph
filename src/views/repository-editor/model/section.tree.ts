@@ -7,19 +7,16 @@ import { SectionTreeNodeUIType } from '@/api.service/no.auth/section.no.auth.api
 import { IndexdbService } from '@/service/indexdb.service';
 import type { JSONContent } from '@tiptap/vue-3';
 import { message } from 'ant-design-vue';
-import { SectionEntityType } from 'metagraph-constant';
 import type {
   EntityCompletelyListItemType,
   KnowledgeResponseType,
   SectionModelType
 } from 'metagraph-constant';
+import { SectionEntityType } from 'metagraph-constant';
 import { reactive, ref } from 'vue';
 import { tiptapInitData } from '@/store/constant';
-import {
-  EntityApiService,
-  SectionApiService,
-  SectionNoAuthApiService
-} from '@/api.service';
+import { EntityApiService, SectionApiService, SectionNoAuthApiService } from '@/api.service';
+import { TreeItemType } from '@/components/metagraph-tree/type';
 
 export type SectionOperationType =
   'Section'
@@ -30,14 +27,14 @@ export type SectionOperationType =
 
 export const sectionModalData = reactive<{
   entityType: SectionOperationType;
-  title: '创建单元' | '修改单元' | '绑定知识点';
+  title: '创建目录' | '修改目录名' | '绑定知识点';
   parentSectionId?: string;
   parentSectionName?: string;
   entityOptionList: { key: string; label: string; value: string }[];
   isConfirmLoading: boolean;
 }>({
   entityType: 'Section',
-  title: '创建单元',
+  title: '创建目录',
   entityOptionList: [],
   isConfirmLoading: false
 });
@@ -49,12 +46,33 @@ export const sectionModalForm = reactive({
 
 export const sectionModalFormRules = ref({});
 
+function generateTree(tree: SectionTreeNodeUIType[]): TreeItemType[] {
+  return tree.map((item: SectionTreeNodeUIType) => {
+    const newItem = {
+      title: item.title,
+      name: item.title,
+      key: item.key,
+      data: item.section
+    };
+    if (item.children) {
+      const newList = generateTree(item.children);
+      return {
+        ...newItem,
+        children: newList
+      };
+    }
+    return newItem;
+  });
+}
+
 export const sectionTree = reactive<{
   tree: SectionTreeNodeUIType[],
-  selectedTreeNodes: string[]
+  metaTree: any[],
+  selectedSectionId: string
 }>({
   tree: [],
-  selectedTreeNodes: []
+  metaTree: [],
+  selectedSectionId: ''
 });
 
 export const currentSectionNode = reactive<{
@@ -80,27 +98,26 @@ export class SectionTreeService {
     const response = await SectionNoAuthApiService.getNormalSectionTree({ repositoryEntityId });
     if (response.data) {
       sectionTree.tree = response.data;
+      sectionTree.metaTree = generateTree(response.data);
       if (response.data.length) {
         const currentSectionId = selectedSectionId ?? response.data[0].key;
         // 如果section存在，那么选中第一个，获取section article
         await this.setSectionContent(currentSectionId, repositoryEntityId);
-        sectionTree.selectedTreeNodes = [currentSectionId];
+        sectionTree.selectedSectionId = currentSectionId;
       } else {
-        sectionTree.selectedTreeNodes = [];
+        sectionTree.selectedSectionId = '';
       }
     }
   }
 
   async selectTreeNode(params: {
-    selectedKeys: string[],
+    sectionId: string,
     repositoryEntityId: string
   }): Promise<void> {
-    sectionTree.selectedTreeNodes = params.selectedKeys;
+    sectionTree.selectedSectionId = params.sectionId;
     // 如果点击的是section
     // 切换section tree之前应该保存之前的section article
-    if (params.selectedKeys.length) {
-      await this.setSectionContent(params.selectedKeys[0], params.repositoryEntityId);
-    }
+    await this.setSectionContent(params.sectionId, params.repositoryEntityId);
   }
 
   /**
@@ -110,6 +127,7 @@ export class SectionTreeService {
    * @private
    */
   async setSectionContent(sectionId: string, repositoryEntityId: string): Promise<void> {
+    debugger
     const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
     if (result.data) {
       currentSectionNode.content = JSON.parse(result.data.article.content);
@@ -134,7 +152,7 @@ export class SectionTreeService {
     currentSectionNode.contentHtml = '';
     currentSectionNode.sectionId = '';
     currentSectionNode.entityList = [];
-    sectionTree.selectedTreeNodes = [];
+    sectionTree.selectedSectionId = '';
   }
 
   /**
@@ -222,23 +240,23 @@ export class SectionTreeService {
     sectionModalData.parentSectionId = params.section?.id;
     sectionModalData.parentSectionName = params.section?.name;
     if (sectionModalData.entityType === 'Section') {
-      sectionModalData.title = '创建单元';
+      sectionModalData.title = '创建目录';
       sectionModalForm.sectionName = '';
       sectionModalFormRules.value = {
         sectionName: [{
           required: true,
-          message: '请输入章节名称',
+          message: '请输入目录名称',
           trigger: 'blur'
         }, {
           min: 3,
           max: 15,
-          message: '单元名称应当在3-15个字符',
+          message: '目录名称应当在3-15个字符',
           trigger: 'blur'
         }],
       };
     }
     if (sectionModalData.entityType === 'ChangeSection') {
-      sectionModalData.title = '修改单元';
+      sectionModalData.title = '修改目录名';
       sectionModalForm.sectionName = params?.section?.name || '';
     }
     if (sectionModalData.entityType === 'Knowledge') {

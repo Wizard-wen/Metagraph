@@ -13,7 +13,7 @@ import {
 import {
   reactive, createVNode, computed, ref
 } from 'vue';
-import { ActionEnum, store } from '@/store';
+import { store } from '@/store';
 import {
   EntityNoAuthApiService, KnowledgeApiService, RepositoryApiService,
   RepositoryNoAuthApiService,

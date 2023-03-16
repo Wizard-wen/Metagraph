@@ -4,7 +4,6 @@
  */
 
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import { CryptoUtil } from '@/utils/crypto-util';
 import Main from '../views/main.vue';
 import Settings from '../views/settings.vue';
 
@@ -76,12 +75,12 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: '/planBoard',
+    path: '/plan/board',
     name: 'planBoard',
     component: () => import('@/views/plan/plan-board.vue')
   },
   {
-    path: '/studyBoard',
+    path: '/study/board',
     name: 'studyBoard',
     component: () => import('@/views/plan/plan-study-board.vue')
   },
@@ -117,7 +116,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/sign-up.vue')
   },
   {
-    path: '/signupByEmail',
+    path: '/signup/email',
     name: 'SignUpByEmail',
     component: () => import('@/views/sign-up/sign-up-by-email.vue')
   },

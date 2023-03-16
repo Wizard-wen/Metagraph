@@ -178,7 +178,7 @@ export abstract class AbstractTiptapTextEditor {
       }, 1000),
       onTransaction({ editor, transaction }) {
         // The editor state has changed.
-        console.log(transaction);
+        // console.log(transaction);
       },
       editorProps: {
         handleClickOn(
@@ -216,7 +216,6 @@ export abstract class AbstractTiptapTextEditor {
             if (node.type.name === 'heading') {
               return '请输入标题...';
             }
-
             return '请输入内容...';
           },
         }),

@@ -9,13 +9,13 @@
     @cancel="handleCloseModal({})">
     <div class="section-name-container" v-if="sectionModalData.parentSectionName">
       <div v-if="sectionModalData.entityType === 'Knowledge'">
-        当前单元是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前目录是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
       <div v-if="sectionModalData.entityType === 'Section'">
-        当前父级单元是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前父级目录是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
       <div v-if="sectionModalData.entityType === 'ChangeSection'">
-        当前单元名称是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前目录名称是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
     </div>
     <ant-form
@@ -25,7 +25,7 @@
       :rules="sectionModalFormRules"
       :label-col="labelCol" :wrapper-col="wrapperCol">
       <ant-form-item
-        label="单元名称"
+        label="目录名称"
         name="sectionName"
         v-if="sectionModalData.entityType === 'Section'
       || sectionModalData.entityType === 'ChangeSection'">
