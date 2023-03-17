@@ -1,190 +1,240 @@
 <template>
   <div class="toolbar">
-    <div class="tabs">
-      <div
-        class="tab"
-        :class="{ 'active': tab.value === toolbarState }"
-        v-for="tab in toolbarElementList"
-        :key="tab.value"
-        @click="setToolbarState(tab.value)">{{ tab.label }}
+    <check-bar
+      :is-editable="true"
+      :current-key="currentBar"
+      @selectedChange="handleBarChange"
+      :element-tabs="toolbarElementList"></check-bar>
+    <div class="search-bar">
+      <SearchOutlined class="search-icon"/>
+      <input type="text" class="search-input" placeholder="搜索知识关联">
+      <ControlOutlined class="search-control"/>
+    </div>
+    <check-bar
+      :is-editable="true"
+      :current-key="currentMentionBar"
+      @selectedChange="handleMentionBarChange"
+      :element-tabs="mentionStatusList"></check-bar>
+    <div class="content">
+      <div class="card-content" v-if="currentShow === 'preMentioned'">
+        <normal-relation-list
+          :relation-list="entityRelationEdges.preInnerList"></normal-relation-list>
+      </div>
+      <div class="card-content" v-if="currentShow === 'preUnmentioned'">
+<!--        <div-->
+<!--          v-for="(item, index) in entityRelationEdges.preOuterList"-->
+<!--          :key="index"-->
+<!--          data-type="rect"-->
+<!--          class="dnd-rect"-->
+<!--          :class="{'is-active': item.isDraggable}"-->
+<!--          :draggable="item.isDraggable"-->
+<!--          @mousedown="startDrag($event, item.item)">-->
+<!--          {{ item.item.content.name }}-->
+<!--        </div>-->
+
+        <draggable-relation-list
+          :relation-list="entityRelationEdges.preOuterList"
+          @handleDrag="startDrag"></draggable-relation-list>
+      </div>
+      <div class="card-content" v-if="currentShow === 'extendMentioned'">
+        <normal-relation-list
+          :relation-list="entityRelationEdges.extendInnerList"></normal-relation-list>
+      </div>
+      <div class="card-content" v-if="currentShow === 'extendUnmentioned'">
+<!--        <div-->
+<!--          v-for="(item, index) in entityRelationEdges.extendOuterList"-->
+<!--          :key="index"-->
+<!--          data-type="rect"-->
+<!--          class="dnd-rect"-->
+<!--          :class="{'is-active': item.isDraggable}"-->
+<!--          :draggable="item.isDraggable"-->
+<!--          @mousedown="startDrag($event, item.item)">-->
+<!--          {{ item.item.content.name }}-->
+<!--        </div>-->
+        <draggable-relation-list
+          :relation-list="entityRelationEdges.extendOuterList"
+          @handleDrag="startDrag"></draggable-relation-list>
       </div>
     </div>
-    <ant-spin :spinning="isKnowledgeRelationLoading">
-      <div class="content">
-        <template v-if="toolbarState === 'pre'">
-          <ant-card class="card-header" title="知识库内">
-            <div class="card-content">
-              <div
-                v-for="(item, index) in entityRelationEdges.preInnerList"
-                :key="index"
-                data-type="rect"
-                class="dnd-rect">
-                {{ item.item.content.name }}
-              </div>
-            </div>
-          </ant-card>
-          <ant-card class="card-header" title="知识库外">
-            <div class="card-content">
-              <div
-                v-for="(item, index) in entityRelationEdges.preOuterList"
-                :key="index"
-                data-type="rect"
-                class="dnd-rect"
-                :class="{'is-active': !repositoryEntityIdList.includes(item.item.entity.id)}"
-                :draggable="!repositoryEntityIdList.includes(item.item.entity.id)"
-                @mousedown="startDrag($event, item.item)">
-                {{ item.item.content.name }}
-              </div>
-            </div>
-          </ant-card>
-        </template>
-        <template v-else>
-          <ant-card class="card-header" title="知识库内">
-            <div class="card-content">
-              <div
-                v-for="(item, index) in entityRelationEdges.extendInnerList"
-                :key="index"
-                data-type="rect"
-                class="dnd-rect">
-                {{ item.item.content.name }}
-              </div>
-            </div>
-          </ant-card>
-          <ant-card class="card-header" title="知识库外">
-            <div class="card-content">
-              <div
-                v-for="(item, index) in entityRelationEdges.extendOuterList"
-                :key="index"
-                data-type="rect"
-                class="dnd-rect"
-                :class="{'is-active': !repositoryEntityIdList.includes(item.item.entity.id)}"
-                :draggable="!repositoryEntityIdList.includes(item.item.entity.id)"
-                @mousedown="startDrag($event, item.item)">
-                {{ item.item.content.name }}
-              </div>
-            </div>
-          </ant-card>
-        </template>
-      </div>
-    </ant-spin>
-
   </div>
 </template>
 
-<script lang="ts">
-import { Card, Spin } from 'ant-design-vue';
-import {
-  computed, defineComponent, inject, onMounted, ref
-} from 'vue';
+<script lang="ts" setup>
+import { ControlOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import { computed, inject, onMounted, ref } from 'vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import {
-  graph,
   dnd,
-  KnowledgeGraphData,
   entityRelationEdges,
-  isKnowledgeRelationLoading
+  graph,
+  KnowledgeGraphData
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
+import CheckBar from '@/views/repository-editor/check-bar.vue';
+import NormalRelationList
+  from '@/views/repository-editor/knowledge-graph-panel/normal-relation-list.vue';
 import { repositoryBindEntityList } from '../model/repository.editor';
+import DraggableRelationList
+  from '@/views/repository-editor/knowledge-graph-panel/draggable-relation-list.vue';
 
-export default defineComponent({
-  name: 'knowledge-connection',
-  components: {
-    AntCard: Card,
-    AntSpin: Spin
+const repositoryEntityIdList = computed(
+  () => repositoryBindEntityList.value.map((item) => item.entity.id)
+);
+const toolbarElementList = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '前置',
+    value: 'pre',
+    isAuth: false
   },
-  setup() {
-    const repositoryEntityIdList = computed(
-      () => repositoryBindEntityList.value.map((item) => item.entity.id)
-    );
-    const toolbarElementList = [
-      {
-        label: '前置',
-        value: 'pre'
-      },
-      {
-        label: '导出',
-        value: 'extend'
-      },
-    ];
-    const toolbarState = ref('pre');
-    const setToolbarState = (value: 'pre' | 'extend') => {
-      toolbarState.value = value;
-    };
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    let knowledgeGraphData: KnowledgeGraphData;
-    onMounted(() => {
-      knowledgeGraphData = new KnowledgeGraphData();
-    });
-    // 拖拽节点
-    // todo 定制不可拖拽节点样式
-    const startDrag = (event: MouseEvent, entity: EntityCompletelyListItemType) => {
-      if (graph.value === undefined || dnd.value === undefined) {
-        throw new Error('Graph not init');
-      }
-      // 如果当前边所对应的节点已经在仓库中，不可拖拽
-      if (repositoryEntityIdList.value.includes(entity.entity.id)) {
-        return;
-      }
-      knowledgeGraphData.dragNodeToPanel({
-        event,
-        entity,
-        repositoryEntityId: repositoryEntityId.value
-      });
-    };
-    return {
-      toolbarElementList,
-      toolbarState,
-      setToolbarState,
-      startDrag,
-      repositoryEntityIdList,
-      entityRelationEdges,
-      isKnowledgeRelationLoading
-    };
+  {
+    label: '导出',
+    value: 'extend',
+    isAuth: false
+  },
+]);
+
+const currentBar = ref<string>('pre');
+
+function handleBarChange(value: string) {
+  currentBar.value = value;
+}
+
+const mentionStatusList = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '已引用',
+    value: 'mentioned',
+    isAuth: false
+  },
+  {
+    label: '未引用',
+    value: 'unmentioned',
+    isAuth: false
+  },
+]);
+
+const currentMentionBar = ref<string>('mentioned');
+
+function handleMentionBarChange(value: string) {
+  currentMentionBar.value = value;
+}
+
+const currentShow = computed(() => {
+  if (currentBar.value === 'pre' && currentMentionBar.value === 'mentioned') {
+    return 'preMentioned';
   }
+  if (currentBar.value === 'pre' && currentMentionBar.value === 'unmentioned') {
+    return 'preUnmentioned';
+  }
+  if (currentBar.value === 'extend' && currentMentionBar.value === 'mentioned') {
+    return 'extendMentioned';
+  }
+  if (currentBar.value === 'extend' && currentMentionBar.value === 'unmentioned') {
+    return 'extendUnmentioned';
+  }
+  return 'preMentioned';
 });
+
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+let knowledgeGraphData: KnowledgeGraphData;
+onMounted(() => {
+  knowledgeGraphData = new KnowledgeGraphData();
+});
+
+// 拖拽节点
+// todo 定制不可拖拽节点样式
+const startDrag = (params: {event: MouseEvent, entity: EntityCompletelyListItemType}) => {
+  if (graph.value === undefined || dnd.value === undefined) {
+    throw new Error('Graph not init');
+  }
+  // 如果当前边所对应的节点已经在仓库中，不可拖拽
+  if (repositoryEntityIdList.value.includes(params.entity.entity.id)) {
+    return;
+  }
+  knowledgeGraphData.dragNodeToPanel({
+    ...params,
+    repositoryEntityId: repositoryEntityId.value
+  });
+};
+
 </script>
 
 <style scoped lang="scss">
 @import '../../../style/common';
 
 .toolbar {
-  border-left: solid 1px $borderColor;
+  border-right: solid 1px $borderColor;
   background-color: #fff;
   min-height: 100%;
-  width: 220px;
+  width: 280px;
   display: flex;
   flex-direction: column;
 
-  .tabs {
-    height: 32px;
-    font-size: 12px;
-    flex-shrink: 0;
+  .search-bar {
+    height: 40px;
     display: flex;
+    align-items: center;
+    border-bottom: 1px solid $borderColor;
 
-    .tab {
-      flex: 1;
+    .search-icon {
+      height: 32px;
+      width: 32px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      background-color: $lightGray;
-      border-bottom: 1px solid $borderColor;
-      cursor: pointer;
-
-      &.active {
-        background-color: #fff;
-        border-bottom-color: #fff;
-      }
-
-      & + .tab {
-        border-left: 1px solid $borderColor;
-      }
+      justify-content: center;
+      font-size: 16px;
     }
+
+    .search-input {
+      display: block;
+      height: 32px;
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .search-control {
+      font-size: 16px;
+      height: 32px;
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .title {
+    height: 32px;
+    line-height: 32px;
+    text-align: left;
+    font-size: 12px;
+    padding-left: 10px;
+    color: #0006;
   }
 
   .content {
     font-size: 13px;
     height: calc(100vh - 88px);
+    padding: 8px;
+
+    .card-content {
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .dnd-rect {
+      width: calc(100% - 6px);
+      height: 32px;
+      border: 1px solid $borderColor;
+      text-align: center;
+      line-height: 32px;
+      margin: 3px auto;
+      cursor: move;
+    }
+
+    .is-active {
+      border: 1px solid #1890FF;
+    }
 
     .card-header {
       & ::v-deep(.ant-card-head) {
@@ -203,26 +253,7 @@ export default defineComponent({
         height: calc(100% - 35px);
       }
 
-      height: 50%;
 
-      .card-content {
-        height: 100%;
-        overflow-y: auto;
-      }
-
-      .dnd-rect {
-        width: calc(100% - 6px);
-        height: 40px;
-        border: 1px solid $borderColor;
-        text-align: center;
-        line-height: 40px;
-        margin: 3px auto;
-        cursor: move;
-      }
-
-      .is-active {
-        border: 1px solid #1890FF;
-      }
     }
   }
 }

@@ -5,59 +5,55 @@
         <template #icon>
           <PlusOutlined/>
         </template>
-        绑定/创建知识点
+        引用/创建知识点
       </ant-button>
     </div>
+    <check-bar
+      :is-editable="editable"
+      :current-key="currentBar"
+      @selectedChange="handleBarChange"
+      :element-tabs="elementTabs"></check-bar>
     <div class="right-sidebar-content">
-      <template
-        v-if="entityList.length || unpublishedDraftKnowledgeList?.length">
-        <div class="entity-list-item"
-             :class="{'entity-list-item-active': item.entity.id === selectedEntityId}"
-             v-for="item in entityList"
-             :key="item.id">
-          <div class="text" v-if="item.content.repositoryEntityId === repositoryEntityId">
-            <StarOutlined class="icon" title="归属于知识库"/>
-            {{ item.content.name }}
-          </div>
-          <div class="text" v-else>
-            <LinkOutlined class="icon"/>
-            {{ item.content.name }}
-          </div>
-          <div class="control">
-            <EditIcon
-              v-if="item.content.repositoryEntityId === repositoryEntityId && editable"
-              @click="handleClickEntityItem(item, 'edit')"></EditIcon>
-            <EyeOutlined @click="handleClickEntityItem(item, 'view')"></EyeOutlined>
-          </div>
-        </div>
-        <div
-          class="entity-list-item"
-          v-for="item in unpublishedDraftKnowledgeList"
-          :key="item.entity.id">
-          <div class="text">
-            <SnippetsOutlined class="icon"/>
-            {{ item.content.name }}
-          </div>
-          <div class="control">
-            <EditIcon @click="handleClickEntityItem(item, 'draft')"></EditIcon>
-          </div>
-        </div>
+      <template v-if="currentBar === 'published'">
+        <mention-entity-list
+          v-if="entityList.length"
+          :operation-list="publishedOperationList"
+          @control="handlePublishedControl($event)"
+          :is-editable="editable"
+          :list-data="entityList"
+        ></mention-entity-list>
+        <empty-view v-else></empty-view>
       </template>
-      <empty-view v-else></empty-view>
+      <template v-if="currentBar === 'mention'">
+        <mention-entity-list
+          v-if="entityList.length"
+          :operation-list="mentionOperationList"
+          @control="handleMentionControl($event)"
+          :is-editable="editable"
+          :list-data="entityList"
+        ></mention-entity-list>
+        <empty-view v-else></empty-view>
+      </template>
+      <template v-if="currentBar === 'unpublished'">
+        <mention-entity-list
+          v-if="unpublishedDraftKnowledgeList.length"
+          :operation-list="unpublishedOperationList"
+          @control="handleUnpublishedControl($event)"
+          :is-editable="editable"
+          :list-data="unpublishedDraftKnowledgeList"
+        ></mention-entity-list>
+        <empty-view v-else></empty-view>
+      </template>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import { Button, Divider } from 'ant-design-vue';
-import {
-  defineComponent, ref, computed, inject
-} from 'vue';
+import { Button as AntButton } from 'ant-design-vue';
+import { computed, defineEmits, inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  PlusOutlined, StarOutlined, SnippetsOutlined, LinkOutlined, EyeOutlined
-} from '@ant-design/icons-vue';
+import { PlusOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
 import {
   repositoryBindEntityList,
@@ -65,79 +61,117 @@ import {
 } from '@/views/repository-editor/model/repository.editor';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { useStore } from '@/store';
-import { EditIcon } from '@/components/icons';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
+import CheckBar from '@/views/repository-editor/check-bar.vue';
+import MentionEntityList from '@/views/repository-editor/mention-entity-list.vue';
 
-export default defineComponent({
-  components: {
-    EmptyView,
-    PlusOutlined,
-    StarOutlined,
-    SnippetsOutlined,
-    EyeOutlined,
-    EditIcon,
-    LinkOutlined,
-    AntButton: Button
+const currentBar = ref<string>('published');
+
+function handleBarChange(value: string) {
+  currentBar.value = value;
+}
+
+const elementTabs = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '原创',
+    value: 'published',
+    isAuth: false
   },
-  emits: ['createOrBindEntity'],
-  setup(props, { emit }) {
-    const store = useStore();
-    const router = useRouter();
-    const knowledgePreview = new KnowledgePreview();
-    const editable = inject(isEditableKey, ref(false));
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const entityList = computed(() => repositoryBindEntityList.value
-      .filter((item) => item.entity.entityType === 'Knowledge'));
-    const selectedEntityId = computed(() => store.state.repositoryEditor.selectedEntityId);
-    const handleModalShow = () => {
-      emit('createOrBindEntity');
-    };
+  {
+    label: '引用',
+    value: 'mention',
+    isAuth: false
+  },
+  {
+    label: '草稿',
+    value: 'unpublished',
+    isAuth: true
+  },
+]);
+const publishedOperationList = ref([
+  { type: 'edit', name: '编辑原创知识点' },
+  { type: 'view', name: '查看原创知识点' }
+]);
+const unpublishedOperationList = ref([
+  { type: 'edit', name: '编辑草稿知识点' }
+]);
+const mentionOperationList = ref([
+  { type: 'view', name: '查看引用知识点' }
+]);
+const emit = defineEmits(['createOrBindEntity']);
+const router = useRouter();
+const knowledgePreview = new KnowledgePreview();
+const editable = inject(isEditableKey, ref(false));
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+const entityList = computed(() => repositoryBindEntityList.value
+  .filter((item) => item.entity.entityType === 'Knowledge'));
 
-    function handleClickEntityItem(
-      item: EntityCompletelyListItemType,
-      type: 'view' | 'edit' | 'draft'
-    ): void {
-      if (type === 'view') {
-        knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'published');
-      } else if (type === 'draft') {
-        router.push({
-          name: 'KnowledgeEdit',
-          query: {
-            draftKnowledgeEntityId: item.entity.id,
-            repositoryEntityId: repositoryEntityId.value
-          }
-        })
-          .then();
-      } else {
-        router.push({
-          name: 'KnowledgeEdit',
-          query: {
-            publishedKnowledgeEntityId: item.entity.id,
-            draftKnowledgeEntityId: (item.content as KnowledgeResponseType).draft?.entityId,
-            repositoryEntityId: repositoryEntityId.value
-          }
-        })
-          .then();
-      }
-    }
+const selectedEntityId = computed(() => '');
 
-    return {
-      repositoryBindEntityList,
-      unpublishedDraftKnowledgeList,
-      entityList,
-      selectedEntityId,
-      handleModalShow,
-      handleClickEntityItem,
-      repositoryEntityId,
-      editable
-    };
+const handleModalShow = () => {
+  emit('createOrBindEntity');
+};
+
+function handleMentionControl(params: {
+  type: string;
+  item: EntityCompletelyListItemType
+}) {
+  if (params.type === 'view') {
+    knowledgePreview.handleShowKnowledgeDrawer(params.item.entity.id, 'published');
   }
-});
+}
+
+function handlePublishedControl(params: {
+  type: string;
+  item: EntityCompletelyListItemType
+}) {
+  if (params.type === 'view') {
+    knowledgePreview.handleShowKnowledgeDrawer(params.item.entity.id, 'published');
+  } else {
+    router.push({
+      name: 'KnowledgeEdit',
+      query: {
+        publishedKnowledgeEntityId: params.item.entity.id,
+        draftKnowledgeEntityId: (params.item.content as KnowledgeResponseType).draft?.entityId,
+        repositoryEntityId: repositoryEntityId.value
+      }
+    })
+      .then();
+  }
+}
+
+function handleUnpublishedControl(params: {
+  type: string;
+  item: EntityCompletelyListItemType
+}) {
+  if (params.type === 'edit') {
+    router.push({
+      name: 'KnowledgeEdit',
+      query: {
+        draftKnowledgeEntityId: params.item.entity.id,
+        repositoryEntityId: repositoryEntityId.value
+      }
+    })
+      .then();
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
 @import '../../../style/common';
 @import './right-sidebar.scss';
+
+.control-button-content {
+  padding: 10px 15px;
+  border-bottom: 1px solid $borderColor;
+
+  .full-button-style {
+    width: 100%;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+}
 
 .entity-list-item {
   height: 32px;
@@ -147,12 +181,15 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 15px;
+  padding: 0 8px;
   font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
 
   &:hover {
-    @include list-item-highlight;
-    text-indent: 5px;
+    background: #e7e9e8;
+    //@include list-item-highlight;
+    //text-indent: 5px;
   }
 
   .text {
@@ -170,6 +207,15 @@ export default defineComponent({
     font-size: 16px;
     line-height: 35px;
   }
+}
+
+.sub-title {
+  height: 32px;
+  line-height: 32px;
+  text-align: left;
+  font-size: 12px;
+  padding-left: 10px;
+  color: #0006;
 }
 
 .entity-list-item-active {

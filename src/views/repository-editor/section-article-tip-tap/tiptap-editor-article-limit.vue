@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{'character-count': true, 'character-count--warning': current === limit}">
-    <svg height="20" width="20" viewBox="0 0 20 20" class="character-count__graph">
+    <svg v-if="isLimit" height="20" width="20" viewBox="0 0 20 20" class="character-count__graph">
       <circle r="10" cx="10" cy="10" fill="#e9ecef"/>
       <circle
         r="5" cx="10" cy="10" fill="transparent"
@@ -11,34 +11,27 @@
       <circle r="6" cx="10" cy="10" fill="white"/>
     </svg>
     <div class="character-count__text">
-      {{ current }} 个字 / {{limit}}
+      {{ current }}个字
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, toRefs } from 'vue';
+<script lang="ts" setup>
+import { computed, defineProps, ref } from 'vue';
 
-export default defineComponent({
-  name: 'tiptap-editor-article-limit',
-  props: {
-    limit: {
-      type: Number,
-      required: true
-    },
-    current: {
-      type: Number,
-      required: true
-    }
+const props = defineProps({
+  limit: {
+    type: Number,
+    required: true
   },
-  setup(props) {
-    const { limit, current } = toRefs(props);
-    const percentage = computed(() => Math.round((100 / limit.value) * current.value));
-    return {
-      percentage
-    };
+  current: {
+    type: Number,
+    required: true
   }
 });
+const isLimit = ref(false);
+const percentage = computed(() => Math.round((100 / props.limit) * props.current));
+
 </script>
 
 <style scoped lang="scss">
@@ -46,6 +39,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   color: #0969DC;
+  font-size: 12px;
 
   &--warning {
     color: #FB5151;

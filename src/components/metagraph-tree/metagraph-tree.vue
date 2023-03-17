@@ -27,7 +27,6 @@ const props = defineProps({
   }
 });
 const uiTreeList = ref<TreeItemUIType[]>([]);
-// const activeItemId = ref();
 const emit = defineEmits(['selectedChange']);
 watchEffect(() => {
   uiTreeList.value = props.treeList?.map((item) => ({
@@ -38,7 +37,6 @@ watchEffect(() => {
 });
 
 function handleSelectedChange(params: { id: string }) {
-  console.log(params.id);
   emit('selectedChange', params);
 }
 </script>

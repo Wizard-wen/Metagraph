@@ -1,5 +1,5 @@
 <template>
-  <div style="height: max-content" v-for="item in uiTreeList">
+  <div style="height: max-content" v-for="item in uiTreeList" :key="item.key">
     <div class="children-content">
       <div
         :style="{paddingLeft: level * 28 + 'px'}"
@@ -59,8 +59,8 @@
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { CaretRightOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { TreeItemUIType } from './type';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
+import { TreeItemUIType } from './type';
 
 type OperationType = 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete';
 const emit = defineEmits(['control', 'selectedChange']);
@@ -127,6 +127,7 @@ function handlePassData($event: any) {
   line-height: 32px;
   padding: 0 2px;
   border-radius: 4px;
+  margin-bottom: 2px;
 
   &:hover {
     background: #eff0f0;
@@ -179,7 +180,8 @@ function handlePassData($event: any) {
 
 .active-item-style {
   background: #eff0f0;
-  font-weight: bold;
+  color: #000;
+  font-weight: 500;
 }
 
 .children-content {

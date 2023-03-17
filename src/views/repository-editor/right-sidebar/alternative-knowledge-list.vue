@@ -10,170 +10,149 @@
     </div>
     <div class="right-sidebar-content">
       <template v-if="alternative.target.length">
-        <ant-collapse v-model="alternative.activeKey" class="custom-collapse">
-          <template #expandIcon="{ isActive }">
-            <caret-right-outlined :rotate="isActive ? 90 : 0"/>
-          </template>
-          <template
-            :key="index"
-            v-for="(item, index) in alternative.target">
-            <ant-collapse-panel
-              v-if="item.children.length"
-              :header="item.article.name"
-              :key="item.article.id">
-              <div
-                class="entity-item"
-                :key="index"
-                v-for="(childItem, index) in item.children">
-                <div class="left">
-                  <div class="knowledge-name">{{ childItem.name }}</div>
-                </div>
-                <div class="right">
-                  <ant-tag class="custom-tag">{{ childItem.weight }}</ant-tag>
-                  <PlusCircleOutlined @click="createKnowledge(childItem)"/>
-                  <DeleteOutlined @click="deleteAlternativeKnowledge(childItem)"/>
-                </div>
-              </div>
-            </ant-collapse-panel>
-          </template>
-        </ant-collapse>
+        <article-item
+          v-for="(item, index) in alternative.target"
+          :key="index"
+          :expend-item-id="expendId"
+          :article-item="item"
+          @expend="handleExpend"
+          @controlArticle="handleControlArticle"
+          @controlKnowledge="handleControlKnowledge"
+          ></article-item>
       </template>
       <empty-view v-else></empty-view>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import { createVNode, defineComponent, inject, ref } from 'vue';
-import { Button, Collapse, message, Modal, Tag } from 'ant-design-vue';
-import {
-  CaretRightOutlined,
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  PlusCircleOutlined,
-  UploadOutlined
-} from '@ant-design/icons-vue';
+import { createVNode, defineEmits, inject, ref } from 'vue';
+import { Button as AntButton, message, Modal } from 'ant-design-vue';
+import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { alternative, RepositoryEditor } from '../model/repository.editor';
+import ArticleItem from '@/views/repository-editor/right-sidebar/article-item.vue';
+import { KnowledgeArticleModelType } from 'metagraph-constant/dist/type/knowledge.type';
 
-export default defineComponent({
-  name: 'alternative-knowledge-list',
-  components: {
-    EmptyView,
-    CaretRightOutlined,
-    UploadOutlined,
-    DeleteOutlined,
-    PlusCircleOutlined,
-    AntTag: Tag,
-    AntButton: Button,
-    AntCollapse: Collapse,
-    AntCollapsePanel: Collapse.Panel
-  },
-  emits: ['open', 'createOrBindEntity'],
-  setup(props, { emit }) {
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const repositoryEditor = new RepositoryEditor();
+const emit = defineEmits(['open', 'createOrBindEntity']);
 
-    async function createKnowledge(childItem: AlternativeKnowledgeModelType) {
-      emit('createOrBindEntity', {
-        searchText: childItem.name
-      });
-    }
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+const repositoryEditor = new RepositoryEditor();
 
-    function handleOpenParseTextModal() {
-      emit('open');
-    }
+function handleOpenParseTextModal() {
+  emit('open');
+}
 
-    async function deleteAlternativeKnowledge(childItem: AlternativeKnowledgeModelType) {
-      Modal.confirm({
-        title: '删除备选知识点',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: `确定要删除备选知识点"${childItem.name}"吗?`,
-        okText: '确定',
-        cancelText: '取消',
-        async onOk() {
-          await repositoryEditor.removeAlternativeKnowledge({
-            repositoryEntityId: repositoryEntityId.value,
-            id: childItem.id
-          });
-          await repositoryEditor
-            .getAlternativeKnowledgeList(repositoryEntityId.value);
-        },
-        onCancel() {
-          message.info('取消删除！');
-        },
-      });
-    }
+const expendId = ref();
 
-    return {
-      alternative,
-      deleteAlternativeKnowledge,
-      createKnowledge,
-      handleOpenParseTextModal
-    };
+function handleExpend(value: string) {
+  if (expendId.value === value) {
+    expendId.value = '';
+  } else {
+    expendId.value = value;
   }
-});
+}
+
+async function deleteAlternativeKnowledge(childItem: AlternativeKnowledgeModelType) {
+  Modal.confirm({
+    title: '删除备选知识点',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: `确定要删除备选知识点"${childItem.name}"吗?`,
+    okText: '确定',
+    cancelText: '取消',
+    async onOk() {
+      await repositoryEditor.removeAlternativeKnowledge({
+        repositoryEntityId: repositoryEntityId.value,
+        id: childItem.id
+      });
+      await repositoryEditor
+        .getAlternativeKnowledgeList(repositoryEntityId.value);
+    },
+    onCancel() {
+      message.info('取消删除！');
+    },
+  });
+}
+
+async function handleControlArticle(params: {
+  type: string,
+  data: KnowledgeArticleModelType
+}) {
+  // todo
+}
+
+async function handleControlKnowledge(params: {
+  type: string,
+  data: AlternativeKnowledgeModelType
+}) {
+  if (params.type === 'CreateKnowledge') {
+    emit('createOrBindEntity', {
+      searchText: params.data.name
+    });
+  }
+  if (params.type === 'DeleteKnowledge') {
+    await deleteAlternativeKnowledge(params.data);
+  }
+}
 </script>
 
 <style scoped lang="scss">
 @import '../../../style/common';
 @import "right-sidebar.scss";
 
-.custom-collapse {
-  border-radius: 6px;
-  border-left: none;
 
-  &::v-deep(.ant-collapse-header) {
-    text-align: left;
-    padding: 6px 15px 6px 30px !important;
-    background: #f9f9f9;
+.control-button-content {
+  padding: 10px 15px 10px 15px;
+  border-bottom: 1px solid $borderColor;
+
+  .full-button-style {
+    width: 100%;
     font-size: 12px;
-
-    .ant-collapse-arrow {
-      left: 12px !important;
-      text-indent: 0;
-    }
-  }
-
-  &::v-deep(.ant-collapse-content-box) {
-    padding: 10px 0;
+    border-radius: 4px;
   }
 }
 
-.entity-item {
-  height: 32px;
-  line-height: 32px;
-  width: 100%;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px;
-  font-size: 12px;
-
-  &:hover {
-    @include list-item-highlight;
-  }
-
-  .left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  .right {
-    .custom-tag {
-      padding: 0 5px;
-      line-height: 18px;
-      margin-right: 0;
-    }
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-  }
+.right-sidebar-content {
+  height: calc(100vh - 135px);
+  padding: 10px;
+  overflow-y: auto;
 }
+
+
+//.entity-item {
+//  height: 32px;
+//  line-height: 32px;
+//  width: 100%;
+//  text-align: left;
+//  display: flex;
+//  align-items: center;
+//  justify-content: space-between;
+//  padding: 0 15px;
+//  font-size: 12px;
+//
+//  &:hover {
+//    @include list-item-highlight;
+//  }
+//
+//  .left {
+//    display: flex;
+//    align-items: center;
+//    gap: 15px;
+//  }
+//
+//  .right {
+//    .custom-tag {
+//      padding: 0 5px;
+//      line-height: 18px;
+//      margin-right: 0;
+//    }
+//
+//    display: flex;
+//    align-items: center;
+//    gap: 10px;
+//    font-size: 14px;
+//  }
+//}
 </style>

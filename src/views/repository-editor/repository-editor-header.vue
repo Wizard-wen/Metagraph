@@ -1,29 +1,39 @@
 <template>
   <div class="repository-editor-header">
     <div class="left">
-      <div class="logo" @click="goHomePage">
-        <img src="/hogwarts-logo.webp" height="32" width="32" alt="">
+      <div class="operation-icon" @click="goHomePage">
+        <LeftOutlined/>
       </div>
-      <div class="title">
-        <ant-dropdown
-          v-if="repositoryModel.target.author.id === currentUserModel?.id"
-          :getPopupContainer="getPopupContainer"
-          :trigger="['click']"
-          :placement="'bottomRight'"
-          :overlayClassName="'dropdown-overlay'">
-          <div class="repository-title">
-            <div class="name">{{ repositoryModel.target.content.name }}</div>
-            <DownOutlined class="title-icon" />
-          </div>
-          <template #overlay>
-            <ant-menu>
-              <ant-menu-item @click="goRepositoryEditPage">
-                <div>编辑知识库</div>
+      <ant-dropdown
+        :getPopupContainer="getPopupContainer"
+        :trigger="['click']"
+        :placement="'bottomLeft'"
+        :overlayClassName="'dropdown-overlay'">
+        <div class="operation-icon">
+          <MenuOutlined/>
+        </div>
+        <template #overlay>
+          <ant-menu>
+            <ant-sub-menu key="test" title="知识库">
+              <ant-menu-item
+                v-if="isCloneButtonShow"
+                @click="handleOpenCloneModal">克隆知识库
               </ant-menu-item>
-            </ant-menu>
-          </template>
-        </ant-dropdown>
-        <div class="name" v-else>{{ repositoryModel.target.content.name }}</div>
+              <ant-menu-item @click="goRepositoryEditPage">编辑知识库</ant-menu-item>
+            </ant-sub-menu>
+            <ant-sub-menu key="alternative" title="素材">
+              <ant-menu-item>上传文本</ant-menu-item>
+            </ant-sub-menu>
+
+            <ant-menu-item>创建文档</ant-menu-item>
+            <ant-menu-item>创建/绑定知识点</ant-menu-item>
+            <div class="divider-style"></div>
+            <ant-menu-item>回到首页</ant-menu-item>
+          </ant-menu>
+        </template>
+      </ant-dropdown>
+      <div class="title">
+        <div class="name">{{ repositoryModel.target.content.name }}</div>
         <ant-tag class="repository-type-tag">
           {{ isPublicRepository ? '公开' : '私有' }}
         </ant-tag>
@@ -40,9 +50,8 @@
       <ant-button
         type="primary"
         style="height: 28px; padding: 0 12px; font-size: 12px;"
-        v-if="isCloneButtonShow"
         :loading="isCloning"
-        @click="handleOpenCloneModal">克隆
+      >克隆
       </ant-button>
       <star-control-button
         @update="handleStarStatusUpdate"
@@ -70,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { ExclamationCircleOutlined, LeftOutlined, MenuOutlined } from '@ant-design/icons-vue';
 import {
   Button as AntButton,
   Dropdown as AntDropdown,
@@ -78,7 +87,8 @@ import {
   message,
   Modal,
   Spin as AntSpin,
-  Tag as AntTag
+  Tag as AntTag,
+  Divider as AntDivider
 } from 'ant-design-vue';
 import { computed, createVNode, defineEmits, defineProps, inject, PropType, ref } from 'vue';
 import type { RepositoryModelType } from 'metagraph-constant';
@@ -90,10 +100,10 @@ import RepositoryViewChange
   from '@/views/repository-editor/repository-editor-header/repository-view-change.vue';
 import { CommentControlButton, StarControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { EditIcon } from '@/components/icons';
 import { RepositoryEditor, repositoryModel } from './model/repository.editor';
-const AntMenuItem = AntMenu.Item;
 
+const AntMenuItem = AntMenu.Item;
+const AntSubMenu = AntMenu.SubMenu;
 defineProps({
   viewStatus: {
     type: String as PropType<'section' | 'graph'>,
@@ -186,6 +196,7 @@ async function handleCloseCloneModal(params?: {
 function handleOpenCloneModal() {
   isCloneModalShow.value = true;
 }
+
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
 }
@@ -237,6 +248,12 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
 <style scoped lang="scss">
 @import "../../style/common";
 
+.divider-style {
+  height: 1px;
+  background: $borderColor;
+  width: 100%;
+  margin: 12px 0;
+}
 .repository-editor-header {
   background: #fafbfc;
   height: 56px;
@@ -250,8 +267,18 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
     display: flex;
     gap: 10px;
 
-    .logo {
+    .operation-icon {
+      height: 32px;
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
       cursor: pointer;
+
+      &:hover {
+        background: #eee;
+      }
     }
 
     .title {
@@ -267,6 +294,7 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
         align-items: center;
         cursor: pointer;
       }
+
       .title-icon {
         margin-left: 4px;
       }

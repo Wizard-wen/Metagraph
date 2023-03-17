@@ -22,11 +22,12 @@ import {
   KnowledgeNoAuthApiService,
   RepositoryApiService
 } from '@/api.service';
-import { RepositoryEditor } from '../model/repository.editor';
+import { repositoryBindEntityList, RepositoryEditor } from '../model/repository.editor';
 import './custom-edge-tooltip/test.tooltip';
 
 type CustomEdgeType = {
   isInnerRepository: boolean;
+  isDraggable?: boolean;
 } & KnowledgeEdgeInEdgeGroupType;
 export const isKnowledgeRelationLoading = ref(false);
 export const knowledgeInEdgeList = ref<KnowledgeEdgeInEdgeGroupType[]>([]);
@@ -49,7 +50,7 @@ export const entityRelationEdges = reactive<{
 export const graph = ref<AntvX6.Graph>();
 export const dnd = ref<AntvX6.Addon.Dnd>();
 export const websocketService = ref<WebsocketService>();
-
+console.log(process.env.VUE_APP_API_WEBSOCKET_BASE_URL!);
 export function initWebSocket(): void {
   websocketService.value = new WebsocketService(
     process.env.VUE_APP_API_WEBSOCKET_BASE_URL!,
@@ -62,6 +63,7 @@ export function initWebSocket(): void {
       }
     ]
   );
+  console.log(websocketService.value, '------websocket');
 }
 
 export class KnowledgeGraphData {
@@ -254,13 +256,15 @@ export class KnowledgeGraphData {
       return;
     }
     entityRelationEdges.entity = result.data.entity;
+    const repositoryEntityIdList = repositoryBindEntityList.value.map((item) => item.entity.id)
     entityRelationEdges.extendInnerList = result.data.extendInnerList.map((item) => ({
       ...item,
       isInnerRepository: true
     }));
     entityRelationEdges.extendOuterList = result.data.extendOuterList.map((item) => ({
       ...item,
-      isInnerRepository: false
+      isInnerRepository: false,
+      isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
     }));
     entityRelationEdges.preInnerList = result.data.preInnerList.map((item) => ({
       ...item,
@@ -268,7 +272,8 @@ export class KnowledgeGraphData {
     }));
     entityRelationEdges.preOuterList = result.data.preOuterList.map((item) => ({
       ...item,
-      isInnerRepository: false
+      isInnerRepository: false,
+      isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
     }));
   }
 

@@ -148,6 +148,23 @@ onUnmounted(() => {
     text-align: left;
     height: 100%;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      background-color: #adb0b8;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #8a8e99;
+    }
 
     .bottom-control {
       position: absolute;

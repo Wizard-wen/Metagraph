@@ -62,7 +62,6 @@
     </div>
     <div class="tree-bind-container">
       <div class="header">知识点</div>
-
       <div
         class="section-bind-scroll-container"
         v-if="currentSectionNode.entityList.length">

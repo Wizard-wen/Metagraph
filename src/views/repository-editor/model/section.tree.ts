@@ -127,7 +127,6 @@ export class SectionTreeService {
    * @private
    */
   async setSectionContent(sectionId: string, repositoryEntityId: string): Promise<void> {
-    debugger
     const result = await SectionNoAuthApiService.getSectionArticle({ sectionId });
     if (result.data) {
       currentSectionNode.content = JSON.parse(result.data.article.content);
