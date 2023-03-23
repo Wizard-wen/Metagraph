@@ -276,9 +276,9 @@ export class SectionTreeService {
    * 初始化单元可绑定实体
    * @private
    */
-  private async initEntityOptionList(): Promise<void> {
+  private async initEntityOptionList(value?: string): Promise<void> {
     const result = await EntityApiService.getEntityList({
-      // name: sectionModalData.selectedEntityId,
+      name: value,
       entityType: sectionModalData.entityType,
       pageIndex: 0,
       pageSize: 80

@@ -12,28 +12,29 @@
         </div>
         <template #overlay>
           <ant-menu>
-            <ant-menu-item @click="handleClickControl">
-              <div>新建</div>
+            <ant-menu-item @click="handleClickControl(item)">
+              <div>查看知识点</div>
             </ant-menu-item>
           </ant-menu>
         </template>
       </ant-dropdown>
-      <div class="icon-content-style" @click="handleClickControl">
-        <plus-outlined/>
+      <div class="icon-content-style" @click="handleClickControl(item)">
+        <eye-outlined/>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, PropType } from 'vue';
-import { MoreOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { defineEmits, defineProps, PropType } from 'vue';
+import { MoreOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
 }
 
+const emit = defineEmits(['control']);
 const AntMenuItem = AntMenu.Item;
 type ListDataType = {
   title: string,
@@ -48,8 +49,11 @@ defineProps({
   },
 });
 
-function handleClickControl() {
-
+function handleClickControl(item: ListDataType) {
+  emit('control', {
+    type: 'view',
+    params: item
+  });
 }
 </script>
 

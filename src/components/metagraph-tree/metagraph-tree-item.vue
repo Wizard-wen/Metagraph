@@ -105,7 +105,6 @@ function handleMouseLeave() {
 }
 
 function handleClickControl(type: OperationType, params?: any) {
-  console.log(params);
   emit('control', {
     type,
     data: params
@@ -167,6 +166,7 @@ function handlePassData($event: any) {
     text-align: left;
     cursor: pointer;
     flex: 1;
+    font-size: 12px;
     overflow: hidden; /*超出部分隐藏*/
     text-overflow: ellipsis; /* 超出部分显示省略号 */
     white-space: nowrap; /*规定段落中的文本不进行换行 */

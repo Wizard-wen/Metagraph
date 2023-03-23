@@ -1,6 +1,6 @@
 <template>
   <metagraph-tree-item
-    @control="$emit('control', $event)"
+    @control="handleControl($event)"
     @selectedChange="handleSelectedChange"
     :active-item-id="activeItemId"
     :ui-tree-list="uiTreeList"></metagraph-tree-item>
@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 
 import MetagraphTreeItem from '@/components/metagraph-tree/metagraph-tree-item.vue';
-import { defineProps, PropType, ref, watchEffect, defineEmits } from 'vue';
+import { defineEmits, defineProps, PropType, ref, watchEffect } from 'vue';
 import { TreeItemType, TreeItemUIType } from '@/components/metagraph-tree/type';
 
 const props = defineProps({
@@ -27,7 +27,7 @@ const props = defineProps({
   }
 });
 const uiTreeList = ref<TreeItemUIType[]>([]);
-const emit = defineEmits(['selectedChange']);
+const emit = defineEmits(['selectedChange', 'control']);
 watchEffect(() => {
   uiTreeList.value = props.treeList?.map((item) => ({
     ...item,
@@ -38,6 +38,10 @@ watchEffect(() => {
 
 function handleSelectedChange(params: { id: string }) {
   emit('selectedChange', params);
+}
+
+function handleControl($event: any) {
+  emit('control', $event);
 }
 </script>
 

@@ -30,6 +30,8 @@
         v-if="sectionModalData.entityType === 'Section'
       || sectionModalData.entityType === 'ChangeSection'">
         <ant-input
+          autocomplete="off"
+          placeholder="请输入目录名称"
           v-model:value="sectionModalForm.sectionName"></ant-input>
       </ant-form-item>
       <ant-form-item v-else label="绑定实体" name="selectedEntityId">
@@ -37,72 +39,55 @@
           v-model:value="sectionModalForm.selectedEntityId"
           optionLabelProp="label"
           style="width: 100%"
-          placeholder="Please select"
+          placeholder="请选择知识点"
           :options="sectionModalData.entityOptionList"/>
       </ant-form-item>
     </ant-form>
   </ant-modal>
 </template>
 
-<script lang="ts">
-import { defineComponent, inject, ref } from 'vue';
-import {
-  Input, Modal, Select, Form
-} from 'ant-design-vue';
+<script lang="ts" setup>
+import { inject, ref, defineEmits, defineProps } from 'vue';
+import { Form as AntForm, Input as AntInput, Modal as AntModal, Select as AntSelect } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import {
-  sectionModalData, SectionTreeService, sectionModalForm, sectionModalFormRules
+  sectionModalData,
+  sectionModalForm,
+  sectionModalFormRules,
+  SectionTreeService
 } from '../model/section.tree';
+const AntFormItem = AntForm.Item;
 
-export default defineComponent({
-  name: 'section-create-modal',
-  props: {
-    isModalVisible: {
-      type: Boolean,
-      required: true
-    }
-  },
-  components: {
-    AntSelect: Select,
-    AntModal: Modal,
-    AntInput: Input,
-    AntFormItem: Form.Item,
-    AntForm: Form
-  },
-  emits: ['close'],
-  setup(props, { emit }) {
-    const sectionTreeService = new SectionTreeService();
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const sectionModalFormRef = ref();
+const labelCol = ref({ span: 8 });
+const wrapperCol = ref({ offset: 0 });
 
-    function handleCloseModal(params: {
-      sectionId?: string,
-      entityId?: string
-    }) {
-      emit('close', params);
-    }
+const sectionTreeService = new SectionTreeService();
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+const sectionModalFormRef = ref();
 
-    async function handleCreateSection() {
-      sectionModalFormRef.value.validate()
-        .then(async () => {
-          sectionModalData.isConfirmLoading = true;
-          const result = await sectionTreeService.createSection(repositoryEntityId.value);
-          handleCloseModal(result);
-        });
-    }
-
-    return {
-      sectionModalData,
-      sectionModalForm,
-      sectionModalFormRules,
-      labelCol: { span: 8 },
-      wrapperCol: { offset: 0 },
-      handleCreateSection,
-      handleCloseModal,
-      sectionModalFormRef
-    };
+const emit = defineEmits(['close']);
+defineProps({
+  isModalVisible: {
+    type: Boolean,
+    default: false
   }
 });
+function handleCloseModal(params: {
+  sectionId?: string,
+  entityId?: string
+}) {
+  emit('close', params);
+}
+
+async function handleCreateSection() {
+  sectionModalFormRef.value.validate()
+    .then(async () => {
+      sectionModalData.isConfirmLoading = true;
+      const result = await sectionTreeService.createSection(repositoryEntityId.value);
+      handleCloseModal(result);
+    });
+}
+
 </script>
 
 <style scoped lang="scss">

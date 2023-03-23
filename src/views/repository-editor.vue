@@ -106,7 +106,6 @@ const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
 sectionArticleTiptapTextEditor.initEditorInstance();
 const { editor } = sectionArticleTiptapTextEditor;
 
-
 // 切换视图状态
 async function handleChangeView(view: 'section' | 'graph') {
   viewStatus.value = view;
