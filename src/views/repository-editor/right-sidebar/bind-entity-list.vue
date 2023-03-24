@@ -62,7 +62,7 @@ import {
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { useStore } from '@/store';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
-import CheckBar from '@/views/repository-editor/check-bar.vue';
+import CheckBar from '@/components/metagraph-tab-bar.vue';
 import MentionEntityList from '@/views/repository-editor/mention-entity-list.vue';
 
 const currentBar = ref<string>('published');

@@ -50,72 +50,113 @@
   </ant-modal>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {
-  Form, Input, message, Modal, Select
+  Form as AntForm,
+  Input as AntInput,
+  message,
+  Modal as AntModal,
+  Select as AntSelect
 } from 'ant-design-vue';
-import { defineComponent, ref, inject } from 'vue';
+import { defineEmits, defineProps, inject, ref } from 'vue';
 import {
   graph,
+  KnowledgeGraphData,
   knowledgeInEdgeList
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
+import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import { repositoryEntityIdKey } from '../model/provide.type';
 import {
-  knowledgeEdgeFormRules,
-  knowledgeEdgeFormRef,
-  knowledgeEdgeFormState, KnowledgeGraphPanel,
+  KnowledgeEdgeFormState,
+  knowledgeEdgeFormState,
+  KnowledgeGraphPanel,
 } from './knowledge.graph.panel';
 
-export default defineComponent({
-  name: 'edge-create-modal',
-  emits: ['close'],
-  props: {
-    isModalVisible: {
-      type: Boolean,
-      required: true
-    }
-  },
-  components: {
-    AntModal: Modal,
-    AntForm: Form,
-    AntFormItem: Form.Item,
-    AntTextArea: Input.TextArea,
-    AntSelect: Select,
-    AntSelectOption: Select.Option
-  },
-  setup(props, { emit }) {
-    const modalConfirmLoading = ref<boolean>(false);
-    const knowledgeGraphPanel = new KnowledgeGraphPanel();
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const handleModalCancel = () => {
-      if (knowledgeEdgeFormState.temporaryEdgeId) {
-        graph.value?.removeEdge(knowledgeEdgeFormState.temporaryEdgeId);
-      }
-      message.info('取消创建关联');
-      emit('close');
-    };
-
-    const handleModalOk = async () => {
-      const errorMessage = await knowledgeGraphPanel.validateEdge();
-      if (errorMessage) {
-        return;
-      }
-      modalConfirmLoading.value = true;
-      await knowledgeGraphPanel.createEdge(repositoryEntityId.value);
-      modalConfirmLoading.value = false;
-      emit('close');
-    };
-    return {
-      knowledgeEdgeFormRules,
-      knowledgeEdgeFormRef,
-      knowledgeEdgeFormState,
-      modalConfirmLoading,
-      knowledgeInEdgeList,
-      handleModalCancel,
-      handleModalOk
-    };
+const knowledgeEdgeFormRef = ref();
+const emit = defineEmits(['close']);
+defineProps({
+  isModalVisible: {
+    type: Boolean,
+    required: true
   }
 });
+
+const knowledgeEdgeFormRules = {
+  knowledgeEntityId: [
+    {
+      required: true,
+      message: '请选择所属实体',
+      trigger: 'change'
+    }
+  ],
+  targetKnowledgeEntityId: [
+    {
+      required: true,
+      message: '请选择目标实体',
+      trigger: 'change'
+    }
+  ],
+  originKnowledgeEntityId: [
+    {
+      required: true,
+      message: '请选择源实体',
+      trigger: 'change'
+    }
+  ],
+  description: [
+    {
+      required: true,
+      message: '请输入关联描述',
+      trigger: 'blur'
+    }
+  ],
+};
+
+const AntFormItem = AntForm.Item;
+const AntTextArea = AntInput.TextArea;
+const AntSelectOption = AntSelect.Option;
+
+const modalConfirmLoading = ref<boolean>(false);
+const knowledgeGraphPanel = new KnowledgeGraphPanel();
+const knowledgeGraphData = new KnowledgeGraphData();
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+const handleModalCancel = () => {
+  if (knowledgeEdgeFormState.temporaryEdgeId) {
+    graph.value?.removeEdge(knowledgeEdgeFormState.temporaryEdgeId);
+  }
+  message.info('取消创建关联');
+  emit('close');
+};
+
+async function validateEdge(): Promise<undefined | ValidateErrorEntity<KnowledgeEdgeFormState>> {
+  return new Promise((resolve) => {
+    knowledgeEdgeFormRef.value.validate()
+      .then(() => {
+        resolve(undefined);
+      })
+      .catch((error: ValidateErrorEntity<KnowledgeEdgeFormState>) => {
+        resolve(error);
+      });
+  });
+}
+
+const handleModalOk = async () => {
+  const errorMessage = await validateEdge();
+  if (errorMessage) {
+    return;
+  }
+  modalConfirmLoading.value = true;
+  const edgeData = await knowledgeGraphPanel.createEdgeInServer(repositoryEntityId.value);
+  if (edgeData) {
+    knowledgeGraphData.createNewEdge(edgeData);
+    message.success('关联创建成功');
+  } else {
+    message.error('关联创建失败');
+  }
+
+  modalConfirmLoading.value = false;
+  emit('close');
+};
 </script>
 
 <style scoped>

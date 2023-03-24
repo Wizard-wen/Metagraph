@@ -35,7 +35,9 @@
 
 <script lang="ts" setup>
 import { EntityCompletelyListItemType, KnowledgeEdgeInEdgeGroupType } from 'metagraph-constant';
-import { defineEmits, defineProps, PropType, ref } from 'vue';
+import {
+  defineEmits, defineProps, PropType, ref
+} from 'vue';
 import { EyeOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 

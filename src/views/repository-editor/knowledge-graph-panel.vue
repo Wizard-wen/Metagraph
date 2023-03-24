@@ -4,9 +4,9 @@
       <knowledge-connection></knowledge-connection>
       <div class="graph-content">
         <div class="graph-top">
-          <div style="height: 50px;" class="graph-control">
-            <zoom-in-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomInGraph"/>
-            <zoom-out-icon style="font-size: 30px;line-height: 50px;" @click="handleZoomOutGraph"/>
+          <div class="graph-control">
+            <zoom-in-icon class="control-icon" @click="handleZoomInGraph"/>
+            <zoom-out-icon class="control-icon" @click="handleZoomOutGraph"/>
           </div>
           <div style="display: flex">
             <div id="container" class="graph-graph"></div>
@@ -24,83 +24,51 @@
     @close="isModalVisible = false"></edge-create-modal>
 </template>
 
-<script lang="ts">
-import { Spin } from 'ant-design-vue';
+<script lang="ts" setup>
+import { Spin as AntSpin } from 'ant-design-vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
+import { EdgeCreateModal } from '@/views/repository-editor/knowledge-graph-panel/index';
 import {
-  defineComponent, onMounted, ref, onUnmounted, inject
-} from 'vue';
-import EdgeCreateModal from '@/views/repository-editor/knowledge-graph-panel/edge-create-modal.vue';
-import {
-  KnowledgeGraphData,
-  graph,
   initWebSocket,
-  isModalVisible
+  isModalVisible,
+  KnowledgeGraphData
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
 import KnowledgeConnection from './knowledge-graph-panel/knowledge-relation.vue';
-import {
-  knowledgeEdgeFormRules,
-  knowledgeEdgeFormRef,
-  knowledgeEdgeFormState,
-} from './knowledge-graph-panel/knowledge.graph.panel';
 
-export default defineComponent({
-  name: 'knowledge-graph-panel',
-  components: {
-    EdgeCreateModal,
-    KnowledgeConnection,
-    ZoomInIcon,
-    ZoomOutIcon,
-    AntSpin: Spin
-  },
-  setup() {
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const isEditable = inject(isEditableKey, ref(false));
-    const isExtendTreeGraphShow = ref(false);
-    const isPreTreeGraphShow = ref(false);
-    const isLoading = ref(false);
-    let knowledgeGraphData: KnowledgeGraphData;
-    onUnmounted(() => {
-      isLoading.value = true;
-      if (isEditable.value) {
-        knowledgeGraphData.closeWebSocket();
-      }
-      knowledgeGraphData.destroy();
-      isLoading.value = false;
-    });
-    onMounted(async () => {
-      isLoading.value = true;
-      knowledgeGraphData = new KnowledgeGraphData();
-      if (isEditable.value) {
-        initWebSocket();
-      }
-      await knowledgeGraphData.initData(repositoryEntityId.value, isEditable.value);
-      isLoading.value = false;
-    });
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+const isEditable = inject(isEditableKey, ref(false));
+const isLoading = ref(false);
+let knowledgeGraphData: KnowledgeGraphData;
 
-    const handleZoomInGraph = () => {
-      graph.value?.zoom(0.1);
-    };
-    const handleZoomOutGraph = () => {
-      graph.value?.zoom(-0.1);
-    };
+function handleZoomInGraph() {
+  knowledgeGraphData.handleZoomInGraph();
+}
 
-    return {
-      isExtendTreeGraphShow,
-      isPreTreeGraphShow,
-      isModalVisible,
-      graph,
-      handleZoomInGraph,
-      handleZoomOutGraph,
-      knowledgeEdgeFormRules,
-      knowledgeEdgeFormRef,
-      knowledgeEdgeFormState,
-      isLoading
-    };
-  },
+function handleZoomOutGraph() {
+  knowledgeGraphData.handleZoomOutGraph();
+}
+
+onUnmounted(() => {
+  isLoading.value = true;
+  if (isEditable.value) {
+    knowledgeGraphData.closeWebSocket();
+  }
+  knowledgeGraphData.destroy();
+  isLoading.value = false;
 });
+onMounted(async () => {
+  isLoading.value = true;
+  knowledgeGraphData = new KnowledgeGraphData();
+  if (isEditable.value) {
+    initWebSocket();
+  }
+  await knowledgeGraphData.initData(repositoryEntityId.value, isEditable.value);
+  isLoading.value = false;
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -118,10 +86,15 @@ export default defineComponent({
       height: 100%;
 
       .graph-control {
+        height: 50px;
         position: absolute;
         right: 10px;
         top: 0;
         z-index: 999;
+        .control-icon {
+          font-size: 30px;
+          line-height: 50px;
+        }
       }
 
       .graph-graph {

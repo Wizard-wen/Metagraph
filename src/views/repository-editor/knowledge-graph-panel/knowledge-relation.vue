@@ -1,36 +1,36 @@
 <template>
   <div class="toolbar">
-    <check-bar
+    <metagraph-tab-bar
       :is-editable="true"
       :current-key="currentBar"
       @selectedChange="handleBarChange"
-      :element-tabs="toolbarElementList"></check-bar>
+      :element-tabs="toolbarElementList"></metagraph-tab-bar>
     <div class="search-bar">
       <SearchOutlined class="search-icon"/>
       <input type="text" class="search-input" placeholder="搜索知识关联">
       <ControlOutlined class="search-control"/>
     </div>
-    <check-bar
+    <metagraph-tab-bar
       :is-editable="true"
       :current-key="currentMentionBar"
       @selectedChange="handleMentionBarChange"
-      :element-tabs="mentionStatusList"></check-bar>
+      :element-tabs="mentionStatusList"></metagraph-tab-bar>
     <div class="content">
       <div class="card-content" v-if="currentShow === 'preMentioned'">
         <normal-relation-list
           :relation-list="entityRelationEdges.preInnerList"></normal-relation-list>
       </div>
       <div class="card-content" v-if="currentShow === 'preUnmentioned'">
-<!--        <div-->
-<!--          v-for="(item, index) in entityRelationEdges.preOuterList"-->
-<!--          :key="index"-->
-<!--          data-type="rect"-->
-<!--          class="dnd-rect"-->
-<!--          :class="{'is-active': item.isDraggable}"-->
-<!--          :draggable="item.isDraggable"-->
-<!--          @mousedown="startDrag($event, item.item)">-->
-<!--          {{ item.item.content.name }}-->
-<!--        </div>-->
+        <!--        <div-->
+        <!--          v-for="(item, index) in entityRelationEdges.preOuterList"-->
+        <!--          :key="index"-->
+        <!--          data-type="rect"-->
+        <!--          class="dnd-rect"-->
+        <!--          :class="{'is-active': item.isDraggable}"-->
+        <!--          :draggable="item.isDraggable"-->
+        <!--          @mousedown="startDrag($event, item.item)">-->
+        <!--          {{ item.item.content.name }}-->
+        <!--        </div>-->
 
         <draggable-relation-list
           :relation-list="entityRelationEdges.preOuterList"
@@ -41,16 +41,16 @@
           :relation-list="entityRelationEdges.extendInnerList"></normal-relation-list>
       </div>
       <div class="card-content" v-if="currentShow === 'extendUnmentioned'">
-<!--        <div-->
-<!--          v-for="(item, index) in entityRelationEdges.extendOuterList"-->
-<!--          :key="index"-->
-<!--          data-type="rect"-->
-<!--          class="dnd-rect"-->
-<!--          :class="{'is-active': item.isDraggable}"-->
-<!--          :draggable="item.isDraggable"-->
-<!--          @mousedown="startDrag($event, item.item)">-->
-<!--          {{ item.item.content.name }}-->
-<!--        </div>-->
+        <!--        <div-->
+        <!--          v-for="(item, index) in entityRelationEdges.extendOuterList"-->
+        <!--          :key="index"-->
+        <!--          data-type="rect"-->
+        <!--          class="dnd-rect"-->
+        <!--          :class="{'is-active': item.isDraggable}"-->
+        <!--          :draggable="item.isDraggable"-->
+        <!--          @mousedown="startDrag($event, item.item)">-->
+        <!--          {{ item.item.content.name }}-->
+        <!--        </div>-->
         <draggable-relation-list
           :relation-list="entityRelationEdges.extendOuterList"
           @handleDrag="startDrag"></draggable-relation-list>
@@ -64,18 +64,18 @@ import { ControlOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import { computed, inject, onMounted, ref } from 'vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
+import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import {
   dnd,
   entityRelationEdges,
   graph,
   KnowledgeGraphData
-} from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
-import CheckBar from '@/views/repository-editor/check-bar.vue';
+} from './knowledge.graph.data';
 import NormalRelationList
-  from '@/views/repository-editor/knowledge-graph-panel/normal-relation-list.vue';
-import { repositoryBindEntityList } from '../model/repository.editor';
+  from './normal-relation-list.vue';
 import DraggableRelationList
-  from '@/views/repository-editor/knowledge-graph-panel/draggable-relation-list.vue';
+  from './draggable-relation-list.vue';
+import { repositoryBindEntityList } from '../model/repository.editor';
 
 const repositoryEntityIdList = computed(
   () => repositoryBindEntityList.value.map((item) => item.entity.id)
@@ -142,7 +142,7 @@ onMounted(() => {
 
 // 拖拽节点
 // todo 定制不可拖拽节点样式
-const startDrag = (params: {event: MouseEvent, entity: EntityCompletelyListItemType}) => {
+const startDrag = (params: { event: MouseEvent, entity: EntityCompletelyListItemType }) => {
   if (graph.value === undefined || dnd.value === undefined) {
     throw new Error('Graph not init');
   }

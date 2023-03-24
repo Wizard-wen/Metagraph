@@ -1,10 +1,10 @@
 <template>
   <div class="sidebar">
-    <check-bar
+    <metagraph-tab-bar
       :is-editable="isEditable"
       :current-key="currentBar"
       @selectedChange="handleBarChange"
-      :element-tabs="elementTabs"></check-bar>
+      :element-tabs="elementTabs"></metagraph-tab-bar>
     <div class="content">
       <toolbar-entity-list
         @createOrBindEntity="handleOpenCreateOrBindEntityModal"
@@ -36,7 +36,7 @@ import { defineEmits, inject, ref } from 'vue';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import UploadAndParseTextModal
   from '@/views/repository-editor/section-article-tip-tap/upload-and-parse-text-modal.vue';
-import CheckBar from '@/views/repository-editor/check-bar.vue';
+import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import ToolbarEntityList from './right-sidebar/bind-entity-list.vue';
 import AlternativeKnowledgeList from './right-sidebar/alternative-knowledge-list.vue';
 import CreateOrBindKnowledgeModal

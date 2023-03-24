@@ -1,22 +1,25 @@
 /**
- * @author songxiwen
+ * @author wizard.song
  * @date  2022/1/10 22:46
  */
 
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import * as AntvX6 from '@antv/x6';
 import { message, Modal } from 'ant-design-vue';
-import {
+import type {
   EntityCompletelyListItemType,
-  ExerciseModelType, KnowledgeEdgeInEdgeGroupType, KnowledgeEdgeModelType,
+  ExerciseModelType,
+  KnowledgeEdgeInEdgeGroupType,
+  KnowledgeEdgeModelType,
+  KnowledgeEdgeResponseType,
   KnowledgeModelType
 } from 'metagraph-constant';
 import { createVNode, reactive, ref } from 'vue';
 import { WebsocketService } from '@/service/websocket.service';
 import {
-  KnowledgeGraphPanel,
-  newEdgeId
+  KnowledgeGraphPanel
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.panel';
+
 import {
   EdgeNoAuthApiService,
   KnowledgeNoAuthApiService,
@@ -29,6 +32,9 @@ type CustomEdgeType = {
   isInnerRepository: boolean;
   isDraggable?: boolean;
 } & KnowledgeEdgeInEdgeGroupType;
+
+export const newEdgeId = ref();
+
 export const isKnowledgeRelationLoading = ref(false);
 export const knowledgeInEdgeList = ref<KnowledgeEdgeInEdgeGroupType[]>([]);
 export const isModalVisible = ref(false);
@@ -50,14 +56,14 @@ export const entityRelationEdges = reactive<{
 export const graph = ref<AntvX6.Graph>();
 export const dnd = ref<AntvX6.Addon.Dnd>();
 export const websocketService = ref<WebsocketService>();
-console.log(process.env.VUE_APP_API_WEBSOCKET_BASE_URL!);
+
 export function initWebSocket(): void {
   websocketService.value = new WebsocketService(
     process.env.VUE_APP_API_WEBSOCKET_BASE_URL!,
     [
       {
         event: 'graph',
-        handler(info) {
+        handler() {
           // todo
         }
       }
@@ -77,6 +83,47 @@ export class KnowledgeGraphData {
     minimap: 'mini-map-container'
   };
 
+  /**
+   * 生成新的edge
+   * @param edgeData
+   */
+  createNewEdge(edgeData: KnowledgeEdgeResponseType): void {
+    // 删除antv生成的临时edge
+    graph.value?.removeEdge(newEdgeId.value);
+    // 插入自定义edge
+    graph.value?.addEdge({
+      id: edgeData.id,
+      source: {
+        cell: `${edgeData.originKnowledgeEntityId}`,
+        port: `${edgeData.originKnowledgeEntityId}-out`
+      },
+      target: {
+        cell: `${edgeData.targetKnowledgeEntityId}`,
+        port: `${edgeData.targetKnowledgeEntityId}-in`
+      },
+      labels: [edgeData.description || ''],
+      connector: 'rounded',
+      attrs: {
+        line: {
+          stroke: '#a0a0a0',
+          strokeWidth: 1,
+          targetMarker: {
+            name: 'classic',
+            size: 7,
+          },
+        },
+      },
+      // tools: [
+      //   {
+      //     name: 'tooltip',
+      //     args: {
+      //       tooltip: 'Tooltip Content',
+      //     },
+      //   },
+      // ],
+    });
+  }
+
   async initData(repositoryEntityId: string, hasAuth: boolean): Promise<void> {
     this.initGraph();
 
@@ -84,8 +131,8 @@ export class KnowledgeGraphData {
       return;
     }
     const result = await Promise.all([
-      this.createEdges(repositoryEntityId),
-      this.createNodes(repositoryEntityId, hasAuth)
+      KnowledgeGraphData.initEdges(repositoryEntityId),
+      KnowledgeGraphData.initNodes(repositoryEntityId, hasAuth)
     ]);
     if (result[0] === undefined || result[1] === undefined) {
       return;
@@ -104,19 +151,19 @@ export class KnowledgeGraphData {
     this.initEdgeConnectedEventHandler();
   }
 
-  handleZoomInGraph() {
+  handleZoomInGraph(): void {
     graph.value?.zoom(0.1);
   }
 
-  handleZoomOutGraph() {
+  handleZoomOutGraph(): void {
     graph.value?.zoom(-0.1);
   }
 
-  destroy() {
+  destroy(): void {
     graph.value?.dispose();
   }
 
-  closeWebSocket() {
+  closeWebSocket(): void {
     if (!websocketService.value) {
       return;
     }
@@ -166,17 +213,14 @@ export class KnowledgeGraphData {
     if (!graph.value) {
       return;
     }
-    graph.value.on('edge:connected', async ({
-      edge,
-      previousView,
-      currentView
-    }) => {
+    graph.value.on('edge:connected', async ({ edge }) => {
       if (edge.getSourceCell() === null || edge.getTargetCell() === null) {
         return;
       }
       const sourceCellData = edge.getSourceCell()?.data;
       const targetCellData = edge.getTargetCell()?.data;
       knowledgeInEdgeList.value = [sourceCellData, targetCellData];
+      console.log(edge.id, 'connected---------------------------');
       this.knowledgeGraphPanel.setKnowledgeEdgeFormState({
         temporaryEdgeId: edge.id,
         originKnowledgeEntityId: sourceCellData.entity.id,
@@ -192,10 +236,7 @@ export class KnowledgeGraphData {
     if (!graph.value) {
       return;
     }
-    graph.value.on('edge:selected', ({
-      cell,
-      edge
-    }) => {
+    graph.value.on('edge:selected', ({ edge }) => {
       edge.setAttrs({
         line: {
           stroke: '#7c68fc', // 指定 path 元素的填充色
@@ -208,10 +249,7 @@ export class KnowledgeGraphData {
     if (!graph.value) {
       return;
     }
-    graph.value.on('edge:unselected', ({
-      cell,
-      edge
-    }) => {
+    graph.value.on('edge:unselected', ({ edge }) => {
       edge.setAttrs({
         line: {
           stroke: '#000', // 指定 path 元素的填充色
@@ -224,10 +262,7 @@ export class KnowledgeGraphData {
     if (!graph.value) {
       return;
     }
-    graph.value.on('edge:change:connector', ({
-      cell,
-      edge
-    }) => {
+    graph.value.on('edge:change:connector', () => {
       // todo
     });
   }
@@ -239,12 +274,18 @@ export class KnowledgeGraphData {
     graph.value.on('node:click', async ({ cell }) => {
       isKnowledgeRelationLoading.value = true;
       selectedGraphNodeEntityId.value = cell.id;
-      await KnowledgeGraphData.getRelations(cell.id, repositoryEntityId);
+      await KnowledgeGraphData.getCurrentNodeRelations(cell.id, repositoryEntityId);
       isKnowledgeRelationLoading.value = false;
     });
   }
 
-  private static async getRelations(
+  /**
+   * 获取当前节点的关联节点
+   * @param knowledgeEntityId
+   * @param repositoryEntityId
+   * @private
+   */
+  private static async getCurrentNodeRelations(
     knowledgeEntityId: string,
     repositoryEntityId: string
   ): Promise<void> {
@@ -255,44 +296,54 @@ export class KnowledgeGraphData {
     if (!result.data) {
       return;
     }
+    // 当前知识点
     entityRelationEdges.entity = result.data.entity;
-    const repositoryEntityIdList = repositoryBindEntityList.value.map((item) => item.entity.id)
-    entityRelationEdges.extendInnerList = result.data.extendInnerList.map((item) => ({
-      ...item,
-      isInnerRepository: true
-    }));
-    entityRelationEdges.extendOuterList = result.data.extendOuterList.map((item) => ({
-      ...item,
-      isInnerRepository: false,
-      isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
-    }));
-    entityRelationEdges.preInnerList = result.data.preInnerList.map((item) => ({
-      ...item,
-      isInnerRepository: true
-    }));
-    entityRelationEdges.preOuterList = result.data.preOuterList.map((item) => ({
-      ...item,
-      isInnerRepository: false,
-      isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
-    }));
+    const repositoryEntityIdList = repositoryBindEntityList.value
+      .map((item) => item.entity.id);
+    // 知识库内引申知识点
+    entityRelationEdges.extendInnerList = result.data.extendInnerList
+      .map((item: KnowledgeEdgeInEdgeGroupType) => ({
+        ...item,
+        isInnerRepository: true
+      }));
+    // 知识库外引申知识点
+    entityRelationEdges.extendOuterList = result.data.extendOuterList
+      .map((item: KnowledgeEdgeInEdgeGroupType) => ({
+        ...item,
+        isInnerRepository: false,
+        isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
+      }));
+    // 知识库内前提知识点
+    entityRelationEdges.preInnerList = result.data.preInnerList
+      .map((item: KnowledgeEdgeInEdgeGroupType) => ({
+        ...item,
+        isInnerRepository: true
+      }));
+    // 知识库外前提知识点
+    entityRelationEdges.preOuterList = result.data.preOuterList
+      .map((item: KnowledgeEdgeInEdgeGroupType) => ({
+        ...item,
+        isInnerRepository: false,
+        isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
+      }));
   }
 
   private initNodeMovedEventHandler(repositoryEntityId: string) {
     if (!graph.value || !websocketService.value) {
       return;
     }
-    graph.value.on('node:moved', async ({
-      x,
-      y,
-      node
+    graph.value.on('node:moved', async (params: {
+      x: number;
+      y: number;
+      node: AntvX6.Node;
     }) => {
       websocketService.value?.send({
         event: 'graph',
         data: {
-          entityId: node.data.entity.id,
+          entityId: params.node.data.entity.id,
           repositoryEntityId,
-          x,
-          y
+          x: params.x,
+          y: params.y
         }
       });
     });
@@ -302,15 +353,14 @@ export class KnowledgeGraphData {
     if (!graph.value) {
       return;
     }
-    graph.value.on('edge:removed', async ({
-      edge,
-      options
+    graph.value.on('edge:removed', async (params: {
+      options: { [key: string]: never }
     }) => {
       // 删除边的时候option可以自定义一个属性
-      if (!options.ui) {
+      if (!params.options.ui) {
         return;
       }
-      await this.createEdges(repositoryEntityId);
+      await KnowledgeGraphData.initEdges(repositoryEntityId);
     });
   }
 
@@ -374,7 +424,7 @@ export class KnowledgeGraphData {
             name: 'button-remove',
             args: {
               distance: -30,
-              onClick(params: { view: any }) {
+              onClick(params: { view: AntvX6.CellView }) {
                 Modal.confirm({
                   title: '确定删除知识关联?',
                   okText: '确定',
@@ -382,7 +432,7 @@ export class KnowledgeGraphData {
                   icon: createVNode(ExclamationCircleOutlined),
                   content: '删除关系操作不可恢复，请谨慎操作',
                   async onOk() {
-                    await _this.knowledgeGraphPanel.removeEdge({
+                    await _this.knowledgeGraphPanel.removeEdgeInServer({
                       id: edge.id,
                       repositoryEntityId
                     });
@@ -411,7 +461,15 @@ export class KnowledgeGraphData {
     });
   }
 
+  /**
+   * 初始化整个画布
+   */
   private initGraph(): void {
+    const minimapElement = document.getElementById(this.container.minimap);
+    const graphElement = document.getElementById(this.container.graph);
+    if (!minimapElement || !graphElement) {
+      return;
+    }
     graph.value = new AntvX6.Graph({
       autoResize: true,
       selecting: {
@@ -420,9 +478,9 @@ export class KnowledgeGraphData {
       },
       minimap: {
         enabled: true,
-        container: document.getElementById(this.container.minimap)!,
+        container: minimapElement,
       },
-      container: document.getElementById(this.container.graph)!,
+      container: graphElement,
       width: window.innerWidth.valueOf() - 520,
       height: (window.innerHeight.valueOf() - 56),
       background: {
@@ -452,6 +510,7 @@ export class KnowledgeGraphData {
           },
         },
       },
+      // 配置全局的连线规则
       connecting: {
         snap: true,
         allowBlank: false,
@@ -465,6 +524,7 @@ export class KnowledgeGraphData {
             direction: 'V',
           },
         },
+        // 连接的过程中创建新的边
         createEdge() {
           const edge = new AntvX6.Shape.Edge({
             attrs: {
@@ -478,22 +538,25 @@ export class KnowledgeGraphData {
               },
             },
           });
+          console.log(edge.id, '---------------------------');
           newEdgeId.value = edge.id;
           return edge;
         },
-        validateConnection({
-          sourceView,
-          targetView,
-          targetMagnet
+        // 在移动边的时候判断连接是否有效，如果返回 false ，
+        // 当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素。
+        validateConnection(params: {
+          targetView?: AntvX6.CellView | null
+          targetMagnet?: Element | null
         }) {
-          if (!targetMagnet) {
+          if (!params.targetMagnet) {
             return false;
           }
-          if (targetMagnet.getAttribute('port-group') !== 'in') {
+          if (params.targetMagnet.getAttribute('port-group') !== 'in') {
             return false;
           }
-          if (targetView) {
-            const node = targetView.cell;
+          if (params.targetView) {
+            const node = params.targetView.cell;
+            console.log(node);
           }
           return true;
         },
@@ -501,6 +564,10 @@ export class KnowledgeGraphData {
     });
   }
 
+  /**
+   * 初始化拖拽操作区
+   * @param repositoryEntityId
+   */
   private initDnd(repositoryEntityId: string): void {
     if (!graph.value) {
       return;
@@ -549,7 +616,8 @@ export class KnowledgeGraphData {
     });
   }
 
-  private async createEdges(repositoryEntityId: string): Promise<any[] | undefined> {
+  private static async initEdges(repositoryEntityId: string)
+    : Promise<AntvX6.Edge.Metadata[] | undefined> {
     const result = await EdgeNoAuthApiService.getListByRepositoryId({
       edgeRepositoryEntityId: repositoryEntityId
     });
@@ -590,13 +658,10 @@ export class KnowledgeGraphData {
     }));
   }
 
-  private async createNodes(
+  private static async initNodes(
     repositoryEntityId: string,
     hasAuth: boolean
-  ): Promise<any[] | undefined> {
-    if (!graph.value) {
-      return undefined;
-    }
+  ): Promise<AntvX6.Node.Metadata[] | undefined> {
     const result = await KnowledgeNoAuthApiService.getRepositoryKnowledgeList({
       repositoryEntityId
     });
@@ -605,7 +670,7 @@ export class KnowledgeGraphData {
     }
     return result.data.list.map((item: EntityCompletelyListItemType) => {
       const ports = KnowledgeGraphData.generatePort(item);
-      let node: any = {
+      let node: AntvX6.Node.Metadata = {
         id: item.entity.id,
         height: 30,
         width: 150,

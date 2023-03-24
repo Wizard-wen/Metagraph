@@ -49,7 +49,7 @@ const elementShowTabs = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '../../style/common';
+@import '../style/common';
 .tabs {
   height: 40px;
   font-size: 12px;
