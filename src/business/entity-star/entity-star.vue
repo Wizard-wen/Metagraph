@@ -34,7 +34,7 @@ import {
   defineComponent, onMounted, reactive, ref, toRef, toRefs
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { StarApiService } from '@/api.service';
+import { StarApiService } from '@/api-service';
 
 export default defineComponent({
   name: 'entity-star',

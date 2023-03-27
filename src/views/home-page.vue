@@ -1,20 +1,29 @@
 <template>
-  <div class="home-page">
-    <div class="aside" v-if="isLogin" id="step1" data-homepage="1">
-      <left-aside-list data-title="Welcome!" data-intro="Hello World! 👋"></left-aside-list>
+  <div class="home-page" v-if="isLogin">
+    <div class="aside" id="step1" data-homepage="1">
+      <aside-list data-title="Welcome!" data-intro="Hello World! 👋"></aside-list>
     </div>
     <div class="right-side" id="step4" data-homepage="4">
       <div class="container">
         <div class="content authed-list-content">
           <div class="list-content">
-            <authed-main-list  v-if="isLogin"></authed-main-list>
+            <authed-main-list v-if="isLogin"></authed-main-list>
             <no-auth-main-list v-else></no-auth-main-list>
-            <div class="icp-message">
-              <a href="https://beian.miit.gov.cn/">京ICP备20020548号-3</a>
-            </div>
+            <ipc-message></ipc-message>
           </div>
           <hot-list></hot-list>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-page" v-else>
+    <div class="no-auth-side">
+      <div class="container">
+        <div class="list-content">
+          <no-auth-main-list></no-auth-main-list>
+          <ipc-message></ipc-message>
+        </div>
+        <hot-list></hot-list>
       </div>
     </div>
   </div>
@@ -29,11 +38,12 @@ import {
   getHotList,
   getOwnRepositoryList,
   getRepositoryList
-} from '@/views/home-page/home.page';
+} from '@/views/home-page/home-page-model';
 import { useStore } from '@/store';
 import NoAuthMainList from '@/views/home-page/no-auth-main-list.vue';
 import AuthedMainList from '@/views/home-page/authed-main-list.vue';
-import { LeftAsideList, HotList } from './home-page/index';
+import IpcMessage from '@/views/home-page/ipc-message.vue';
+import { AsideList, HotList } from './home-page/index';
 
 const store = useStore();
 const isLogin = computed(() => store.state.user.isLogin);
@@ -84,38 +94,47 @@ onMounted(async () => {
     flex: 1;
     height: calc(100vh - 56px);
     overflow-y: scroll;
+  }
+
+  .no-auth-side {
+    width: 100%;
+    height: calc(100vh - 56px);
+    overflow-y: scroll;
 
     .container {
+      width: 1350px;
+      margin: 0 auto;
+      display: flex;
+      .list-content {
+        margin-right: 30px;
+      }
+    }
+  }
+
+  .container {
+    width: 100%;
+
+    .content {
+      margin: 0 auto;
       width: 100%;
+      display: flex;
+      padding: 30px 20px 0 20px;
 
-      .content {
-        margin: 0 auto;
-        width: max-content;
-        display: flex;
-        padding-top: 30px;
-        .list-content {
-
-        }
-      }
-
-      .authed-list-content {
-
-      }
-
-      .no-auth-list-content {
-
+      .list-content {
+        width: 100%;
       }
     }
-  }
 
-  .icp-message {
-    height: 100px;
-    line-height: 100px;
+    .authed-list-content {
 
-    a {
-      font-size: 12px;
-      color: #a9a9a9;
     }
+
+    .no-auth-list-content {
+      width: 1440px;
+      justify-content: space-around;
+    }
+
   }
+
 }
 </style>

@@ -7,26 +7,14 @@
   </ant-spin>
 </template>
 
-<script lang="ts">
-import { Spin } from 'ant-design-vue';
-import { defineComponent, computed } from 'vue';
+<script lang="ts" setup>
+import { Spin as AntSpin } from 'ant-design-vue';
+import { computed } from 'vue';
 import { useStore } from '@/store';
 import MetagraphHeader from './main/metagraph-header.vue';
+const store = useStore();
+const spinning = computed(() => store.state.global.isSpinning);
 
-export default defineComponent({
-  name: 'Main',
-  components: {
-    MetagraphHeader,
-    AntSpin: Spin
-  },
-  setup() {
-    const store = useStore();
-    const spinning = computed(() => store.state.global.isSpinning);
-    return {
-      spinning
-    };
-  }
-});
 </script>
 <style lang="scss" scoped>
 .page-container {

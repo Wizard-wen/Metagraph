@@ -53,7 +53,6 @@ export class CommonUtil {
     const halfamonth = day * 15;
     const month = day * 30;
     const now = new Date().getTime(); // 获取当前时间毫秒
-    console.log(now);
     const diffValue = now - dateTimeStamp;// 时间差
 
     if (diffValue < 0) {

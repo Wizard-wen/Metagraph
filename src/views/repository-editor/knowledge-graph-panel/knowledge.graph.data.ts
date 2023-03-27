@@ -24,7 +24,7 @@ import {
   EdgeNoAuthApiService,
   KnowledgeNoAuthApiService,
   RepositoryApiService
-} from '@/api.service';
+} from '@/api-service';
 import { repositoryBindEntityList, RepositoryEditor } from '../model/repository.editor';
 import './custom-edge-tooltip/test.tooltip';
 

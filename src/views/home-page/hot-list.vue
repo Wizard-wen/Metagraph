@@ -38,7 +38,7 @@ import { StarOutlined } from '@ant-design/icons-vue';
 import { MetagraphTag } from 'metagraph-ui';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
-import { hotRepositoryList } from './home.page';
+import { hotRepositoryList } from './home-page-model';
 
 const router = useRouter();
 const store = useStore();

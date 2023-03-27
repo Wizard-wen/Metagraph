@@ -18,7 +18,7 @@ import {
   EntityNoAuthApiService, KnowledgeApiService, RepositoryApiService,
   RepositoryNoAuthApiService,
   SectionApiService
-} from '@/api.service';
+} from '@/api-service';
 
 export const isRepositoryEditorLoading = ref(false);
 

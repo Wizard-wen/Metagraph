@@ -3,7 +3,7 @@
  * @date  2021/11/22 00:04
  */
 
-import { SectionTreeNodeUIType } from '@/api.service/no.auth/section.no.auth.api.service';
+import { SectionTreeNodeUIType } from '@/api-service/no.auth/section.no.auth.api.service';
 import { IndexdbService } from '@/service/indexdb.service';
 import type { JSONContent } from '@tiptap/vue-3';
 import { message } from 'ant-design-vue';
@@ -15,7 +15,7 @@ import type {
 import { SectionEntityType } from 'metagraph-constant';
 import { reactive, ref } from 'vue';
 import { tiptapInitData } from '@/store/constant';
-import { EntityApiService, SectionApiService, SectionNoAuthApiService } from '@/api.service';
+import { EntityApiService, SectionApiService, SectionNoAuthApiService } from '@/api-service';
 import { TreeItemType } from '@/components/metagraph-tree/type';
 
 export type SectionOperationType =

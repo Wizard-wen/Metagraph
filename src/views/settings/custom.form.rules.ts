@@ -4,7 +4,7 @@
  */
 
 import { reactive } from 'vue';
-import { UserNoAuthApiService } from '@/api.service';
+import { UserNoAuthApiService } from '@/api-service';
 
 export const customFormRules = reactive({
   name: [

@@ -13,7 +13,7 @@ import {
   KnowledgeApiService,
   RepositoryApiService,
   RepositoryNoAuthApiService
-} from '@/api.service';
+} from '@/api-service';
 import { repositoryBindEntityList } from '../../model/repository.editor';
 
 export const searchText = ref<string | undefined>(undefined);

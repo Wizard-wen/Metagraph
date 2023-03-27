@@ -26,7 +26,7 @@ import {
 } from 'vue';
 import { message } from 'ant-design-vue';
 import { StarOutlined } from '@ant-design/icons-vue';
-import { StarApiService } from '@/api.service';
+import { StarApiService } from '@/api-service';
 import EntityStar from '@/business/entity-star/entity-star.vue';
 import { MetagraphDrawer, SocialActionButton } from '@/components';
 

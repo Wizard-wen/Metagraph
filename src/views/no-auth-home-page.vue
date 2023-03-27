@@ -1,5 +1,6 @@
 <template>
   <div class="no-auth-page">
+    <metagraph-header></metagraph-header>
     <div class="banner">
       <div class="left">
         <div class="title-content">
@@ -22,9 +23,6 @@
         <img width="500" :src="FirstImage" alt="">
       </div>
     </div>
-
-    <div class="sticky"><h1>Less bazel, more screen.</h1></div>
-    <!--    <div class="banner-bg"></div>-->
   </div>
 </template>
 
@@ -32,6 +30,7 @@
 import { ArrowRightOutlined } from '@ant-design/icons-vue';
 import FirstImage from '@/assets/co-working-space.png';
 import { onMounted } from 'vue';
+import MetagraphHeader from '@/views/main/metagraph-header.vue';
 
 onMounted(() => {
   const h1 = document.querySelector('h1');
@@ -39,7 +38,7 @@ onMounted(() => {
     const scrolled = document.documentElement.scrollTop / (document.documentElement.scrollHeight -
       document.documentElement.clientHeight);
     console.log(scrolled);
-    h1!.style.backgroundPositionX = `${(1 - scrolled) * 100}%`;
+    h1!.style.backgroundPositionX = `${ (1 - scrolled) * 100 }%`;
   });
 });
 
@@ -49,9 +48,14 @@ onMounted(() => {
 $text-primary: #262626;
 .no-auth-page {
   box-sizing: border-box;
-  width: 100vw;
-  height: calc(100vh - 56px);
+  width: 100%;
   overflow-y: auto;
+
+  .header {
+    height: 65px;
+    width: 100%;
+    background: #e7e9e8;
+  }
 
   .banner {
     //background: #5F95FF;
@@ -60,8 +64,7 @@ $text-primary: #262626;
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
-    height: calc(100vh - 56px);
-    margin: -80px auto 0;
+    margin: 0 auto;
 
     .left {
       min-height: 500px;
@@ -172,6 +175,7 @@ $text-primary: #262626;
     height: 100vh;
     justify-content: center;
     align-items: center;
+
     h1 {
       color: transparent;
       font-size: 5rem;
@@ -187,7 +191,5 @@ $text-primary: #262626;
       background-position-x: 0;
     }
   }
-
-
 }
 </style>

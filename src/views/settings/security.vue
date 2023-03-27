@@ -38,7 +38,7 @@ import {
   defineComponent, reactive, UnwrapRef, ref
 } from 'vue';
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
-import { UserApiService } from '@/api.service';
+import { UserApiService } from '@/api-service';
 import SettingHeader from './setting.header.vue';
 
 interface FormState {

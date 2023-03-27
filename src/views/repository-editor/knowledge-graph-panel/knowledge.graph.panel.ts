@@ -10,7 +10,7 @@ import type {
   KnowledgeEdgeResponseType,
   KnowledgeModelType
 } from 'metagraph-constant';
-import { EdgeApiService } from '@/api.service';
+import { EdgeApiService } from '@/api-service';
 
 export interface KnowledgeEdgeFormState {
   knowledgeEntityId?: string;

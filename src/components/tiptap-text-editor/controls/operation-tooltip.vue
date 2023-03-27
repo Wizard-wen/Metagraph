@@ -1,16 +1,21 @@
 <template>
   <a-tooltip :trigger="['hover']" :title="desc" :getPopupContainer="getPopupContainer"
-             :overlayClassName="'custom-tool-tip'" placement="bottom">
+             :overlayClassName="'custom-tool-tip'" :placement="placement">
     <slot></slot>
   </a-tooltip>
 </template>
 
 <script lang="ts" setup>
+import { defineProps } from 'vue';
 import { Tooltip as ATooltip } from 'ant-design-vue';
 
 defineProps({
   desc: {
     type: String
+  },
+  placement: {
+    type: String,
+    default: 'bottom'
   }
 });
 
@@ -19,7 +24,7 @@ function getPopupContainer(triggerNode: any) {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .custom-tool-tip {
   border-radius: 6px;
 

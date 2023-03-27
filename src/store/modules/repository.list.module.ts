@@ -5,7 +5,7 @@
 
 import { Module } from 'vuex';
 import { RootStateType, RepositoryListType } from '@/store/type';
-import { RepositoryApiService } from '@/api.service';
+import { RepositoryApiService } from '@/api-service';
 import { ActionEnum, MutationEnum } from '@/store/constant';
 
 export const repositoryListModule: Module<RepositoryListType, RootStateType> = {

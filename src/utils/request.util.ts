@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios';
-import { ApiPathEnum } from '@/api.service/config/api.config';
+import { ApiPathEnum } from '@/api-service/config/api.config';
 
 export interface PublicApiResponseType<T> {
   data?: T;

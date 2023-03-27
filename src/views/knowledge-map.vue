@@ -92,7 +92,7 @@ import { useRouter } from 'vue-router';
 import {
   ArrowDownIcon, ArrowRightIcon, ArrowLeftIcon, ZoomInIcon, ZoomOutIcon
 } from '@/components';
-import { KnowledgeNoAuthApiService } from '@/api.service';
+import { KnowledgeNoAuthApiService } from '@/api-service';
 import {
   KnowledgeMap,
   graph,

@@ -27,7 +27,7 @@ import {
   DomainNoAuthApiService,
   KnowledgeApiService, KnowledgeNoAuthApiService, RepositoryApiService,
   RepositoryNoAuthApiService, TagApiService
-} from '@/api.service';
+} from '@/api-service';
 import { tiptapInitData } from '@/store/constant';
 
 export const draftKnowledgeEntityIdInjectKey: InjectionKey<Ref<string>> = Symbol('draftKnowledgeEntityId');

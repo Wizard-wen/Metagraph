@@ -5,11 +5,11 @@
 
 import { EntityCompletelyListItemType, UpdateRecordType, UserModelType } from 'metagraph-constant';
 import { reactive, ref } from 'vue';
-import { ActivityApiService } from '@/api.service/activity.api.service';
-import { FollowApiService } from '@/api.service/follow.api.service';
-import { FollowNoAuthApiService } from '@/api.service/no.auth/follow.no.auth.api.service';
-import { StarNoAuthApiService } from '@/api.service/no.auth/star.no.auth.api.service';
-import { RepositoryNoAuthApiService, UserApiService, UserNoAuthApiService } from '@/api.service';
+import { ActivityApiService } from '@/api-service/activity.api.service';
+import { FollowApiService } from '@/api-service/follow.api.service';
+import { FollowNoAuthApiService } from '@/api-service/no.auth/follow.no.auth.api.service';
+import { StarNoAuthApiService } from '@/api-service/no.auth/star.no.auth.api.service';
+import { RepositoryNoAuthApiService, UserApiService, UserNoAuthApiService } from '@/api-service';
 
 export const myStaredEntityList = reactive<{
   target: EntityCompletelyListItemType[]

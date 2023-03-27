@@ -77,8 +77,8 @@ import {
 import { useRouter } from 'vue-router';
 import { customFormRules } from '@/views/settings/custom.form.rules';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
-import { UserNoAuthApiService } from '@/api.service/no.auth/user.no.auth.api.service';
-import { UserApiService } from '@/api.service';
+import { UserNoAuthApiService } from '@/api-service/no.auth/user.no.auth.api.service';
+import { UserApiService } from '@/api-service';
 
 interface SignUpFormState {
   name: string;

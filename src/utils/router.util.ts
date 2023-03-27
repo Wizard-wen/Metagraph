@@ -20,13 +20,36 @@ export class RouterUtil {
     return JSON.parse(CryptoUtil.decrypt(t, { iv, key }));
   }
 
-  static async jumpTo(path: string, params: { [key: string]: string | number }) {
-    const result = RouterUtil.encryptQuery(params);
+  static async jumpTo(path: string, params?: { [key: string]: string | number }): Promise<void> {
+    // const result = RouterUtil.encryptQuery(params);
+    let queryParams = {};
+    if (params) {
+      queryParams = {
+        ...params
+      };
+    }
     await router.push({
       path,
       query: {
-        // t: result
+        ...queryParams
       }
+    });
+  }
+
+  static async replaceTo(path: string, params?: { [key: string]: string | number }): Promise<void> {
+    // const result = RouterUtil.encryptQuery(params);
+    let queryParams = {};
+    if (params) {
+      queryParams = {
+        ...params
+      };
+    }
+    await router.push({
+      path,
+      query: {
+        ...queryParams
+      },
+      replace: true
     });
   }
 

@@ -56,7 +56,7 @@ import {
 import {
   defineComponent, onMounted, reactive, ref
 } from 'vue';
-import { UserApiService } from '@/api.service';
+import { UserApiService } from '@/api-service';
 import EndTime from '@/views/settings/end-time.vue';
 import { bindEmailObject, Settings } from './settings';
 import SettingHeader from './setting.header.vue';

@@ -2,7 +2,7 @@
  * @author songxiwen
  * @date  2022/4/6 16:30
  */
-import { PlanApiService } from '@/api.service/plan.api.service';
+import { PlanApiService } from '@/api-service/plan.api.service';
 import { CommonUtil } from '@/utils';
 import { message } from 'ant-design-vue';
 import { PlanListItemType } from 'metagraph-constant';

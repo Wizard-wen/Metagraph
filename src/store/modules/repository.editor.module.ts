@@ -16,7 +16,7 @@ import {
   KnowledgeNoAuthApiService,
   RepositoryNoAuthApiService,
   SectionNoAuthApiService
-} from '@/api.service';
+} from '@/api-service';
 import { ActionEnum, MutationEnum, tiptapInitData } from '@/store/constant';
 import { RepositoryEditorStateType, RootStateType } from '@/store/type';
 

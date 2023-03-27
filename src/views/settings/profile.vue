@@ -70,7 +70,7 @@ import {
 import { customFormRules } from '@/views/settings/custom.form.rules';
 import UploadFormItem from '@/components/upload/upload-form-item.vue';
 import { useStore } from '@/store';
-import { UserApiService } from '@/api.service';
+import { UserApiService } from '@/api-service';
 import SettingHeader from './setting.header.vue';
 import { userProfileFormState, UserProfileFormStateType } from './settings';
 

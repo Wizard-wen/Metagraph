@@ -30,7 +30,7 @@ import {
 } from 'vue';
 import { Form, Input, Modal } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { RepositoryApiService } from '@/api.service';
+import { RepositoryApiService } from '@/api-service';
 
 interface FormState {
   name: string;

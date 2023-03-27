@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { PlanApiService } from '@/api.service/plan.api.service';
+import { PlanApiService } from '@/api-service/plan.api.service';
 import { PlanList } from '@/views/plan/plan.list';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {

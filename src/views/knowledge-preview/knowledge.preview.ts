@@ -2,7 +2,7 @@
  * @author songxiwen
  * @date  2022/5/4 19:51
  */
-import { KnowledgeApiService, KnowledgeNoAuthApiService } from '@/api.service';
+import { KnowledgeApiService, KnowledgeNoAuthApiService } from '@/api-service';
 import { knowledgeDrawerState } from '@/business';
 import { EntityCompletelyListItemType } from 'metagraph-constant';
 import { ref } from 'vue';

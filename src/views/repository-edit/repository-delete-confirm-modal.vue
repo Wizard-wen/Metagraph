@@ -61,7 +61,7 @@ import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interfac
 import {
   reactive, ref, UnwrapRef, toRef, defineComponent, onMounted
 } from 'vue';
-import { RepositoryApiService } from '@/api.service';
+import { RepositoryApiService } from '@/api-service';
 
 interface FormState {
   message: string;

@@ -9,8 +9,8 @@ import {
   reactive, ref, computed
 } from 'vue';
 import { FileEnum, SectionModelType } from 'metagraph-constant';
-import { FileApiService, KnowledgeApiService, SectionApiService } from '@/api.service';
-import { NlpApiService } from '@/api.service/nlp.api.service';
+import { FileApiService, KnowledgeApiService, SectionApiService } from '@/api-service';
+import { NlpApiService } from '@/api-service/nlp.api.service';
 
 export type ParsedKeywordType = {
   word: string;

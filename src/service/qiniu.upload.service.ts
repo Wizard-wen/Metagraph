@@ -6,7 +6,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { FileEnum, FileProvider } from 'metagraph-constant';
 import * as qiniu from 'qiniu-js';
-import { FileApiService } from '@/api.service';
+import { FileApiService } from '@/api-service';
 
 export class QiniuUploadService {
   async customRequestUploadHandler(params: {

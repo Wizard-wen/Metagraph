@@ -23,8 +23,8 @@ import { useStore } from '@/store';
 import { computed } from 'vue';
 import { Pagination as AntPagination, Skeleton as AntSkeleton } from 'ant-design-vue';
 import HomePageActivityListItem
-  from '@/views/home-page/home-page-main-list/home-page-activity-list-item.vue';
-import { activityList, getActivityList } from '@/views/home-page/home.page';
+  from '@/views/home-page/authed-main-list/home-page-activity-list-item.vue';
+import { activityList, getActivityList } from '@/views/home-page/home-page-model';
 
 const store = useStore();
 const isLogin = computed(() => store.state.user.isLogin);
@@ -36,7 +36,7 @@ async function onActivityPaginationChange(page: number) {
 
 <style scoped lang="scss">
 .authed-list {
-  width: 1000px;
+  width: 100%;
   .activity-title {
     text-align: left;
     height: 30px;

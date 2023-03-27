@@ -3,7 +3,7 @@
  * @date  2022/4/11 11:58
  */
 
-import { PlanApiService } from '@/api.service';
+import { PlanApiService } from '@/api-service';
 import { message } from 'ant-design-vue';
 import { PlanItemModelType, PlanModelType, PublicEntityType } from 'metagraph-constant';
 import { ref } from 'vue';

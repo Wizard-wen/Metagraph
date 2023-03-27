@@ -9,7 +9,7 @@ import {
   DomainTreeNodeResponseType
 } from 'metagraph-constant';
 import { reactive, ref } from 'vue';
-import { DomainNoAuthApiService } from '@/api.service';
+import { DomainNoAuthApiService } from '@/api-service';
 
 export const domainTree = reactive<{
   target: DomainTreeNodeResponseType[]

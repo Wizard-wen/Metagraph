@@ -1,9 +1,10 @@
 <template>
   <div class="no-auth-list">
-    <repository-list-item
+    <div class="activity-title">推荐知识库</div>
+    <repository-view-item
       :key="index"
-      :repository="item"
-      v-for="(item, index) in repositoryList.list"></repository-list-item>
+      v-for="(item, index) in repositoryList.list"
+      :activity-item="item"></repository-view-item>
     <div v-if="!repositoryList.list.length">
       <ant-skeleton v-for="item in 10" :key="item" active/>
     </div>
@@ -20,10 +21,10 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { Pagination as AntPagination, Skeleton as AntSkeleton } from 'ant-design-vue';
-import { RepositoryListItem } from '@/github.style.component';
 import { useStore } from '@/store';
 
-import { getRepositoryList, repositoryList } from '@/views/home-page/home.page';
+import { getRepositoryList, repositoryList } from '@/views/home-page/home-page-model';
+import RepositoryViewItem from '@/views/home-page/no-auth-main-list/repository-view-item.vue';
 
 const store = useStore();
 const isLogin = computed(() => store.state.user.isLogin);
@@ -35,7 +36,16 @@ async function onRepositoryPaginationChange(page: number) {
 
 <style scoped lang="scss">
 .no-auth-list {
+  margin-top: 16px;
   width: 1000px;
+}
+
+.activity-title {
+  text-align: left;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  color: #242930;
 }
 
 .pagination {

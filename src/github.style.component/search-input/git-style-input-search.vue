@@ -43,7 +43,7 @@
 import {
   defineComponent, onMounted, onUnmounted, ref
 } from 'vue';
-import { RepositoryApiService } from '@/api.service';
+import { RepositoryApiService } from '@/api-service';
 import SearchIcon from '@/components/icons/search.icon.vue';
 import RepositoryListIcon from '@/components/icons/repository.list.icon.vue';
 

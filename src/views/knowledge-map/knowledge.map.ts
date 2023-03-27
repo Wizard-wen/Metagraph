@@ -18,7 +18,7 @@ import {
   EdgeNoAuthApiService, EntityNoAuthApiService, KnowledgeNoAuthApiService,
   RepositoryApiService,
   RepositoryNoAuthApiService
-} from '@/api.service';
+} from '@/api-service';
 
 export const edges = reactive<{
   list?: KnowledgeEdgeModelType[]

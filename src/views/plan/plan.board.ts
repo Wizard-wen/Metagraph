@@ -2,7 +2,7 @@
  * @author songxiwen
  * @date  2022/4/7 11:44
  */
-import { PlanApiService } from '@/api.service/plan.api.service';
+import { PlanApiService } from '@/api-service/plan.api.service';
 import { message } from 'ant-design-vue';
 import {
   EntityCompletelyListItemType,

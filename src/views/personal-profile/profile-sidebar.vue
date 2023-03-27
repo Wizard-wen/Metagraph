@@ -73,7 +73,7 @@ import {
   EmailIcon, FollowerIcon, LocationIcon, LinkIcon, WechatIcon
 } from '@/components/icons';
 import { useStore } from '@/store';
-import { FollowApiService } from '@/api.service/follow.api.service';
+import { FollowApiService } from '@/api-service/follow.api.service';
 
 export default defineComponent({
   name: 'profile-sidebar',

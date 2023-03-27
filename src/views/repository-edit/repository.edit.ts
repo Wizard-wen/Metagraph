@@ -5,7 +5,7 @@
 import { reactive, UnwrapRef, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import { RepositoryApiService } from '@/api.service';
+import { RepositoryApiService } from '@/api-service';
 import { RouterUtil } from '@/utils/router.util';
 
 export const repositoryFormRef = ref();

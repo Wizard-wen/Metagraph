@@ -5,7 +5,7 @@
 
 import { message } from 'ant-design-vue';
 import { reactive, toRaw, UnwrapRef } from 'vue';
-import { UserApiService } from '@/api.service';
+import { UserApiService } from '@/api-service';
 
 export interface UserProfileFormStateType {
   name: string;

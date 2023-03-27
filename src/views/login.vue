@@ -14,6 +14,7 @@
         <ant-form-item name="name">
           <ant-input
             class="custom-input-style"
+            autocomplete="off"
             v-model:value="formState.name" placeholder="用户名"
             allow-clear>
             <template #prefix>
@@ -26,6 +27,7 @@
             class="custom-input-style"
             v-model:value="formState.password"
             type="password" placeholder="密码"
+            autocomplete="off"
             allow-clear>
             <template #prefix>
               <LockOutlined/>
@@ -33,8 +35,8 @@
           </ant-input>
         </ant-form-item>
         <ant-form-item>
-          <ant-button class="login-form-button" type="primary" @click="login">登录</ant-button>
-          <ant-button class="login-form-button" @click="register">注册</ant-button>
+          <m-button class="login-form-button" :title="'登 录'" @click="login"></m-button>
+          <m-button class="login-form-button" :title="'注 册'"  @click="register"></m-button>
           <div class="back">
             <ant-button type="link" @click="goHomePage">回到首页</ant-button>
           </div>
@@ -43,92 +45,75 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { Button, Form, Input, message } from 'ant-design-vue';
+<script lang="ts" setup>
+import { Button as AntButton, Form as AntForm, Input as AntInput, message } from 'ant-design-vue';
 import {
-  defineComponent, reactive, ref,
+  reactive, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { LockOutlined, UserOutlined } from '@ant-design/icons-vue';
 import { useStore, MutationEnum } from '@/store';
-import { UserNoAuthApiService } from '@/api.service';
+import { UserNoAuthApiService } from '@/api-service';
+import { MButton } from '@/metagraph-ui';
 
-export default defineComponent({
-  components: {
-    LockOutlined,
-    UserOutlined,
-    AntForm: Form,
-    AntFormItem: Form.Item,
-    AntButton: Button,
-    AntInput: Input
-  },
-  setup() {
-    const formRef = ref();
-    const store = useStore();
-    const router = useRouter();
-    const formState = reactive<{
-      name: string;
-      password: string;
-    }>({
-      name: '',
-      password: '',
-    });
-    const rules = {
-      name: {
-        required: true,
-        message: '请输入用户名！',
-      },
-      password: {
-        required: true,
-        message: '请输入密码！',
-      },
-    };
-    const login = () => {
-      formRef.value
-        .validate()
-        .then(async () => {
-          const response = await UserNoAuthApiService.login({
-            name: formState.name,
-            password: formState.password
-          });
-          if (response.data) {
-            store.commit(MutationEnum.SET_USER_MODEL, { userModel: response.data });
-            router.push('/').then();
-          } else {
-            message.error(response?.message || '登录时出现问题！');
-          }
-        })
-        .catch((error: Error) => {
-          message.error(error.message);
-        });
-    };
-    const resetForm = () => {
-      formRef.value.resetFields();
-    };
+const AntFormItem = AntForm.Item;
 
-    const register = async () => {
-      router.push('/signup').then();
-    };
+const labelCol = ref({ span: 0 });
+const wrapperCol = ref({ span: 24 });
 
-    const goHomePage = async () => {
-      router.replace({
-        path: '/',
-        force: true
-      }).then();
-    };
-    return {
-      formRef,
-      labelCol: { span: 0 },
-      wrapperCol: { span: 24 },
-      formState,
-      rules,
-      login,
-      resetForm,
-      register,
-      goHomePage
-    };
-  },
+const formRef = ref();
+const store = useStore();
+const router = useRouter();
+const formState = reactive<{
+  name: string;
+  password: string;
+}>({
+  name: '',
+  password: '',
 });
+const rules = {
+  name: {
+    required: true,
+    message: '请输入用户名！',
+  },
+  password: {
+    required: true,
+    message: '请输入密码！',
+  },
+};
+const login = () => {
+  formRef.value
+    .validate()
+    .then(async () => {
+      const response = await UserNoAuthApiService.login({
+        name: formState.name,
+        password: formState.password
+      });
+      if (response.data) {
+        store.commit(MutationEnum.SET_USER_MODEL, { userModel: response.data });
+        router.push('/').then();
+      } else {
+        message.error(response?.message || '登录时出现问题！');
+      }
+    })
+    .catch((error: Error) => {
+      message.error(error.message);
+    });
+};
+const resetForm = () => {
+  formRef.value.resetFields();
+};
+
+const register = async () => {
+  router.push('/signup').then();
+};
+
+const goHomePage = async () => {
+  router.replace({
+    path: '/',
+    force: true
+  }).then();
+};
 </script>
 <style lang="scss" scoped>
 @import '../style/common.scss';

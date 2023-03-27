@@ -78,7 +78,7 @@ import type { KnowledgeCustomFieldType } from 'metagraph-constant';
 import {
   defineComponent, ref, inject, createVNode
 } from 'vue';
-import { KnowledgeApiService } from '@/api.service';
+import { KnowledgeApiService } from '@/api-service';
 import AddFieldModal from '@/views/knowledge-edit/knowledge-custom-fields/add-field-modal.vue';
 import {
   KnowledgeEdit,

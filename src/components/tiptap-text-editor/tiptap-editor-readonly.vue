@@ -56,7 +56,6 @@ export default defineComponent({
       ],
     });
     watch(() => props.articleContent, (newValue) => {
-      console.log(newValue, '----- new value');
       if (newValue) {
         editor.value.commands.setContent(JSON.parse(newValue));
       }

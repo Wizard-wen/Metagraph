@@ -43,7 +43,7 @@ import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interfac
 import {
   reactive, ref, UnwrapRef, inject, defineComponent
 } from 'vue';
-import { KnowledgeApiService } from '@/api.service';
+import { KnowledgeApiService } from '@/api-service';
 import { draftKnowledgeEntityIdInjectKey } from '@/views/knowledge-edit/model/knowledge.edit';
 
 interface FormState {

@@ -122,7 +122,7 @@ import { CommentEntityType, CommentListItemType } from 'metagraph-constant';
 import { UserOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils';
-import { CommentNoAuthApiService, CommentApiService } from '@/api.service';
+import { CommentNoAuthApiService, CommentApiService } from '@/api-service';
 
 export default defineComponent({
   props: {

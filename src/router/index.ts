@@ -24,9 +24,9 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/home-page.vue')
       },
       {
-        path: '/repository/list',
+        path: '/search/list',
         name: 'RepositoryList',
-        component: () => import('@/views/repository-list.vue')
+        component: () => import('@/views/search-list.vue')
       },
       {
         path: '/repository/edit',
@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/personal-profile.vue')
       },
       {
-        path: 'planList',
+        path: 'plan/list',
         name: 'PlanList',
         component: () => import('@/views/plan/plan-list.vue'),
         meta: { requiresAuth: true }
@@ -48,12 +48,25 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'inspiration',
         name: 'inspiration',
-        component: () => import('@/views/inspiration.vue')
+        component: () => import('@/views/inspiration.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'feedback',
+        name: 'feedback',
+        component: () => import('@/views/feedback.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'help',
+        name: 'help',
+        component: () => import('@/views/help.vue')
       },
       {
         path: 'settings',
         name: 'Settings',
         component: Settings,
+        meta: { requiresAuth: true },
         children: [
           {
             path: 'profile',
@@ -103,7 +116,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/knowledge/preview',
     name: 'KnowledgePreview',
-    component: () => import('@/views/knowledge-preview.page.vue'),
+    component: () => import('@/views/knowledge-preview.vue'),
   },
   {
     path: '/login',
@@ -124,6 +137,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/test',
     name: 'ComponentTest',
     component: () => import('@/views/component-test.vue')
+  },
+  {
+    path: '/home/no/auth',
+    name: 'NoAuthHomePage',
+    component: () => import('@/views/no-auth-home-page.vue')
   },
 ];
 

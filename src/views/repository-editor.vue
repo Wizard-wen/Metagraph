@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-import { SectionApiService } from '@/api.service';
+import { SectionApiService } from '@/api-service';
 import { IndexdbService } from '@/service/indexdb.service';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';

@@ -3,7 +3,7 @@
  * @date  2022/4/9 18:01
  */
 
-import { CreatePlanType } from '@/api.service/plan.api.service';
+import { CreatePlanType } from '@/api-service/plan.api.service';
 import moment, { Moment } from 'moment';
 import { reactive } from 'vue';
 
