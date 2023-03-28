@@ -94,6 +94,7 @@ onMounted(async () => {
     flex: 1;
     height: calc(100vh - 56px);
     overflow-y: scroll;
+    @include custom-scroll-style;
   }
 
   .no-auth-side {

@@ -14,16 +14,13 @@
       </template>
       <template #content>
         <ant-form-item class="inner-form-item">
-          <ant-text-area :rows="4" v-model:value="commentContent"/>
+          <ant-text-area :rows="3" v-model:value="commentContent"/>
         </ant-form-item>
         <ant-form-item>
-          <ant-button
-            html-type="submit"
-            :loading="submitting"
-            type="primary"
-            @click="handleSubmitComment">
-            评论
-          </ant-button>
+          <m-button
+            :is-loading="submitting"
+            @click="handleSubmitComment"
+            :title="'评论'"></m-button>
         </ant-form-item>
       </template>
     </ant-comment>
@@ -44,7 +41,8 @@
               <div
                 class="reply-button"
                 v-if="userModel"
-                @click="handleOpenReplyDrawer(item, item.id)">回复</div>
+                @click="handleOpenReplyDrawer(item, item.id)">回复
+              </div>
               <div
                 class="reply-button"
                 v-if="item.children.length"
@@ -66,7 +64,8 @@
                     <div
                       v-if="userModel"
                       class="reply-button"
-                      @click="handleOpenReplyDrawer(childItem, item.id)">回复</div>
+                      @click="handleOpenReplyDrawer(childItem, item.id)">回复
+                    </div>
                   </template>
                 </ant-comment>
               </template>
@@ -111,175 +110,191 @@
     </ant-drawer>
   </ant-spin>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
 import {
-  message, Comment, List, Avatar, Form, Button, Drawer, Spin, Input
+  Avatar as AntAvatar,
+  Button as AntButton,
+  Comment as AntComment,
+  Drawer as AntDrawer,
+  Form as AntForm,
+  Input as AntInput,
+  List as AntList,
+  message,
+  Spin as AntSpin
 } from 'ant-design-vue';
-import {
-  defineComponent, onMounted, ref, toRef, reactive, computed
-} from 'vue';
+import {MButton} from '@/metagraph-ui';
+import { computed, defineProps, onMounted, reactive, ref, toRef } from 'vue';
 import { CommentEntityType, CommentListItemType } from 'metagraph-constant';
 import { UserOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils';
-import { CommentNoAuthApiService, CommentApiService } from '@/api-service';
+import { CommentApiService, CommentNoAuthApiService } from '@/api-service';
 
-export default defineComponent({
-  props: {
-    entityId: {
-      type: String,
-      required: true
-    },
-    entityType: {
-      type: String,
-      required: true
-    }
+const AntFormItem = AntForm.Item;
+const AntTextArea = AntInput.TextArea;
+const AntListItem = AntList.Item;
+
+const props = defineProps({
+  entityId: {
+    type: String,
+    required: true
   },
-  components: {
-    UserOutlined,
-    AntComment: Comment,
-    AntSpin: Spin,
-    AntTextArea: Input.TextArea,
-    AntList: List,
-    AntListItem: List.Item,
-    AntAvatar: Avatar,
-    AntButton: Button,
-    AntDrawer: Drawer,
-    AntFormItem: Form.Item
-  },
-  setup(props) {
-    const store = useStore();
-    const entityType = toRef(props, 'entityType');
-    const entityId = toRef(props, 'entityId');
-    const commentList = reactive<{
-      target: CommentListItemType[]
-    }>({ target: [] });
-    const submitting = ref<boolean>(false);
-    const submittingReply = ref<boolean>(false);
-    const commentContent = ref<string>('');
-    const replyContent = ref<string>('');
-    const isLoading = ref(false);
-    const commentCount = ref<number>(0);
-    const reply = reactive<{
-      isReplying: boolean,
-      name: string,
-      rootCommentId: string,
-      replyId?: string,
-      replyUserId?: string
-    }>({
-      isReplying: false,
-      name: '',
-      rootCommentId: '',
-    });
-    const userModel = computed(() => store.state.user.user);
-    const getCommentList = async () => {
-      isLoading.value = true;
-      commentCount.value = 0;
-      const result = await CommentNoAuthApiService.getCommentByEntityId({
-        entityId: entityId.value,
-        entityType: entityType.value as CommentEntityType,
-        pageIndex: 0,
-        pageSize: 10
-      });
-      if (result.data) {
-        commentList.target = result.data.list.map((item) => {
+  entityType: {
+    type: String,
+    required: true
+  }
+});
+
+const store = useStore();
+const entityType = toRef(props, 'entityType');
+const entityId = toRef(props, 'entityId');
+const commentList = reactive<{
+  target: CommentListItemType[]
+}>({ target: [] });
+const submitting = ref<boolean>(false);
+const submittingReply = ref<boolean>(false);
+const commentContent = ref<string>('');
+const replyContent = ref<string>('');
+const isLoading = ref(false);
+const commentCount = ref<number>(0);
+const reply = reactive<{
+  isReplying: boolean,
+  name: string,
+  rootCommentId: string,
+  replyId?: string,
+  replyUserId?: string
+}>({
+  isReplying: false,
+  name: '',
+  rootCommentId: '',
+});
+const userModel = computed(() => store.state.user.user);
+const getCommentList = async () => {
+  isLoading.value = true;
+  commentCount.value = 0;
+  const result = await CommentNoAuthApiService.getCommentByEntityId({
+    entityId: entityId.value,
+    entityType: entityType.value as CommentEntityType,
+    pageIndex: 0,
+    pageSize: 10
+  });
+  if (result.data) {
+    commentList.target = result.data.list.map((item) => {
+      commentCount.value += 1;
+      const result = {
+        ...item,
+        createdAt: CommonUtil.formatDate(new Date(item.createdAt),
+          'yyyy-MM-dd hh:mm') as any
+      };
+      if (item.children) {
+        const children = item.children.map((childItem) => {
           commentCount.value += 1;
-          const result = {
-            ...item,
-            createdAt: CommonUtil.formatDate(new Date(item.createdAt),
+          return {
+            ...childItem,
+            createdAt: CommonUtil.formatDate(new Date(childItem.createdAt),
               'yyyy-MM-dd hh:mm') as any
           };
-          if (item.children) {
-            const children = item.children.map((childItem) => {
-              commentCount.value += 1;
-              return {
-                ...childItem,
-                createdAt: CommonUtil.formatDate(new Date(childItem.createdAt),
-                  'yyyy-MM-dd hh:mm') as any
-              };
-            });
-            return {
-              ...result,
-              children,
-              isExtend: false
-            };
-          }
-          return result;
         });
-      } else {
-        message.error('获取失败');
+        return {
+          ...result,
+          children,
+          isExtend: false
+        };
       }
-      isLoading.value = false;
-    };
-
-    function handleOpenReplyDrawer(item: CommentListItemType, rootId: string) {
-      reply.isReplying = true;
-      reply.name = item.user?.name || '';
-      reply.replyId = item.id;
-      reply.replyUserId = item.user?.id;
-      reply.rootCommentId = rootId;
-    }
-
-    async function handleCloseReplyDrawer() {
-      reply.isReplying = false;
-      reply.name = '';
-      reply.rootCommentId = '';
-      await getCommentList();
-    }
-
-    async function handleSubmitComment() {
-      if (!commentContent.value) {
-        return;
-      }
-      submitting.value = true;
-      await CommentApiService.create({
-        entityId: entityId.value,
-        entityType: entityType.value as CommentEntityType,
-        content: commentContent.value
-      });
-      await getCommentList();
-      commentContent.value = '';
-      submitting.value = false;
-    }
-
-    async function handleSubmitReply() {
-      if (!replyContent.value) {
-        return;
-      }
-      submittingReply.value = true;
-      await CommentApiService.create({
-        entityId: entityId.value,
-        rootCommentId: reply.rootCommentId,
-        replyId: reply.replyId,
-        replyUserId: reply.replyUserId,
-        entityType: entityType.value as CommentEntityType,
-        content: replyContent.value
-      });
-      submittingReply.value = false;
-      replyContent.value = '';
-      await handleCloseReplyDrawer();
-    }
-
-    onMounted(async () => {
-      await getCommentList();
+      return result;
     });
-    return {
-      commentList,
-      submitting,
-      submittingReply,
-      commentContent,
-      handleSubmitComment,
-      isLoading,
-      handleOpenReplyDrawer,
-      handleCloseReplyDrawer,
-      handleSubmitReply,
-      reply,
-      commentCount,
-      replyContent,
-      userModel
-    };
-  },
+  } else {
+    message.error('获取失败');
+  }
+  isLoading.value = false;
+};
+
+function handleOpenReplyDrawer(item: CommentListItemType, rootId: string) {
+  reply.isReplying = true;
+  reply.name = item.user?.name || '';
+  reply.replyId = item.id;
+  reply.replyUserId = item.user?.id;
+  reply.rootCommentId = rootId;
+}
+
+async function handleCloseReplyDrawer() {
+  reply.isReplying = false;
+  reply.name = '';
+  reply.rootCommentId = '';
+  await getCommentList();
+}
+
+async function handleSubmitComment() {
+  if (!commentContent.value) {
+    return;
+  }
+  submitting.value = true;
+  await CommentApiService.create({
+    entityId: entityId.value,
+    entityType: entityType.value as CommentEntityType,
+    content: commentContent.value
+  });
+  await getCommentList();
+  commentContent.value = '';
+  submitting.value = false;
+}
+
+async function handleSubmitReply() {
+  if (!replyContent.value) {
+    return;
+  }
+  submittingReply.value = true;
+  await CommentApiService.create({
+    entityId: entityId.value,
+    rootCommentId: reply.rootCommentId,
+    replyId: reply.replyId,
+    replyUserId: reply.replyUserId,
+    entityType: entityType.value as CommentEntityType,
+    content: replyContent.value
+  });
+  submittingReply.value = false;
+  replyContent.value = '';
+  await handleCloseReplyDrawer();
+}
+
+onMounted(async () => {
+  await getCommentList();
 });
+// export default defineComponent({
+//   props: {
+//
+//   },
+//   components: {
+//     UserOutlined,
+//     AntComment: Comment,
+//     AntSpin: Spin,
+//     AntTextArea: Input.TextArea,
+//     AntList: List,
+//     AntListItem: List.Item,
+//     AntAvatar: Avatar,
+//     AntButton: Button,
+//     AntDrawer: Drawer,
+//     AntFormItem: Form.Item
+//   },
+//   setup(props) {
+//
+//     return {
+//       commentList,
+//       submitting,
+//       submittingReply,
+//       commentContent,
+//       handleSubmitComment,
+//       isLoading,
+//       handleOpenReplyDrawer,
+//       handleCloseReplyDrawer,
+//       handleSubmitReply,
+//       reply,
+//       commentCount,
+//       replyContent,
+//       userModel
+//     };
+//   },
+// });
 </script>
 
 <style lang="scss" scoped>

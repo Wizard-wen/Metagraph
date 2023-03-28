@@ -21,14 +21,18 @@
       <ant-dropdown
         :getPopupContainer="getPopupContainer"
         :placement="'bottomRight'"
-        :trigger="['click']"
-        :overlayClassName="'dropdown-overlay'">
+        :trigger="['click']">
         <div class="icon-content-style">
           <MoreOutlined/>
         </div>
         <template #overlay>
-          <ant-menu>
-            <ant-menu-item @click="handleControlArticle('Delete')">删除文本</ant-menu-item>
+          <ant-menu class="dropdown-menu-style">
+            <ant-menu-item
+              class="menu-item-style"
+              @click="handleControlArticle('Delete')">
+              <DeleteOutlined class="icon-size"/>
+              删除文本
+            </ant-menu-item>
           </ant-menu>
         </template>
       </ant-dropdown>
@@ -38,32 +42,36 @@
     <div
       v-for="(item, index) in articleItem.children" :key="index"
       class="label"
-      style="padding-left: 48px"
+      style="padding-left: 30px"
       @mouseenter="handleMouseEnter($event)"
       @mouseleave="handleMouseLeave">
       <div class="text-container">
         <div class="text"
              @click="handleClickItem({id: item.id})">
-          {{ item.name }}
+          {{ item.name }}({{ item.weight.toFixed() }})
         </div>
-        <div class="weight">{{ item.weight.toFixed() }}</div>
       </div>
       <div class="control">
         <ant-dropdown
           :getPopupContainer="getPopupContainer"
           :trigger="['click']"
-          :placement="'bottomRight'"
-          :overlayClassName="'dropdown-overlay'">
+          :placement="'bottomRight'">
           <div class="icon-content-style">
             <MoreOutlined/>
           </div>
           <template #overlay>
-            <ant-menu>
+            <ant-menu class="dropdown-menu-style">
               <ant-menu-item
-                @click="handleControlKnowledge('CreateKnowledge', item)">创建知识点
+                class="menu-item-style"
+                @click="handleControlKnowledge('CreateKnowledge', item)">
+                <ReadOutlined class="icon-size"/>
+                创建词条
               </ant-menu-item>
               <ant-menu-item
-                @click="handleControlKnowledge('DeleteKnowledge', item)">删除知识点
+                class="menu-item-style"
+                @click="handleControlKnowledge('DeleteKnowledge', item)">
+                <DeleteOutlined class="icon-size"/>
+                删除词条
               </ant-menu-item>
             </ant-menu>
           </template>
@@ -76,7 +84,7 @@
 
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType } from 'vue';
-import { CaretRightOutlined, MoreOutlined } from '@ant-design/icons-vue';
+import { CaretRightOutlined, MoreOutlined, DeleteOutlined, ReadOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 import type {
   AlternativeKnowledgeModelType,

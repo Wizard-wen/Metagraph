@@ -7,15 +7,15 @@
     <div class="tree-container">
       <div class="header">目录</div>
       <div class="control" v-if="isEditable">
-        <ant-button
-          v-if="isEditable"
+        <m-button
           class="add-section-button"
+          v-if="isEditable"
+          :title="'创建目录'"
           @click="openCreateSectionModal({ type: 'Section', isRoot: true })">
           <template #icon>
             <PlusOutlined/>
           </template>
-          创建目录
-        </ant-button>
+        </m-button>
       </div>
       <div class="tree-scroll-content" :class="[isEditable ? 'edit-height' : 'readonly-height']">
         <div class="tree-content">
@@ -56,11 +56,11 @@ import type {
 } from 'metagraph-constant';
 import { computed, defineEmits, inject, ref } from 'vue';
 import MetagraphTree from '@/components/metagraph-tree/metagraph-tree.vue';
-import { Button as AntButton } from 'ant-design-vue';
 import { isEditableKey } from '@/views/repository-editor/model/provide.type';
 import { currentSectionNode, sectionTree } from '@/views/repository-editor/model/section.tree';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import MetagraphList from '@/components/metagraph-list.vue';
+import { MButton } from '@/metagraph-ui';
 
 type OperationType = 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete';
 const emit = defineEmits(['selectSection', 'createSection', 'widthChange']);
@@ -182,8 +182,6 @@ function handleClickEntityItem(params: { type: string, params: EntityCompletelyL
 
       .add-section-button {
         width: 100%;
-        font-size: 12px;
-        border-radius: 4px;
       }
     }
 

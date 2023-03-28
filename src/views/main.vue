@@ -12,6 +12,7 @@ import { Spin as AntSpin } from 'ant-design-vue';
 import { computed } from 'vue';
 import { useStore } from '@/store';
 import MetagraphHeader from './main/metagraph-header.vue';
+
 const store = useStore();
 const spinning = computed(() => store.state.global.isSpinning);
 

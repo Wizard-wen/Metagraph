@@ -18,47 +18,34 @@
   </metagraph-drawer>
 </template>
 
-<script lang="ts">
-import { ref, defineComponent } from 'vue';
+<script lang="ts" setup>
+import { defineEmits, defineProps, ref } from 'vue';
 import { CommentOutlined } from '@ant-design/icons-vue';
 import EntityComment from '@/business/entity-comment/entity-comment.vue';
-import { SocialActionButton, MetagraphDrawer } from '@/components';
+import { MetagraphDrawer, SocialActionButton } from '@/components';
 
-export default defineComponent({
-  name: 'comment-control-button',
-  components: {
-    EntityComment,
-    CommentOutlined,
-    SocialActionButton,
-    MetagraphDrawer
+defineProps({
+  count: {
+    type: Number,
+    required: true
   },
-  props: {
-    count: {
-      type: Number,
-      required: true
-    },
-    entityType: {
-      type: String,
-      required: true
-    },
-    entityId: {
-      type: String,
-      required: true
-    },
+  entityType: {
+    type: String,
+    required: true
   },
-  emits: ['update'],
-  setup(props, { emit }) {
-    const isCommentDrawerShow = ref(false);
-    const handleCloseDrawer = () => {
-      isCommentDrawerShow.value = false;
-      emit('update');
-    };
-    return {
-      isCommentDrawerShow,
-      handleCloseDrawer
-    };
+  entityId: {
+    type: String,
+    required: true
   }
 });
+const emit = defineEmits(['update']);
+
+const isCommentDrawerShow = ref(false);
+const handleCloseDrawer = () => {
+  isCommentDrawerShow.value = false;
+  emit('update');
+};
+
 </script>
 
 <style scoped lang="scss">

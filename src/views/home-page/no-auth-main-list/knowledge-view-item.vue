@@ -5,7 +5,7 @@
       v-if="activityItem.author.avatar"
       :src="activityItem.author.avatar"></ant-avatar>
     <div class="activity-content">
-      <div class="user-name">{{activityItem.author.name}}</div>
+      <div class="user-name">{{ activityItem.author.name }}</div>
       <div class="activity-box">
         <div class="name-content">
           <div class="name" @click="goProfilePage">
@@ -34,15 +34,16 @@
           </div>
           <div class="updatedAt">{{ date }}</div>
         </div>
+        <div class="control-btn star-btn">
+          <slot name="control"></slot>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type {
-  EntityCompletelyListItemType,
-} from 'metagraph-constant';
+import type { EntityCompletelyListItemType, } from 'metagraph-constant';
 import { computed, defineProps, PropType } from 'vue';
 import { Avatar as AntAvatar } from 'ant-design-vue';
 import { MTag } from '@/metagraph-ui';

@@ -1,8 +1,10 @@
 <template>
   <ant-modal
     title="文本解析"
-    :width="1000"
-    :height="700"
+    :width="'100%'"
+    :wrapClassName="'full-modal'"
+    :footer="null"
+    :zIndex="7999"
     v-if="isUploadModalShown"
     :visible="isUploadModalShown"
     @cancel="handleCloseParseWordModal({
@@ -41,6 +43,23 @@
         </ant-form>
       </div>
     </div>
+    <a-steps>
+      <a-step status="finish" title="Login">
+        <template #icon>
+          <user-outlined/>
+        </template>
+      </a-step>
+      <a-step status="finish" title="Verification">
+        <template #icon>
+          <solution-outlined/>
+        </template>
+      </a-step>
+      <a-step status="process" title="Pay">
+        <template #icon>
+          <loading-outlined/>
+        </template>
+      </a-step>
+    </a-steps>
     <ant-tabs v-model:activeKey="activeTab">
       <ant-tabs-pane key="1" tab="文本" class="tab-content">
         <div
@@ -88,13 +107,28 @@
   </ant-modal>
 </template>
 
-<script lang="ts">
-import {Button, Form, Input, List, Modal, Tabs, Tag} from 'ant-design-vue';
-import {FileEnum, SectionModelType} from 'metagraph-constant';
-import {CloseOutlined, UploadOutlined} from '@ant-design/icons-vue';
-import {defineComponent, inject, ref} from 'vue';
+<script lang="ts" setup>
+import {
+  Button as AntButton,
+  Form as AntForm,
+  Input as AntInput,
+  List as AntList,
+  Modal as AntModal,
+  Steps as ASteps,
+  Tabs as AntTabs,
+  Tag as AntTag
+} from 'ant-design-vue';
+import { FileEnum, SectionModelType } from 'metagraph-constant';
+import {
+  CloseOutlined,
+  LoadingOutlined,
+  SolutionOutlined,
+  UploadOutlined,
+  UserOutlined
+} from '@ant-design/icons-vue';
+import { defineEmits, defineProps, inject, ref } from 'vue';
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import {repositoryEntityIdKey} from '../model/provide.type';
+import { repositoryEntityIdKey } from '../model/provide.type';
 import {
   articleText,
   isShowOperation,
@@ -102,146 +136,150 @@ import {
   keywords,
   suffixText,
   textFileForm,
-  textFileFormRef,
   textFileFormRules,
   textParsingStatus,
   UploadAndParseTextService,
   uploadButtonText
 } from '../model/upload.and.parse.text.service';
 
-export default defineComponent({
-  name: 'upload-and-parse-text-modal',
-  props: {
-    isUploadModalShown: {
-      type: Boolean,
-      required: true
-    }
-  },
-  components: {
-    CloseOutlined,
-    UploadOutlined,
-    AntTabs: Tabs,
-    EmptyView,
-    AntList: List,
-    AntInput: Input,
-    AntListItem: List.Item,
-    AntTabsPane: Tabs.TabPane,
-    AntTag: Tag,
-    AntButton: Button,
-    AntModal: Modal,
-    AntForm: Form,
-    AntFormItem: Form.Item
-  },
-  emits: ['close'],
-  setup(props, {emit}) {
-    const uploadAndParseTextService = new UploadAndParseTextService();
-    const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-    const activeTab = ref('1');
-    const fileNameInput = ref<HTMLInputElement>();
-    const currentWordFile = ref<File | undefined>();
-    // 响应选择word文本
-    const handleFileChange = (event: InputEvent) => {
-      const target = event.target as HTMLInputElement;
-      if (target.files === null) {
-        return;
-      }
-      // eslint-disable-next-line prefer-destructuring
-      currentWordFile.value = target.files[0];
-      textFileForm.value.title = target.files[0].name;
-      fileNameInput.value?.focus();
-    };
+const AStep = ASteps.Step;
+const textFileFormRef = ref();
 
-    function clearText() {
-      currentWordFile.value = undefined;
-      uploadAndParseTextService.clearData();
-    }
+const AntListItem = AntList.Item;
+const AntTabsPane = AntTabs.TabPane;
+const AntFormItem = AntForm.Item;
 
-    // 上传word文本
-    const confirmUploadWord = async () => {
-      textFileFormRef.value.validate()
-        .then(async () => {
-          if (!currentWordFile.value) {
-            return;
-          }
-          const result = await uploadAndParseTextService.customRequestUploadHandler({
-            repositoryEntityId: repositoryEntityId.value,
-            file: currentWordFile.value,
-            name: currentWordFile.value.name,
-            type: FileEnum.Text
-          });
-          if (result) {
-            await uploadAndParseTextService.parseUploadedFileText({
-              fileUrl: result.url,
-              repositoryEntityId: repositoryEntityId.value
-            });
-          }
-        });
-    };
-    // 清除 input file
-    const clearCurrentUploadingValue = (event: InputEvent) => {
-      const target = event.target as HTMLInputElement;
-      target.value = '';
-    };
+const labelCol = { span: 3 };
+const wrapperCol = { offset: 0 };
 
-    // 关闭modal
-    function handleCloseParseWordModal(params: {
-      type: 'Section' | 'void' | 'Alternative'
-      sectionModel?: SectionModelType
-    }) {
-      emit('close', params);
-    }
-
-    // 创建新单元
-    async function createWordTextSection() {
-      textFileFormRef.value.validate()
-        .then(async () => {
-          const result = await uploadAndParseTextService
-            .createWordTextSection(repositoryEntityId.value);
-          handleCloseParseWordModal({
-            type: 'Section',
-            sectionModel: result
-          });
-        });
-    }
-
-    // 创建备选知识点
-    const createAlternativeKnowledgeList = async () => {
-      await uploadAndParseTextService.createAlternativeKnowledgeList(repositoryEntityId.value);
-      handleCloseParseWordModal({
-        type: 'Alternative'
-      });
-    };
-    // 删除关键词
-    const removeKeyword = (index: number) => {
-      keywords.value.splice(index, 1);
-    };
-    return {
-      createWordTextSection,
-      removeKeyword,
-      confirmUploadWord,
-      handleFileChange,
-      clearCurrentUploadingValue,
-      activeTab,
-      clearText,
-      articleText,
-      fileNameInput,
-      isShowOperationButton,
-      handleCloseParseWordModal,
-      createAlternativeKnowledgeList,
-      currentWordFile,
-      keywords,
-      textParsingStatus,
-      uploadButtonText,
-      textFileFormRules,
-      textFileFormRef,
-      textFileForm,
-      isShowOperation,
-      suffixText,
-      labelCol: {span: 3},
-      wrapperCol: {offset: 0},
-    };
+defineProps({
+  isUploadModalShown: {
+    type: Boolean,
+    required: true
   }
 });
+const emit = defineEmits(['close']);
+const uploadAndParseTextService = new UploadAndParseTextService();
+const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
+const activeTab = ref('1');
+const fileNameInput = ref<HTMLInputElement>();
+const currentWordFile = ref<File | undefined>();
+// 响应选择word文本
+const handleFileChange = (event: InputEvent) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files === null) {
+    return;
+  }
+  // eslint-disable-next-line prefer-destructuring
+  currentWordFile.value = target.files[0];
+  textFileForm.value.title = target.files[0].name;
+  fileNameInput.value?.focus();
+};
+
+function clearText() {
+  currentWordFile.value = undefined;
+  uploadAndParseTextService.clearData();
+}
+
+// 上传word文本
+const confirmUploadWord = async () => {
+  textFileFormRef.value.validate()
+    .then(async () => {
+      if (!currentWordFile.value) {
+        return;
+      }
+      const result = await uploadAndParseTextService.customRequestUploadHandler({
+        repositoryEntityId: repositoryEntityId.value,
+        file: currentWordFile.value,
+        name: currentWordFile.value.name,
+        type: FileEnum.Text
+      });
+      if (result) {
+        await uploadAndParseTextService.parseUploadedFileText({
+          fileUrl: result.url,
+          repositoryEntityId: repositoryEntityId.value
+        });
+      }
+    });
+};
+// 清除 input file
+const clearCurrentUploadingValue = (event: InputEvent) => {
+  const target = event.target as HTMLInputElement;
+  target.value = '';
+};
+
+// 关闭modal
+function handleCloseParseWordModal(params: {
+  type: 'Section' | 'void' | 'Alternative'
+  sectionModel?: SectionModelType
+}) {
+  emit('close', params);
+}
+
+// 创建新单元
+async function createWordTextSection() {
+  textFileFormRef.value.validate()
+    .then(async () => {
+      const result = await uploadAndParseTextService
+        .createWordTextSection(repositoryEntityId.value);
+      handleCloseParseWordModal({
+        type: 'Section',
+        sectionModel: result
+      });
+    });
+}
+
+// 创建备选知识点
+const createAlternativeKnowledgeList = async () => {
+  await uploadAndParseTextService.createAlternativeKnowledgeList(repositoryEntityId.value);
+  handleCloseParseWordModal({
+    type: 'Alternative'
+  });
+};
+// 删除关键词
+const removeKeyword = (index: number) => {
+  keywords.value.splice(index, 1);
+};
+
+// export default defineComponent({
+//   components: {
+//     CloseOutlined,
+//     UploadOutlined,
+//     AntTabs: Tabs,
+//     EmptyView,
+//     AntList: List,
+//     AntInput: Input,
+//
+//   },
+//   emits: ['close'],
+//   setup(props, { emit }) {
+//
+//     return {
+//       createWordTextSection,
+//       removeKeyword,
+//       confirmUploadWord,
+//       handleFileChange,
+//       clearCurrentUploadingValue,
+//       activeTab,
+//       clearText,
+//       articleText,
+//       fileNameInput,
+//       isShowOperationButton,
+//       handleCloseParseWordModal,
+//       createAlternativeKnowledgeList,
+//       currentWordFile,
+//       keywords,
+//       textParsingStatus,
+//       uploadButtonText,
+//       textFileFormRules,
+//       textFileFormRef,
+//       textFileForm,
+//       isShowOperation,
+//       suffixText,
+//
+//     };
+//   }
+// });
 </script>
 
 <style scoped lang="scss">

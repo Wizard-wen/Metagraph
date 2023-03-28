@@ -27,16 +27,18 @@ input {
   position: absolute;
 }
 
-.no-break-line-text {
+@mixin no-break-line-text {
   overflow: hidden; //超出的文本隐藏
   text-overflow: ellipsis; //溢出用省略号显示
   white-space: nowrap; //溢出不换行
 }
 
 $fontColor: #24292e;
-$themeColor: #d14424;
+$themeColor: #00B96B;
 $textColor: #41464b;
 $lightGray: #f9f9f9;
+
+$starHighlight: #ECAA04;
 
 $backgroundColor: #f5f6f7;
 

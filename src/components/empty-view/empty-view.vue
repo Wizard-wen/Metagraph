@@ -2,26 +2,24 @@
   <ant-empty
     class="custom-empty-view"
     :image="simpleImage"
-    description="暂无数据">
+    :description="description">
     <slot name="content"></slot>
   </ant-empty>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { defineProps } from 'vue';
 import { Empty } from 'ant-design-vue';
 
-export default defineComponent({
-  name: 'empty-view',
-  components: {
-    AntEmpty: Empty
-  },
-  setup() {
-    return {
-      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-    };
+const AntEmpty = Empty;
+
+defineProps({
+  description: {
+    type: String,
+    default: '暂无数据'
   }
 });
+const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 </script>
 
 <style scoped lang="scss">

@@ -1,12 +1,11 @@
 <template>
   <div class="right-sidebar-container">
     <div class="control-button-content">
-      <ant-button class="full-button-style" @click="handleOpenParseTextModal">
+      <m-button :title="'解析文本'" class="full-button-style" @click="handleOpenParseTextModal">
         <template #icon>
           <UploadOutlined/>
         </template>
-        解析文本
-      </ant-button>
+      </m-button>
     </div>
     <div class="right-sidebar-content">
       <template v-if="alternative.target.length">
@@ -18,7 +17,7 @@
           @expend="handleExpend"
           @controlArticle="handleControlArticle"
           @controlKnowledge="handleControlKnowledge"
-          ></article-item>
+        ></article-item>
       </template>
       <empty-view v-else></empty-view>
     </div>
@@ -28,13 +27,14 @@
 <script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
 import { createVNode, defineEmits, inject, ref } from 'vue';
-import { Button as AntButton, message, Modal } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { alternative, RepositoryEditor } from '../model/repository.editor';
 import ArticleItem from '@/views/repository-editor/right-sidebar/article-item.vue';
 import { KnowledgeArticleModelType } from 'metagraph-constant/dist/type/knowledge.type';
+import { MButton } from '@/metagraph-ui';
+import { alternative, RepositoryEditor } from '../model/repository.editor';
 
 const emit = defineEmits(['open', 'createOrBindEntity']);
 
@@ -100,8 +100,6 @@ async function handleControlKnowledge(params: {
 
 <style scoped lang="scss">
 @import '../../../style/common';
-@import "right-sidebar.scss";
-
 
 .control-button-content {
   padding: 10px 15px 10px 15px;
@@ -109,8 +107,6 @@ async function handleControlKnowledge(params: {
 
   .full-button-style {
     width: 100%;
-    font-size: 12px;
-    border-radius: 4px;
   }
 }
 
@@ -119,40 +115,4 @@ async function handleControlKnowledge(params: {
   padding: 10px;
   overflow-y: auto;
 }
-
-
-//.entity-item {
-//  height: 32px;
-//  line-height: 32px;
-//  width: 100%;
-//  text-align: left;
-//  display: flex;
-//  align-items: center;
-//  justify-content: space-between;
-//  padding: 0 15px;
-//  font-size: 12px;
-//
-//  &:hover {
-//    @include list-item-highlight;
-//  }
-//
-//  .left {
-//    display: flex;
-//    align-items: center;
-//    gap: 15px;
-//  }
-//
-//  .right {
-//    .custom-tag {
-//      padding: 0 5px;
-//      line-height: 18px;
-//      margin-right: 0;
-//    }
-//
-//    display: flex;
-//    align-items: center;
-//    gap: 10px;
-//    font-size: 14px;
-//  }
-//}
 </style>

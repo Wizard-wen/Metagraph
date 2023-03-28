@@ -11,8 +11,15 @@ module.exports = {
   css: {
     loaderOptions: {
       less: {
-        javascriptEnabled: true
-      },
+        lessOptions: {
+          modifyVars: {
+            'primary-color': '#1DA57A',
+            'link-color': '#1DA57A',
+            'border-radius-base': '2px',
+          },
+          javascriptEnabled: true,
+        },
+      }
     }
   },
   // 该对象将会被 webpack-merge 合并入最终的 webpack 配置。

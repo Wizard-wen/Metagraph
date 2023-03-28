@@ -5,7 +5,8 @@
     :title="hasStar ? '取消' : '点赞'"
     :total="count">
     <template #icon>
-      <StarOutlined/>
+      <StarOutlined v-if="!hasStar"/>
+      <StarFilled class="high-icon-style" v-else/>
     </template>
   </social-action-button>
   <metagraph-drawer
@@ -19,87 +20,69 @@
   </metagraph-drawer>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import type { PublicEntityType } from 'metagraph-constant';
-import {
-  defineComponent, PropType, ref, toRef
-} from 'vue';
+import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { message } from 'ant-design-vue';
-import { StarOutlined } from '@ant-design/icons-vue';
+import { StarFilled, StarOutlined } from '@ant-design/icons-vue';
 import { StarApiService } from '@/api-service';
 import EntityStar from '@/business/entity-star/entity-star.vue';
 import { MetagraphDrawer, SocialActionButton } from '@/components';
 
-export default defineComponent({
-  name: 'star-control-button',
-  components: {
-    EntityStar,
-    SocialActionButton,
-    MetagraphDrawer,
-    StarOutlined
+const props = defineProps({
+  isOwner: {
+    type: Boolean
   },
-  props: {
-    isOwner: {
-      type: Boolean
-    },
-    count: {
-      type: Number,
-      required: true
-    },
-    hasStar: {
-      type: Boolean
-    },
-    entityType: {
-      type: String as PropType<PublicEntityType>,
-      required: true
-    },
-    entityId: {
-      type: String,
-      required: true
-    },
+  count: {
+    type: Number,
+    required: true
   },
-  emits: ['update'],
-  setup(props, { emit }) {
-    const entityId = toRef(props, 'entityId');
-    const isOwner = toRef(props, 'isOwner');
-    const entityType = toRef(props, 'entityType');
-    const hasStar = toRef(props, 'hasStar');
-    const isStarDrawerShow = ref(false);
-
-    async function handleAction() {
-      if (!isOwner.value) {
-        return;
-      }
-      let result;
-      let type;
-      if (hasStar.value) {
-        result = await StarApiService.cancel({
-          entityId: entityId.value,
-          entityType: entityType.value
-        });
-        type = '取消点赞成功';
-        emit('update', 'cancel');
-      } else {
-        result = await StarApiService.create({
-          entityId: entityId.value,
-          entityType: entityType.value
-        });
-        type = '点赞成功';
-        emit('update', 'add');
-      }
-      if (result.code === 0) {
-        message.success(type);
-      }
-    }
-
-    return {
-      isStarDrawerShow,
-      handleAction
-    };
-  }
+  hasStar: {
+    type: Boolean
+  },
+  entityType: {
+    type: String as PropType<PublicEntityType>,
+    required: true
+  },
+  entityId: {
+    type: String,
+    required: true
+  },
 });
+const emit = defineEmits(['update']);
+const isStarDrawerShow = ref(false);
+
+async function handleAction() {
+  if (!props.isOwner) {
+    return;
+  }
+  let result;
+  let type;
+  if (props.hasStar) {
+    result = await StarApiService.cancel({
+      entityId: props.entityId,
+      entityType: props.entityType
+    });
+    type = '取消点赞成功';
+    emit('update', 'cancel');
+  } else {
+    result = await StarApiService.create({
+      entityId: props.entityId,
+      entityType: props.entityType
+    });
+    type = '点赞成功';
+    emit('update', 'add');
+  }
+  if (result.code === 0) {
+    message.success(type);
+  }
+}
+
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+@import "../../style/common.scss";
+.high-icon-style {
+  color: $starHighlight;
+}
 </style>

@@ -1,18 +1,32 @@
 <template>
-  <button :disabled="isDisabled" class="meta-normal-button">
+  <button v-if="!isIcon"
+          :disabled="isDisabled"
+          :style="fontStyle"
+          :class="['meta-normal-button', hasBorder? 'button-border-style': 'button-none-border-style' ]">
     <LoadingOutlined class="icon-style" v-if="isLoading"/>
     <slot name="icon" v-else></slot>
     {{ title }}
   </button>
+  <button
+    v-else
+    :style="fontStyle"
+    :disabled="isDisabled"
+    :class="['meta-normal-button', hasBorder? 'button-border-style': 'button-none-border-style' ]">
+    <slot name="icon"></slot>
+  </button>
 </template>
 <script lang="ts" setup>
-import { computed, defineProps } from 'vue';
+import { computed, defineProps, PropType } from 'vue';
 import { LoadingOutlined } from '@ant-design/icons-vue';
 
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    default: ''
+  },
+  isIcon: {
+    type: Boolean,
+    default: false
   },
   disabled: {
     type: Boolean,
@@ -21,46 +35,95 @@ const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false
+  },
+  hasBorder: {
+    type: Boolean,
+    default: true
+  },
+  fontSize: {
+    type: Number,
+    default: 12
+  },
+  // middle small large
+  size: {
+    type: String as PropType<'small' | 'middle' | 'large'>,
+    default: 'middle'
   }
 });
 const isDisabled = computed(() => props.disabled || props.isLoading);
+const fontStyle = computed(() => {
+  if (props.size === 'large') {
+    return {
+      height: '36px',
+      'line-height': props.hasBorder ? '28px' : '30px',
+      'font-size': '16px'
+    };
+  }
+  if (props.size === 'small') {
+    return {
+      height: '28px',
+      'line-height': props.hasBorder ? '20px' : '22px',
+      'font-size': '12px'
+    };
+  }
+  return {
+    height: '32px',
+    'line-height': props.hasBorder ? '24px' : '26px',
+    'font-size': '14px'
+  };
+});
 </script>
 
 <style scoped lang="scss">
 @import "../style/common.scss";
 // 按钮公共样式
+
+.button-border-style {
+  border: 1px solid $hoverDeepBackColor;
+}
+
+.button-none-border-style {
+  border: none;
+}
+
 .meta-normal-button {
-  height: 32px;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+
+  //height: 32px;
   appearance: none;
   background-color: #fff;
-  border: 1px solid $hoverDeepBackColor;
+
   border-radius: 6px;
   //box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0,
   //rgba(255, 255, 255, 0.25) 0 1px 0 inset;
-  box-sizing: border-box;
+
   color: $titleFontColor;
-  cursor: pointer;
-  display: inline-block;
+
   font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial,
   sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  font-size: 14px;
-  line-height: 1.5;
+  //font-size: 14px;
+  //line-height: 1.5;
   list-style: none;
   padding: 3px 10px;
-  position: relative;
+
   transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  vertical-align: middle;
+  cursor: pointer;
+
   white-space: nowrap;
   word-wrap: break-word;
+
   .icon-style {
     font-size: 14px;
   }
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: $hoverBackColor;
     text-decoration: none;
     transition-duration: 0.1s;
   }

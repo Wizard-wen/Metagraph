@@ -27,17 +27,18 @@
           </div>
           <div class="updatedAt">{{ date }}</div>
         </div>
-        <m-button
-          v-if="isLogin"
-          class="control-btn star-btn"
-          :title="'点赞'"
-          :isLoading="isStarButtonDisabled"
-          @click="addStar($event, activityItem.entity.hasStared)">
-          <template #icon>
-            <star-filled  v-if="activityItem.entity.hasStared"/>
-            <star-outlined v-else/>
-          </template>
-        </m-button>
+        <div class="control-btn">
+          <m-button
+            v-if="isLogin"
+            :title="'点赞'"
+            :isLoading="isStarButtonDisabled"
+            @click="addStar($event, activityItem.entity.hasStared)">
+            <template #icon>
+              <star-filled  v-if="activityItem.entity.hasStared"/>
+              <star-outlined v-else/>
+            </template>
+          </m-button>
+        </div>
       </div>
     </div>
   </div>

@@ -36,21 +36,23 @@
       </div>
     </div>
     <div class="right">
-      <ant-dropdown v-if="isLogin" :placement="'bottomRight'" :trigger="['click']">
-        <div class="create-btn">
-          <PlusOutlined class="icon-size" style="margin-right: 3px;"/>
-        </div>
+      <ant-dropdown v-if="isLogin" :placement="'bottomRight'">
+        <m-button :size="'large'" :has-border="false">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+        </m-button>
         <template #overlay>
-          <ant-menu style="width: 160px; padding: 8px;">
-            <ant-menu-item @click="goCreateRepoPage" class="menu-item-style">
+          <ant-menu class="dropdown-menu-style">
+            <ant-menu-item class="menu-item-style" @click="goCreateRepoPage">
               <BookOutlined class="icon-size"/>
               新建知识库
             </ant-menu-item>
-            <ant-menu-item class="menu-item-style">
+            <ant-menu-item class="menu-item-style" @click="goCreateKnowledgePage">
               <ReadOutlined class="icon-size"/>
               新建知识点
             </ant-menu-item>
-            <ant-menu-item class="menu-item-style">
+            <ant-menu-item class="menu-item-style" @click="goCreateInspirationPage">
               <FireOutlined class="icon-size"/>
               新建灵感
             </ant-menu-item>
@@ -58,7 +60,11 @@
         </template>
       </ant-dropdown>
       <div class="notify" v-if="isLogin">
-        <BellOutlined class="icon-size"/>
+        <m-button :size="'large'" :has-border="false">
+          <template #icon>
+            <BellOutlined/>
+          </template>
+        </m-button>
       </div>
       <div class="login-status">
         <div class="no-login" v-if="!isLogin">
@@ -66,39 +72,39 @@
           <m-button :title="'登 录'" @click="goSignInPage"></m-button>
         </div>
         <div class="has-login" v-else>
-          <ant-dropdown>
+          <ant-dropdown :placement="'bottomRight'">
             <div class="avatar-dropdown">
               <ant-avatar :src="userModel.avatar"></ant-avatar>
               <DownOutlined style="margin-left: 4px;"/>
             </div>
             <template #overlay>
-              <ant-menu style="width: 160px">
+              <ant-menu class="dropdown-menu-style">
                 <ant-menu-item class="menu-item-style" @click="goRepositoryPage">
-                  <BookOutlined/>
+                  <BookOutlined class="icon-size"/>
                   我的知识库
                 </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="goStarPage">
-                  <StarOutlined/>
+                  <StarOutlined class="icon-size"/>
                   我赞过的
                 </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="goFollowedPage">
-                  <AimOutlined/>
+                  <AimOutlined class="icon-size"/>
                   我关注的人
                 </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="goFollowerPage">
-                  <UserOutlined/>
+                  <UserOutlined class="icon-size"/>
                   关注我的人
                 </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="goPLanListPage">
-                  <ScheduleOutlined/>
+                  <ScheduleOutlined class="icon-size"/>
                   我的计划
                 </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="goUserEditPage">
-                  <SettingOutlined/>
+                  <SettingOutlined class="icon-size"/>
                   设置
                 </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="signOut">
-                  <PoweroffOutlined/>
+                  <PoweroffOutlined class="icon-size"/>
                   退出登录
                 </ant-menu-item>
               </ant-menu>
@@ -111,103 +117,116 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  computed
-} from 'vue';
-import { useRouter } from 'vue-router';
+import { computed } from 'vue';
 import {
   Avatar as AntAvatar,
   Dropdown as AntDropdown,
+  Input as AntInput,
   Menu as AntMenu,
-  Button as AntButton,
-  Input as AntInput
+  message
 } from 'ant-design-vue';
 import { MButton } from '@/metagraph-ui';
 import {
-  FireOutlined, BookOutlined, ReadOutlined, DownOutlined, SettingOutlined,
-  ScheduleOutlined, StarOutlined, BellOutlined, UserOutlined, AimOutlined, PoweroffOutlined,
-  PlusOutlined
+  AimOutlined,
+  BellOutlined,
+  BookOutlined,
+  DownOutlined,
+  FireOutlined,
+  PlusOutlined,
+  PoweroffOutlined,
+  ReadOutlined,
+  ScheduleOutlined,
+  SettingOutlined,
+  StarOutlined,
+  UserOutlined
 } from '@ant-design/icons-vue';
 import { MutationEnum, useStore } from '@/store';
-import { searchData } from './metegraph.header';
 import { RouterUtil } from '@/utils/router.util';
+import { searchData } from './metegraph.header';
 
 const AntMenuItem = AntMenu.Item;
 const AntInputSearch = AntInput.Search;
-const router = useRouter();
 const store = useStore();
 const isLogin = computed(() => store.state.user.isLogin);
 const userModel = computed(() => store.state.user.user);
-const token = computed(() => store.state.user.token);
-const goSignInPage = async () => {
-  router.push('/login')
-    .then();
-};
-const goInspirationPage = async () => {
-  router.push('/inspiration')
-    .then();
-};
-const goCreateRepoPage = async () => {
-  router.push('/repository/edit')
-    .then();
-};
-const goUserEditPage = async () => {
+
+async function goSignInPage() {
+  await RouterUtil.jumpTo('/login');
+}
+
+async function goInspirationPage() {
+  await RouterUtil.jumpTo('/inspiration');
+}
+
+async function goCreateRepoPage() {
+  await RouterUtil.jumpTo('/repository/edit');
+}
+
+async function goUserEditPage() {
   if (userModel.value === undefined) return;
-  router.push({
-    path: '/settings/profile',
-    params: {
-      userId: userModel.value.id
-    }
-  })
-    .then();
-};
-const goKnowledgeMap = async () => {
-  router.push('/knowledge/map')
-    .then();
-};
-const goStarPage = async () => {
+  await RouterUtil.jumpTo('/settings/profile', {
+    userId: userModel.value.id
+  });
+}
+
+async function goKnowledgeMap() {
+  await RouterUtil.jumpTo('/knowledge/map');
+}
+
+function goCreateInspirationPage() {
+  message.info('该功能尚未开放，敬请期待！');
+}
+
+function goCreateKnowledgePage() {
+  message.info('该功能尚未开放，敬请期待！');
+}
+
+async function goStarPage() {
   if (userModel.value === undefined) return;
   await RouterUtil.jumpTo('/profile', {
     id: userModel.value.id,
     tabKey: '3'
   });
-};
+}
 
-const goRepositoryPage = async () => {
+async function goRepositoryPage() {
   if (userModel.value === undefined) return;
   await RouterUtil.jumpTo('/profile', {
     id: userModel.value.id,
     tabKey: '2'
   });
-};
+}
 
-const goFollowedPage = async () => {
+async function goFollowedPage() {
   if (userModel.value === undefined) return;
   await RouterUtil.jumpTo('/profile', {
     id: userModel.value.id,
     tabKey: '4'
   });
-};
+}
 
-const goFollowerPage = async () => {
+async function goFollowerPage() {
   if (userModel.value === undefined) return;
   await RouterUtil.jumpTo('/profile', {
     id: userModel.value.id,
     tabKey: '5'
   });
-};
-const goSignUpPage = async () => {
+}
+
+async function goSignUpPage() {
   await RouterUtil.jumpTo('/signup');
-};
-const goHomePage = async () => {
+}
+
+async function goHomePage() {
   await RouterUtil.jumpTo('/');
   searchData.value.text = '';
   searchData.value.type = '';
   searchData.value.activeIndex = 0;
   searchData.value.pageSize = 10;
   searchData.value.pageIndex = 1;
-};
-const handleSearch = async (event: string) => {
+}
+
+async function handleSearch(event: string) {
   searchData.value.text = event;
   searchData.value.pageSize = 10;
   searchData.value.pageIndex = 1;
@@ -217,11 +236,12 @@ const handleSearch = async (event: string) => {
     pageSize: searchData.value.pageSize,
     pageIndex: searchData.value.pageIndex
   });
-};
-const signOut = async () => {
+}
+
+async function signOut() {
   store.commit(MutationEnum.CLEAR_USER_MODEL);
   await RouterUtil.jumpTo('/login');
-};
+}
 
 async function goPLanListPage() {
   await RouterUtil.jumpTo('/plan/list');
@@ -243,12 +263,21 @@ async function goHelpPage() {
   font-size: 16px !important;
 }
 
+.dropdown-menu-style {
+  width: 160px;
+  padding: 8px!important;
+}
+
 .menu-item-style {
   font-size: $iconFontSize;
   height: 36px;
   line-height: 36px;
   padding: 5px 10px !important;
   border-radius: 6px !important;
+
+  &:hover {
+    background: $hoverBackColor !important;
+  }
 }
 
 .ant-dropdown-menu-title-content {
@@ -357,12 +386,6 @@ async function goHelpPage() {
     .notify {
       padding: 5px 10px;
       margin-right: 15px;
-      cursor: pointer;
-
-      &:hover {
-        border-radius: 4px;
-        background: $hoverBackColor;
-      }
     }
 
     .avatar-dropdown {

@@ -34,22 +34,22 @@
           </div>
           <div class="updatedAt">{{ date }}</div>
         </div>
-        <add-to-plan-button
-          class="control-btn plan-btn"
-          :custom-class="['control-btn', 'plan-btn']"
-          :entity-id="activityItem.entity.entity.id"
-          :entity-type="activityItem.entity.entity.entityType"></add-to-plan-button>
-        <m-button
-          class="control-btn star-btn"
-          v-if="isLogin"
-          @click="addStar($event, activityItem.entity.hasStared)"
-          :title="'点赞'"
-          :is-loading="isStarButtonDisabled">
-          <template #icon>
-            <star-filled v-if="activityItem.entity.hasStared"/>
-            <star-outlined v-else/>
-          </template>
-        </m-button>
+        <div class="control-btn">
+          <add-to-plan-button
+            :custom-class="['control-btn', 'plan-btn']"
+            :entity-id="activityItem.entity.entity.id"
+            :entity-type="activityItem.entity.entity.entityType"></add-to-plan-button>
+          <m-button
+            v-if="isLogin"
+            @click="addStar($event, activityItem.entity.hasStared)"
+            :title="'点赞'"
+            :is-loading="isStarButtonDisabled">
+            <template #icon>
+              <star-filled v-if="activityItem.entity.hasStared"/>
+              <star-outlined v-else/>
+            </template>
+          </m-button>
+        </div>
       </div>
     </div>
   </div>

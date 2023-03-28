@@ -29,7 +29,7 @@ export const textFileFormRules = ref({
     trigger: 'blur'
   }]
 });
-export const textFileFormRef = ref();
+
 // 上传的文件的url
 export const fileUrl = ref<string>();
 // 解析出来的关键字

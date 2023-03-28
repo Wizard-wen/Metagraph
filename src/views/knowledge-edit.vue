@@ -186,22 +186,23 @@ export default defineComponent({
     }
 
     async function handleRouteLeaveConfirm(): Promise<boolean> {
-      return new Promise((resolve) => {
-        Modal.confirm({
-          zIndex: 100000,
-          title: '确定离开当前页面吗?',
-          icon: createVNode(ExclamationCircleOutlined),
-          content: '',
-          okText: '确定',
-          cancelText: '取消',
-          onOk() {
-            resolve(true);
-          },
-          onCancel() {
-            resolve(false);
-          }
-        });
-      });
+      return true;
+      // return new Promise((resolve) => {
+      //   Modal.confirm({
+      //     zIndex: 100000,
+      //     title: '确定离开当前页面吗?',
+      //     icon: createVNode(ExclamationCircleOutlined),
+      //     content: '',
+      //     okText: '确定',
+      //     cancelText: '取消',
+      //     onOk() {
+      //       resolve(true);
+      //     },
+      //     onCancel() {
+      //       resolve(false);
+      //     }
+      //   });
+      // });
     }
 
     onBeforeRouteLeave(async () => {

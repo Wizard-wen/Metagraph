@@ -1,12 +1,15 @@
 <template>
   <div class="right-sidebar-container">
     <div class="control-button-content">
-      <ant-button class="full-button-style" @click="handleModalShow" v-if="editable">
+      <m-button
+        class="full-button-style"
+        @click="handleModalShow"
+        v-if="editable"
+        :title="'引用/创建知识点'">
         <template #icon>
           <PlusOutlined/>
         </template>
-        引用/创建知识点
-      </ant-button>
+      </m-button>
     </div>
     <check-bar
       :is-editable="editable"
@@ -50,7 +53,6 @@
 
 <script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import { Button as AntButton } from 'ant-design-vue';
 import { computed, defineEmits, inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
@@ -60,10 +62,10 @@ import {
   unpublishedDraftKnowledgeList
 } from '@/views/repository-editor/model/repository.editor';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { useStore } from '@/store';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import CheckBar from '@/components/metagraph-tab-bar.vue';
 import MentionEntityList from '@/views/repository-editor/mention-entity-list.vue';
+import {MButton} from '@/metagraph-ui';
 
 const currentBar = ref<string>('published');
 
@@ -160,7 +162,6 @@ function handleUnpublishedControl(params: {
 
 <style scoped lang="scss">
 @import '../../../style/common';
-@import './right-sidebar.scss';
 
 .control-button-content {
   padding: 10px 15px;
@@ -168,58 +169,13 @@ function handleUnpublishedControl(params: {
 
   .full-button-style {
     width: 100%;
-    font-size: 12px;
-    border-radius: 4px;
   }
 }
 
-.entity-list-item {
-  height: 32px;
-  line-height: 32px;
-  width: 100%;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background: #e7e9e8;
-    //@include list-item-highlight;
-    //text-indent: 5px;
-  }
-
-  .text {
-    .icon {
-      text-indent: 0;
-      font-size: 14px;
-    }
-  }
-
-  .text-no-icon {
-    padding-left: 17px;
-  }
-
-  .control {
-    font-size: 16px;
-    line-height: 35px;
-  }
-}
-
-.sub-title {
-  height: 32px;
-  line-height: 32px;
-  text-align: left;
-  font-size: 12px;
-  padding-left: 10px;
-  color: #0006;
-}
-
-.entity-list-item-active {
-  @include list-item-highlight;
+.right-sidebar-content {
+  height: calc(100vh - 135px);
+  padding: 10px;
+  overflow-y: auto;
 }
 
 </style>

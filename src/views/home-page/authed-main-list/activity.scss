@@ -120,11 +120,10 @@
 
 .control-btn {
   position: absolute;
-  //font-weight: bold;
-
-  &::v-deep(.ant-btn) {
-    height: 28px;
-  }
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 5px;
 }
 
 .plan-btn {
