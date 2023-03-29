@@ -15,6 +15,7 @@
       <div class="search">
         <div class="search-container">
           <ant-input
+            size="large"
             placeholder="请输入要查找的知识点"
             :allowClear="true"
             class="search-input"

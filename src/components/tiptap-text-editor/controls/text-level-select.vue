@@ -11,7 +11,7 @@
       <div class="list">
         <div
           @click="handleFontSizeChange(item.value)"
-          :class="['list-item', 'list-item-' + index, {'disabled-style': index === 1}]"
+          :class="['list-item', 'list-item-' + index]"
           :key="index"
           v-for="(item, index) in textLevelList">
           <CheckOutlined class="check-icon" v-if="currentTextLevel === item.value"/>
@@ -46,10 +46,10 @@ const textLevelList = reactive([
     label: '正文',
     value: '0'
   },
-  {
-    label: '正文标题',
-    value: '1'
-  },
+  // {
+  //   label: '正文标题',
+  //   value: '1'
+  // },
   {
     label: '标题1',
     value: '2'
@@ -145,7 +145,7 @@ function toggleHeading(level: 2 | 3 | 4) {
 }
 
 .list {
-  padding: 10px 0;
+  padding: 10px;
   min-width: 100px;
   width: max-content;
   border: 1px solid $borderColor;

@@ -4,16 +4,17 @@
     :key="index"
     data-type="rect"
     class="dnd-rect"
-    :class="{'is-active': item.isDraggable}"
+    :class="[item.isDraggable ? 'is-active' : 'is-normal']"
     :draggable="item.isDraggable"
-    @mousedown="startDrag($event, item.item)">
+    @dragstart="startDrag($event, item.item)">
     <div class="text">{{ item.item.content.name }}</div>
     <div class="control">
       <ant-dropdown
         :getPopupContainer="getPopupContainer"
         :trigger="['click']"
-        :overlayClassName="'dropdown-overlay'">
-        <div class="icon-content-style">
+        >
+        <div class="icon-content-style" :draggable="item.isDraggable"
+             @dragstart="handleNoDrag($event)">
           <MoreOutlined/>
         </div>
         <template #overlay>
@@ -26,7 +27,14 @@
           </ant-menu>
         </template>
       </ant-dropdown>
-      <div class="icon-content-style">
+      <div
+        v-if="item.isDraggable"
+        class="icon-content-style"
+        :draggable="item.isDraggable"
+        @dragstart="handleNoDrag($event)">
+        <eye-outlined/>
+      </div>
+      <div class="icon-content-style" v-else>
         <eye-outlined/>
       </div>
     </div>
@@ -45,6 +53,12 @@ const AntMenuItem = AntMenu.Item;
 
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
+}
+
+function handleNoDrag($event: DragEvent) {
+  console.log($event);
+  $event.preventDefault();
+  $event.stopPropagation();
 }
 
 const emit = defineEmits(['handleDrag']);
@@ -111,13 +125,9 @@ const operationList = ref([
     }
   }
 
-  &:hover {
-    background: #eff0f0;
-  }
 
   .text {
     text-align: left;
-    cursor: pointer;
     flex: 1;
     overflow: hidden; /*超出部分隐藏*/
     text-overflow: ellipsis; /* 超出部分显示省略号 */
@@ -129,7 +139,20 @@ const operationList = ref([
   }
 }
 
+.is-normal {
+  border: 1px solid $hoverBackColor;
+
+  &:hover {
+    background: $hoverBackColor;
+  }
+}
+
 .is-active {
-  border: 1px solid #1890FF;
+  border: 1px solid $themeColor;
+  cursor: move;
+
+  &:hover {
+    background: rgba($themeColor, 0.1);
+  }
 }
 </style>

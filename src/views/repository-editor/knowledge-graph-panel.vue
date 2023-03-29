@@ -31,7 +31,7 @@ import { EdgeCreateModal } from '@/views/repository-editor/knowledge-graph-panel
 import {
   initWebSocket,
   isModalVisible,
-  KnowledgeGraphData
+  KnowledgeGraphData, selectedGraphNodeEntityId
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
@@ -108,7 +108,7 @@ onMounted(async () => {
         height: 200px;
         position: fixed;
         bottom: 0;
-        right: 300px;
+        right: 260px;
       }
     }
 

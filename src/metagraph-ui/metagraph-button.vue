@@ -1,8 +1,9 @@
 <template>
-  <button v-if="!isIcon"
-          :disabled="isDisabled"
-          :style="fontStyle"
-          :class="['meta-normal-button', hasBorder? 'button-border-style': 'button-none-border-style' ]">
+  <button
+    v-if="!isIcon"
+    :disabled="isDisabled"
+    :style="fontStyle"
+    :class="['meta-normal-button', hasBorder? 'button-border-style': 'button-none-border-style' ]">
     <LoadingOutlined class="icon-style" v-if="isLoading"/>
     <slot name="icon" v-else></slot>
     {{ title }}
@@ -43,6 +44,10 @@ const props = defineProps({
   fontSize: {
     type: Number,
     default: 12
+  },
+  background: {
+    type: String,
+    default: 'transparent'
   },
   // middle small large
   size: {

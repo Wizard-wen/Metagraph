@@ -38,14 +38,16 @@ export const newEdgeId = ref();
 export const isKnowledgeRelationLoading = ref(false);
 export const knowledgeInEdgeList = ref<KnowledgeEdgeInEdgeGroupType[]>([]);
 export const isModalVisible = ref(false);
-export const selectedGraphNodeEntityId = ref();
+export const selectedGraphNodeEntityId = ref<string>();
 export const entityRelationEdges = reactive<{
+  isLoading: boolean;
   entity?: EntityCompletelyListItemType,
   preInnerList: CustomEdgeType[],
   preOuterList: CustomEdgeType[],
   extendInnerList: CustomEdgeType[],
   extendOuterList: CustomEdgeType[]
 }>({
+  isLoading: false,
   entity: undefined,
   preInnerList: [],
   preOuterList: [],
@@ -94,12 +96,12 @@ export class KnowledgeGraphData {
     graph.value?.addEdge({
       id: edgeData.id,
       source: {
-        cell: `${edgeData.originKnowledgeEntityId}`,
-        port: `${edgeData.originKnowledgeEntityId}-out`
+        cell: `${ edgeData.originKnowledgeEntityId }`,
+        port: `${ edgeData.originKnowledgeEntityId }-out`
       },
       target: {
-        cell: `${edgeData.targetKnowledgeEntityId}`,
-        port: `${edgeData.targetKnowledgeEntityId}-in`
+        cell: `${ edgeData.targetKnowledgeEntityId }`,
+        port: `${ edgeData.targetKnowledgeEntityId }-in`
       },
       labels: [edgeData.description || ''],
       connector: 'rounded',
@@ -145,6 +147,7 @@ export class KnowledgeGraphData {
     this.initEdgeRemovedEventHandler(repositoryEntityId);
     this.initNodeMovedEventHandler(repositoryEntityId);
     this.initNodeClickEventHandler(repositoryEntityId);
+    this.initBlankClickEventHandler();
     KnowledgeGraphData.initEdgeChangeConnectorEventHandler();
     KnowledgeGraphData.initEdgeUnSelectedEventHandler();
     KnowledgeGraphData.initEdgeSelectedEventHandler();
@@ -279,6 +282,20 @@ export class KnowledgeGraphData {
     });
   }
 
+  private initBlankClickEventHandler() {
+    if (!graph.value) {
+      return;
+    }
+    graph.value.on('blank:click', async () => {
+      selectedGraphNodeEntityId.value = undefined;
+      entityRelationEdges.entity = undefined;
+      entityRelationEdges.preInnerList = [];
+      entityRelationEdges.preOuterList = [];
+      entityRelationEdges.extendInnerList = [];
+      entityRelationEdges.extendOuterList = [];
+    });
+  }
+
   /**
    * 获取当前节点的关联节点
    * @param knowledgeEntityId
@@ -289,6 +306,7 @@ export class KnowledgeGraphData {
     knowledgeEntityId: string,
     repositoryEntityId: string
   ): Promise<void> {
+    entityRelationEdges.isLoading = true;
     const result = await KnowledgeNoAuthApiService.getEdgesByKnowledgeEntityId({
       knowledgeEntityId,
       repositoryEntityId
@@ -326,6 +344,7 @@ export class KnowledgeGraphData {
         isInnerRepository: false,
         isDraggable: !repositoryEntityIdList.includes(item.item.entity.id)
       }));
+    entityRelationEdges.isLoading = false;
   }
 
   private initNodeMovedEventHandler(repositoryEntityId: string) {
@@ -627,12 +646,12 @@ export class KnowledgeGraphData {
     return result.data.map((item: KnowledgeEdgeModelType) => ({
       id: item.id,
       source: {
-        cell: `${item.originKnowledgeEntityId}`,
-        port: `${item.originKnowledgeEntityId}-out`
+        cell: `${ item.originKnowledgeEntityId }`,
+        port: `${ item.originKnowledgeEntityId }-out`
       },
       target: {
-        cell: `${item.targetKnowledgeEntityId}`,
-        port: `${item.targetKnowledgeEntityId}-in`
+        cell: `${ item.targetKnowledgeEntityId }`,
+        port: `${ item.targetKnowledgeEntityId }-in`
       },
       labels: [item.description || ''],
       connector: 'rounded',
@@ -713,14 +732,14 @@ export class KnowledgeGraphData {
     return {
       items: [
         {
-          id: `${item.entity.id}-in`,
+          id: `${ item.entity.id }-in`,
           group: 'in',
           attrs: {
             text: { text: 'in' },
           },
         },
         {
-          id: `${item.entity.id}-out`,
+          id: `${ item.entity.id }-out`,
           group: 'out',
           attrs: {
             text: { text: 'out' },

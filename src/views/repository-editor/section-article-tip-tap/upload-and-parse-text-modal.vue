@@ -1,8 +1,7 @@
 <template>
   <ant-modal
     title="文本解析"
-    :width="'100%'"
-    :wrapClassName="'full-modal'"
+    :width="'80%'"
     :footer="null"
     :zIndex="7999"
     v-if="isUploadModalShown"

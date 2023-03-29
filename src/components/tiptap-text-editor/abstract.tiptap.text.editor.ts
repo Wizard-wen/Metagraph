@@ -23,11 +23,11 @@ import { debounce } from 'lodash';
 import { lowlight } from 'lowlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
+import { FontSize } from '@/components/tiptap-text-editor/controls/font.size.extension';
 import MentionList from './components/mention-list.vue';
 import { CustomMention } from './components/tiptap.custom.mention';
 import CodeBlockContainer from './components/code-block-container.vue';
 import TableOfContent from './components/table.of.content';
-import { FontSize } from '@/components/tiptap-text-editor/controls/font.size.extension';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -197,11 +197,11 @@ export abstract class AbstractTiptapTextEditor {
         },
       },
       extensions: [
-        Document.extend({
-          content: 'heading block*',
-        }),
+        // Document.extend({
+        //   content: 'heading block*',
+        // }),
         StarterKit.configure({
-          document: false,
+          // document: false,
         }),
         TextAlign.configure({
           types: ['heading', 'paragraph'],

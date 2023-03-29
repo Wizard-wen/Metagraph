@@ -1,5 +1,14 @@
 <template>
-  <div class="toolbar">
+  <div :class="['toolbar', selectedGraphNodeEntityId ? '' : 'hide-style']">
+    <metagraph-tab-bar
+      :is-editable="true"
+      :current-key="currentBar"
+      :element-tabs="menuList"></metagraph-tab-bar>
+
+    <div class="knowledge-name">
+      <ReadOutlined class="icon-style"/>
+      {{entityRelationEdges.entity?.entity.name}}
+    </div>
     <metagraph-tab-bar
       :is-editable="true"
       :current-key="currentBar"
@@ -8,7 +17,23 @@
     <div class="search-bar">
       <SearchOutlined class="search-icon"/>
       <input type="text" class="search-input" placeholder="搜索知识关联">
-      <ControlOutlined class="search-control"/>
+      <ant-dropdown :placement="'bottomRight'">
+        <m-button :size="'small'" :has-border="false">
+          <template #icon>
+            <ControlOutlined/>
+          </template>
+        </m-button>
+        <template #overlay>
+          <ant-menu class="dropdown-menu-style">
+            <ant-menu-item class="menu-item-style">
+              我的知识库
+            </ant-menu-item>
+            <ant-menu-item class="menu-item-style">
+              我的知识库
+            </ant-menu-item>
+          </ant-menu>
+        </template>
+      </ant-dropdown>
     </div>
     <metagraph-tab-bar
       :is-editable="true"
@@ -16,66 +41,61 @@
       @selectedChange="handleMentionBarChange"
       :element-tabs="mentionStatusList"></metagraph-tab-bar>
     <div class="content">
-      <div class="card-content" v-if="currentShow === 'preMentioned'">
-        <normal-relation-list
-          :relation-list="entityRelationEdges.preInnerList"></normal-relation-list>
-      </div>
-      <div class="card-content" v-if="currentShow === 'preUnmentioned'">
-        <!--        <div-->
-        <!--          v-for="(item, index) in entityRelationEdges.preOuterList"-->
-        <!--          :key="index"-->
-        <!--          data-type="rect"-->
-        <!--          class="dnd-rect"-->
-        <!--          :class="{'is-active': item.isDraggable}"-->
-        <!--          :draggable="item.isDraggable"-->
-        <!--          @mousedown="startDrag($event, item.item)">-->
-        <!--          {{ item.item.content.name }}-->
-        <!--        </div>-->
+      <template v-if="selectedGraphNodeEntityId && entityRelationEdges.isLoading === false">
+        <div class="card-content"
+             v-if="currentShow === 'preMentioned'">
+          <normal-relation-list
+            :relation-list="entityRelationEdges.preInnerList"></normal-relation-list>
+        </div>
+        <div class="card-content"
+             v-if="currentShow === 'preUnmentioned'">
+          <draggable-relation-list
+            :relation-list="entityRelationEdges.preOuterList"
+            @handleDrag="startDrag"></draggable-relation-list>
+        </div>
+        <div class="card-content"
+             v-if="currentShow === 'extendMentioned'">
+          <normal-relation-list
+            :relation-list="entityRelationEdges.extendInnerList"></normal-relation-list>
+        </div>
+        <div class="card-content"
+             v-if="currentShow === 'extendUnmentioned'">
+          <draggable-relation-list
+            :relation-list="entityRelationEdges.extendOuterList"
+            @handleDrag="startDrag"></draggable-relation-list>
+        </div>
+      </template>
 
-        <draggable-relation-list
-          :relation-list="entityRelationEdges.preOuterList"
-          @handleDrag="startDrag"></draggable-relation-list>
-      </div>
-      <div class="card-content" v-if="currentShow === 'extendMentioned'">
-        <normal-relation-list
-          :relation-list="entityRelationEdges.extendInnerList"></normal-relation-list>
-      </div>
-      <div class="card-content" v-if="currentShow === 'extendUnmentioned'">
-        <!--        <div-->
-        <!--          v-for="(item, index) in entityRelationEdges.extendOuterList"-->
-        <!--          :key="index"-->
-        <!--          data-type="rect"-->
-        <!--          class="dnd-rect"-->
-        <!--          :class="{'is-active': item.isDraggable}"-->
-        <!--          :draggable="item.isDraggable"-->
-        <!--          @mousedown="startDrag($event, item.item)">-->
-        <!--          {{ item.item.content.name }}-->
-        <!--        </div>-->
-        <draggable-relation-list
-          :relation-list="entityRelationEdges.extendOuterList"
-          @handleDrag="startDrag"></draggable-relation-list>
-      </div>
+      <template v-if="selectedGraphNodeEntityId && entityRelationEdges.isLoading">
+        <ant-skeleton v-for="item in 3" :key="item"></ant-skeleton>
+      </template>
+      <empty-view v-if="!selectedGraphNodeEntityId"></empty-view>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ControlOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import { ControlOutlined, SearchOutlined, ReadOutlined } from '@ant-design/icons-vue';
 import { computed, inject, onMounted, ref } from 'vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
+import { MButton } from '@/metagraph-ui';
+import { Menu as AntMenu, Dropdown as AntDropdown, Skeleton as AntSkeleton } from 'ant-design-vue';
+import EmptyView from '@/components/empty-view/empty-view.vue';
 import {
   dnd,
   entityRelationEdges,
   graph,
-  KnowledgeGraphData
+  KnowledgeGraphData, selectedGraphNodeEntityId
 } from './knowledge.graph.data';
 import NormalRelationList
   from './normal-relation-list.vue';
 import DraggableRelationList
   from './draggable-relation-list.vue';
 import { repositoryBindEntityList } from '../model/repository.editor';
+
+const AntMenuItem = AntMenu.Item;
 
 const repositoryEntityIdList = computed(
   () => repositoryBindEntityList.value.map((item) => item.entity.id)
@@ -87,7 +107,7 @@ const toolbarElementList = ref<{ value: string; label: string; isAuth: boolean }
     isAuth: false
   },
   {
-    label: '导出',
+    label: '引申',
     value: 'extend',
     isAuth: false
   },
@@ -99,7 +119,30 @@ function handleBarChange(value: string) {
   currentBar.value = value;
 }
 
+const menuList = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '面板',
+    value: 'all',
+    isAuth: false
+  },
+  {
+    label: '知识点',
+    value: 'mentioned',
+    isAuth: false
+  },
+  {
+    label: '知识关联',
+    value: 'unmentioned',
+    isAuth: false
+  },
+]);
+
 const mentionStatusList = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '全部',
+    value: 'all',
+    isAuth: false
+  },
   {
     label: '已引用',
     value: 'mentioned',
@@ -161,6 +204,10 @@ const startDrag = (params: { event: MouseEvent, entity: EntityCompletelyListItem
 <style scoped lang="scss">
 @import '../../../style/common';
 
+.hide-style {
+
+}
+
 .toolbar {
   border-right: solid 1px $borderColor;
   background-color: #fff;
@@ -168,6 +215,18 @@ const startDrag = (params: { event: MouseEvent, entity: EntityCompletelyListItem
   width: 280px;
   display: flex;
   flex-direction: column;
+  .knowledge-name {
+    display: flex;
+    height: 45px;
+    align-items: center;
+    border-bottom: 1px solid $borderColor;
+    padding-left: 8px;
+    font-weight: bold;
+    .icon-style {
+      margin-right: 8px;
+      font-size: 14px;
+    }
+  }
 
   .search-bar {
     height: 40px;
