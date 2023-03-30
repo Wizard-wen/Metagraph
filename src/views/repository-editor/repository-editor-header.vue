@@ -1,6 +1,6 @@
 <template>
   <div class="repository-editor-header">
-    <div class="left">
+    <div class="left-side">
       <m-button :has-border="false" @click="goHomePage">
         <template #icon>
           <LeftOutlined/>
@@ -58,42 +58,52 @@
         </template>
       </ant-dropdown>
       <div class="title">
-        <div class="repository-name">{{ repositoryModel.target.content.name }}</div>
-        <m-tag :title="isCloneRepository ? '克隆' : '原创'" class="repository-type-tag">
-        </m-tag>
-        <m-button class="repository-type-tag" :is-icon="true" :has-border="false">
-          <template #icon>
-            <UnlockOutlined :title="'公开'" v-if="isPublicRepository"/>
-            <LockOutlined :title="'私有'" v-else/>
-          </template>
-        </m-button>
-        <div class="saving-status">
-          <LoadingOutlined v-if="savingStatus === 'saving...'" class="saving-icon-style"/>
-          <CloudSyncOutlined v-else class="saved-icon-style"/>
-        </div>
+        <template v-if="repositoryModel.target">
+          <div class="repository-name">{{ repositoryModel.target.content.name }}</div>
+          <m-tag
+            :title="isCloneRepository ? '克隆' : '原创'"
+            class="repository-type-tag">
+          </m-tag>
+          <m-button class="repository-type-tag" :is-icon="true" :has-border="false">
+            <template #icon>
+              <UnlockOutlined :title="'公开'" v-if="isPublicRepository"/>
+              <LockOutlined :title="'私有'" v-else/>
+            </template>
+          </m-button>
+          <div class="saving-status">
+            <LoadingOutlined v-if="savingStatus === 'saving...'" class="saving-icon-style"/>
+            <CloudSyncOutlined v-else class="saved-icon-style"/>
+          </div>
+        </template>
+        <ant-skeleton style="max-width: 300px" v-else :paragraph="false"></ant-skeleton>
       </div>
+
     </div>
-    <div class="middle">
+    <div class="middle-side">
       <switch-mode
         :view-status="viewStatus"
         @viewChange="handleRepositoryViewChange"></switch-mode>
     </div>
-    <div class="right">
-      <star-control-button
-        @update="handleStarStatusUpdate"
-        :is-owner="!!repositoryModel.target.author.id"
-        :has-star="repositoryModel.target.hasStared"
-        :count="repositoryModel.target.star"
-        :entity-id="repositoryModel.target.entity.id"
-        :entity-type="repositoryModel.target.entity.entityType"></star-control-button>
-      <comment-control-button
-        @update="handleUpdateComment"
-        :count="repositoryModel.target.comment"
-        :entity-id="repositoryModel.target.entity.id"
-        :entity-type="repositoryModel.target.entity.entityType"></comment-control-button>
+    <div class="right-side">
+      <template v-if="repositoryModel.target">
+        <star-control-button
+          @update="handleStarStatusUpdate"
+          :is-owner="!!repositoryModel.target.author.id"
+          :has-star="repositoryModel.target.hasStared"
+          :count="repositoryModel.target.star"
+          :entity-id="repositoryModel.target.entity.id"
+          :entity-type="repositoryModel.target.entity.entityType"></star-control-button>
+        <comment-control-button
+          @update="handleUpdateComment"
+          :count="repositoryModel.target.comment"
+          :entity-id="repositoryModel.target.entity.id"
+          :entity-type="repositoryModel.target.entity.entityType"></comment-control-button>
+      </template>
+      <ant-skeleton v-else :paragraph="false"></ant-skeleton>
     </div>
   </div>
   <clone-repository-modal
+    v-if="repositoryModel.target"
     :old-repository-name="currentRepositoryName"
     @close="handleCloseCloneModal"
     :is-modal-visible="isCloneModalShow"></clone-repository-modal>
@@ -116,7 +126,13 @@ import {
   UnlockOutlined,
   UploadOutlined
 } from '@ant-design/icons-vue';
-import { Dropdown as AntDropdown, Menu as AntMenu, message, Modal } from 'ant-design-vue';
+import {
+  Dropdown as AntDropdown,
+  Menu as AntMenu,
+  message,
+  Modal,
+  Skeleton as AntSkeleton
+} from 'ant-design-vue';
 import { computed, createVNode, defineEmits, defineProps, inject, PropType, ref } from 'vue';
 import type { RepositoryModelType } from 'metagraph-constant';
 import { useRoute } from 'vue-router';
@@ -166,6 +182,7 @@ async function goRepositoryEditPage() {
     repositoryEntityId: repositoryEntityId.value
   });
 }
+
 const handleUpdateComment = async () => {
   await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
 };
@@ -255,7 +272,7 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
   justify-content: space-between;
   align-items: center;
 
-  .left {
+  .left-side {
     display: flex;
     gap: 4px;
 
@@ -290,13 +307,13 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
     }
   }
 
-  .middle {
+  .middle-side {
     position: absolute;
     top: 12px;
     left: calc(50% - 110px);
   }
 
-  .right {
+  .right-side {
     display: flex;
     align-items: center;
     gap: 20px;

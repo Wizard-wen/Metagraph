@@ -5,7 +5,6 @@
         @viewChange="handleChangeView"
         :view-status="viewStatus"
         :saving-status="isSaving"
-        v-if="repositoryModel.target"
       ></repository-editor-header>
       <div class="editable">
         <div class="section-view">

@@ -42,23 +42,6 @@
         </ant-form>
       </div>
     </div>
-    <a-steps>
-      <a-step status="finish" title="Login">
-        <template #icon>
-          <user-outlined/>
-        </template>
-      </a-step>
-      <a-step status="finish" title="Verification">
-        <template #icon>
-          <solution-outlined/>
-        </template>
-      </a-step>
-      <a-step status="process" title="Pay">
-        <template #icon>
-          <loading-outlined/>
-        </template>
-      </a-step>
-    </a-steps>
     <ant-tabs v-model:activeKey="activeTab">
       <ant-tabs-pane key="1" tab="文本" class="tab-content">
         <div
@@ -113,17 +96,13 @@ import {
   Input as AntInput,
   List as AntList,
   Modal as AntModal,
-  Steps as ASteps,
   Tabs as AntTabs,
   Tag as AntTag
 } from 'ant-design-vue';
 import { FileEnum, SectionModelType } from 'metagraph-constant';
 import {
   CloseOutlined,
-  LoadingOutlined,
-  SolutionOutlined,
-  UploadOutlined,
-  UserOutlined
+  UploadOutlined
 } from '@ant-design/icons-vue';
 import { defineEmits, defineProps, inject, ref } from 'vue';
 import EmptyView from '@/components/empty-view/empty-view.vue';
@@ -141,7 +120,6 @@ import {
   uploadButtonText
 } from '../model/upload.and.parse.text.service';
 
-const AStep = ASteps.Step;
 const textFileFormRef = ref();
 
 const AntListItem = AntList.Item;
@@ -239,46 +217,6 @@ const createAlternativeKnowledgeList = async () => {
 const removeKeyword = (index: number) => {
   keywords.value.splice(index, 1);
 };
-
-// export default defineComponent({
-//   components: {
-//     CloseOutlined,
-//     UploadOutlined,
-//     AntTabs: Tabs,
-//     EmptyView,
-//     AntList: List,
-//     AntInput: Input,
-//
-//   },
-//   emits: ['close'],
-//   setup(props, { emit }) {
-//
-//     return {
-//       createWordTextSection,
-//       removeKeyword,
-//       confirmUploadWord,
-//       handleFileChange,
-//       clearCurrentUploadingValue,
-//       activeTab,
-//       clearText,
-//       articleText,
-//       fileNameInput,
-//       isShowOperationButton,
-//       handleCloseParseWordModal,
-//       createAlternativeKnowledgeList,
-//       currentWordFile,
-//       keywords,
-//       textParsingStatus,
-//       uploadButtonText,
-//       textFileFormRules,
-//       textFileFormRef,
-//       textFileForm,
-//       isShowOperation,
-//       suffixText,
-//
-//     };
-//   }
-// });
 </script>
 
 <style scoped lang="scss">

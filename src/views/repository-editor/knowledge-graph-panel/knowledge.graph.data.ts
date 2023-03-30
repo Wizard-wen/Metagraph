@@ -96,12 +96,12 @@ export class KnowledgeGraphData {
     graph.value?.addEdge({
       id: edgeData.id,
       source: {
-        cell: `${ edgeData.originKnowledgeEntityId }`,
-        port: `${ edgeData.originKnowledgeEntityId }-out`
+        cell: `${edgeData.originKnowledgeEntityId}`,
+        port: `${edgeData.originKnowledgeEntityId}-out`
       },
       target: {
-        cell: `${ edgeData.targetKnowledgeEntityId }`,
-        port: `${ edgeData.targetKnowledgeEntityId }-in`
+        cell: `${edgeData.targetKnowledgeEntityId}`,
+        port: `${edgeData.targetKnowledgeEntityId}-in`
       },
       labels: [edgeData.description || ''],
       connector: 'rounded',
@@ -160,6 +160,14 @@ export class KnowledgeGraphData {
 
   handleZoomOutGraph(): void {
     graph.value?.zoom(-0.1);
+  }
+
+  showGrid(type: boolean) {
+    type ? graph.value?.showGrid() : graph.value?.hideGrid();
+  }
+
+  showMinimap(type: boolean) {
+    // todo
   }
 
   destroy(): void {
@@ -646,12 +654,12 @@ export class KnowledgeGraphData {
     return result.data.map((item: KnowledgeEdgeModelType) => ({
       id: item.id,
       source: {
-        cell: `${ item.originKnowledgeEntityId }`,
-        port: `${ item.originKnowledgeEntityId }-out`
+        cell: `${item.originKnowledgeEntityId}`,
+        port: `${item.originKnowledgeEntityId}-out`
       },
       target: {
-        cell: `${ item.targetKnowledgeEntityId }`,
-        port: `${ item.targetKnowledgeEntityId }-in`
+        cell: `${item.targetKnowledgeEntityId}`,
+        port: `${item.targetKnowledgeEntityId}-in`
       },
       labels: [item.description || ''],
       connector: 'rounded',
@@ -732,14 +740,14 @@ export class KnowledgeGraphData {
     return {
       items: [
         {
-          id: `${ item.entity.id }-in`,
+          id: `${item.entity.id}-in`,
           group: 'in',
           attrs: {
             text: { text: 'in' },
           },
         },
         {
-          id: `${ item.entity.id }-out`,
+          id: `${item.entity.id}-out`,
           group: 'out',
           attrs: {
             text: { text: 'out' },
