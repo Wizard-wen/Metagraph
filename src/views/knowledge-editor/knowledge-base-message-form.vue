@@ -73,7 +73,7 @@
       @close="handleKnowledgeTagModalClose($event)"></knowledge-tag-modal>
     <domain-select-modal
       v-if="isDomainModalVisible"
-      :domain-list="domainListProp"
+      :selected-domain-list="domainListProp"
       :isModalVisible="isDomainModalVisible"
       @close="handleDomainModalClose($event)"></domain-select-modal>
   </ant-form>
@@ -98,7 +98,6 @@ import {
   draftKnowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
 } from './model/knowledge.edit';
-
 export default defineComponent({
   name: 'knowledge-base-message-form',
   components: {

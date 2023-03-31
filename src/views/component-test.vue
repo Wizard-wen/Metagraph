@@ -1,16 +1,14 @@
 <template>
 
-  <upload-word :is-upload-modal-shown="true"></upload-word>
+  <!--  <upload-word :is-upload-modal-shown="true"></upload-word>-->
+  <git-style-login></git-style-login>
 </template>
 
 <script lang="ts" setup>
 
 import 'intro.js/introjs.css';
 import 'metagraph-ui/dist/style.css';
-
-import MetagraphTreeDemo from './test/metagraph-tree-demo.vue';
-import UploadWord from '@/views/repository-editor/section-article-tip-tap/upload-word.vue';
-</script>
+import { GitStyleLogin } from '@/github.style.component';</script>
 
 <style scoped lang="scss">
 .ele {

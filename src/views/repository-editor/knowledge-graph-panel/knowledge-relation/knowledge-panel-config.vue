@@ -13,7 +13,7 @@
     <input type="text" class="search-input" placeholder="搜索知识关联">
     <ant-dropdown :placement="'bottomRight'">
       <m-button :size="'small'" :has-border="false">
-        <template #icon>+
+        <template #icon>
           <ControlOutlined/>
         </template>
       </m-button>

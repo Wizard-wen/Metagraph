@@ -9,7 +9,7 @@
       </div>
       <div class="login-form-body">
         <form>
-          <label class="label" for="user_name">Username or email address</label>
+          <label class="label" for="user_name">用户名或邮箱</label>
           <input type="text" name="user_name" id="user_name"
                  class="form-control input-block"
                  autocapitalize="off"
@@ -22,7 +22,7 @@
                    class="form-control input-block"
                    autocomplete="current-password">
             <router-link to="#"
-                         class="forget-password position-absolute">Forgot password?
+                         class="forget-password position-absolute">忘记密码?
             </router-link>
             <input type="submit" value="Sign in" name="commit" class="submit-btn">
           </div>

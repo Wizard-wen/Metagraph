@@ -51,8 +51,8 @@
 <script lang="ts">
 import NetworkStatusAlert from '@/components/network-status-alert/network-status-alert.vue';
 import { IndexdbService } from '@/service/indexdb.service';
-import KnowledgeDescription from '@/views/knowledge-edit/knowledge-description.vue';
-import SelectKnowledgeCoverModal from '@/views/knowledge-edit/select-knowledge-cover-modal.vue';
+import KnowledgeDescription from '@/views/knowledge-editor/knowledge-description.vue';
+import SelectKnowledgeCoverModal from '@/views/knowledge-editor/select-knowledge-cover-modal.vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import {
   message, Modal, Spin
@@ -79,7 +79,7 @@ import {
   KnowledgeCustomFields,
   KnowledgeSidebar,
   KnowledgeBaseMessageForm
-} from '@/views/knowledge-edit/index';
+} from '@/views/knowledge-editor/index';
 
 import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
 import {
@@ -90,7 +90,7 @@ import {
   draftKnowledgeEntityIdInjectKey,
   publishedKnowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
-} from './knowledge-edit/model/knowledge.edit';
+} from './knowledge-editor/model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-edit',

@@ -18,7 +18,7 @@ import { defineComponent, inject, ref } from 'vue';
 import QiniuUploadImageList from '@/components/upload/qiniu-upload-image-list.vue';
 import type {
   KnowledgePicturesFrontendType
-} from '@/views/knowledge-edit/model/knowledge.edit.type';
+} from '@/views/knowledge-editor/model/knowledge.edit.type';
 import { KnowledgeEdit, knowledgePictures, draftKnowledgeEntityIdInjectKey } from './model/knowledge.edit';
 
 export default defineComponent({

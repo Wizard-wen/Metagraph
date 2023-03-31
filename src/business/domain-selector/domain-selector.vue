@@ -27,93 +27,107 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { defineEmits, defineProps, onMounted, PropType, watchEffect } from 'vue';
 import {
-  defineComponent, onMounted, PropType, toRef
-} from 'vue';
-import {
-  Cascader, Select, Button, Tag
+  Button as AntButton,
+  Cascader as AntCascader,
+  Select as AntSelect,
+  Tag as AntTag
 } from 'ant-design-vue';
 import {
-  domain, domainList, domainBaseTypeId, domainIdList, domainTree, domainBaseTypeList, DomainSelector
+  domain,
+  domainBaseTypeId,
+  domainBaseTypeList,
+  domainIdList,
+  domainList,
+  DomainSelector,
+  domainTree
 } from './domain.selector';
 
-export default defineComponent({
-  name: 'domain-select',
-  components: {
-    AntCascader: Cascader,
-    AntSelect: Select,
-    AntSelectOption: Select.Option,
-    AntButton: Button,
-    AntTag: Tag
+const AntSelectOption = AntSelect.Option;
+const props = defineProps({
+  modelValue: {
+    type: Array as PropType<{
+      domainId: string[];
+      domainBaseTypeId: string;
+    }[]>,
+    required: true
   },
-  props: {
-    modelValue: {
-      type: Array as PropType<{
-        domainId: string[];
-        domainBaseTypeId: string;
-      }[]>,
-      required: true
-    },
-    // 为了上层能够响应ant design form 需要在props中声明 value id
-    value: String,
-    id: String
-  },
-  emits: ['update:modelValue', 'change', 'blur'],
-  setup(props, { emit }) {
-    const initDomainList = toRef(props, 'modelValue');
-    domain.target = initDomainList.value;
-    const domainSelect = new DomainSelector();
-    const fieldNames = {
-      label: 'name',
-      value: 'key',
-      children: 'children'
-    };
+  // 为了上层能够响应ant design form 需要在props中声明 value id
+  value: String,
+  id: String
+});
+const emit = defineEmits(['update:modelValue', 'change', 'blur']);
 
-    function addDomain(): void {
-      if (!domainBaseTypeId.value) {
-        return;
-      }
-      domain.target.push({
-        domainId: domainIdList.target,
-        domainName: domainList.target.find((item) => item.id === domainIdList.target[2])?.name,
-        domainBaseTypeId: domainBaseTypeId.value
-      });
-      emit('update:modelValue', domain.target);
-      emit('change');
-      domainIdList.target = [];
-    }
+watchEffect(() => {
+  domain.target = props.modelValue;
+});
+const domainSelect = new DomainSelector();
+const fieldNames = {
+  label: 'name',
+  value: 'key',
+  children: 'children'
+};
 
-    function handleDeleteDomainTag(index: number): void {
-      domain.target.splice(index, 1);
-      emit('update:modelValue', domain.target);
-      emit('change');
-    }
+function addDomain(): void {
+  if (!domainBaseTypeId.value) {
+    return;
+  }
+  domain.target.push({
+    domainId: domainIdList.target,
+    domainName: domainList.target.find((item) => item.id === domainIdList.target[2])?.name ?? '',
+    domainBaseTypeId: domainBaseTypeId.value
+  });
+  emit('update:modelValue', domain.target);
+  emit('change');
+  domainIdList.target = [];
+}
 
-    async function handleDomainBaseTypeChange(event: any) {
-      await domainSelect.getDomainTree(event);
-    }
+function handleDeleteDomainTag(index: number): void {
+  domain.target.splice(index, 1);
+  emit('update:modelValue', domain.target);
+  emit('change');
+}
 
-    onMounted(async () => {
-      await domainSelect.getDomainBaseTypeList();
-      if (domainBaseTypeId.value) {
-        await domainSelect.getDomainTree(domainBaseTypeId.value);
-      }
-    });
+async function handleDomainBaseTypeChange(event: any) {
+  await domainSelect.getDomainTree(event);
+}
 
-    return {
-      fieldNames,
-      domainBaseTypeId,
-      domainIdList,
-      domainTree,
-      domainBaseTypeList,
-      domain,
-      handleDeleteDomainTag,
-      addDomain,
-      handleDomainBaseTypeChange
-    };
+onMounted(async () => {
+  await domainSelect.getDomainBaseTypeList();
+  if (domainBaseTypeId.value) {
+    await domainSelect.getDomainTree(domainBaseTypeId.value);
   }
 });
+
+// export default defineComponent({
+//   name: 'domain-select',
+//   components: {
+//     AntCascader: Cascader,
+//     AntSelect: Select,
+//     AntSelectOption: Select.Option,
+//     AntButton: Button,
+//     AntTag: Tag
+//   },
+//   props: ,
+//   emits: ['update:modelValue', 'change', 'blur'],
+//   setup(props, { emit }) {
+//
+//
+//     return {
+//       fieldNames,
+//       domainBaseTypeId,
+//       domainIdList,
+//       domainTree,
+//       domainBaseTypeList,
+//       domain,
+//       handleDeleteDomainTag,
+//       addDomain,
+//       handleDomainBaseTypeChange
+//     };
+//   }
+// });
 </script>
 
 <style scoped lang="scss">

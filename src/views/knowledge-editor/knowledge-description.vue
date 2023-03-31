@@ -43,7 +43,7 @@ import {
 import { defineComponent, PropType } from 'vue';
 import { Button } from 'ant-design-vue';
 import { FileImageOutlined } from '@ant-design/icons-vue';
-import KnowledgeDescriptionLimit from '@/views/knowledge-edit/knowledge-description/knowledge-description-limit.vue';
+import KnowledgeDescriptionLimit from '@/views/knowledge-editor/knowledge-description/knowledge-description-limit.vue';
 import { knowledgeCover } from './model/knowledge.edit';
 
 export default defineComponent({

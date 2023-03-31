@@ -44,7 +44,7 @@ import {
   reactive, ref, UnwrapRef, inject, defineComponent
 } from 'vue';
 import { KnowledgeApiService } from '@/api-service';
-import { draftKnowledgeEntityIdInjectKey } from '@/views/knowledge-edit/model/knowledge.edit';
+import { draftKnowledgeEntityIdInjectKey } from '@/views/knowledge-editor/model/knowledge.edit';
 
 interface FormState {
   name: string;

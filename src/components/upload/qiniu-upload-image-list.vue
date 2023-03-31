@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { QiniuUploadService } from '@/service/qiniu.upload.service';
-import { KnowledgePicturesFrontendType } from '@/views/knowledge-edit/model/knowledge.edit.type';
+import { KnowledgePicturesFrontendType } from '@/views/knowledge-editor/model/knowledge.edit.type';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message, Modal, Upload } from 'ant-design-vue';
 import { FileEnum } from 'metagraph-constant';

@@ -6,9 +6,11 @@
 import KnowledgeListItem from './knowledge-list-item/knowledge-list-item.vue';
 import RepositoryListItem from './repository-list-item/repository-list-item.vue';
 import RouterMenuList from './router-menu-list/router-menu-list.vue';
+import GitStyleLogin from './git-style-login.vue';
 
 export {
   KnowledgeListItem,
   RepositoryListItem,
-  RouterMenuList
+  RouterMenuList,
+  GitStyleLogin
 };

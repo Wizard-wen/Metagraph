@@ -79,7 +79,7 @@ import {
   defineComponent, ref, inject, createVNode
 } from 'vue';
 import { KnowledgeApiService } from '@/api-service';
-import AddFieldModal from '@/views/knowledge-edit/knowledge-custom-fields/add-field-modal.vue';
+import AddFieldModal from '@/views/knowledge-editor/knowledge-custom-fields/add-field-modal.vue';
 import {
   KnowledgeEdit,
   draftKnowledgeEntityIdInjectKey,

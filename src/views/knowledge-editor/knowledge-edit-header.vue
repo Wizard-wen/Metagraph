@@ -56,7 +56,7 @@
     :repository-entity-id="repositoryEntityId"></knowledge-compare-modal>
 </template>
 <script lang="ts">
-import KnowledgeCompareModal from '@/views/knowledge-edit/knowledge-compare-modal.vue';
+import KnowledgeCompareModal from '@/views/knowledge-editor/knowledge-compare-modal.vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Editor } from '@tiptap/vue-3';
 import {
@@ -66,7 +66,7 @@ import { useRouter } from 'vue-router';
 import {
   createVNode, defineComponent, inject, PropType, ref, toRef
 } from 'vue';
-import MentionedControlButton from '@/views/knowledge-edit/knowledge-edit-header/mentioned-control-button.vue';
+import MentionedControlButton from '@/views/knowledge-editor/knowledge-edit-header/mentioned-control-button.vue';
 import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
 import { GoBackIcon } from '@/components/icons';
 import {

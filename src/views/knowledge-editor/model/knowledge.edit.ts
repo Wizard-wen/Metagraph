@@ -7,7 +7,7 @@ import { IndexdbService } from '@/service/indexdb.service';
 import {
   KnowledgeBaseFormType,
   KnowledgePicturesFrontendType
-} from '@/views/knowledge-edit/model/knowledge.edit.type';
+} from '@/views/knowledge-editor/model/knowledge.edit.type';
 import { JSONContent } from '@tiptap/vue-3';
 import { ValidateInfo } from 'ant-design-vue/es/form/useForm';
 import { differenceWith, isEqual } from 'lodash';

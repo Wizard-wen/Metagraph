@@ -13,7 +13,7 @@ import { createVNode } from 'vue';
 import {
   KnowledgeEdit,
   mentionedKnowledge, repositoryEntityList
-} from '@/views/knowledge-edit/model/knowledge.edit';
+} from '@/views/knowledge-editor/model/knowledge.edit';
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
