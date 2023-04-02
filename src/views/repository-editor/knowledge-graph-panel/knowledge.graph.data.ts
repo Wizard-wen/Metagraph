@@ -71,7 +71,6 @@ export function initWebSocket(): void {
       }
     ]
   );
-  console.log(websocketService.value, '------websocket');
 }
 
 export class KnowledgeGraphData {
@@ -247,7 +246,7 @@ export class KnowledgeGraphData {
     if (!graph.value) {
       return;
     }
-    graph.value.on('edge:selected', ({ edge }) => {
+    graph.value.on('edge:click', ({ edge }) => {
       edge.setAttrs({
         line: {
           stroke: '#7c68fc', // 指定 path 元素的填充色
@@ -503,6 +502,9 @@ export class KnowledgeGraphData {
         enabled: true,
         showNodeSelectionBox: true,
       },
+      snapline: {
+        enabled: true,
+      },
       minimap: {
         enabled: true,
         container: minimapElement,
@@ -518,6 +520,7 @@ export class KnowledgeGraphData {
         visible: true, // 渲染网格背景
       },
       highlighting: {
+        // 连线过程中，链接桩可以被链接时被使用。
         magnetAvailable: {
           name: 'stroke',
           args: {
@@ -527,6 +530,7 @@ export class KnowledgeGraphData {
             },
           },
         },
+        // 连线过程中，自动吸附到链接桩时被使用。
         magnetAdsorbed: {
           name: 'stroke',
           args: {
@@ -565,7 +569,6 @@ export class KnowledgeGraphData {
               },
             },
           });
-          console.log(edge.id, '---------------------------');
           newEdgeId.value = edge.id;
           return edge;
         },

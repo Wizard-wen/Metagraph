@@ -1,11 +1,7 @@
 <template>
-  <div class="panel-item">
-    <div class="title">属性</div>
-    <div class="item view-item">
-      <div class="left">高度</div>
-      <div class="right">987px</div>
-    </div>
-  </div>
+  <panel-description
+    :title="graphPanel.title"
+    :description="graphPanel.content"></panel-description>
   <div class="panel-item">
     <div class="title">配置项</div>
     <div class="item">
@@ -38,6 +34,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { MCheckbox, MSlider } from '@/metagraph-ui';
+import PanelDescription
+  from '@/views/repository-editor/knowledge-graph-panel/knowledge-relation/panel-description.vue';
 import { KnowledgeGraphData } from '../knowledge.graph.data';
 
 const slideLength = ref(10);
@@ -49,6 +47,17 @@ const optionList = ref([
   { key: 'has', name: '有' },
   { key: 'none', name: '无' }
 ]);
+
+const graphPanel = ref({
+  title: '属性',
+  content: [{
+    title: '知识点',
+    content: '23'
+  }, {
+    title: '边',
+    content: '23'
+  }]
+});
 
 function handleGridChange($event: string) {
   currentOption.value.grid = $event;

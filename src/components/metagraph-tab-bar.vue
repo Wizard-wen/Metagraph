@@ -55,16 +55,16 @@ const elementShowTabs = computed(() => {
   font-size: 12px;
   flex-shrink: 0;
   display: flex;
-  padding-left: 10px;
+  padding-left: 16px;
   border-bottom: 1px solid $borderColor;
 
   .tab {
     display: flex;
     justify-content: center;
     align-items: center;
-
+    //width: 56px;
     cursor: pointer;
-    padding: 0 12px;
+    padding-right: 16px;
 
     &.active {
       color: #000;

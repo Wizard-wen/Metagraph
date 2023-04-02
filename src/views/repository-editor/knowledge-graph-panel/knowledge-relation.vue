@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import KnowledgePanelConfig
   from '@/views/repository-editor/knowledge-graph-panel/knowledge-relation/knowledge-panel-config.vue';
@@ -42,6 +42,10 @@ const menuList = ref<{ value: string; label: string; isAuth: boolean }[]>([
     isAuth: false
   },
 ]);
+
+computed(() => {
+
+});
 </script>
 
 <style scoped lang="scss">
