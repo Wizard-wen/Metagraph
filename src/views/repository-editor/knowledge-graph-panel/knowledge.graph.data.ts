@@ -14,7 +14,7 @@ import type {
   KnowledgeEdgeResponseType,
   KnowledgeModelType
 } from 'metagraph-constant';
-import { createVNode, reactive, ref } from 'vue';
+import { createApp, createVNode, reactive, ref } from 'vue';
 import { WebsocketService } from '@/service/websocket.service';
 import {
   KnowledgeGraphPanel
@@ -25,8 +25,11 @@ import {
   KnowledgeNoAuthApiService,
   RepositoryApiService
 } from '@/api-service';
+import { Options } from '@antv/x6/lib/graph/options';
 import { repositoryBindEntityList, RepositoryEditor } from '../model/repository.editor';
-import './custom-edge-tooltip/test.tooltip';
+import './custom-nodes/custom-edge-label';
+import './custom-nodes/custom-port-tooltip';
+import ValidateConnectionArgs = Options.ValidateConnectionArgs;
 
 type CustomEdgeType = {
   isInnerRepository: boolean;
@@ -34,6 +37,14 @@ type CustomEdgeType = {
 } & KnowledgeEdgeInEdgeGroupType;
 
 export const newEdgeId = ref();
+
+const customGraphConfig = {
+  edge: {
+    normalColor: '#a0a0a0',
+    hoverColor: '#ffa940',
+    selectedColor: '#ffa940'
+  }
+};
 
 export const isKnowledgeRelationLoading = ref(false);
 export const knowledgeInEdgeList = ref<KnowledgeEdgeInEdgeGroupType[]>([]);
@@ -106,7 +117,7 @@ export class KnowledgeGraphData {
       connector: 'rounded',
       attrs: {
         line: {
-          stroke: '#a0a0a0',
+          stroke: customGraphConfig.edge.normalColor,
           strokeWidth: 1,
           targetMarker: {
             name: 'classic',
@@ -114,14 +125,14 @@ export class KnowledgeGraphData {
           },
         },
       },
-      // tools: [
-      //   {
-      //     name: 'tooltip',
-      //     args: {
-      //       tooltip: 'Tooltip Content',
-      //     },
-      //   },
-      // ],
+      tools: [
+        {
+          name: 'tooltip',
+          args: {
+            tooltip: 'Tooltip Content',
+          },
+        },
+      ],
     });
   }
 
@@ -208,6 +219,7 @@ export class KnowledgeGraphData {
           strokeWidth: 1,
         },
       },
+
       portMarkup: [
         {
           tagName: 'circle',
@@ -249,7 +261,7 @@ export class KnowledgeGraphData {
     graph.value.on('edge:click', ({ edge }) => {
       edge.setAttrs({
         line: {
-          stroke: '#7c68fc', // 指定 path 元素的填充色
+          stroke: customGraphConfig.edge.selectedColor, // 指定 path 元素的填充色
         },
       });
     });
@@ -262,7 +274,7 @@ export class KnowledgeGraphData {
     graph.value.on('edge:unselected', ({ edge }) => {
       edge.setAttrs({
         line: {
-          stroke: '#000', // 指定 path 元素的填充色
+          stroke: customGraphConfig.edge.normalColor, // 指定 path 元素的填充色
         },
       });
     });
@@ -396,56 +408,17 @@ export class KnowledgeGraphData {
     }
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
-    graph.value.on('edge:mouseenter', ({ edge }) => {
+    graph.value.on('edge:mouseenter', ({ edge, view }) => {
       if (hasAuth) {
+        edge.setAttrs({
+          line: {
+            stroke: customGraphConfig.edge.hoverColor
+          }
+        });
         // hover展示删除按钮
         edge.addTools([
-          'source-arrowhead',
-          'target-arrowhead',
-          // todo button 点击edge的响应事件
-          // {
-          //   name: 'button',
-          //   args: {
-          //     markup: [
-          //       {
-          //         tagName: 'rect',
-          //         selector: 'button',
-          //         attrs: {
-          //           // x: 18,
-          //           // y: 9,
-          //           rx: 5,
-          //           ry: 5,
-          //           width: 50,
-          //           height: 20,
-          //           stroke: '#fe854f',
-          //           'stroke-width': 2,
-          //           fill: 'white',
-          //           cursor: 'pointer',
-          //         },
-          //       },
-          //       {
-          //         tagName: 'text',
-          //         textContent: 'Btn B',
-          //         selector: 'icon',
-          //         attrs: {
-          //           fill: '#fe854f',
-          //           'font-size': 10,
-          //           'text-anchor': 'middle',
-          //           'pointer-events': 'none',
-          //           // y: '0.3em',
-          //         },
-          //       },
-          //     ],
-          //     distance: 40,
-          //     onClick({ view }: any) {
-          //       const edge = view.cell;
-          //       // const source = edge.getSource();
-          //       // const target = edge.getTarget();
-          //       // edge.setSource(target);
-          //       // edge.setTarget(source);
-          //     },
-          //   },
-          // },
+          // 'source-arrowhead',
+          // 'target-arrowhead',
           {
             name: 'button-remove',
             args: {
@@ -484,6 +457,11 @@ export class KnowledgeGraphData {
     }
     graph.value.on('edge:mouseleave', ({ edge }) => {
       edge.removeTools();
+      edge.setAttrs({
+        line: {
+          stroke: customGraphConfig.edge.normalColor
+        }
+      });
     });
   }
 
@@ -502,6 +480,7 @@ export class KnowledgeGraphData {
         enabled: true,
         showNodeSelectionBox: true,
       },
+      // 对齐线
       snapline: {
         enabled: true,
       },
@@ -547,14 +526,14 @@ export class KnowledgeGraphData {
         allowBlank: false,
         allowLoop: false,
         highlight: true,
-        connector: 'smooth',
+        connector: 'rounded',
         connectionPoint: 'boundary',
-        router: {
-          name: 'er',
-          args: {
-            direction: 'V',
-          },
-        },
+        // router: {
+        //   name: 'er',
+        //   args: {
+        //     direction: 'V',
+        //   },
+        // },
         // 连接的过程中创建新的边
         createEdge() {
           const edge = new AntvX6.Shape.Edge({
@@ -574,10 +553,8 @@ export class KnowledgeGraphData {
         },
         // 在移动边的时候判断连接是否有效，如果返回 false ，
         // 当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素。
-        validateConnection(params: {
-          targetView?: AntvX6.CellView | null
-          targetMagnet?: Element | null
-        }) {
+        validateConnection(params: ValidateConnectionArgs) {
+          console.log(params, '-----------params connection');
           if (!params.targetMagnet) {
             return false;
           }
@@ -590,6 +567,10 @@ export class KnowledgeGraphData {
           }
           return true;
         },
+      },
+      onPortRendered({ contentContainer, port, node }) {
+        const text = node.portProp(port.id, 'tip') as string;
+        console.log(text, contentContainer.parentNode, port, node);
       },
     });
   }
@@ -664,8 +645,20 @@ export class KnowledgeGraphData {
         cell: `${item.targetKnowledgeEntityId}`,
         port: `${item.targetKnowledgeEntityId}-in`
       },
-      labels: [item.description || ''],
+      labels: [
+        {
+          attrs: {
+            // line: {
+            //   stroke: '#73d13d',
+            // },
+            text: {
+              text: item.description || '',
+            },
+          },
+        },
+      ],
       connector: 'rounded',
+      shape: 'custom-edge-label',
       attrs: {
         line: {
           stroke: '#a0a0a0',
@@ -674,14 +667,14 @@ export class KnowledgeGraphData {
             name: 'classic',
             size: 7,
           },
-        },
+        }
       },
       // todo tooltip for vue
       tools: [
         {
           name: 'tooltip',
           args: {
-            tooltip: 'Tooltip Content',
+            tooltip: '{name:\'fur\'}', // 传去内容
           },
         },
       ],
@@ -722,6 +715,7 @@ export class KnowledgeGraphData {
             selector: 'portBody',
           },
         ],
+        // portMarkup: [Markup.getForeignObjectMarkup()],
       };
       if (result.data?.view[item.entity.id]) {
         node = {
@@ -745,6 +739,7 @@ export class KnowledgeGraphData {
         {
           id: `${item.entity.id}-in`,
           group: 'in',
+          tip: 'in-1',
           attrs: {
             text: { text: 'in' },
           },
@@ -752,6 +747,7 @@ export class KnowledgeGraphData {
         {
           id: `${item.entity.id}-out`,
           group: 'out',
+          tip: 'out-1',
           attrs: {
             text: { text: 'out' },
           },

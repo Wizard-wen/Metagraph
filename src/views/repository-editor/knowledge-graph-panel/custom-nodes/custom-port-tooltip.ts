@@ -1,59 +1,45 @@
-/**
- * @author songxiwen
- * @date  2022/1/11 14:45
- */
 import { EdgeView, Graph, ToolsView } from '@antv/x6';
-import { createApp, App, createRenderer } from 'vue';
-import TestTooltip from './test-tooltip.vue';
+import { createApp, h, ref } from 'vue';
+import TooltipNode from './tooltip-node.vue';
+
+const app = ref();
 
 export interface TooltipToolOptions extends ToolsView.ToolItem.Options {
-  tooltip?: string
+  tooltip?: string;
 }
 
-export class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
-  private knob!: HTMLDivElement;
-
-  app!: App;
+// tooltip
+class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions> {
+  private knob?: HTMLDivElement;
 
   render() {
     if (!this.knob) {
       this.knob = ToolsView.createElement('div', false) as HTMLDivElement;
       this.knob.style.position = 'absolute';
       this.container.appendChild(this.knob);
-      console.log(this.container);
     }
     return this;
   }
 
   private toggleTooltip(visible: boolean) {
-    if (this.app) {
-      this.app.unmount();
-    }
-    // ReactDom.unmountComponentAtNode(this.knob)
-    // if (visible) {
-    //   ReactDom.render(
-    //     <Tooltip
-    //       title={this.options.tooltip}
-    //       visible={true}
-    //       destroyTooltipOnHide
-    //     >
-    //   <div />
-    //   </Tooltip>,
-    //   this.knob,
-    // )
-    // }
+    const { tooltip } = this.options; // 接收使用时传入的内容
+    app.value && app.value.unmount(this.knob);
     if (visible) {
-      console.log('visible');
-      this.app = createApp(TestTooltip, {
-        content: this.options.tooltip
+      app.value = createApp({
+        setup() {
+          return () => h(TooltipNode, {
+            visible,
+            content: tooltip,
+          });
+        },
       });
-      this.app.mount(this.knob);
-      console.log(this.app);
+      app.value.mount(this.knob);
     }
+    console.log(app);
   }
 
   private onMouseEnter({ e }: { e: MouseEvent }) {
-    console.log('show tooltip', e);
+    console.log('enter =======');
     this.updatePosition(e);
     this.toggleTooltip(true);
   }
@@ -76,7 +62,10 @@ export class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions
   }
 
   private updatePosition(e?: MouseEvent) {
-    const { style } = this.knob;
+    const style = this.knob?.style;
+    if (!style) {
+      return;
+    }
     if (e) {
       const p = this.graph.clientToGraph(e.clientX, e.clientY);
       style.display = 'block';
@@ -98,7 +87,10 @@ export class TooltipTool extends ToolsView.ToolItem<EdgeView, TooltipToolOptions
 
 TooltipTool.config({
   tagName: 'div',
-  isSVGElement: false,
+  isSVGElement: false
 });
 
+// 线
 Graph.registerEdgeTool('tooltip', TooltipTool, true);
+// 节点
+Graph.registerNodeTool('tooltip', TooltipTool, true);

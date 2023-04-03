@@ -25,13 +25,13 @@
 </template>
 
 <script lang="ts" setup>
-import { Spin as AntSpin } from 'ant-design-vue';
+import { Spin as AntSpin, Tooltip as AntTooltip } from 'ant-design-vue';
 import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { EdgeCreateModal } from '@/views/repository-editor/knowledge-graph-panel/index';
 import {
   initWebSocket,
   isModalVisible,
-  KnowledgeGraphData, selectedGraphNodeEntityId
+  KnowledgeGraphData
 } from '@/views/repository-editor/knowledge-graph-panel/knowledge.graph.data';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
@@ -91,6 +91,7 @@ onMounted(async () => {
         right: 10px;
         top: 0;
         z-index: 999;
+
         .control-icon {
           font-size: 30px;
           line-height: 50px;
