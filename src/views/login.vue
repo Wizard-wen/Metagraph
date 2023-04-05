@@ -1,47 +1,91 @@
 <template>
   <div class="login-page">
+    <div class="logo-left" @click="goHomePage">
+      <img src="@/assets/logo-header.png" height="50" alt="">
+    </div>
+    <div class="logo-bg">
+      <img src="@/assets/logo-bg.png" alt="">
+    </div>
     <div class="login-box">
-      <div class="login-image">
-        <img src="@/assets/hogwarts-logo.webp" alt="" height="300" width="300">
+      <div class="login-content" v-if="loginType === 'email'">
+        <div class="project-name">邮箱登录</div>
+<!--        <ant-form-->
+<!--          id="components-form-demo-normal-login"-->
+<!--          ref="formRef"-->
+<!--          :model="emailFormState"-->
+<!--          :rules="emailRules"-->
+<!--          :wrapper-col="wrapperCol">-->
+<!--          <ant-form-item name="name">-->
+<!--            <ant-input-->
+<!--              class="custom-input-style"-->
+<!--              autocomplete="off"-->
+<!--              v-model:value="emailFormState.email"-->
+<!--              placeholder="请输入邮箱">-->
+<!--            </ant-input>-->
+<!--          </ant-form-item>-->
+<!--          <ant-form-item name="password">-->
+<!--            <ant-input-->
+<!--              class="custom-input-style"-->
+<!--              v-model:value="emailFormState.verifyCode"-->
+<!--              placeholder="请输入验证码"-->
+<!--              autocomplete="off">-->
+<!--              <template #suffix>-->
+<!--                <div class="send-code">获取</div>-->
+<!--              </template>-->
+<!--            </ant-input>-->
+<!--          </ant-form-item>-->
+<!--          <ant-form-item>-->
+<!--            <m-button :size="'large'" class="login-form-button" :title="'登 录'"-->
+<!--                      @click="login"></m-button>-->
+<!--          </ant-form-item>-->
+<!--        </ant-form>-->
+        <login-by-email></login-by-email>
+        <div class="check-way" @click="loginType = 'username'">账户登录</div>
+        <div class="register-way">
+          还没有账号？
+          <div class="register">注册</div>
+        </div>
+        <div class="forget">忘记密码</div>
       </div>
-      <div class="project-name">Metagraph</div>
-      <ant-form
-        id="components-form-demo-normal-login"
-        ref="formRef"
-        :model="formState"
-        :rules="rules"
-        :wrapper-col="wrapperCol">
-        <ant-form-item name="name">
-          <ant-input
-            class="custom-input-style"
-            autocomplete="off"
-            v-model:value="formState.name" placeholder="用户名"
-            allow-clear>
-            <template #prefix>
-              <UserOutlined/>
-            </template>
-          </ant-input>
-        </ant-form-item>
-        <ant-form-item name="password">
-          <ant-input
-            class="custom-input-style"
-            v-model:value="formState.password"
-            type="password" placeholder="密码"
-            autocomplete="off"
-            allow-clear>
-            <template #prefix>
-              <LockOutlined/>
-            </template>
-          </ant-input>
-        </ant-form-item>
-        <ant-form-item>
-          <m-button class="login-form-button" :title="'登 录'" @click="login"></m-button>
-          <m-button class="login-form-button" :title="'注 册'"  @click="register"></m-button>
-          <div class="back">
-            <ant-button type="link" @click="goHomePage">回到首页</ant-button>
-          </div>
-        </ant-form-item>
-      </ant-form>
+
+      <div class="login-content" v-else>
+        <div class="project-name">账户登录</div>
+        <ant-form
+          id="components-form-demo-normal-login"
+          ref="formRef"
+          :model="formState"
+          :rules="rules"
+          :wrapper-col="wrapperCol">
+          <ant-form-item name="name">
+            <ant-input
+              class="custom-input-style"
+              autocomplete="off"
+              v-model:value="formState.name" placeholder="请输入用户名"
+              allow-clear>
+            </ant-input>
+          </ant-form-item>
+          <ant-form-item name="password">
+            <ant-input
+              class="custom-input-style"
+              v-model:value="formState.password"
+              type="password" placeholder="请输入密码"
+              autocomplete="off"
+              allow-clear>
+            </ant-input>
+          </ant-form-item>
+          <ant-form-item>
+            <m-button :size="'large'" class="login-form-button" :title="'登 录'"
+                      @click="login"></m-button>
+          </ant-form-item>
+        </ant-form>
+        <div class="check-way" @click="loginType = 'email'">邮箱登录</div>
+        <div class="register-way">
+          还没有账号？
+          <div class="register">注册</div>
+        </div>
+        <div class="forget">忘记密码</div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -55,12 +99,13 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons-vue';
 import { useStore, MutationEnum } from '@/store';
 import { UserNoAuthApiService } from '@/api-service';
 import { MButton } from '@/metagraph-ui';
+import LoginByEmail from '@/views/login/login-by-email.vue';
 
 const AntFormItem = AntForm.Item;
 
 const labelCol = ref({ span: 0 });
 const wrapperCol = ref({ span: 24 });
-
+const loginType = ref('email');
 const formRef = ref();
 const store = useStore();
 const router = useRouter();
@@ -71,6 +116,7 @@ const formState = reactive<{
   name: '',
   password: '',
 });
+
 const rules = {
   name: {
     required: true,
@@ -81,6 +127,23 @@ const rules = {
     message: '请输入密码！',
   },
 };
+
+const emailFormState = ref({
+  email: '',
+  verifyCode: ''
+});
+
+const emailRules = {
+  email: {
+    required: true,
+    message: '请输入邮箱！',
+  },
+  verifyCode: {
+    required: true,
+    message: '请输入验证码！',
+  },
+};
+
 const login = () => {
   formRef.value
     .validate()
@@ -117,22 +180,49 @@ const goHomePage = async () => {
 </script>
 <style lang="scss" scoped>
 @import '../style/common.scss';
-@import url('https://fonts.googleapis.com/css2?family=Comforter&family=Noto+Sans+SC:wght@300;400&display=swap');
 
 .login-page {
   height: 100vh;
   width: 100%;
   background: $backgroundColor;
 
-  .login-box {
-    background: rgba(255, 255, 255, .3);
-    width: 440px;
-    height: 660px;
-    border: 1px solid $borderColor;
-    border-radius: 6px;
+  .logo-left {
     position: fixed;
-    left: calc(50% - 220px);
-    top: calc(50% - 330px);
+    left: 32px;
+    top: 32px;
+    cursor: pointer;
+  }
+
+  .logo-bg {
+    display: flex;
+    align-items: center;
+    width: calc(100% - 460px);
+    height: 100%;
+    justify-content: center;
+
+    img {
+      display: block;
+      width: 80%;
+      margin-top: -60px;
+
+    }
+  }
+
+  .login-box {
+    background: #FFF;
+    width: 360px;
+    border: 1px solid rgba(19, 18, 43, 0.07);
+    border-radius: 10px;
+    position: fixed;
+    right: 100px;
+    top: calc(50% - 200px);
+    box-shadow: 0 4px 24px rgba(128, 128, 128, 0.1);
+
+    .login-content {
+      width: 296px;
+      margin: 0 auto;
+      padding: 32px 0 16px;
+    }
 
     .login-image {
       height: 300px;
@@ -141,14 +231,33 @@ const goHomePage = async () => {
     }
 
     .project-name {
-      font-family: 'Comforter', cursive;
-      margin-bottom: 20px;
-      font-size: 35px;
+      width: 100%;
+      font-size: 20px;
+      margin-bottom: 24px;
+      text-align: left;
     }
 
     #components-form-demo-normal-login {
-      width: 360px;
+      width: 296px;
       margin: 0 auto;
+
+      &::v-deep(.ant-form-item) {
+        margin-bottom: 12px;
+      }
+
+      &::v-deep(.ant-form-item-explain-error) {
+        text-align: left;
+        height: 18px;
+        min-height: 18px;
+        font-size: 12px;
+        line-height: 18px;
+      }
+
+      &::v-deep(.ant-form-item-control-input-content) {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
 
       .login-form-button {
         width: 100%;
@@ -161,12 +270,50 @@ const goHomePage = async () => {
     }
 
     .custom-input-style {
+      height: 40px;
+      border-radius: 6px;
+
       ::v-deep(.ant-input) {
         background: #FFFFFF !important;
         -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
       }
     }
 
+    .send-code {
+      color: $themeColor;
+      cursor: pointer;
+      padding-left: 4px;
+      height: 40px;
+      line-height: 40px;
+    }
+
+    .check-way {
+      color: $themeColor;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .register-way {
+      display: flex;
+      justify-content: center;
+
+      .register {
+        color: $themeColor;
+        cursor: pointer;
+      }
+    }
+
+    .forget {
+      margin: 0 auto;
+      width: max-content;
+      margin-top: 28px;
+      cursor: pointer;
+      color: #8b8c8f;
+
+      &:hover {
+        color: #000;
+      }
+    }
   }
 }
 

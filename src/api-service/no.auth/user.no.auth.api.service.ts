@@ -38,8 +38,8 @@ export class UserNoAuthApiService {
   }
 
   // 发送邮箱验证码
-  static async sendRegisterEmailCode(params: { password: string; name: string }): Promise<PublicApiResponseType<any>> {
-    return RequestUtil.post<{ password: string; name: string }, any>({
+  static async sendRegisterEmailCode(params: { email: string}): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{ email: string }, any>({
       apiPath: ApiPathEnum.SendRegisterEmailCode,
       requestBody: params
     });

@@ -88,7 +88,7 @@ export enum ApiPathEnum {
   UpdateUser = '/account/updateUser',
   RegisterByName = '/public/user/registerByName',
   GetPublicUserById = '/public/user/getById',
-  SendRegisterEmailCode = '/public/user/sendEmailCode',
+  SendRegisterEmailCode = '/public/user/sendMailCode',
   CheckIfUserExists = '/public/user/check/nickname',
   /**
    * repository
