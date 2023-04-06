@@ -6,177 +6,79 @@
     <div class="logo-bg">
       <img src="@/assets/logo-bg.png" alt="">
     </div>
-    <div class="login-box">
-      <div class="login-content" v-if="loginType === 'email'">
-        <div class="project-name">邮箱登录</div>
-<!--        <ant-form-->
-<!--          id="components-form-demo-normal-login"-->
-<!--          ref="formRef"-->
-<!--          :model="emailFormState"-->
-<!--          :rules="emailRules"-->
-<!--          :wrapper-col="wrapperCol">-->
-<!--          <ant-form-item name="name">-->
-<!--            <ant-input-->
-<!--              class="custom-input-style"-->
-<!--              autocomplete="off"-->
-<!--              v-model:value="emailFormState.email"-->
-<!--              placeholder="请输入邮箱">-->
-<!--            </ant-input>-->
-<!--          </ant-form-item>-->
-<!--          <ant-form-item name="password">-->
-<!--            <ant-input-->
-<!--              class="custom-input-style"-->
-<!--              v-model:value="emailFormState.verifyCode"-->
-<!--              placeholder="请输入验证码"-->
-<!--              autocomplete="off">-->
-<!--              <template #suffix>-->
-<!--                <div class="send-code">获取</div>-->
-<!--              </template>-->
-<!--            </ant-input>-->
-<!--          </ant-form-item>-->
-<!--          <ant-form-item>-->
-<!--            <m-button :size="'large'" class="login-form-button" :title="'登 录'"-->
-<!--                      @click="login"></m-button>-->
-<!--          </ant-form-item>-->
-<!--        </ant-form>-->
-        <login-by-email></login-by-email>
-        <div class="check-way" @click="loginType = 'username'">账户登录</div>
+    <div class="login-box" v-if="type === 'register'">
+      <div class="login-content">
+        <div class="login-title">邮箱注册</div>
+        <register-by-email></register-by-email>
+        <div class="register-way">
+          已有账号？
+          <div class="register" @click="checkType('login')">登录</div>
+        </div>
+      </div>
+    </div>
+    <div class="login-box" v-else-if="type === 'forget'">
+      <div class="login-content">
+        <div class="login-title">
+          <m-button
+            class="operation"
+            @click="checkType('login')"
+            :has-border="false"
+            :is-icon="true">
+            <template #icon>
+              <LeftOutlined/>
+            </template>
+          </m-button>
+          忘记密码
+        </div>
+        <forget-password></forget-password>
+      </div>
+    </div>
+    <div class="login-box" v-else>
+      <div class="login-content">
+        <template v-if="loginType === 'email'">
+          <div class="login-title">邮箱登录</div>
+          <login-by-email></login-by-email>
+          <div class="check-way" @click="loginType = 'username'">账户登录</div>
+        </template>
+        <template v-else>
+          <div class="login-title">用户名登录</div>
+          <login-by-user-name></login-by-user-name>
+          <div class="check-way" @click="loginType = 'email'">邮箱登录</div>
+        </template>
         <div class="register-way">
           还没有账号？
-          <div class="register">注册</div>
+          <div class="register" @click="checkType('register')">注册</div>
         </div>
-        <div class="forget">忘记密码</div>
-      </div>
-
-      <div class="login-content" v-else>
-        <div class="project-name">账户登录</div>
-        <ant-form
-          id="components-form-demo-normal-login"
-          ref="formRef"
-          :model="formState"
-          :rules="rules"
-          :wrapper-col="wrapperCol">
-          <ant-form-item name="name">
-            <ant-input
-              class="custom-input-style"
-              autocomplete="off"
-              v-model:value="formState.name" placeholder="请输入用户名"
-              allow-clear>
-            </ant-input>
-          </ant-form-item>
-          <ant-form-item name="password">
-            <ant-input
-              class="custom-input-style"
-              v-model:value="formState.password"
-              type="password" placeholder="请输入密码"
-              autocomplete="off"
-              allow-clear>
-            </ant-input>
-          </ant-form-item>
-          <ant-form-item>
-            <m-button :size="'large'" class="login-form-button" :title="'登 录'"
-                      @click="login"></m-button>
-          </ant-form-item>
-        </ant-form>
-        <div class="check-way" @click="loginType = 'email'">邮箱登录</div>
-        <div class="register-way">
-          还没有账号？
-          <div class="register">注册</div>
+        <div
+          v-if="loginType === 'username'"
+          class="forget-btn"
+          @click="checkType('forget')">忘记密码
         </div>
-        <div class="forget">忘记密码</div>
       </div>
-
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { Button as AntButton, Form as AntForm, Input as AntInput, message } from 'ant-design-vue';
-import {
-  reactive, ref,
-} from 'vue';
-import { useRouter } from 'vue-router';
-import { LockOutlined, UserOutlined } from '@ant-design/icons-vue';
-import { useStore, MutationEnum } from '@/store';
-import { UserNoAuthApiService } from '@/api-service';
-import { MButton } from '@/metagraph-ui';
+import { ref, } from 'vue';
 import LoginByEmail from '@/views/login/login-by-email.vue';
+import LoginByUserName from '@/views/login/login-by-user-name.vue';
+import { RouterUtil } from '@/utils/router.util';
+import RegisterByEmail from '@/views/sign-up/register-by-email.vue';
+import { MButton } from '@/metagraph-ui';
+import { LeftOutlined } from '@ant-design/icons-vue';
+import ForgetPassword from '@/views/login/forget-password.vue';
 
-const AntFormItem = AntForm.Item;
+const type = ref<'login' | 'register' | 'forget'>('login');
 
-const labelCol = ref({ span: 0 });
-const wrapperCol = ref({ span: 24 });
+function checkType(params: 'login' | 'register' | 'forget') {
+  type.value = params;
+}
+
 const loginType = ref('email');
-const formRef = ref();
-const store = useStore();
-const router = useRouter();
-const formState = reactive<{
-  name: string;
-  password: string;
-}>({
-  name: '',
-  password: '',
-});
 
-const rules = {
-  name: {
-    required: true,
-    message: '请输入用户名！',
-  },
-  password: {
-    required: true,
-    message: '请输入密码！',
-  },
-};
-
-const emailFormState = ref({
-  email: '',
-  verifyCode: ''
-});
-
-const emailRules = {
-  email: {
-    required: true,
-    message: '请输入邮箱！',
-  },
-  verifyCode: {
-    required: true,
-    message: '请输入验证码！',
-  },
-};
-
-const login = () => {
-  formRef.value
-    .validate()
-    .then(async () => {
-      const response = await UserNoAuthApiService.login({
-        name: formState.name,
-        password: formState.password
-      });
-      if (response.data) {
-        store.commit(MutationEnum.SET_USER_MODEL, { userModel: response.data });
-        router.push('/').then();
-      } else {
-        message.error(response?.message || '登录时出现问题！');
-      }
-    })
-    .catch((error: Error) => {
-      message.error(error.message);
-    });
-};
-const resetForm = () => {
-  formRef.value.resetFields();
-};
-
-const register = async () => {
-  router.push('/signup').then();
-};
-
-const goHomePage = async () => {
-  router.replace({
-    path: '/',
-    force: true
-  }).then();
-};
+async function goHomePage() {
+  await RouterUtil.replaceTo('/');
+}
 </script>
 <style lang="scss" scoped>
 @import '../style/common.scss';
@@ -188,8 +90,8 @@ const goHomePage = async () => {
 
   .logo-left {
     position: fixed;
-    left: 32px;
-    top: 32px;
+    left: 20px;
+    top: 20px;
     cursor: pointer;
   }
 
@@ -204,7 +106,7 @@ const goHomePage = async () => {
       display: block;
       width: 80%;
       margin-top: -60px;
-
+      max-width: 1000px;
     }
   }
 
@@ -224,73 +126,25 @@ const goHomePage = async () => {
       padding: 32px 0 16px;
     }
 
-    .login-image {
-      height: 300px;
-      width: 300px;
-      margin: 20px auto 5px;
-    }
-
-    .project-name {
+    .login-title {
       width: 100%;
       font-size: 20px;
       margin-bottom: 24px;
       text-align: left;
-    }
+      display: flex;
 
-    #components-form-demo-normal-login {
-      width: 296px;
-      margin: 0 auto;
-
-      &::v-deep(.ant-form-item) {
-        margin-bottom: 12px;
+      .operation {
+        margin-left: -7px;
+        margin-right: 4px
       }
-
-      &::v-deep(.ant-form-item-explain-error) {
-        text-align: left;
-        height: 18px;
-        min-height: 18px;
-        font-size: 12px;
-        line-height: 18px;
-      }
-
-      &::v-deep(.ant-form-item-control-input-content) {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .login-form-button {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-
-      .ant-input {
-        background: #FFFFFF;
-      }
-    }
-
-    .custom-input-style {
-      height: 40px;
-      border-radius: 6px;
-
-      ::v-deep(.ant-input) {
-        background: #FFFFFF !important;
-        -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
-      }
-    }
-
-    .send-code {
-      color: $themeColor;
-      cursor: pointer;
-      padding-left: 4px;
-      height: 40px;
-      line-height: 40px;
     }
 
     .check-way {
       color: $themeColor;
-      margin-bottom: 12px;
       cursor: pointer;
+      width: max-content;
+      padding: 0 10px;
+      margin: 0 auto 12px;
     }
 
     .register-way {
@@ -303,10 +157,9 @@ const goHomePage = async () => {
       }
     }
 
-    .forget {
-      margin: 0 auto;
+    .forget-btn {
       width: max-content;
-      margin-top: 28px;
+      margin: 28px auto 0;
       cursor: pointer;
       color: #8b8c8f;
 

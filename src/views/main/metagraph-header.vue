@@ -3,11 +3,11 @@
     <div class="left">
       <div class="logo-container">
         <img
+          @click="goHomePage"
           class="logo"
-          src="/hogwarts-logo.webp"
-          height="32" width="32"
+          src="@/assets/logo-header.png"
+          height="32"
           alt="logo"/>
-        <div class="logo-name" @click="goHomePage">metagraph</div>
       </div>
       <ant-input-search
         class="input-search-style"
@@ -74,7 +74,8 @@
         <div class="has-login" v-else>
           <ant-dropdown :placement="'bottomRight'">
             <div class="avatar-dropdown">
-              <ant-avatar :src="userModel.avatar"></ant-avatar>
+              <ant-avatar v-if="userModel.avatar" :src="userModel.avatar"></ant-avatar>
+              <ant-avatar v-else>{{ textAvatar }}</ant-avatar>
               <DownOutlined style="margin-left: 4px;"/>
             </div>
             <template #overlay>
@@ -150,6 +151,8 @@ const store = useStore();
 const isLogin = computed(() => store.state.user.isLogin);
 const userModel = computed(() => store.state.user.user);
 
+const textAvatar = computed(() => userModel.value?.name.charAt(0) ?? 'M');
+
 async function goSignInPage() {
   await RouterUtil.jumpTo('/login');
 }
@@ -221,13 +224,13 @@ async function goHomePage() {
   await RouterUtil.jumpTo('/');
   searchData.value.text = '';
   searchData.value.type = '';
-  searchData.value.activeIndex = 0;
   searchData.value.pageSize = 10;
   searchData.value.pageIndex = 1;
 }
 
 async function handleSearch(event: string) {
   searchData.value.text = event;
+  searchData.value.type = '';
   searchData.value.pageSize = 10;
   searchData.value.pageIndex = 1;
   await RouterUtil.replaceTo('/search/list', {
@@ -265,7 +268,7 @@ async function goHelpPage() {
 
 .dropdown-menu-style {
   width: 160px;
-  padding: 8px!important;
+  padding: 8px !important;
 }
 
 .menu-item-style {
@@ -291,7 +294,6 @@ async function goHelpPage() {
 
 <style scoped lang="scss">
 @import "../../style/common.scss";
-@import url('https://fonts.googleapis.com/css2?family=Comforter&family=Noto+Sans+SC:wght@300;400&display=swap');
 
 .metagraph-header {
   width: 100%;
@@ -323,20 +325,27 @@ async function goHelpPage() {
       }
     }
 
-    .logo {
-      cursor: pointer;
+    &::v-deep(.ant-input-affix-wrapper) {
+      &:hover {
+        border-color: $themeColor;
+      }
     }
 
-    .logo-name {
-      font-family: 'Comforter', cursive;
-      font-size: 20px;
-      cursor: pointer
+    &::v-deep(.ant-input-affix-wrapper-focused) {
+      box-shadow: none;
+      border-color: $themeColor;
+    }
+
+    .logo {
+      cursor: pointer;
     }
 
     .input-search-style {
       width: 260px;
       margin-left: 60px;
       margin-right: 20px;
+      height: 40px;
+      border-radius: 6px;
     }
 
     .banner-list {

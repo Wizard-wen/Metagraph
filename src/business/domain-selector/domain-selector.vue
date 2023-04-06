@@ -49,7 +49,7 @@ const AntSelectOption = AntSelect.Option;
 const props = defineProps({
   modelValue: {
     type: Array as PropType<{
-      domainId: string[];
+      domainId: string;
       domainBaseTypeId: string;
     }[]>,
     required: true

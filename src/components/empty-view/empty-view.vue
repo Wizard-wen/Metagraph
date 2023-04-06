@@ -19,12 +19,16 @@ defineProps({
     default: '暂无数据'
   }
 });
-const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
 </script>
 
 <style scoped lang="scss">
 @import "../../style/common.scss";
+
 .custom-empty-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   &::v-deep(.ant-empty-description) {
     font-size: $iconFontSize;
   }

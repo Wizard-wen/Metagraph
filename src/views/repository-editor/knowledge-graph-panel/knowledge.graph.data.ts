@@ -127,7 +127,7 @@ export class KnowledgeGraphData {
       },
       tools: [
         {
-          name: 'tooltip',
+          name: 'tooltip-1',
           args: {
             tooltip: 'Tooltip Content',
           },
@@ -645,12 +645,11 @@ export class KnowledgeGraphData {
         cell: `${item.targetKnowledgeEntityId}`,
         port: `${item.targetKnowledgeEntityId}-in`
       },
+      // 自定义标签样式
+      shape: 'custom-edge-label',
       labels: [
         {
           attrs: {
-            // line: {
-            //   stroke: '#73d13d',
-            // },
             text: {
               text: item.description || '',
             },
@@ -658,7 +657,6 @@ export class KnowledgeGraphData {
         },
       ],
       connector: 'rounded',
-      shape: 'custom-edge-label',
       attrs: {
         line: {
           stroke: '#a0a0a0',
@@ -672,9 +670,11 @@ export class KnowledgeGraphData {
       // todo tooltip for vue
       tools: [
         {
-          name: 'tooltip',
+          name: 'tooltip-1',
           args: {
             tooltip: '{name:\'fur\'}', // 传去内容
+            content: '11111111',
+            isVisible: true
           },
         },
       ],
@@ -715,7 +715,6 @@ export class KnowledgeGraphData {
             selector: 'portBody',
           },
         ],
-        // portMarkup: [Markup.getForeignObjectMarkup()],
       };
       if (result.data?.view[item.entity.id]) {
         node = {

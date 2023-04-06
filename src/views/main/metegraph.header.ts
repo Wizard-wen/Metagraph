@@ -8,7 +8,6 @@ import { ref } from 'vue';
 export const searchData = ref({
   text: '',
   type: '',
-  activeIndex: 0,
   pageSize: 10,
   pageIndex: 0
 });

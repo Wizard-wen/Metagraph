@@ -91,6 +91,6 @@ TooltipTool.config({
 });
 
 // 线
-Graph.registerEdgeTool('tooltip', TooltipTool, true);
+Graph.registerEdgeTool('tooltip-1', TooltipTool, true);
 // 节点
-Graph.registerNodeTool('tooltip', TooltipTool, true);
+Graph.registerNodeTool('tooltip-1', TooltipTool, true);

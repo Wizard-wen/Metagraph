@@ -36,7 +36,7 @@ export const domain = reactive<{
   target: {
     domainBaseTypeId: string,
     domainName?: string,
-    domainId: string[]
+    domainId: string
   }[]
 }>({
   target: []

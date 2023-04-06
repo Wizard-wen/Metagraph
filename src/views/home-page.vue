@@ -3,10 +3,10 @@
     <div class="aside" id="step1" data-homepage="1">
       <aside-list data-title="Welcome!" data-intro="Hello World! 👋"></aside-list>
     </div>
-    <div class="right-side" id="step4" data-homepage="4">
+    <div class="right-side" >
       <div class="container">
         <div class="content authed-list-content">
-          <div class="list-content">
+          <div class="list-content" id="step4" data-homepage="4">
             <authed-main-list v-if="isLogin"></authed-main-list>
             <no-auth-main-list v-else></no-auth-main-list>
             <ipc-message></ipc-message>
@@ -35,9 +35,7 @@ import { computed, nextTick, onMounted } from 'vue';
 import { guide } from '@/utils/guide.util';
 import {
   getActivityList,
-  getHotList,
-  getOwnRepositoryList,
-  getRepositoryList
+  getOwnRepositoryList
 } from '@/views/home-page/home-page-model';
 import { useStore } from '@/store';
 import NoAuthMainList from '@/views/home-page/no-auth-main-list.vue';
@@ -50,7 +48,6 @@ const isLogin = computed(() => store.state.user.isLogin);
 onMounted(async () => {
   if (isLogin.value) {
     await Promise.all([
-      getHotList(),
       getOwnRepositoryList(),
       getActivityList()
     ]);
@@ -59,11 +56,6 @@ onMounted(async () => {
         type: 'homepage'
       });
     });
-  } else {
-    await Promise.all([
-      getHotList(),
-      getRepositoryList()
-    ]);
   }
 });
 </script>

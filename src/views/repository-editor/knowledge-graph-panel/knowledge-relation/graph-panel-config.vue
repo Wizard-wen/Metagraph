@@ -108,7 +108,6 @@ function handleChangeSlide($event: number) {
     text-align: left;
     align-items: center;
 
-
     .left {
       flex: 0 0 64px;
       color: $lightFontColor;

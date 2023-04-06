@@ -1,22 +1,22 @@
 <template>
   <ant-form
     id="login-by-email-form"
-    ref="formRef"
-    :model="emailFormState"
-    :rules="emailRules"
+    ref="registerFormRef"
+    :model="registerFormState"
+    :rules="registerRules"
     :wrapper-col="wrapperCol">
     <ant-form-item name="email">
       <ant-input
         class="custom-input-style"
         autocomplete="off"
-        v-model:value="emailFormState.email"
+        v-model:value="registerFormState.email"
         placeholder="请输入邮箱">
       </ant-input>
     </ant-form-item>
-    <ant-form-item name="password">
+    <ant-form-item name="verifyCode">
       <ant-input
         class="custom-input-style"
-        v-model:value="emailFormState.verifyCode"
+        v-model:value="registerFormState.verifyCode"
         placeholder="请输入验证码"
         autocomplete="off">
         <template #suffix>
@@ -27,11 +27,29 @@
         </template>
       </ant-input>
     </ant-form-item>
+    <ant-form-item
+      ref="password"
+      name="password">
+      <ant-input-password
+        placeholder="请输入密码"
+        autocomplete="new-password"
+        class="custom-input-style"
+        v-model:value="registerFormState.password"/>
+    </ant-form-item>
+    <ant-form-item
+      ref="confirmPassword"
+      name="confirmPassword">
+      <ant-input-password
+        placeholder="请再次确认密码"
+        autocomplete="off"
+        class="custom-input-style"
+        v-model:value="registerFormState.confirmPassword"/>
+    </ant-form-item>
     <ant-form-item>
       <m-button
         :size="'large'"
         class="login-form-button"
-        :title="'登录'"
+        :title="'注册'"
         @click="login"></m-button>
     </ant-form-item>
   </ant-form>
@@ -43,24 +61,19 @@ import { Form as AntForm, Input as AntInput, message } from 'ant-design-vue';
 import { MButton } from '@/metagraph-ui';
 import EndTime from '@/views/settings/end-time.vue';
 import { UserNoAuthApiService } from '@/api-service';
-import { RouterUtil } from '@/utils/router.util';
-import { MutationEnum, useStore } from '@/store';
 
 const AntFormItem = AntForm.Item;
-const store = useStore();
-const formRef = ref();
+const AntInputPassword = AntInput.Password;
 
-const wrapperCol = ref({ span: 24 });
-
-const endTime = ref(new Date().getTime());
-const isEnding = ref(false);
-
-const emailFormState = ref({
+const registerFormRef = ref();
+const registerFormState = ref({
   email: '',
-  verifyCode: ''
+  verifyCode: '',
+  password: '',
+  confirmPassword: ''
 });
 
-const emailRules = {
+const registerRules = {
   email: {
     required: true,
     message: '请输入邮箱！',
@@ -69,34 +82,70 @@ const emailRules = {
     required: true,
     message: '请输入验证码！',
   },
+  password: [
+    {
+      required: true,
+      trigger: 'change',
+      validator(rule: any, value: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+          if (!value) {
+            reject('请输入密码');
+          }
+          resolve();
+        });
+      }
+    }
+  ],
+  confirmPassword: [
+    {
+      required: true,
+      trigger: 'change',
+      validator(rule: any, value: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+          if (!value) {
+            reject('请输入密码');
+          }
+          if (value !== registerFormState.value.password) {
+            reject('两次输入密码不一致');
+          }
+          resolve();
+        });
+      }
+    },
+  ],
 };
 
 function login() {
-  formRef.value.validate().then(async () => {
-    const result = await UserNoAuthApiService.loginByEmail({
-      email: emailFormState.value.email,
-      verifyCode: emailFormState.value.verifyCode
+  registerFormRef.value.validate().then(async () => {
+    console.log(registerFormState.value);
+    const response = await UserNoAuthApiService.registerByEmail({
+      email: registerFormState.value.email,
+      password: registerFormState.value.password,
+      verifyCode: registerFormState.value.verifyCode
     });
-    if (result.code === 0) {
-      message.success('登录成功！');
+    if (response.code === 0) {
+      message.success('注册成功');
     }
-    if (result.data) {
-      store.commit(MutationEnum.SET_USER_MODEL, { userModel: result.data });
-      await RouterUtil.jumpTo('/');
-    } else {
-      message.error(result?.message || '登录时出现问题！');
+    if (response.message) {
+      message.error(response?.message || '注册时出现问题！');
     }
   });
 }
 
+const wrapperCol = ref({ span: 24 });
+
+const endTime = ref(new Date().getTime());
+const isEnding = ref(false);
+
 async function handleGetCode() {
-  formRef.value.validate('email').then(async () => {
+  registerFormRef.value.validate('email').then(async () => {
     endTime.value = new Date().getTime() + 60000;
-    localStorage.setItem('loginEmailEndTime', endTime.value.toString());
+    localStorage.setItem('registerEmailEndTime', endTime.value.toString());
     isEnding.value = true;
+
     const result = await UserNoAuthApiService.sendRegisterEmailCode({
-      email: emailFormState.value.email,
-      type: 'login'
+      email: registerFormState.value.email,
+      type: 'register'
     });
     if (result.code === 0) {
       message.success('邮件发送成功！');
@@ -108,10 +157,10 @@ async function handleGetCode() {
 }
 
 onMounted(() => {
-  const loginEmailEndTime = localStorage.getItem('loginEmailEndTime');
-  if (loginEmailEndTime) {
+  const registerEmailEndTime = localStorage.getItem('registerEmailEndTime');
+  if (registerEmailEndTime) {
     isEnding.value = true;
-    endTime.value = Number(loginEmailEndTime);
+    endTime.value = Number(registerEmailEndTime);
   }
 });
 
@@ -136,6 +185,12 @@ onMounted(() => {
     line-height: 18px;
   }
 
+  &::v-deep(.ant-form-item-control-input-content) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
   &::v-deep(.ant-input-affix-wrapper) {
     &:hover {
       border-color: $themeColor;
@@ -158,20 +213,6 @@ onMounted(() => {
     border-color: #ff4d4f;
   }
 
-  &::v-deep(.ant-form-item-control-input-content) {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .login-form-button {
-    width: 100%;
-    margin-bottom: 10px;
-    background: $themeColor;
-    color: #FFF;
-    font-size: 14px;
-  }
-
   .ant-input {
     background: #FFFFFF;
 
@@ -182,6 +223,16 @@ onMounted(() => {
     &:focus {
       border-color: $themeColor;
       box-shadow: none;
+    }
+
+    &:-webkit-autofill {
+      -webkit-box-shadow: inset 0 0 0 1000px #fff;
+      background-color: transparent;
+    }
+
+    &:autofill {
+      -webkit-box-shadow: inset 0 0 0 1000px #fff;
+      background-color: transparent;
     }
   }
 
@@ -206,6 +257,17 @@ onMounted(() => {
   ::v-deep(.ant-input) {
     background: #FFFFFF !important;
     -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  }
+}
+
+.login-form-button {
+  width: 100%;
+  margin-bottom: 10px;
+  background: $themeColor;
+  color: #FFF;
+  font-size: 14px;
+  &:hover {
+    background: $themeHoverColor;
   }
 }
 

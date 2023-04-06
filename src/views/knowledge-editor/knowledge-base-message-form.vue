@@ -164,7 +164,7 @@ const handleOpenModal = async () => {
   isModalVisible.value = true;
 };
 const domainListProp = ref<{
-  domainId: string[];
+  domainId: string;
   domainName?: string;
   domainBaseTypeId: string;
 }[]>();
@@ -184,7 +184,7 @@ async function handleKnowledgeTagModalClose(event?: {
 
 async function handleDomainModalClose(event?: {
   domain: {
-    domainId: string[];
+    domainId: string;
     domainName?: string;
     domainBaseTypeId: string;
   }[]

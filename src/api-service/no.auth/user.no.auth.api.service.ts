@@ -23,6 +23,13 @@ export class UserNoAuthApiService {
     });
   }
 
+  static async loginByEmail(params: { email: string; verifyCode: string }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{ email: string; verifyCode: string }, any>({
+      apiPath: ApiPathEnum.LoginByEmail,
+      requestBody: params
+    });
+  }
+
   static async getPublicUserById(params: { userId: string }): Promise<PublicApiResponseType<UserModelType>> {
     return RequestUtil.post<{ userId: string }, UserModelType>({
       apiPath: ApiPathEnum.GetPublicUserById,
@@ -38,9 +45,24 @@ export class UserNoAuthApiService {
   }
 
   // 发送邮箱验证码
-  static async sendRegisterEmailCode(params: { email: string}): Promise<PublicApiResponseType<any>> {
+  static async sendRegisterEmailCode(params: { email: string, type: 'login' | 'register' | 'forget'}): Promise<PublicApiResponseType<any>> {
     return RequestUtil.post<{ email: string }, any>({
       apiPath: ApiPathEnum.SendRegisterEmailCode,
+      requestBody: params
+    });
+  }
+
+  static async registerByEmail(params: {
+    email: string;
+    password: string;
+    verifyCode: string
+  }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{
+      email: string;
+      password: string;
+      verifyCode: string
+    }, any>({
+      apiPath: ApiPathEnum.RegisterByEmail,
       requestBody: params
     });
   }

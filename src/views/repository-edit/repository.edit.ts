@@ -16,7 +16,7 @@ export interface RepositoryFormStateType {
   domain: {
     domainBaseTypeId: string;
     domainName?: string;
-    domainId: string[];
+    domainId: string;
   }[];
   avatar?: string;
   isAllowedClone: 'allow' | 'forbidden';

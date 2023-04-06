@@ -1,48 +1,55 @@
 <template>
   <div class="explore-box">
     <div class="explore-header">热门知识库</div>
-    <div
-      class="explore-item"
-      :style="{'padding-top': index === 0 ? '4px' : '8px'}"
-      :key="index"
-      v-for="(item, index) in hotRepositoryList">
-      <div class="title" @click="goRepositoryPage(item)">
-        {{ item.author.name }} / {{ item.content.name }}
-      </div>
-      <div class="description-text">{{ item.content.description }}</div>
-      <div class="tag-content" v-if="item.content.domain.length">
-        <metagraph-tag
-          :key="tagIndex"
-          v-for="(domainItem, tagIndex) in item.content.domain"
-          :title="domainItem.domainName"></metagraph-tag>
-      </div>
-      <div class="action">
-        <div class="action-item">
-          <StarOutlined class="action-star"/>
-          {{ item.star }}
+    <div v-if="isLoading">
+      <ant-skeleton v-for="item in 3" :key="item" active/>
+    </div>
+    <template v-else>
+      <template v-if="hotRepositoryList.length">
+        <div
+          class="explore-item"
+          :style="{'padding-top': index === 0 ? '4px' : '8px'}"
+          :key="index"
+          v-for="(item, index) in hotRepositoryList">
+          <div class="title" @click="goRepositoryPage(item)">
+            {{ item.author.name }} / {{ item.content.name }}
+          </div>
+          <div class="description-text">{{ item.content.description }}</div>
+          <div class="tag-content" v-if="item.content.domain.length">
+            <metagraph-tag
+              :key="tagIndex"
+              v-for="(domainItem, tagIndex) in item.content.domain"
+              :title="domainItem.domainName"></metagraph-tag>
+          </div>
+          <div class="action">
+            <div class="action-item">
+              <StarOutlined class="action-star"/>
+              {{ item.star }}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </template>
+      <empty-view v-else></empty-view>
 
-    <div v-if="!hotRepositoryList.length">
-      <ant-skeleton v-for="item in 3" :key="item" active />
-    </div>
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
 import { Skeleton as AntSkeleton } from 'ant-design-vue';
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
 import { MetagraphTag } from 'metagraph-ui';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
-import { hotRepositoryList } from './home-page-model';
+import { getHotList, hotRepositoryList } from './home-page-model';
+import { EmptyView } from '@/components';
 
 const router = useRouter();
 const store = useStore();
 const userModel = computed(() => store.state.user.user);
+const isLoading = ref(false);
 
 async function goRepositoryPage(item: EntityCompletelyListItemType) {
   router.push({
@@ -54,6 +61,12 @@ async function goRepositoryPage(item: EntityCompletelyListItemType) {
   })
     .then();
 }
+
+onMounted(async () => {
+  isLoading.value = true;
+  await getHotList();
+  isLoading.value = false;
+});
 </script>
 
 <style scoped lang="scss">

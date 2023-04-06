@@ -41,6 +41,7 @@
     <img v-if="isGif" :src="gifBase64" alt="">
     <div class="control-box">
       <ant-button
+        v-if="!domFile"
         type="primary"
         class="select-image button-style">
         选择图片
@@ -50,11 +51,12 @@
           @change="handleUploadImg($event)" ref="inputRef">
       </ant-button>
       <ant-button
+        v-if="domFile"
         class="button-style"
         type="primary"
         :loading="isLoading" @click="handleUpload">上传图片
       </ant-button>
-      <ant-button class="button-style" @click="handleModalCancel">关闭</ant-button>
+<!--      <ant-button class="button-style" @click="handleModalCancel">关闭</ant-button>-->
     </div>
   </ant-modal>
 </template>
@@ -261,7 +263,6 @@ export default defineComponent({
 
     async function handleUpload() {
       if (isGif.value && gifBase64.value) {
-        console.log(gifBase64.value, 'gif');
         await uploadFileToQiniu();
       } else {
         cropperRef.value.getCropData(async (data: string) => {
@@ -284,7 +285,8 @@ export default defineComponent({
       cropperRef,
       isLoading,
       isGif,
-      gifBase64
+      gifBase64,
+      domFile
     };
   }
 });
@@ -292,6 +294,8 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .control-box {
+  display: flex;
+  justify-content: flex-end;
   padding-top: 10px;
 }
 

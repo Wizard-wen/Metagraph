@@ -18,7 +18,6 @@ input {
 }
 
 
-
 .position-relative {
   position: relative;
 }
@@ -35,6 +34,7 @@ input {
 
 $fontColor: #24292e;
 $themeColor: #00B96B;
+$themeHoverColor: rgba(0, 185, 107, .7);
 $textColor: #41464b;
 $lightGray: #f9f9f9;
 
@@ -103,17 +103,8 @@ $textBackgroundColor: #FFF;
     background-color: #8a8e99;
   }
 }
-.custom-input-style {
-  ::v-deep(.ant-input) {
-    background: #FFFFFF !important;
-    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
 
-    &:focus {
-      background: #FFFFFF !important;
-      -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
-    }
-  }
-}
+
 
 .custom-date-picker {
   z-index: 10000 !important;
@@ -121,4 +112,99 @@ $textBackgroundColor: #FFF;
 
 .grabbing * {
   cursor: grabbing !important;
+}
+
+
+@mixin custom-input-style-mixin {
+  &::v-deep(.ant-form-item-explain-error) {
+    text-align: left;
+    height: 18px;
+    min-height: 18px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  &::v-deep(.ant-form-item-control-input-content) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &::v-deep(.ant-input-affix-wrapper) {
+    &:hover {
+      border-color: $themeColor;
+    }
+  }
+
+  &::v-deep(.ant-form-item-has-error .ant-input-affix-wrapper) {
+    &:hover {
+      border-color: #ff4d4f;
+    }
+  }
+
+  &::v-deep(.ant-input-affix-wrapper-focused) {
+    box-shadow: none;
+    border-color: $themeColor;
+  }
+
+  &::v-deep(.ant-form-item-has-error .ant-input-affix-wrapper-focused) {
+    box-shadow: none;
+    border-color: #ff4d4f;
+  }
+
+  &::v-deep(.ant-form-item-explain-error) {
+    text-align: left;
+  }
+
+  .ant-input {
+    background: #FFFFFF;
+
+    &:hover {
+      border-color: $themeColor;
+    }
+
+    &:focus {
+      border-color: $themeColor;
+      box-shadow: none;
+    }
+
+    &:-webkit-autofill {
+      -webkit-box-shadow: inset 0 0 0 1000px #fff;
+      background-color: transparent;
+    }
+
+    &:autofill {
+      -webkit-box-shadow: inset 0 0 0 1000px #fff;
+      background-color: transparent;
+    }
+  }
+
+  .ant-form-item-has-error .ant-input {
+    background: #FFFFFF;
+
+    &:hover {
+      border-color: #ff4d4f;
+    }
+
+    &:focus {
+      border-color: #ff4d4f;
+      box-shadow: none;
+    }
+  }
+  &::v-deep(.ant-form-item) {
+    margin-bottom: 12px;
+  }
+  .custom-input-style {
+    min-height: 40px;
+    border-radius: 6px;
+    ::v-deep(.ant-input) {
+      background: #FFFFFF !important;
+      -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+
+      &:focus {
+        background: #FFFFFF !important;
+        -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+      }
+    }
+  }
 }

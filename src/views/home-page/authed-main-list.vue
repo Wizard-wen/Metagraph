@@ -1,13 +1,18 @@
 <template>
   <div class="authed-list">
     <div class="activity-title">全部动态</div>
-    <home-page-activity-list-item
-      :key="index"
-      :activity-item="item"
-      v-for="(item, index) in activityList.list"></home-page-activity-list-item>
-    <div v-if="!activityList.list.length">
-      <ant-skeleton v-for="item in 10" :key="item" active />
+    <div v-if="activityList.isLoading">
+      <ant-skeleton v-for="item in 10" :key="item" active/>
     </div>
+    <template v-else>
+      <template v-if="activityList.list.length">
+        <home-page-activity-list-item
+          :key="index"
+          :activity-item="item"
+          v-for="(item, index) in activityList.list"></home-page-activity-list-item>
+      </template>
+      <empty-view v-else></empty-view>
+    </template>
     <ant-pagination
       v-if="isLogin"
       class="pagination"
@@ -25,6 +30,7 @@ import { Pagination as AntPagination, Skeleton as AntSkeleton } from 'ant-design
 import HomePageActivityListItem
   from '@/views/home-page/authed-main-list/home-page-activity-list-item.vue';
 import { activityList, getActivityList } from '@/views/home-page/home-page-model';
+import { EmptyView } from '@/components';
 
 const store = useStore();
 const isLogin = computed(() => store.state.user.isLogin);
@@ -37,6 +43,7 @@ async function onActivityPaginationChange(page: number) {
 <style scoped lang="scss">
 .authed-list {
   width: 100%;
+
   .activity-title {
     text-align: left;
     height: 30px;
@@ -45,6 +52,7 @@ async function onActivityPaginationChange(page: number) {
     color: #242930;
   }
 }
+
 .pagination {
   margin-top: 50px;
   width: 100%;

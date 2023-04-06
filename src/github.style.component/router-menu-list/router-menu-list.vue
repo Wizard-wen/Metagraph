@@ -3,81 +3,82 @@
     <div class="title">{{ title }}</div>
     <template v-if="type === 'router'">
       <router-link
-        v-for="(item, index) in routerList"
+        v-for="(item, index) in navList"
         :key="index"
-        @click="handleMenuClick(item, index)"
+        @click="handleRouterChange(item, index)"
         :class="{
-        'list-item-without-border': index === routerList.length - 1,
-        'list-item-active': index === activeIndex
+        'list-item-without-border': index === navList.length - 1,
+        'list-item-active': index === activePathIndex
       }"
-        :to="item.path"
+        :to="item.value"
         class="list-item">{{ item.name }}
       </router-link>
     </template>
     <template v-else>
       <div
-        v-for="(item, index) in routerList"
+        v-for="(item, index) in navList"
         :key="index"
         @click="handleMenuClick(item, index)"
         :class="{
-        'list-item-without-border': index === routerList.length - 1,
-        'list-item-active': index === active
+        'list-item-without-border': index === navList.length - 1,
+        'list-item-active': index === activeIndex
       }"
-        :to="item.path"
         class="list-item">{{ item.name }}
       </div>
     </template>
   </div>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, PropType, ref, toRef
-} from 'vue';
+<script lang="ts" setup>
+import { computed, defineEmits, defineProps, onMounted, PropType, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-export default defineComponent({
-  name: 'router-menu-list',
-  props: {
-    title: {
-      type: String,
-      default: 'title',
-      required: true
-    },
-    active: {
-      type: Number,
-      default: 0
-    },
-    type: {
-      type: String as PropType<'router' | 'normal'>,
-      default: 'router'
-    },
-    navList: {
-      type: Array as PropType<{ path: string; name: string; value?: string }[]>,
-      required: true,
-      default: () => []
-    }
+const props = defineProps({
+  title: {
+    type: String,
+    default: 'title',
+    required: true
   },
-  emits: ['onClickItem'],
-  setup(props, { emit }) {
-    const routerList = toRef(props, 'navList');
-    const type = toRef(props, 'type');
-    const route = useRoute();
-    const activeIndex = ref(0);
-    const handleMenuClick = (item: { path: string; name: string; value?: string }, index: number) => {
-      activeIndex.value = index;
-      emit('onClickItem', { ...item, index });
-    };
-    onMounted(() => {
-      if (type.value === 'router') {
-        activeIndex.value = routerList.value.findIndex((item) => item.path === route.path);
-      }
-    });
-    return {
-      routerList,
-      activeIndex,
-      handleMenuClick
-    };
+  activeId: {
+    type: String,
+    default: ''
+  },
+  type: {
+    type: String as PropType<'router' | 'normal'>,
+    default: 'router'
+  },
+  navList: {
+    type: Array as PropType<{ name: string; value: string }[]>,
+    required: true,
+    default: () => []
+  }
+});
+const emit = defineEmits(['onClickItem']);
+
+const route = useRoute();
+const activeIndex = computed(
+  () => props.navList?.findIndex((item) => item.value === props.activeId)
+);
+const handleMenuClick = (item: {
+  name: string;
+  value: string
+}, index: number) => {
+  emit('onClickItem', { ...item, index });
+};
+
+const activePathIndex = ref(0);
+
+function handleRouterChange(item: {
+  name: string;
+  value: string
+}, index: number) {
+  activePathIndex.value = index;
+  emit('onClickItem', { ...item, index });
+}
+
+onMounted(() => {
+  if (props.type === 'router') {
+    activePathIndex.value = props.navList.findIndex((item) => item.value === route.path);
   }
 });
 </script>
@@ -123,7 +124,7 @@ export default defineComponent({
       left: 0;
       width: 2px;
       content: "";
-      background: rgb(253, 140, 115);
+      background: $themeColor;
     }
   }
 }

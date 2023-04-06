@@ -10,7 +10,7 @@ export type KnowledgeBaseFormType = {
   domain: {
     domainBaseTypeId: string;
     domainName?: string;
-    domainId: string[];
+    domainId: string;
   }[];
   repositoryEntityId: string;
   author: string;

@@ -83,12 +83,14 @@ export enum ApiPathEnum {
   UnbindEmail = '/account/unbindEmail',
   GetById = '/account/getById',
   LoginByName = '/public/user/loginByName',
+  LoginByEmail = '/public/user/loginByEmail',
   UpdatePassword = '/account/updatePassword',
   GetUserBindEmail = '/account/getUserBindEmail',
   UpdateUser = '/account/updateUser',
   RegisterByName = '/public/user/registerByName',
   GetPublicUserById = '/public/user/getById',
   SendRegisterEmailCode = '/public/user/sendMailCode',
+  RegisterByEmail = '/public/user/registerByEmail',
   CheckIfUserExists = '/public/user/check/nickname',
   /**
    * repository

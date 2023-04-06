@@ -459,7 +459,7 @@ export class KnowledgeEdit {
     domain?: {
       domainBaseTypeId: string;
       domainName?: string;
-      domainId: string[];
+      domainId: string;
     }[];
     pictures?: KnowledgePicturesFrontendType[];
     knowledgeBaseTypeId?: string;

@@ -3,27 +3,37 @@
     <div class="repository-list">
       <div class="side-content">
         <router-menu-list
-          :active="searchData.activeIndex"
+          :active-id="searchData.type"
           @onClickItem="handleClickMenu($event)"
-          :title="'搜索实体类型'" :type="'normal'" :navList="navList"></router-menu-list>
+          :title="'搜索实体类型'"
+          :type="'normal'"
+          :navList="navList"></router-menu-list>
       </div>
       <div class="list-container">
         <div class="search-result">
           <div class="count">{{ total }}个结果</div>
         </div>
-        <template
-          :key="index"
-          v-for="(item, index) in repositoryList">
-          <repository-view-item
-            v-if="item.entity.entityType === 'Repository'"
-            :activity-item="item"></repository-view-item>
-          <knowledge-view-item
-            v-if="item.entity.entityType === 'Knowledge'"
-            :activity-item="item"></knowledge-view-item>
-        </template>
+
         <div v-if="isLoading">
           <ant-skeleton v-for="item in 3" :key="item" active></ant-skeleton>
         </div>
+        <template v-else>
+          <template v-if="repositoryList.length">
+            <template
+              :key="index"
+              v-for="(item, index) in repositoryList">
+              <repository-view-item
+                v-if="item.entity.entityType === 'Repository'"
+                :activity-item="item"></repository-view-item>
+              <knowledge-view-item
+                v-if="item.entity.entityType === 'Knowledge'"
+                :activity-item="item"></knowledge-view-item>
+            </template>
+          </template>
+          <template v-else>
+            <empty-view></empty-view>
+          </template>
+        </template>
         <ant-pagination
           style="margin-top: 50px;"
           v-model:current="searchData.pageIndex"
@@ -40,7 +50,7 @@
 import { searchData } from '@/views/main/metegraph.header';
 import { Pagination as AntPagination, Skeleton as AntSkeleton } from 'ant-design-vue';
 import type { EntityCompletelyListItemType } from 'metagraph-constant';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import {
   NavigationGuardNext,
   onBeforeRouteUpdate,
@@ -52,44 +62,28 @@ import { RouterMenuList } from '@/github.style.component';
 import { RouterUtil } from '@/utils/router.util';
 import RepositoryViewItem from '@/views/home-page/no-auth-main-list/repository-view-item.vue';
 import KnowledgeViewItem from '@/views/home-page/no-auth-main-list/knowledge-view-item.vue';
+import { EmptyView } from '@/components';
 
 const isLoading = ref(false);
 const route = useRoute();
 const queryName = ref(route.query.name as string);
 const queryType = ref(route.query.type as string);
 const total = ref(0);
-const repositoryList = ref<EntityCompletelyListItemType[]>();
+const repositoryList = ref<EntityCompletelyListItemType[]>([]);
 const navList = ref([
   {
-    path: '',
     value: '',
     name: '全部'
   },
   {
-    path: '',
     value: 'Repository',
     name: '知识库'
   },
   {
-    path: '',
     value: 'Knowledge',
     name: '知识点'
   }
 ]);
-const actions: Record<string, string>[] = [
-  {
-    type: 'StarOutlined',
-    text: '156'
-  },
-  {
-    type: 'LikeOutlined',
-    text: '156'
-  },
-  {
-    type: 'MessageOutlined',
-    text: '2'
-  },
-];
 
 async function setSearchList(params: {
   pageIndex: number;
@@ -122,14 +116,20 @@ onBeforeRouteUpdate(async (
   });
   next();
 });
+
+watchEffect(() => {
+  const initType = route.query.type as string;
+  searchData.value.type = initType;
+});
+
 onMounted(async () => {
-  searchData.value.activeIndex = navList.value.findIndex(
-    (item) => item.value === queryType.value
-  );
-  if (searchData.value.activeIndex === -1) {
-    searchData.value.activeIndex = 0;
+  const initType = route.query.type as string;
+  if (initType) {
+    console.log(initType);
+    searchData.value.type = initType;
+  } else {
+    searchData.value.type = navList.value[0].value;
   }
-  searchData.value.type = navList.value[searchData.value.activeIndex].value;
   searchData.value.text = queryName.value ?? '';
   const pageSizeFromQuery = Number((route.query.pageSize as string | null) ?? 10);
   searchData.value.pageIndex = Number((route.query.pageIndex as string | null) ?? 1);
@@ -153,13 +153,11 @@ const onPaginationChange = async (page: number) => {
 };
 
 async function handleClickMenu(event: {
-  path: string;
   name: string;
-  value?: string;
+  value: string;
   index: number
 }) {
-  searchData.value.activeIndex = event.index;
-  searchData.value.type = navList.value[searchData.value.activeIndex].value;
+  searchData.value.type = event.value;
   searchData.value.pageIndex = 1;
   searchData.value.pageSize = 10;
   await RouterUtil.replaceTo('/search/list', {
@@ -171,10 +169,13 @@ async function handleClickMenu(event: {
 }
 </script>
 <style lang="scss" scoped>
+@import "../style/common.scss";
+
 .search-page {
   height: calc(100vh - 55px);
   width: 100%;
   overflow-y: scroll;
+  @include custom-scroll-style;
 }
 
 .repository-list {

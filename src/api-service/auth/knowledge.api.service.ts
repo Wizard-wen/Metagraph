@@ -29,7 +29,7 @@ export class KnowledgeApiService {
     knowledgeBaseTypeId?: string,
     domain?: {
       domainBaseTypeId: string;
-      domainId: string[];
+      domainId: string;
     }[],
     pictures?: {
       fileKey: string;
