@@ -10,14 +10,25 @@
     @finishFailed="handleFinishFailed"
     :label-col="labelCol" :wrapper-col="wrapperCol">
     <ant-form-item label="旧密码" name="oldPassword">
-      <ant-input class=" custom-input-style" type="password" v-model:value="formState.oldPassword"/>
+      <ant-input
+        class="custom-input-style"
+        type="password"
+        placeholder="请输入旧密码"
+        v-model:value="formState.oldPassword"/>
     </ant-form-item>
     <ant-form-item label="新密码" name="newPassword">
-      <ant-input class=" custom-input-style" type="password" v-model:value="formState.newPassword"/>
+      <ant-input
+        class="custom-input-style"
+        type="password"
+        placeholder="请输入新密码"
+        v-model:value="formState.newPassword"/>
     </ant-form-item>
     <ant-form-item label="请确认新密码" name="confirmNewPassword">
-      <ant-input class=" custom-input-style" type="password"
-                 v-model:value="formState.confirmNewPassword"/>
+      <ant-input
+        class="custom-input-style"
+        type="password"
+        placeholder="请再次确认新密码"
+        v-model:value="formState.confirmNewPassword"/>
     </ant-form-item>
     <ant-form-item :wrapper-col="{ span: 8 }">
       <ant-button type="primary" html-type="submit">更新密码</ant-button>

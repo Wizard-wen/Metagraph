@@ -28,7 +28,10 @@
         </div>
         <a-tooltip :title="progressDesc">
           <a-progress
-            :width="90" :percent="totalRate" :success-percent="successRate"
+            :width="90" :percent="totalRate" :success="{
+              percent: successRate,
+              strokeColor: 'red'
+            }"
             type="circle"/>
         </a-tooltip>
       </div>
@@ -104,9 +107,9 @@ const totalRate = computed(() => {
   return 0;
 });
 const progressDesc = computed(() => `
-${props.planItem.progress.done} done /
-${props.planItem.progress.doing} in progress /
-${props.planItem.progress.todo} to do`);
+${props.planItem.progress.done} 已完成 /
+${props.planItem.progress.doing} 进行中 /
+${props.planItem.progress.todo} 待完成`);
 
 const lastTime = computed(() => props.planItem.deadlineDate ? endDistance(new Date(), new Date(props.planItem.deadlineDate)) : '');
 

@@ -46,12 +46,13 @@ import {
 import {
   Form, Input, Modal, DatePicker
 } from 'ant-design-vue';
-import moment, { Moment } from 'moment';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 interface FormState {
   name: string;
-  deadlineDate?: Moment;
-  planDate?: Moment;
+  deadlineDate?: Dayjs;
+  planDate?: Dayjs;
   description?: string;
 }
 
@@ -82,8 +83,8 @@ export default defineComponent({
     const dateFormat = 'YYYY/MM/DD';
     const formState = reactive<FormState>({
       name: '',
-      deadlineDate: moment(new Date(), dateFormat),
-      planDate: moment(new Date(), dateFormat),
+      deadlineDate: dayjs(new Date(), dateFormat),
+      planDate: dayjs(new Date(), dateFormat),
       description: ''
     });
 
@@ -125,7 +126,7 @@ export default defineComponent({
       if (result.data) {
         formState.name = result.data.name;
         formState.description = result.data.description;
-        formState.deadlineDate = moment(result.data.deadlineDate, dateFormat);
+        formState.deadlineDate = dayjs(result.data.deadlineDate, dateFormat);
       }
     }
 

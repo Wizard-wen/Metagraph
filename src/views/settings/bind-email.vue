@@ -10,7 +10,10 @@
     :model="bindEmailForm"
     :label-col="labelCol" :wrapper-col="wrapperCol">
     <ant-form-item label="邮箱" name="email">
-      <ant-input class="custom-input-style" v-model:value="bindEmailForm.email">
+      <ant-input
+        class="custom-input-style"
+        placeholder="请输入邮箱地址"
+        v-model:value="bindEmailForm.email">
         <template #suffix>
           <div class="send-code">
             <div v-if="!isEnding" @click="sendEmail('bindEmail')">获取</div>
@@ -26,7 +29,10 @@
     <!--      </ant-button>-->
     <!--    </div>-->
     <ant-form-item label="验证码" name="code">
-      <ant-input class="custom-input-style" v-model:value="bindEmailForm.code"/>
+      <ant-input
+        placeholder="请输入验证码"
+        class="custom-input-style"
+        v-model:value="bindEmailForm.code"/>
     </ant-form-item>
     <ant-form-item :wrapper-col="{ span: 4 }">
       <ant-button type="primary" @click="bindEmail">绑定邮箱</ant-button>
