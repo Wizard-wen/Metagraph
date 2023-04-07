@@ -6,6 +6,7 @@
 import { createApp } from 'vue';
 import { clickOutside } from '@/directives/click.outside';
 import MetagraphTreeItem from '@/components/metagraph-tree/metagraph-tree-item.vue';
+import { ConfigProvider, Input } from 'ant-design-vue';
 import App from './App.vue';
 import router from './router';
 import { key, store } from './store';
@@ -18,8 +19,10 @@ import Hide from './directives/hide';
 import './api-service/config/request.intercepter';
 import 'metagraph-ui/dist/style.css';
 import './router/router.interceptor';
+import 'ant-design-vue/dist/antd.variable.min.css';
 
 const app = createApp(App);
+app.use(ConfigProvider);
 app.component('metagraph-tree-item', MetagraphTreeItem);
 // 引入全局directive
 app.directive('contextmenu', Contextmenu);

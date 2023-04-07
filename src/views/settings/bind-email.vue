@@ -2,60 +2,70 @@
   <setting-header :title="'绑定邮箱'"></setting-header>
   <div v-if="bindEmailObject.isBind">当前绑定邮箱：{{ bindEmailObject.email }}</div>
   <ant-form
+    class="bind-email-form"
     v-if="!bindEmailObject.isBind"
     ref="bindEmailFormRef"
     layout="vertical"
     :rules="bindEmailRules"
     :model="bindEmailForm"
     :label-col="labelCol" :wrapper-col="wrapperCol">
-    <ant-form-item
-      label="邮箱" class="ant-form-item-style custom-input-style" name="email">
-      <ant-input v-model:value="bindEmailForm.email"/>
+    <ant-form-item label="邮箱" name="email">
+      <ant-input class="custom-input-style" v-model:value="bindEmailForm.email">
+        <template #suffix>
+          <div class="send-code">
+            <div v-if="!isEnding" @click="sendEmail('bindEmail')">获取</div>
+            <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>
+          </div>
+        </template>
+      </ant-input>
     </ant-form-item>
-    <div style="display: flex;gap: 20px;justify-content: flex-start; margin-bottom: 20px;">
-      <ant-button @click="sendEmail('bindEmail')" :disabled="isEnding || !isEmailValid">
-        <span v-if="!isEnding">发送验证码</span>
-        <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>
-      </ant-button>
-    </div>
-    <ant-form-item
-      label="验证码" class="ant-form-item-style custom-input-style" name="code">
-      <ant-input v-model:value="bindEmailForm.code"/>
+    <!--    <div style="display: flex;gap: 20px;justify-content: flex-start; margin-bottom: 20px;">-->
+    <!--      <ant-button @click="sendEmail('bindEmail')" :disabled="isEnding || !isEmailValid">-->
+    <!--        <span v-if="!isEnding">发送验证码</span>-->
+    <!--        <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>-->
+    <!--      </ant-button>-->
+    <!--    </div>-->
+    <ant-form-item label="验证码" name="code">
+      <ant-input class="custom-input-style" v-model:value="bindEmailForm.code"/>
     </ant-form-item>
-    <ant-form-item :wrapper-col="{ span: 4 }" style="margin-top: 50px">
+    <ant-form-item :wrapper-col="{ span: 4 }">
       <ant-button type="primary" @click="bindEmail">绑定邮箱</ant-button>
     </ant-form-item>
   </ant-form>
   <ant-form
     v-if="bindEmailObject.isBind"
     ref="unbindEmailFormRef"
+    class="bind-email-form"
     layout="vertical"
     :rules="unbindEmailRules"
     :model="unbindEmailForm"
     :label-col="labelCol" :wrapper-col="wrapperCol">
     <ant-form-item
-      label="验证码" class="ant-form-item-style custom-input-style" name="code">
-      <ant-input v-model:value="unbindEmailForm.code"/>
+      label="验证码" name="code">
+      <ant-input class="custom-input-style" v-model:value="unbindEmailForm.code">
+        <template #suffix>
+          <div class="send-code">
+            <div v-if="!isEnding" @click="sendEmail('unbindEmail')">获取</div>
+            <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>
+          </div>
+        </template>
+      </ant-input>
     </ant-form-item>
-    <div style="display: flex;gap: 20px;justify-content: flex-start; margin-bottom: 20px;">
-      <ant-button @click="sendEmail('unbindEmail')" :disabled="isEnding">
-        <span v-if="!isEnding">发送验证码</span>
-        <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>
-      </ant-button>
-    </div>
-    <ant-form-item :wrapper-col="{ span: 4 }" style="margin-top: 50px">
+    <!--    <div style="display: flex;gap: 20px;justify-content: flex-start; margin-bottom: 20px;">-->
+    <!--      <ant-button @click="sendEmail('unbindEmail')" :disabled="isEnding">-->
+    <!--        <span v-if="!isEnding">发送验证码</span>-->
+    <!--        <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>-->
+    <!--      </ant-button>-->
+    <!--    </div>-->
+    <ant-form-item :wrapper-col="{ span: 4 }">
       <ant-button type="primary" @click="unbindEmail">解绑邮箱</ant-button>
     </ant-form-item>
   </ant-form>
 </template>
 
 <script lang="ts">
-import {
-  Button, Form, Input, message
-} from 'ant-design-vue';
-import {
-  defineComponent, onMounted, reactive, ref
-} from 'vue';
+import { Button, Form, Input, message } from 'ant-design-vue';
+import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { UserApiService } from '@/api-service';
 import EndTime from '@/views/settings/end-time.vue';
 import { bindEmailObject, Settings } from './settings';
@@ -135,6 +145,11 @@ export default defineComponent({
     };
 
     async function sendEmail(type: 'bindEmail' | 'unbindEmail') {
+      if (type === 'bindEmail') {
+        await bindEmailFormRef.value.validate('email');
+      } else {
+        await unbindEmailFormRef.value.validate('email');
+      }
       endTime.value = new Date().getTime() + 60000;
       localStorage.setItem('emailEndTime', endTime.value.toString());
       isEnding.value = true;
@@ -240,5 +255,19 @@ export default defineComponent({
 .ant-form-item-style {
   display: flex;
   gap: 20px;
+}
+
+.bind-email-form {
+  @include custom-input-style-mixin;
+}
+
+.send-code {
+  display: flex;
+  align-items: center;
+  color: $themeColor;
+  cursor: pointer;
+  padding-left: 4px;
+  //height: 40px;
+  //line-height: 40px;
 }
 </style>

@@ -1,6 +1,25 @@
 <template>
-  <router-view/>
+  <config-provider>
+    <router-view/>
+  </config-provider>
+
 </template>
+<script setup lang="ts">
+import { reactive } from 'vue';
+import { ConfigProvider } from 'ant-design-vue';
+
+const colorState = reactive({
+  primaryColor: '#00B96B',
+  errorColor: '#ff4d4f',
+  warningColor: '#faad14',
+  successColor: '#52c41a',
+  infoColor: '#00B96B',
+});
+ConfigProvider.config({
+  theme: colorState,
+});
+
+</script>
 <style lang="scss">
 #app {
   //font-family: Avenir, Helvetica, Arial, sans-serif;

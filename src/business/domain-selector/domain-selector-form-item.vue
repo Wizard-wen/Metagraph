@@ -1,15 +1,18 @@
 <template>
-  <div class="tag-box">
-    <m-tag
-      :key="index"
-      v-for="(item, index) in modelValue"
-      :title="item.domainName"></m-tag>
+  <div class="domain-selector-form">
+    <div class="tag-box" v-if="modelValue.length">
+      <m-tag
+        :key="index"
+        v-for="(item, index) in modelValue"
+        :title="item.domainName"></m-tag>
+    </div>
+    <m-button :title="'修改领域'" @click="handleOpenDomainModal">
+      <template #icon>
+        <EditOutlined/>
+      </template>
+    </m-button>
   </div>
-  <m-button :title="'修改领域'" style="display: block" @click="handleOpenDomainModal">
-    <template #icon>
-      <EditOutlined/>
-    </template>
-  </m-button>
+
   <domain-select-modal
     v-if="isDomainModalVisible"
     :selected-domain-list="modelValue"
@@ -23,7 +26,9 @@ import { EditOutlined } from '@ant-design/icons-vue';
 import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { MButton, MTag } from '@/metagraph-ui';
 import DomainSelectModal from './domain-selector-modal.vue';
+import { Form } from 'ant-design-vue';
 
+const useForm = Form.useInjectFormItemContext();
 defineProps({
   modelValue: {
     type: Array as PropType<{
@@ -61,12 +66,17 @@ async function handleDomainModalClose(event?: {
   isDomainModalVisible.value = false;
   if (event) {
     emit('update:modelValue', event.domain);
+    useForm.onFieldChange();
   }
 }
 
 </script>
 
 <style scoped lang="scss">
+.domain-selector-form {
+  padding-bottom: 12px;
+}
+
 .tag-box {
   display: flex;
   justify-content: flex-start;

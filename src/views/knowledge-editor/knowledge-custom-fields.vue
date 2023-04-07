@@ -132,7 +132,7 @@ export default defineComponent({
     async function handleSaveCustomField() {
       const { validate } = Form.useForm(customFieldsModelRef.value, customFieldsRulesRef.value);
       validate()
-        .then(async (value) => {
+        .then(async (value: any) => {
           console.log(value, knowledgeCustomFields.value, customFieldsModelRef.value);
           Object.keys(customFieldsModelRef.value)
             .forEach((item) => {
@@ -148,12 +148,11 @@ export default defineComponent({
             knowledgeEntityId: draftKnowledgeEntityId?.value || '',
             customFields: knowledgeCustomFields.value
           });
-          console.log(result);
           if (result.code === 0) {
             message.success('保存成功！');
           }
         })
-        .catch((err) => {
+        .catch((err: any) => {
           console.log('error', err);
         });
     }

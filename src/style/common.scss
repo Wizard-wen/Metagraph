@@ -105,7 +105,6 @@ $textBackgroundColor: #FFF;
 }
 
 
-
 .custom-date-picker {
   z-index: 10000 !important;
 }
@@ -130,26 +129,13 @@ $textBackgroundColor: #FFF;
     gap: 4px;
   }
 
-  &::v-deep(.ant-input-affix-wrapper) {
-    &:hover {
-      border-color: $themeColor;
-    }
-  }
-
-  &::v-deep(.ant-form-item-has-error .ant-input-affix-wrapper) {
-    &:hover {
-      border-color: #ff4d4f;
-    }
-  }
 
   &::v-deep(.ant-input-affix-wrapper-focused) {
     box-shadow: none;
-    border-color: $themeColor;
   }
 
   &::v-deep(.ant-form-item-has-error .ant-input-affix-wrapper-focused) {
     box-shadow: none;
-    border-color: #ff4d4f;
   }
 
   &::v-deep(.ant-form-item-explain-error) {
@@ -159,12 +145,7 @@ $textBackgroundColor: #FFF;
   .ant-input {
     background: #FFFFFF;
 
-    &:hover {
-      border-color: $themeColor;
-    }
-
     &:focus {
-      border-color: $themeColor;
       box-shadow: none;
     }
 
@@ -177,6 +158,12 @@ $textBackgroundColor: #FFF;
       -webkit-box-shadow: inset 0 0 0 1000px #fff;
       background-color: transparent;
     }
+  }
+
+  &::v-deep(.ant-form-item-explain) {
+    height: 18px;
+    max-height: 18px;
+    min-height: 18px;
   }
 
   .ant-form-item-has-error .ant-input {
@@ -197,6 +184,7 @@ $textBackgroundColor: #FFF;
   .custom-input-style {
     min-height: 40px;
     border-radius: 6px;
+
     ::v-deep(.ant-input) {
       background: #FFFFFF !important;
       -webkit-box-shadow: 0 0 0 1000px #ffffff inset;

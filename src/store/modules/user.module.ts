@@ -19,6 +19,9 @@ export const userModule: Module<UserStateType, RootStateType> = {
       state.token = userModel.token;
       state.isLogin = true;
     },
+    [MutationEnum.UPDATE_USER_MODEL](state, { userModel }) {
+      state.user = userModel;
+    },
     [MutationEnum.CLEAR_USER_MODEL](state) {
       state.user = undefined;
       state.token = undefined;

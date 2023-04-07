@@ -82,10 +82,10 @@
               v-model="repositoryFormState.domain"></domain-select-form-item>
           </ant-form-item>
           <ant-form-item label="知识库封面" name="avatar">
-            <upload-form-item
+            <upload-banner-form-item
               :provider="'RepositoryAvatar'"
               :title="'上传知识库封面'"
-              v-model="repositoryFormState.avatar"></upload-form-item>
+              v-model="repositoryFormState.avatar"></upload-banner-form-item>
           </ant-form-item>
           <ant-form-item label="知识库描述" name="description">
             <ant-text-area
@@ -117,27 +117,26 @@
 </template>
 <script lang="ts" setup>
 import { Form as AntForm, Input as AntInput, Radio as AntRadio } from 'ant-design-vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { BookOutlined, FrownOutlined, LockOutlined, SmileOutlined, UnlockOutlined } from '@ant-design/icons-vue';
+import { FrownOutlined, LockOutlined, SmileOutlined, UnlockOutlined } from '@ant-design/icons-vue';
 import type { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import RepositoryDeleteConfirmModal
   from '@/views/repository-edit/repository-delete-confirm-modal.vue';
 import {
   RepositoryEdit,
-  repositoryFormRef,
   repositoryFormRules,
   repositoryFormState,
   RepositoryFormStateType
 } from '@/views/repository-edit/repository.edit';
-import UploadFormItem from '@/components/upload/upload-form-item.vue';
+import UploadBannerFormItem from '@/components/upload/upload-banner-form-item.vue';
 import { DomainSelectFormItem } from '@/business';
 import { MButton } from '@/metagraph-ui';
 
 const AntFormItem = AntForm.Item;
 const AntTextArea = AntInput.TextArea;
 const AntRadioGroup = AntRadio.Group;
-
+const repositoryFormRef = ref();
 const labelCol = { span: 6 };
 const wrapperCol = { span: 24 };
 const route = useRoute();
@@ -166,7 +165,11 @@ onMounted(async () => {
   }
 });
 
-const onSubmit = async () => {
+watchEffect(() => {
+  console.log(repositoryFormState.domain);
+});
+
+function onSubmit() {
   repositoryFormRef.value
     .validate()
     .then(() => {
@@ -181,7 +184,7 @@ const onSubmit = async () => {
     .catch((error: ValidateErrorEntity<RepositoryFormStateType>) => {
       console.log('error', error);
     });
-};
+}
 
 function deleteRepository() {
   isDeleteModalVisible.value = true;
@@ -220,6 +223,7 @@ const goBack = () => {
 
   .repo-create-form {
     padding: 30px 0 50px;
+
     .line-1px {
       height: 1px;
       width: 100%;
@@ -235,14 +239,6 @@ const goBack = () => {
         height: max-content;
         margin-top: 9px;
         font-size: 12px;
-      }
-      &::v-deep(.ant-radio-inner) {
-        height: 14px;
-        width: 14px;
-        &:after {
-          left: 2px;
-          top: 2px;
-        }
       }
 
       .radio-box {
@@ -288,8 +284,6 @@ const goBack = () => {
       margin: 30px 0 100px;
       display: flex;
     }
-
-
     @include custom-input-style-mixin;
   }
 }

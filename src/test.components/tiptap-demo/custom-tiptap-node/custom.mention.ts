@@ -5,8 +5,8 @@
 
 import { Node, mergeAttributes } from '@tiptap/core';
 import { VueNodeViewRenderer } from '@tiptap/vue-3';
-import { Node as ProseMirrorNode } from 'prosemirror-model';
-import { PluginKey } from 'prosemirror-state';
+import { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { PluginKey } from '@tiptap/pm/state';
 import Suggestion, { SuggestionOptions } from '@tiptap/suggestion';
 import Component from '@/test.components/tiptap-demo/custom-tiptap-node/Component.vue';
 

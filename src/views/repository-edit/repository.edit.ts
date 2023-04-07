@@ -8,7 +8,6 @@ import { message } from 'ant-design-vue';
 import { RepositoryApiService } from '@/api-service';
 import { RouterUtil } from '@/utils/router.util';
 
-export const repositoryFormRef = ref();
 export interface RepositoryFormStateType {
   name: string;
   type: 'public' | 'private';
@@ -36,13 +35,13 @@ export const repositoryFormRules = {
     {
       required: true,
       message: '请输入知识库名称',
-      trigger: 'blur'
+      trigger: 'change'
     },
     {
       min: 3,
       max: 15,
       message: '知识库名称应当在3-15个字符',
-      trigger: 'blur'
+      trigger: 'change'
     }
   ],
   isAllowedClone: [

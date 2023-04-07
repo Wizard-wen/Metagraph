@@ -17,14 +17,15 @@
       @mouseleave="isShow = false">
       <img :src="url" alt="" :class="{'avatar-style': imageType === 'avatar'}">
       <div v-if="isShow" :class="['public', 'black']">
-        <EditOutlined @click="openModal" style="margin-right: 20px" v-if="url" class="light-icon"/>
+        <EditOutlined @click="openModal" style="margin-right: 120px" v-if="url" class="light-icon"/>
         <DeleteOutlined @click="handleRemove" v-if="url" class="light-icon"/>
       </div>
     </div>
   </div>
   <upload-cropper-modal
     v-if="isModalShow"
-    :fixed="false"
+    :fixed="true"
+    :fixed-number="[4,1]"
     :provider="provider"
     :is-modal-visible="isModalShow"
     :title="title"
@@ -91,21 +92,9 @@ const openModal = () => {
 
 .upload-content {
 
-  .upload-container {
-    height: 120px;
-    width: 120px;
-    border: 1px dashed $themeColor;
-    border-radius: 6px;
-  }
-
-  .upload-button {
-    display: block;
-  }
-
-
   .image-box {
-    height: 120px;
-    width: 120px;
+    height: 220px;
+    width: 880px;
     text-align: left;
     position: relative;
 
@@ -118,7 +107,7 @@ const openModal = () => {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
+      border-radius: 12px;
       cursor: pointer;
     }
 
@@ -133,17 +122,18 @@ const openModal = () => {
 
     .light-icon {
       color: #FFF;
-      font-size: 18px;
+      font-size: 24px;
     }
 
     .black-icon {
       color: $themeColor;
-      font-size: 18px;
+      font-size: 24px;
     }
 
     img {
-      display: inline-block;
-      max-height: 300px;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
     }
   }
 

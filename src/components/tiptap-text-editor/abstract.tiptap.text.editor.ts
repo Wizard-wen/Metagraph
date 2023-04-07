@@ -5,9 +5,8 @@
 
 import { Editor as CoreEditor, Range } from '@tiptap/core';
 import { EntityCompletelyListItemType, KnowledgeModelType, } from 'metagraph-constant';
-import { Node as ProsemirrorNode } from 'prosemirror-model';
-import { EditorView } from 'prosemirror-view';
-import Document from '@tiptap/extension-document';
+import { Node as ProsemirrorNode } from '@tiptap/pm/model';
+import { EditorView } from '@tiptap/pm/view';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
 import TextStyle from '@tiptap/extension-text-style';
@@ -167,7 +166,7 @@ export abstract class AbstractTiptapTextEditor {
     const _this = this;
     this.editor = useEditor({
       editable: this.editable,
-      onUpdate: debounce(({ editor}) => {
+      onUpdate: debounce(({ editor }) => {
         // 当内容更新后，持久化数据到本地
         if (editor.getHTML() && editor.getJSON()) {
           _this.saveToIndexDB({
@@ -197,12 +196,7 @@ export abstract class AbstractTiptapTextEditor {
         },
       },
       extensions: [
-        // Document.extend({
-        //   content: 'heading block*',
-        // }),
-        StarterKit.configure({
-          // document: false,
-        }),
+        StarterKit,
         TextAlign.configure({
           types: ['heading', 'paragraph'],
         }),
@@ -250,12 +244,15 @@ export abstract class AbstractTiptapTextEditor {
                 onStart: (suggestionProps: SuggestionProps) => {
                   if (_this.editor?.value) {
                     component = new VueRenderer(MentionList, {
-                      editor: _this.editor?.value,
+                      editor: suggestionProps.editor,
                       props: suggestionProps,
                     });
                   }
+                  if (!suggestionProps.clientRect) {
+                    return;
+                  }
                   popup = tippy('body', {
-                    getReferenceClientRect: suggestionProps.clientRect,
+                    getReferenceClientRect: suggestionProps.clientRect as () => DOMRect,
                     appendTo: () => document.body,
                     content: component.element,
                     showOnCreate: true,
@@ -265,9 +262,12 @@ export abstract class AbstractTiptapTextEditor {
                   });
                 },
                 onUpdate(suggestionProps: SuggestionProps) {
+                  if (!suggestionProps.clientRect) {
+                    return;
+                  }
                   component.updateProps(suggestionProps);
                   popup[0].setProps({
-                    getReferenceClientRect: suggestionProps.clientRect,
+                    getReferenceClientRect: suggestionProps.clientRect as () => DOMRect,
                   });
                 },
                 onKeyDown(suggestionProps: SuggestionKeyDownProps) {

@@ -29,8 +29,8 @@ export default defineComponent({
 .h1-style {
   height: 36px;
   margin-bottom: 8px;
-  font-size: 24px;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 500;
   text-align: left;
 }
 </style>

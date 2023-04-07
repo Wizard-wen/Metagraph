@@ -4,7 +4,7 @@
  */
 
 import { message } from 'ant-design-vue';
-import { reactive, toRaw, UnwrapRef } from 'vue';
+import { reactive, UnwrapRef } from 'vue';
 import { UserApiService } from '@/api-service';
 
 export interface UserProfileFormStateType {
@@ -12,7 +12,7 @@ export interface UserProfileFormStateType {
   avatar: string;
   type: 'personal' | 'organization';
   phone?: string;
-  email: string;
+  email?: string;
   wechat?: string;
   company?: string;
   personalWebsite?: string;

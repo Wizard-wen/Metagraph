@@ -3,13 +3,15 @@
     <div class="settings">
       <div class="headers">
         <div class="icons">
-          <img
-            v-if="user.target.avatar"
-            :src="user.target.avatar"
-            class="image-border-radius" height="48" width="48" alt="">
+          <ant-avatar
+            class="image-right" :size="48" v-if="userModel.avatar"
+            :src="userModel.avatar"></ant-avatar>
+          <ant-avatar
+            class="image-right" :size="48" v-else>{{ textAvatar }}
+          </ant-avatar>
         </div>
         <div class="user">
-          <div class="user-name">{{ user.target.name }}</div>
+          <div class="user-name">{{ userModel.name }}</div>
           <div class="user-type">您的个人帐户</div>
         </div>
       </div>
@@ -28,70 +30,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, reactive, computed
-} from 'vue';
+<script lang="ts" setup>
+import { computed, onMounted, reactive } from 'vue';
 import { Settings } from '@/views/settings/settings';
 import { useStore } from '@/store';
 import RouterMenuList from '@/github.style.component/router-menu-list/router-menu-list.vue';
+import { Avatar as AntAvatar } from 'ant-design-vue';
 
-export default defineComponent({
-  name: 'Settings',
-  components: {
-    RouterMenuList
+const store = useStore();
+const userModel = computed(() => store.state.user.user);
+const textAvatar = computed(() => userModel.value?.name.charAt(0) ?? 'M');
+
+const routerList = reactive([
+  {
+    value: '/settings/profile',
+    name: '用户信息'
   },
-  setup() {
-    const store = useStore();
-    const user = reactive<{
-      target: {
-        id: string;
-        name: string;
-        avatar: string;
-        token: string;
-        userType: 'personal' | 'organization'
-      }
-    }>({
-      target: {
-        id: '',
-        avatar: '',
-        name: '',
-        token: '',
-        userType: 'personal'
-      }
-    });
-    const routerList = reactive([
-      {
-        value: '/settings/profile',
-        name: '用户信息'
-      },
-      {
-        value: '/settings/bindEmail',
-        name: '绑定邮箱'
-      },
-      {
-        value: '/settings/security',
-        name: '更改密码'
-      }
-    ]);
-    const userModel = computed(() => store.state.user.user);
-    const settings = new Settings();
-    onMounted(async () => {
-      if (userModel.value) {
-        user.target = userModel.value;
-      }
-      await settings.getUserModel();
-    });
-    return {
-      user,
-      routerList
-    };
+  {
+    value: '/settings/bindEmail',
+    name: '绑定邮箱'
+  },
+  {
+    value: '/settings/security',
+    name: '更改密码'
   }
+]);
+
+const settings = new Settings();
+onMounted(async () => {
+  await settings.getUserModel();
 });
+
 </script>
 
 <style scoped lang="scss">
 @import "../style/common.scss";
+
 .settings-page {
   height: calc(100vh - 55px);
   overflow-y: auto;
@@ -99,6 +73,7 @@ export default defineComponent({
   width: 100%;
   @include custom-scroll-style;
 }
+
 .settings {
   padding-top: 24px;
   padding-left: 16px;
@@ -112,8 +87,7 @@ export default defineComponent({
   text-align: left;
   display: flex;
 
-  .image-border-radius {
-    border-radius: 50%;
+  .image-right {
     margin-right: 16px;
   }
 
@@ -141,7 +115,6 @@ export default defineComponent({
 
   .right-side {
     flex: 1;
-    padding-bottom: 50px;
   }
 }
 </style>

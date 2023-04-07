@@ -46,6 +46,7 @@ export enum MutationEnum {
   // user
   SET_USER_MODEL = 'setUserModel',
   CLEAR_USER_MODEL = 'clearUserModel',
+  UPDATE_USER_MODEL = 'updateUserModel',
   // home-page
   SET_REPOSITORY_LIST = 'setRepositoryList',
   SET_OWN_REPOSITORY_LIST = 'setOwnRepositoryList',

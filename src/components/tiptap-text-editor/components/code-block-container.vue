@@ -39,7 +39,7 @@ export default defineComponent({
     const languages = extension.value?.options.lowlight.listLanguages();
     const selectedLanguage = computed({
       get() {
-        return node.value?.attrs.language;
+        return (node.value as any)?.attrs.language;
       },
       set(language) {
         if (updateAttributes.value) {

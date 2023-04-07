@@ -9,12 +9,16 @@
           height="32"
           alt="logo"/>
       </div>
-      <ant-input-search
+      <ant-input
         class="input-search-style"
         :allowClear="true"
         v-model:value="searchData.text"
         placeholder="请输入搜索内容..."
-        @search="handleSearch($event)"></ant-input-search>
+        @pressEnter="handleSearch">
+        <template #suffix>
+          <search-outlined @click="handleSearch"/>
+        </template>
+      </ant-input>
       <div class="banner-list">
         <div
           class="text-button"
@@ -137,6 +141,7 @@ import {
   PoweroffOutlined,
   ReadOutlined,
   ScheduleOutlined,
+  SearchOutlined,
   SettingOutlined,
   StarOutlined,
   UserOutlined
@@ -228,13 +233,12 @@ async function goHomePage() {
   searchData.value.pageIndex = 1;
 }
 
-async function handleSearch(event: string) {
-  searchData.value.text = event;
+async function handleSearch() {
   searchData.value.type = '';
   searchData.value.pageSize = 10;
   searchData.value.pageIndex = 1;
   await RouterUtil.replaceTo('/search/list', {
-    name: event ?? '',
+    name: searchData.value.text,
     type: searchData.value.type,
     pageSize: searchData.value.pageSize,
     pageIndex: searchData.value.pageIndex
@@ -264,6 +268,7 @@ async function goHelpPage() {
 
 .icon-size {
   font-size: 16px !important;
+  margin-right: 8px;
 }
 
 .dropdown-menu-style {
@@ -325,15 +330,8 @@ async function goHelpPage() {
       }
     }
 
-    &::v-deep(.ant-input-affix-wrapper) {
-      &:hover {
-        border-color: $themeColor;
-      }
-    }
-
     &::v-deep(.ant-input-affix-wrapper-focused) {
       box-shadow: none;
-      border-color: $themeColor;
     }
 
     .logo {
@@ -344,7 +342,7 @@ async function goHelpPage() {
       width: 260px;
       margin-left: 60px;
       margin-right: 20px;
-      height: 40px;
+      height: 36px;
       border-radius: 6px;
     }
 

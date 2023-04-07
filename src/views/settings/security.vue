@@ -1,6 +1,7 @@
 <template>
   <setting-header :title="'更改密码'"></setting-header>
   <ant-form
+    class="security-form"
     ref="formRef"
     layout="vertical"
     :rules="rules"
@@ -8,20 +9,15 @@
     @finish="handleFinish"
     @finishFailed="handleFinishFailed"
     :label-col="labelCol" :wrapper-col="wrapperCol">
-    <ant-form-item
-      label="旧密码" name="oldPassword"
-      class="ant-form-item-style custom-input-style">
-      <ant-input type="password" v-model:value="formState.oldPassword"/>
+    <ant-form-item label="旧密码" name="oldPassword">
+      <ant-input class=" custom-input-style" type="password" v-model:value="formState.oldPassword"/>
     </ant-form-item>
-    <ant-form-item
-      label="新密码" name="newPassword"
-      class="ant-form-item-style custom-input-style">
-      <ant-input type="password" v-model:value="formState.newPassword"/>
+    <ant-form-item label="新密码" name="newPassword">
+      <ant-input class=" custom-input-style" type="password" v-model:value="formState.newPassword"/>
     </ant-form-item>
-    <ant-form-item
-      label="请确认新密码" name="confirmNewPassword"
-      class="ant-form-item-style custom-input-style">
-      <ant-input type="password" v-model:value="formState.confirmNewPassword"/>
+    <ant-form-item label="请确认新密码" name="confirmNewPassword">
+      <ant-input class=" custom-input-style" type="password"
+                 v-model:value="formState.confirmNewPassword"/>
     </ant-form-item>
     <ant-form-item :wrapper-col="{ span: 8 }">
       <ant-button type="primary" html-type="submit">更新密码</ant-button>
@@ -31,12 +27,8 @@
 </template>
 
 <script lang="ts">
-import {
-  Button, Form, Input, message
-} from 'ant-design-vue';
-import {
-  defineComponent, reactive, UnwrapRef, ref
-} from 'vue';
+import { Button, Form, Input, message } from 'ant-design-vue';
+import { defineComponent, reactive, ref, UnwrapRef } from 'vue';
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import { UserApiService } from '@/api-service';
 import SettingHeader from './setting.header.vue';
@@ -77,7 +69,6 @@ export default defineComponent({
         return Promise.reject('请再次输入新密码');
       }
       if (value !== formState.newPassword) {
-        // eslint-disable-next-line prefer-promise-reject-errors
         return Promise.reject('两次输入的密码不一致!');
       }
       return Promise.resolve();
@@ -136,4 +127,8 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "../../style/common.scss";
+
+.security-form {
+  @include custom-input-style-mixin;
+}
 </style>

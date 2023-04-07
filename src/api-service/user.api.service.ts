@@ -64,7 +64,6 @@ export class UserApiService {
     userId: string;
     name: string;
     phone?: string;
-    email?: string;
     avatar?: string;
     wechat?: string;
     company?: string;
@@ -74,7 +73,6 @@ export class UserApiService {
       userId: string;
       name: string;
       phone?: string;
-      email?: string;
       avatar?: string;
       wechat?: string;
       company?: string;

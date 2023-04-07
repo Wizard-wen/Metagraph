@@ -15,65 +15,55 @@
   </node-view-wrapper>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, ref, toRefs, nextTick
-} from 'vue';
-import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3';
+<script lang="ts" setup>
+import { defineProps, nextTick, onMounted, ref } from 'vue';
+import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3';
 
-export default defineComponent({
-  components: {
-    NodeViewWrapper,
-  },
-  props: nodeViewProps,
-  setup(props) {
-    const { editor } = toRefs(props);
-    const headings = ref<{
-      id: string;
-      text: string;
-      level: any
-    }[]>([]);
+const props = defineProps(nodeViewProps);
+const headings = ref<{
+  id: string;
+  text: string;
+  level: any
+}[]>([]);
 
-    function handleUpdate() {
-      console.log('ssssssssssssss');
-      const heading: {
-        id: string;
-        text: string;
-        level: any
-      }[] = [];
-      const transaction = editor.value?.state.tr;
-      if (!transaction) {
-        return;
-      }
-      editor.value?.state.doc.descendants((node, pos) => {
-        if (node.type.name === 'heading') {
-          const id = `heading-${headings.value.length + 1}`;
-
-          if (node.attrs.id !== id) {
-            transaction?.setNodeMarkup(pos, undefined, {
-              ...node.attrs,
-              id,
-            });
-          }
-          heading.push({
-            level: node.attrs.level,
-            text: node.textContent,
-            id,
-          });
-        }
-      });
-      transaction?.setMeta('addToHistory', false);
-      transaction?.setMeta('preventUpdate', true);
-      editor.value?.view.dispatch(transaction);
-      headings.value = heading;
-    }
-
-    onMounted(() => {
-      editor.value?.on('update', handleUpdate);
-      nextTick(handleUpdate);
-    });
+function handleUpdate() {
+  const heading: {
+    id: string;
+    text: string;
+    level: any
+  }[] = [];
+  const transaction = props.editor?.state.tr;
+  if (!transaction) {
+    return;
   }
+  props.editor?.state.doc.descendants((node: any, pos: any) => {
+    if (node.type.name === 'heading') {
+      const id = `heading-${headings.value.length + 1}`;
+
+      if (node.attrs.id !== id) {
+        transaction?.setNodeMarkup(pos, undefined, {
+          ...node.attrs,
+          id,
+        });
+      }
+      heading.push({
+        level: node.attrs.level,
+        text: node.textContent,
+        id,
+      });
+    }
+  });
+  transaction?.setMeta('addToHistory', false);
+  transaction?.setMeta('preventUpdate', true);
+  props.editor?.view.dispatch(transaction);
+  headings.value = heading;
+}
+
+onMounted(() => {
+  props.editor?.on('update', handleUpdate);
+  nextTick(handleUpdate);
 });
+
 </script>
 
 <style lang="scss">

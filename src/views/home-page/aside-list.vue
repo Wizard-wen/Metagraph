@@ -46,8 +46,8 @@ import { computed, onMounted, ref } from 'vue';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import { Input as AntInput, Skeleton as AntSkeleton } from 'ant-design-vue';
 import { RouterUtil } from '@/utils/router.util';
-import { getOwnRepositoryList, ownRepositoryList } from './home-page-model';
 import { EmptyView } from '@/components';
+import { getOwnRepositoryList, ownRepositoryList } from './home-page-model';
 
 const searchText = ref<string>('');
 const filteredRepositoryList = computed(() => ownRepositoryList.list?.filter(
@@ -135,14 +135,14 @@ onMounted(async () => {
         border-radius: 6px;
         outline: none;
 
-        &:hover {
-          border-color: $themeColor;
-        }
-
-        &:focus {
-          border-color: $themeColor;
-          box-shadow: none;
-        }
+        //&:hover {
+        //  border-color: $themeColor;
+        //}
+        //
+        //&:focus {
+        //  border-color: $themeColor;
+        //  box-shadow: none;
+        //}
 
         &::placeholder {
           font-size: 12px;
