@@ -4,6 +4,7 @@
       <div class="repository-header" id="step2" data-homepage="2">
         知识库列表
         <m-button
+          :is-icon="true"
           @click="goCreateRepositoryPage">
           <template #icon>
             <PlusOutlined style="font-size: 14px;"/>

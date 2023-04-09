@@ -2,7 +2,8 @@
   <div :class="['section-tree', isClose ? 'hide-style': 'show-style']">
     <div :class="['drag-btn', isClose ? 'hide-drag-style': 'show-drag-style' ]"
          @click="handleClickDrag">
-      <CaretLeftOutlined/>
+      <CaretLeftOutlined v-if="!isClose"/>
+      <CaretRightOutlined v-else/>
     </div>
     <div class="tree-container">
       <div class="header">目录</div>
@@ -48,7 +49,7 @@
 
 <script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import { CaretLeftOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { CaretLeftOutlined, CaretRightOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import type {
   EntityCompletelyListItemType,
   KnowledgeResponseType,
@@ -200,7 +201,7 @@ function handleClickEntityItem(params: { type: string, params: EntityCompletelyL
     }
 
     .tree-content {
-      height: 100%;
+      height: max-content;
     }
   }
 

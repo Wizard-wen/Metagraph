@@ -1,23 +1,38 @@
 <template>
+
   <button
-    v-if="!isIcon"
-    :disabled="isDisabled"
+    v-if="isIcon"
     :style="fontStyle"
-    :class="['meta-normal-button', hasBorder? 'button-border-style': 'button-none-border-style' ]">
-    <LoadingOutlined class="icon-style" v-if="isLoading"/>
-    <slot name="icon" v-else></slot>
-    {{ title }}
+    :disabled="isDisabled"
+    :class="[
+      'public-button',
+      'normal-style',
+      typeClassName,
+      hasBorder? 'button-border-style': 'button-none-border-style' ]">
+    <slot name="icon"></slot>
   </button>
   <button
     v-else
-    :style="fontStyle"
     :disabled="isDisabled"
-    :class="['meta-normal-button', hasBorder? 'button-border-style': 'button-none-border-style' ]">
-    <slot name="icon"></slot>
+    :style="fontStyle"
+    :class="[
+      'public-button',
+      'test-style',
+      'normal-style',
+      typeClassName,
+      hasBorder? 'button-border-style': 'button-none-border-style' ]">
+    <LoadingOutlined class="icon-style" v-if="isLoading"/>
+    <template v-else>
+      <span class="icon-style" v-if="iconSlot">
+      <slot name="icon"></slot>
+    </span>
+    </template>
+
+    {{ title }}
   </button>
 </template>
 <script lang="ts" setup>
-import { computed, defineProps, PropType } from 'vue';
+import { computed, defineProps, PropType, useSlots } from 'vue';
 import { LoadingOutlined } from '@ant-design/icons-vue';
 
 const props = defineProps({
@@ -49,33 +64,63 @@ const props = defineProps({
     type: String,
     default: 'transparent'
   },
+  type: {
+    type: String as PropType<'normal' | 'primary'>,
+    default: 'normal'
+  },
   // middle small large
   size: {
     type: String as PropType<'small' | 'middle' | 'large'>,
     default: 'middle'
   }
 });
+const iconSlot = useSlots().icon;
+
 const isDisabled = computed(() => props.disabled || props.isLoading);
+const typeClassName = computed(() => {
+  if (props.type === 'primary') {
+    return 'primary-style';
+  }
+  return 'normal-style';
+});
 const fontStyle = computed(() => {
+  let styleObject: {
+    heightSize: number,
+    widthSize?: number,
+    lineHeightSize: number,
+    fontSize: number;
+  } = {
+    heightSize: 32,
+    lineHeightSize: props.hasBorder ? 24 : 26,
+    fontSize: 14
+  };
   if (props.size === 'large') {
-    return {
-      height: '36px',
-      'line-height': props.hasBorder ? '28px' : '30px',
-      'font-size': '16px'
+    styleObject = {
+      heightSize: 36,
+      lineHeightSize: props.hasBorder ? 28 : 30,
+      fontSize: 16
     };
   }
   if (props.size === 'small') {
-    return {
-      height: '28px',
-      'line-height': props.hasBorder ? '20px' : '22px',
-      'font-size': '12px'
+    styleObject = {
+      heightSize: 28,
+      lineHeightSize: props.hasBorder ? 20 : 22,
+      fontSize: 12
     };
   }
-  return {
-    height: '32px',
-    'line-height': props.hasBorder ? '24px' : '26px',
-    'font-size': '14px'
+
+  const finalSize = {
+    height: `${ styleObject.heightSize }px`,
+    'font-size': `${ styleObject.fontSize }px`,
+    'line-height': `${ styleObject.lineHeightSize }px`
   };
+  if (props.isIcon) {
+    return {
+      ...finalSize,
+      width: `${ styleObject.heightSize }px`
+    };
+  }
+  return finalSize;
 });
 </script>
 
@@ -91,28 +136,23 @@ const fontStyle = computed(() => {
   border: none;
 }
 
-.meta-normal-button {
+.public-button {
   box-sizing: border-box;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
+  //display: inline-block;
+  //vertical-align: middle;
+  //position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  //height: 32px;
   appearance: none;
-  background-color: #fff;
-
   border-radius: 6px;
-  //box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0,
-  //rgba(255, 255, 255, 0.25) 0 1px 0 inset;
-
-  color: $titleFontColor;
 
   font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial,
   sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  //font-size: 14px;
-  //line-height: 1.5;
+
   list-style: none;
-  padding: 3px 10px;
+  //padding: 3px 10px;
 
   transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
   user-select: none;
@@ -122,10 +162,36 @@ const fontStyle = computed(() => {
 
   white-space: nowrap;
   word-wrap: break-word;
+}
 
-  .icon-style {
-    font-size: 14px;
+.icon-style {
+  //font-size: 14px;
+  margin-right: 4px;
+}
+
+.text-style {
+  padding: 0 10px;
+}
+
+.normal-style {
+  padding: 0 10px;
+
+  &:focus {
+    outline: 1px transparent;
   }
+
+  &:before {
+    display: none;
+  }
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.normal-style {
+  background-color: #fff;
+  color: $titleFontColor;
 
   &:hover {
     background-color: $hoverBackColor;
@@ -145,17 +211,29 @@ const fontStyle = computed(() => {
     box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
     transition: none 0s;
   }
+}
 
-  &:focus {
-    outline: 1px transparent;
+.primary-style {
+  background: $themeColor;
+  color: #FFFFFF;
+
+  &:hover {
+    background-color: $themeHoverColor;
+    text-decoration: none;
+    transition-duration: 0.1s;
   }
 
-  &:before {
-    display: none;
+  &:disabled {
+    background-color: #fafbfc;
+    border-color: rgba(27, 31, 35, 0.15);
+    color: #959da5;
+    cursor: default;
   }
 
-  &::-webkit-details-marker {
-    display: none;
+  &:active {
+    background-color: #edeff2;
+    box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+    transition: none 0s;
   }
 }
 </style>

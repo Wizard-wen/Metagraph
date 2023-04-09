@@ -1,7 +1,7 @@
 <template>
   <div class="repository-editor-header">
     <div class="left-side">
-      <m-button :has-border="false" @click="goHomePage">
+      <m-button :is-icon="true" :has-border="false" @click="goHomePage">
         <template #icon>
           <LeftOutlined/>
         </template>
@@ -10,7 +10,7 @@
         :getPopupContainer="getPopupContainer"
         :trigger="['click']"
         :placement="'bottomLeft'">
-        <m-button :has-border="false">
+        <m-button :is-icon="true" :has-border="false">
           <template #icon>
             <MenuOutlined/>
           </template>
@@ -29,6 +29,11 @@
               @click="goRepositoryEditPage">
               <FormOutlined class="icon-size"/>
               编辑知识库
+            </ant-menu-item>
+            <ant-menu-item
+              class="menu-item-style">
+              <delete-outlined class="icon-size"/>
+              删除知识库
             </ant-menu-item>
             <div class="divider-style"></div>
             <ant-menu-item class="menu-item-style">
@@ -80,9 +85,15 @@
 
     </div>
     <div class="middle-side">
-      <switch-mode
-        :view-status="viewStatus"
-        @viewChange="handleRepositoryViewChange"></switch-mode>
+<!--      <switch-mode-->
+<!--        :view-status="viewStatus"-->
+<!--        @viewChange="handleRepositoryViewChange"></switch-mode>-->
+      <m-checkbox
+        style="width: 200px; height: 36px"
+        :type="'checkbox'"
+        :modelValue="viewStatus"
+        @update:modelValue="handleRepositoryViewChange"
+        :option-list="optionList"></m-checkbox>
     </div>
     <div class="right-side">
       <template v-if="repositoryModel.target">
@@ -103,7 +114,7 @@
     </div>
   </div>
   <clone-repository-modal
-    v-if="repositoryModel.target"
+    v-if="isCloneModalShow"
     :old-repository-name="currentRepositoryName"
     @close="handleCloseCloneModal"
     :is-modal-visible="isCloneModalShow"></clone-repository-modal>
@@ -124,7 +135,8 @@ import {
   ReadOutlined,
   SwapOutlined,
   UnlockOutlined,
-  UploadOutlined
+  UploadOutlined,
+  DeleteOutlined
 } from '@ant-design/icons-vue';
 import {
   Dropdown as AntDropdown,
@@ -141,7 +153,7 @@ import CloneRepositoryModal
 import { useStore } from '@/store';
 import { CommentControlButton, StarControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { MButton, MTag } from '@/metagraph-ui';
+import { MButton, MTag, MCheckbox } from '@/metagraph-ui';
 import SwitchMode from '@/views/repository-editor/repository-editor-header/switch-mode.vue';
 import { RouterUtil } from '@/utils/router.util';
 import { RepositoryEditor, repositoryModel } from './model/repository.editor';
@@ -157,6 +169,12 @@ defineProps({
   }
 });
 const emit = defineEmits(['viewChange']);
+
+const optionList = ref([
+  { key: 'section', name: '文档模式' },
+  { key: 'graph', name: '图谱模式' }
+]);
+
 
 const route = useRoute();
 const store = useStore();
@@ -264,7 +282,7 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
 
 .repository-editor-header {
   position: relative;
-  background: $headerBackgroundColor;
+  //background: $headerBackgroundColor;
   height: 56px;
   padding: 0 24px;
   border-bottom: 1px solid $borderColor;
@@ -278,6 +296,7 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
 
     .title {
       margin-right: 16px;
+      margin-left: 8px;
       display: flex;
       height: 32px;
       line-height: 32px;
@@ -285,6 +304,7 @@ const currentRepositoryName = computed(() => (repositoryModel.target?.content as
       align-items: center;
 
       .repository-name {
+        margin-right: 4px;
         font-weight: 600;
         line-height: 32px;
         max-width: 200px;

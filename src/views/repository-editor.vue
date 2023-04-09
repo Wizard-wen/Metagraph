@@ -68,8 +68,7 @@ import {
 import {
   isRepositoryEditorLoading,
   repositoryBindEntityList,
-  RepositoryEditor,
-  repositoryModel
+  RepositoryEditor
 } from '@/views/repository-editor/model/repository.editor';
 import { SectionArticleTiptapTextEditor } from '@/components';
 import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
@@ -286,7 +285,7 @@ onBeforeRouteLeave(async () => {
     if (descriptionInIndexDB !== description) {
       console.log('indexdb与当前富文本数据不一致', descriptionInIndexDB, description);
     }
-    if (editor.value) {
+    if (editor.value && currentSectionNode.sectionId) {
       await sectionTreeService.saveSectionArticle({
         content: editor.value.getJSON(),
         contentHtml: editor.value.getHTML(),

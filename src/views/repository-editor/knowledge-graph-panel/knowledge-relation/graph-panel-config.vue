@@ -8,6 +8,7 @@
       <div class="left">网格</div>
       <div class="right">
         <m-checkbox
+          class="check-box-style"
           :type="'checkbox'"
           :modelValue="currentOption.grid"
           @update:modelValue="handleGridChange"
@@ -18,6 +19,7 @@
       <div class="left">小地图</div>
       <div class="right">
         <m-checkbox
+          class="check-box-style"
           :type="'checkbox'"
           :modelValue="currentOption.minimap"
           @update:modelValue="handleMinimapChange"
@@ -115,6 +117,9 @@ function handleChangeSlide($event: number) {
 
     .right {
       flex: 1 1 auto;
+      .check-box-style {
+        width: 86px;
+      }
     }
   }
 }

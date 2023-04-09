@@ -14,7 +14,7 @@ import type {
   KnowledgeEdgeResponseType,
   KnowledgeModelType
 } from 'metagraph-constant';
-import { createApp, createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref } from 'vue';
 import { WebsocketService } from '@/service/websocket.service';
 import {
   KnowledgeGraphPanel
@@ -138,7 +138,6 @@ export class KnowledgeGraphData {
 
   async initData(repositoryEntityId: string, hasAuth: boolean): Promise<void> {
     this.initGraph();
-
     if (!graph.value) {
       return;
     }
@@ -172,7 +171,7 @@ export class KnowledgeGraphData {
     graph.value?.zoom(-0.1);
   }
 
-  showGrid(type: boolean) {
+  showGrid(type: boolean): void {
     type ? graph.value?.showGrid() : graph.value?.hideGrid();
   }
 

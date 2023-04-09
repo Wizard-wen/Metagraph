@@ -12,10 +12,14 @@
         当前目录是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
       <div v-if="sectionModalData.entityType === 'Section'">
-        当前父级目录是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前父级目录是<span class="section-name">{{
+          sectionModalData.parentSectionName || ''
+        }}</span>
       </div>
       <div v-if="sectionModalData.entityType === 'ChangeSection'">
-        当前目录名称是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
+        当前目录名称是<span class="section-name">{{
+          sectionModalData.parentSectionName || ''
+        }}</span>
       </div>
     </div>
     <ant-form
@@ -23,15 +27,19 @@
       :model="sectionModalForm"
       layout="vertical"
       :rules="sectionModalFormRules"
-      :label-col="labelCol" :wrapper-col="wrapperCol">
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+      class="section-form">
       <ant-form-item
         label="目录名称"
         name="sectionName"
         v-if="sectionModalData.entityType === 'Section'
       || sectionModalData.entityType === 'ChangeSection'">
         <ant-input
+          ref="sectionNameRef"
           autocomplete="off"
           placeholder="请输入目录名称"
+          class="custom-input-style"
           v-model:value="sectionModalForm.sectionName"></ant-input>
       </ant-form-item>
       <ant-form-item v-else label="绑定实体" name="selectedEntityId">
@@ -47,8 +55,13 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref, defineEmits, defineProps } from 'vue';
-import { Form as AntForm, Input as AntInput, Modal as AntModal, Select as AntSelect } from 'ant-design-vue';
+import { inject, ref, defineEmits, defineProps, onMounted } from 'vue';
+import {
+  Form as AntForm,
+  Input as AntInput,
+  Modal as AntModal,
+  Select as AntSelect
+} from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import {
   sectionModalData,
@@ -56,7 +69,10 @@ import {
   sectionModalFormRules,
   SectionTreeService
 } from '../model/section.tree';
+
 const AntFormItem = AntForm.Item;
+
+const sectionNameRef = ref();
 
 const labelCol = ref({ span: 8 });
 const wrapperCol = ref({ offset: 0 });
@@ -72,6 +88,7 @@ defineProps({
     default: false
   }
 });
+
 function handleCloseModal(params: {
   sectionId?: string,
   entityId?: string
@@ -88,14 +105,25 @@ async function handleCreateSection() {
     });
 }
 
+onMounted(() => {
+  if (sectionNameRef.value) {
+    sectionNameRef.value.focus();
+  }
+});
 </script>
 
 <style scoped lang="scss">
+@import "../../../style/common.scss";
+
 .section-name-container {
   line-height: 50px;
 
   .section-name {
     font-weight: bolder;
   }
+}
+
+.section-form {
+  @include custom-input-style-mixin;
 }
 </style>

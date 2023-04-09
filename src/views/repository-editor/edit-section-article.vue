@@ -114,6 +114,7 @@ function handleCreateSectionByParseText(params: {
 const editorWidth = ref(0);
 
 function handleWindowResize() {
+  if (!editorContainer.value) return;
   const editorHeight = editorContainer.value.scrollHeight;
   editorWidth.value = Math.floor((editorHeight * 210) / 297);
 }

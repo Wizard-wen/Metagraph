@@ -41,7 +41,7 @@
     </div>
     <div class="right">
       <ant-dropdown v-if="isLogin" :placement="'bottomRight'">
-        <m-button :size="'large'" :has-border="false">
+        <m-button :is-icon="true" :size="'large'" :has-border="false">
           <template #icon>
             <PlusOutlined/>
           </template>
@@ -64,7 +64,7 @@
         </template>
       </ant-dropdown>
       <div class="notify" v-if="isLogin">
-        <m-button :size="'large'" :has-border="false">
+        <m-button :is-icon="true" :size="'large'" :has-border="false">
           <template #icon>
             <BellOutlined/>
           </template>

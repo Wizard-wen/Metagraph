@@ -8,7 +8,7 @@
       <template v-if="item.isIcon">
         <component :is="item.name"></component>
       </template>
-      <template v-else>{{ item.name }}</template>
+      <div v-else>{{ item.name }}</div>
     </div>
     <div @click="$event.stopPropagation()" class="checked"
          :class="isLeft ? 'left' : 'right'"></div>
@@ -75,28 +75,31 @@ function handleClick(item: {
 @import "../style/common.scss";
 
 .check-box {
-  height: 28px;
+  box-sizing: border-box;
   border-radius: 6px;
-  padding: 2px;
-  background: #f7f7f9;
-  width: 86px;
+  background: $hoverBackColor;
+  width: 100%;
+  height: 100%;
+  min-height: 28px;
+  min-width: 86px;
   position: relative;
   cursor: pointer;
   display: flex;
 
   .item {
-    width: 41px;
-    height: 24px;
+    width: 50%;
     text-align: center;
-    line-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 2;
   }
 
   .checked {
     cursor: default;
     position: absolute;
-    width: 41px;
-    height: 24px;
+    width: calc(50% - 2px);
+    height: calc(100% - 4px);
     background: #FFF;
     box-shadow: 0 2px 8px #19191a1f, 0 0 1px #19191a14;
     transition: left .5s;
@@ -104,11 +107,13 @@ function handleClick(item: {
   }
 
   .left {
+    top: 2px;
     left: 2px;
   }
 
   .right {
     left: 50%;
+    top: 2px;
   }
 }
 </style>

@@ -44,7 +44,20 @@ const menuList = ref<{ value: string; label: string; isAuth: boolean }[]>([
 ]);
 
 computed(() => {
-
+  if (selectedGraphNodeEntityId.value) {
+    return [
+      {
+        label: '面板',
+        value: 'panel',
+        isAuth: false
+      },
+      {
+        label: '知识点',
+        value: 'knowledge',
+        isAuth: false
+      },
+    ]
+  }
 });
 </script>
 

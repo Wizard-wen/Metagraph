@@ -73,7 +73,6 @@ function handleViewChange(item: {
 
   .active-bar {
     background: $hoverDeepBackColor;
-
   }
 }
 </style>

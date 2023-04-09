@@ -18,24 +18,35 @@
         <div class="control" v-if="expendItemId === item.key">
           <ant-dropdown
             :getPopupContainer="getPopupContainer"
-            :trigger="['click']"
-            :overlayClassName="'dropdown-overlay'">
+            :trigger="['click']">
             <div class="icon-content-style">
               <MoreOutlined/>
             </div>
             <template #overlay>
-              <ant-menu>
-                <ant-menu-item @click="handleClickControl('Section', item.data)">
-                  <div>新建</div>
+              <ant-menu class="dropdown-menu-style">
+                <ant-menu-item
+                  class="menu-item-style"
+                  @click="handleClickControl('Section', item.data)">
+                  <plus-outlined class="icon-size"/>
+                  新建
                 </ant-menu-item>
-                <ant-menu-item @click="handleClickControl('Knowledge', item.data)">
-                  <div>绑定知识点</div>
+                <ant-menu-item
+                  class="menu-item-style"
+                  @click="handleClickControl('Knowledge', item.data)">
+                  <link-outlined class="icon-size"/>
+                  引用知识点
                 </ant-menu-item>
-                <ant-menu-item @click="handleClickControl('ChangeSection', item.data)">
-                  <div>重命名</div>
+                <ant-menu-item
+                  class="menu-item-style"
+                  @click="handleClickControl('ChangeSection', item.data)">
+                  <FormOutlined class="icon-size"/>
+                  重命名
                 </ant-menu-item>
-                <ant-menu-item @click="handleClickControl('Delete', item.data)">
-                  <div>删除</div>
+                <ant-menu-item
+                  class="menu-item-style"
+                  @click="handleClickControl('Delete', item.data)">
+                  <delete-outlined class="icon-size"/>
+                  删除
                 </ant-menu-item>
               </ant-menu>
             </template>
@@ -58,7 +69,14 @@
 
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType, ref } from 'vue';
-import { CaretRightOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import {
+  CaretRightOutlined,
+  MoreOutlined,
+  PlusOutlined,
+  LinkOutlined,
+  FormOutlined,
+  DeleteOutlined
+} from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 import { TreeItemUIType } from './type';
 
@@ -199,8 +217,5 @@ function handlePassData($event: any) {
   opacity: 0;
 }
 
-.dropdown-overlay {
-  z-index: 1065 !important;
-}
 
 </style>

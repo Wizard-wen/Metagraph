@@ -18,7 +18,7 @@
             size="large"
             placeholder="请输入要查找的知识点"
             :allowClear="true"
-            class="search-input"
+            class="custom-input-style search-input"
             v-model:value="searchText"
             @change="handleChange"></ant-input>
         </div>
@@ -271,6 +271,7 @@ onMounted(async () => {
     .search-container {
       display: flex;
       gap: 20px;
+      @include custom-input-style-mixin;
 
       .search-input {
         width: 600px;

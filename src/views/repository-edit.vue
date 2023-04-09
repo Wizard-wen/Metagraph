@@ -96,7 +96,7 @@
           </ant-form-item>
         </ant-form>
         <div class="control-button">
-          <m-button :title="pageTitle" @click="onSubmit"></m-button>
+          <m-button :type="'primary'" :title="pageTitle" @click="onSubmit"></m-button>
           <m-button
             :title="'删除'"
             v-if="repositoryEntityId"
