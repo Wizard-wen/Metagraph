@@ -11,7 +11,9 @@
           v-if="item.children"
           class="icon-content-style arrow"
           @click="handleClickArrow($event, item)">
-          <caret-right-outlined class="arrow-icon" :class="{'arrow-rotate': item.isExpand}"/>
+          <caret-right-outlined
+            class="arrow-icon"
+            :class="{'arrow-rotate': item.isExpand}"/>
         </div>
         <div v-else class="no-icon"></div>
         <div class="text" @click="handleClickItem({id: item.key})">{{ item.title }}</div>

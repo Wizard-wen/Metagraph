@@ -5,7 +5,7 @@
 
 // todo 用ts类型约束接口文档，建立一个仓库
 // authed api
-export { FileApiService } from './file.api.service';
+export { FileApiService } from './auth/file.api.service';
 export { EntityNoAuthApiService } from './no.auth/entity.no.auth.api.service';
 export { CommentApiService } from './comment.api.service';
 export { EdgeApiService } from './auth/edge.api.service';

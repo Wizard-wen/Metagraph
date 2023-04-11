@@ -229,7 +229,7 @@ async function uploadToQiniu(data: string) {
   const result = await qiniuUploadService.customRequestUploadHandler({
     base64: data,
     type: FileEnum.Image,
-    name: '',
+    name: domFile.value?.name || '',
     provider: props.provider
   });
   if (result) {
