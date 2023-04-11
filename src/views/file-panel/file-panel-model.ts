@@ -13,7 +13,7 @@ export const filePanelList = ref<{
   total: number
 }>({
   isLoading: false,
-  pageSize: 10,
+  pageSize: 12,
   pageNumber: 1,
   list: [],
   total: 0

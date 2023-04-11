@@ -3,9 +3,10 @@
     <div class="file-panel-list">
       <div class="search-container">
         <ant-input
+          style="width: 320px;"
           class="custom-input-style"
           v-model="filePanelList.searchInput"></ant-input>
-        <ant-dropdown :placement="'bottomRight'">
+        <ant-dropdown :placement="'bottomRight'" :trigger="['click']">
           <m-button :size="'large'" :has-border="false">
             <template #icon>
               <PlusOutlined/>
@@ -116,7 +117,7 @@ const AntMenuItem = AntMenu.Item;
 const showId = ref();
 const onPaginationChange = async (page: number) => {
   searchData.value.pageIndex = page;
-  searchData.value.pageSize = 10;
+  searchData.value.pageSize = 12;
   await getFilePanelList();
 };
 
@@ -144,7 +145,7 @@ onMounted(async () => {
   filePanelItemData.data = undefined;
   setFilePanelListConfig({
     pageNumber: 1,
-    pageSize: 10
+    pageSize: 12
   });
   await getFilePanelList();
 });
@@ -158,7 +159,8 @@ onMounted(async () => {
   width: 1200px;
 
   .file-panel-view {
-    width: 400px;
+    width: 360px;
+    margin-left: 20px;
 
     .file-name {
       height: 32px;
@@ -171,8 +173,8 @@ onMounted(async () => {
     }
 
     .image-container {
-      width: 400px;
-      height: 400px;
+      width: 360px;
+      height: 300px;
     }
 
     .file-inner {
@@ -200,6 +202,7 @@ onMounted(async () => {
     .search-container {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       @include custom-input-style-mixin;
     }
   }
@@ -210,7 +213,6 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 8px;
   .file-panel-item:nth-child(4n+1) {
     padding-left: 0;
   }
@@ -219,7 +221,7 @@ onMounted(async () => {
   }
   .file-panel-item {
     height: 180px;
-    width: 20%;
+    width: 25%;
     padding: 14px 16px;
     box-sizing: border-box;
     position: relative;
