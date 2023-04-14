@@ -31,8 +31,10 @@ export class FileApiService {
   static async getFileList(params: {
     pageIndex: number;
     pageSize: number;
-    type?: FileEnum
+    type?: FileEnum;
+    searchInput?: string;
   }): Promise<PublicApiResponseType<FilePageListResponseType>> {
+    console.log(params)
     return RequestNewUntil.post<FileAuthApi.GetFileList>({
       apiPath: '/file/get/list',
       requestBody: params

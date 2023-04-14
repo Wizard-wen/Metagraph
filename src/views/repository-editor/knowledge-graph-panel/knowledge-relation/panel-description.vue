@@ -69,6 +69,9 @@ defineProps({
 
     .right {
       flex: 1 1 auto;
+      word-wrap: break-word;
+      white-space: normal;
+      word-break: break-all;
     }
   }
 }

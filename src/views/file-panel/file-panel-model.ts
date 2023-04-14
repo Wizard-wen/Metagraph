@@ -36,13 +36,14 @@ export function setFilePanelListConfig(params: {
   filePanelList.value.pageSize = params.pageSize;
 }
 
-export async function getFilePanelList(fileType?: FileEnum): Promise<void> {
+export async function getFilePanelList(): Promise<void> {
   return new Promise(() => {
     filePanelList.value.isLoading = true;
     FileApiService.getFileList({
       pageIndex: filePanelList.value.pageNumber - 1,
       pageSize: filePanelList.value.pageSize,
-      type: fileType
+      type: filePanelList.value.type ?? undefined,
+      searchInput: filePanelList.value.searchInput ?? undefined
     }).then((result) => {
       if (result.data) {
         filePanelList.value.list = result.data.list;
