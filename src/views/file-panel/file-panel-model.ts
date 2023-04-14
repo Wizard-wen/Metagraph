@@ -58,17 +58,32 @@ export async function getFilePanelList(): Promise<void> {
 }
 
 export async function getFilePanelItemById(id: string): Promise<void> {
-  return new Promise(() => {
+  return new Promise((resolve) => {
     filePanelItemData.isLoading = true;
     FileApiService.getFileById({ id }).then((result) => {
       if (result.data) {
         filePanelItemData.data = result.data;
         fileData.value = result.data;
       }
+      resolve();
     }).catch(() => {
       message.error('获取文件详情时失败');
+      resolve();
     }).finally(() => {
       filePanelItemData.isLoading = false;
+    });
+  });
+}
+
+
+export async function removeFileById(id: string): Promise<void> {
+  return new Promise(() => {
+    FileApiService.removeFile({
+      id
+    }).then(() => {
+
+    }).catch(() => {
+
     });
   });
 }

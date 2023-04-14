@@ -63,7 +63,8 @@
                   </div>
                   <div class="file-name">{{ item.name || '暂无名称' }}</div>
                   <div v-if="showId === item.id" class="shadow-style">
-                    <EditOutlined style="margin-right: 20px" class="light-icon"/>
+                    <DeleteOutlined @click="handleDeleteFile(item.id)" style="margin-right: 20px"
+                                    class="light-icon"/>
                     <EyeOutlined @click="handleViewFile(item.id)" class="light-icon"/>
                   </div>
                 </div>
@@ -104,10 +105,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, createVNode, onMounted, ref } from 'vue';
 import { FileEnum } from 'metagraph-constant';
 import {
-  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
   EyeOutlined,
   FileImageOutlined,
   FileOutlined,
@@ -120,6 +122,7 @@ import {
   Dropdown as AntDropdown,
   Input as AntInput,
   Menu as AntMenu,
+  Modal,
   Pagination as AntPagination,
   Skeleton as ASkeleton
 } from 'ant-design-vue';
@@ -163,6 +166,18 @@ const fileDescription = computed(() => {
 
 async function handleViewFile(id: string) {
   await getFilePanelItemById(id);
+}
+
+async function handleDeleteFile(id: string) {
+  Modal.confirm({
+    title: '确定删除当前图片?',
+    okText: '确定',
+    cancelText: '取消',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: '删除关系操作不可恢复，请谨慎操作',
+    async onOk() {
+    }
+  });
 }
 
 async function handleTypeChange(type: FileEnum) {
@@ -217,6 +232,7 @@ onMounted(async () => {
 
     .file-panel-list {
       flex: 1;
+
       .list-box {
         height: 600px;
       }
