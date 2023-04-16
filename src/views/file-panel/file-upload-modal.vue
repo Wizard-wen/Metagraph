@@ -41,23 +41,22 @@
     ></vueCropper>
     <img v-if="isGif" :src="gifBase64" alt="">
     <div class="control-box">
-      <ant-button
-        v-if="!domFile"
-        type="primary"
-        class="select-image button-style">
-        选择图片
-        <input
-          type="file" class="upload-input"
-          accept="image/png, image/jpeg, image/gif, image/jpg"
-          @change="handleUploadImg($event)" ref="inputRef">
-      </ant-button>
+      <!--      <ant-button-->
+      <!--        v-if="!domFile"-->
+      <!--        type="primary"-->
+      <!--        class="select-image button-style">-->
+      <!--        选择图片-->
+      <!--        <input-->
+      <!--          type="file" class="upload-input"-->
+      <!--          accept="image/png, image/jpeg, image/gif, image/jpg"-->
+      <!--          @change="handleUploadImg($event)" ref="inputRef">-->
+      <!--      </ant-button>-->
       <ant-button
         v-if="domFile"
         class="button-style"
         type="primary"
-        :loading="isLoading" @click="handleUpload">上传图片
+        :loading="isLoading" @click="handleUpload">上传
       </ant-button>
-      <!--      <ant-button class="button-style" @click="handleModalCancel">关闭</ant-button>-->
     </div>
   </ant-modal>
 </template>
@@ -69,6 +68,7 @@ import { computed, defineEmits, defineProps, PropType, ref, watchEffect } from '
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
 import { FileEnum, FileProvider } from 'metagraph-constant';
+import { renderAsync } from 'docx-preview';
 
 const props = defineProps({
   isModalVisible: {
@@ -188,12 +188,17 @@ const inputRef = ref<HTMLInputElement>();
 const cropperRef = ref<any>();
 
 watchEffect(() => {
-  if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(props.domFile)) {
+  if (!props.domFile) {
     return;
   }
-  if (/\.(gif|GIF)$/.test(target.value)) {
-    isGif.value = true;
-  }
+  const type = props.domFile.type;
+  console.log(type);
+  // if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(props.domFile?.name)) {
+  //   return;
+  // }
+  // if (/\.(gif|GIF)$/.test(target.value)) {
+  //   isGif.value = true;
+  // }
 });
 
 function handleUploadImg(e: Event) {

@@ -5,7 +5,6 @@
 
 import { FileAuthApi, FileEnum, FileResponseType } from 'metagraph-constant';
 import type {
-  FileModelType,
   FilePageListResponseType,
   QiniuUploadingCredentialRequestType,
   QiniuUploadingCredentialResponseType,
@@ -34,7 +33,6 @@ export class FileApiService {
     type?: FileEnum;
     searchInput?: string;
   }): Promise<PublicApiResponseType<FilePageListResponseType>> {
-    console.log(params)
     return RequestNewUntil.post<FileAuthApi.GetFileList>({
       apiPath: '/file/get/list',
       requestBody: params
@@ -44,6 +42,16 @@ export class FileApiService {
   static async removeFile(params: { id: string; }): Promise<PublicApiResponseType<void>> {
     return RequestNewUntil.post<FileAuthApi.RemoveFileById>({
       apiPath: '/file/remove/id',
+      requestBody: params
+    });
+  }
+
+  static async updateFile(params: {
+    id: string;
+    name?: string;
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<FileAuthApi.UpdateFileById>({
+      apiPath: '/file/update/id',
       requestBody: params
     });
   }

@@ -5,3 +5,4 @@
 
 export * from './request.util';
 export * from './common.util';
+export * from './router.util';

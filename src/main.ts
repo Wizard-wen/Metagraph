@@ -6,7 +6,8 @@
 import { createApp } from 'vue';
 import { clickOutside } from '@/directives/click.outside';
 import MetagraphTreeItem from '@/components/metagraph-tree/metagraph-tree-item.vue';
-import { ConfigProvider, Input } from 'ant-design-vue';
+import { ConfigProvider } from 'ant-design-vue';
+import { Vue3Clipboard } from '@/directives/vue3-clipboard';
 import App from './App.vue';
 import router from './router';
 import { key, store } from './store';
@@ -28,6 +29,7 @@ app.component('metagraph-tree-item', MetagraphTreeItem);
 app.directive('contextmenu', Contextmenu);
 app.directive('hide', Hide);
 app.directive('clickOutside', clickOutside);
+app.use(Vue3Clipboard);
 // 引入全局component
 // 传入 injection key
 app.use(store, key);

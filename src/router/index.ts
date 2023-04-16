@@ -93,6 +93,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/plan/plan-board.vue')
   },
   {
+    path: '/file/panel',
+    name: 'filePanel',
+    component: () => import('@/views/file-panel.vue')
+  },
+  {
     path: '/study/board',
     name: 'studyBoard',
     component: () => import('@/views/plan/plan-study-board.vue')

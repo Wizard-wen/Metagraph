@@ -1,44 +1,6 @@
 <template>
   <div class="file-panel">
-    <div class="search-container">
-      <ant-input
-        style="width: 320px;"
-        class="custom-input-style"
-        @pressEnter="handleSearch"
-        placeholder="请输入搜索内容..."
-        v-model:value="filePanelList.searchInput">
-        <template #suffix>
-          <search-outlined @click="handleSearch"/>
-        </template>
-      </ant-input>
-      <div class="control-bar">
-        <m-button :is-icon="true" :size="'large'" :has-border="false">
-          <template #icon>
-            <plus-outlined/>
-          </template>
-        </m-button>
-        <ant-dropdown :placement="'bottomRight'" :trigger="['click']">
-          <m-button :is-icon="true" :size="'large'" :has-border="false">
-            <template #icon>
-              <filter-outlined/>
-            </template>
-          </m-button>
-          <template #overlay>
-            <ant-menu class="dropdown-menu-style">
-              <ant-menu-item class="menu-item-style" @click="handleTypeChange('image')">
-                <file-image-outlined class="icon-size"/>
-                图片
-              </ant-menu-item>
-              <ant-menu-item class="menu-item-style" @click="handleTypeChange('text')">
-                <file-outlined class="icon-size"/>
-                文档
-              </ant-menu-item>
-            </ant-menu>
-          </template>
-        </ant-dropdown>
-      </div>
-
-    </div>
+    <file-panel-list-header></file-panel-list-header>
     <div class="file-panel-content">
       <div class="file-panel-list">
         <template v-if="filePanelList.isLoading">
@@ -51,9 +13,8 @@
                 class="file-panel-item"
                 v-for="(item, index) in filePanelList.list"
                 :key="index"
-                @mouseenter="showId = item.id"
-                @mouseleave="showId = undefined">
-                <div class="file-content">
+                @click.stop="handleViewFile(item.id)">
+                <div :class="['file-content', showId === item.id ? 'shadow-style' : '']">
                   <div class="file-inner">
                     <img class="image-file" v-if="item.type === FileEnum.Image" :src="item.url"
                          alt="">
@@ -62,13 +23,7 @@
                     </div>
                   </div>
                   <div class="file-name">{{ item.name || '暂无名称' }}</div>
-                  <div v-if="showId === item.id" class="shadow-style">
-                    <DeleteOutlined @click="handleDeleteFile(item.id)" style="margin-right: 20px"
-                                    class="light-icon"/>
-                    <EyeOutlined @click="handleViewFile(item.id)" class="light-icon"/>
-                  </div>
                 </div>
-
               </div>
             </div>
             <div class="pagination-box">
@@ -85,116 +40,44 @@
           </template>
         </div>
       </div>
-      <div class="file-panel-view">
-        <template v-if="fileDescription.length">
-          <div>
-            <div class="file-name">{{ filePanelItemData.data.name }}</div>
-            <panel-description
-              :title="'文件信息'"
-              :description="fileDescription"></panel-description>
-          </div>
-          <div class="image-container">
-            <div class="file-inner">
-              <img class="preview-image" :src="filePanelItemData.data.url" alt="">
-            </div>
-          </div>
-        </template>
-      </div>
+      <file-preview-sidebar></file-preview-sidebar>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, createVNode, onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { FileEnum } from 'metagraph-constant';
 import {
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  EyeOutlined,
-  FileImageOutlined,
-  FileOutlined,
-  FileWordOutlined,
-  FilterOutlined,
-  PlusOutlined,
-  SearchOutlined
+  FileWordOutlined
 } from '@ant-design/icons-vue';
 import {
-  Dropdown as AntDropdown,
-  Input as AntInput,
-  Menu as AntMenu,
-  Modal,
   Pagination as AntPagination,
-  Skeleton as ASkeleton
+  Skeleton as ASkeleton,
 } from 'ant-design-vue';
 import {
   filePanelItemData,
   filePanelList,
+  showId,
   getFilePanelItemById,
   getFilePanelList,
   setFilePanelListConfig
 } from '@/views/file-panel/file-panel-model';
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import { searchData } from '@/views/main/metegraph.header';
-import PanelDescription
-  from '@/views/repository-editor/knowledge-graph-panel/knowledge-relation/panel-description.vue';
-import { CommonUtil } from '@/utils';
-import { MButton } from '@/metagraph-ui';
+import FilePreviewSidebar from './file-panel-list/file-preview-sidebar.vue';
+import FilePanelListHeader from './file-panel-list/file-panel-list-header.vue';
 
-const AntMenuItem = AntMenu.Item;
-const showId = ref();
 const onPaginationChange = async (page: number) => {
-  searchData.value.pageIndex = page;
-  searchData.value.pageSize = 12;
+  setFilePanelListConfig({
+    pageNumber: page,
+    pageSize: 12
+  });
   await getFilePanelList();
 };
 
-const fileDescription = computed(() => {
-  if (!filePanelItemData.data) {
-    return [];
-  }
-  return [
-    { title: '名称', content: filePanelItemData.data.name },
-    { title: '类型', content: filePanelItemData.data.type },
-    { title: '路径', content: filePanelItemData.data.url },
-    { title: '大小', content: CommonUtil.getFileSize(filePanelItemData.data.size) },
-    {
-      title: '创建时间',
-      content: CommonUtil.timeAgo(new Date(filePanelItemData.data.createdAt).getTime())
-    }
-  ];
-});
-
 async function handleViewFile(id: string) {
+  showId.value = id;
   await getFilePanelItemById(id);
-}
-
-async function handleDeleteFile(id: string) {
-  Modal.confirm({
-    title: '确定删除当前图片?',
-    okText: '确定',
-    cancelText: '取消',
-    icon: createVNode(ExclamationCircleOutlined),
-    content: '删除关系操作不可恢复，请谨慎操作',
-    async onOk() {
-    }
-  });
-}
-
-async function handleTypeChange(type: FileEnum) {
-  filePanelList.value.type = type;
-  setFilePanelListConfig({
-    pageNumber: 1,
-    pageSize: 12
-  });
-  await getFilePanelList();
-}
-
-async function handleSearch() {
-  setFilePanelListConfig({
-    pageNumber: 1,
-    pageSize: 12
-  });
-  await getFilePanelList();
 }
 
 onMounted(async () => {
@@ -211,30 +94,27 @@ onMounted(async () => {
 @import "../../style/common.scss";
 
 .file-panel {
-  width: 1200px;
+  min-width: 1200px;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
-
-  .search-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid $hoverDeepBackColor;
-    padding: 10px 0;
-    @include custom-input-style-mixin;
-
-    .control-bar {
-      display: flex;
-    }
-  }
+  position: relative;
 
   .file-panel-content {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
 
     .file-panel-list {
+      height: 100%;
       flex: 1;
+      padding: 18px;
 
       .list-box {
-        height: 600px;
+        height: 100%;
       }
 
       .file-panel-list-container {
@@ -243,43 +123,27 @@ onMounted(async () => {
         flex-wrap: wrap;
         justify-content: flex-start;
 
-        .file-panel-item:nth-child(4n+1) {
-          padding-left: 0;
-        }
-
-        .file-panel-item:nth-child(4n) {
-          padding-right: 0;
-        }
-
         .file-panel-item {
           height: 180px;
-          width: 20%;
-          //padding: 4px;
+          width: 180px;
+          margin: 6px;
           box-sizing: border-box;
+
+          .shadow-style {
+            cursor: pointer;
+            border: 2px solid $themeColor;
+            border-radius: 6px;
+          }
 
           .file-content {
             height: 100%;
             width: 100%;
-            border-radius: 6px;
-            position: relative;
 
-            .shadow-style {
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              //border-radius: 6px;
+            &:hover {
+              padding: 2px 4px 2px 2px;
               cursor: pointer;
-              background: rgba(0, 0, 0, .3);
-
-              .light-icon {
-                color: #FFF;
-                font-size: 18px;
-              }
+              border: 2px solid $themeColor;
+              border-radius: 6px;
             }
 
             .file-inner {
@@ -287,7 +151,7 @@ onMounted(async () => {
               width: 100%;
               display: flex;
               box-sizing: border-box;
-              padding: 4px;
+              padding: 4px 6px 4px 4px;
               align-items: flex-end;
               justify-content: center;
 
@@ -311,53 +175,12 @@ onMounted(async () => {
           }
         }
       }
-    }
 
-    .file-panel-view {
-      width: 300px;
-      height: 600px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-left: 1px solid $hoverDeepBackColor;
-      padding-top: 12px;
-
-      .file-name {
-        height: 32px;
-        line-height: 32px;
-        width: 100%;
-        font-size: 18px;
-        font-weight: 600;
-        text-align: left;
-        padding-left: 10px;
-        margin-bottom: 12px;
-      }
-
-      .image-container {
-        padding-left: 12px;
-        width: 300px;
-        height: 240px;
-      }
-
-      .file-inner {
-        background-color: #fff;
-        background-image: linear-gradient(45deg, #eee 25%, transparent 0, transparent 75%, #eee 0, #eee),
-        linear-gradient(45deg, #eee 25%, transparent 0, transparent 75%, #eee 0, #eee);
-        background-size: 19px 19px;
-        background-position: 0 0, 9px 9px;
-
-        height: 100%;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .preview-image {
-        max-height: 100%;
-        max-width: 100%;
+      .pagination-box {
+        padding: 12px 0;
       }
     }
+
   }
 }
 </style>

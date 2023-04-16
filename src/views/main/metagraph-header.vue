@@ -104,6 +104,10 @@
                   <ScheduleOutlined class="icon-size"/>
                   我的计划
                 </ant-menu-item>
+                <ant-menu-item class="menu-item-style" @click="goFilePanelPage">
+                  <FileOutlined class="icon-size"/>
+                  文件面板
+                </ant-menu-item>
                 <ant-menu-item class="menu-item-style" @click="goUserEditPage">
                   <SettingOutlined class="icon-size"/>
                   设置
@@ -144,7 +148,8 @@ import {
   SearchOutlined,
   SettingOutlined,
   StarOutlined,
-  UserOutlined
+  UserOutlined,
+  FileOutlined
 } from '@ant-design/icons-vue';
 import { MutationEnum, useStore } from '@/store';
 import { RouterUtil } from '@/utils/router.util';
@@ -175,6 +180,10 @@ async function goUserEditPage() {
   await RouterUtil.jumpTo('/settings/profile', {
     userId: userModel.value.id
   });
+}
+
+async function goFilePanelPage() {
+  await RouterUtil.jumpTo('/file/panel');
 }
 
 async function goKnowledgeMap() {
@@ -313,22 +322,13 @@ async function goHelpPage() {
     display: flex;
     align-items: center;
 
-    @media screen and (max-width: 1920px) {
-      .logo-container {
-        display: flex;
-        justify-content: flex-start;
-        gap: 8px;
-        width: calc(265px - 24px);
-      }
+    .logo-container {
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+      width: 300px;
     }
-    @media screen and (min-width: 1920px) {
-      .logo-container {
-        display: flex;
-        justify-content: flex-start;
-        gap: 8px;
-        width: calc(285px - 24px);
-      }
-    }
+
 
     &::v-deep(.ant-input-affix-wrapper-focused) {
       box-shadow: none;
@@ -340,7 +340,6 @@ async function goHelpPage() {
 
     .input-search-style {
       width: 260px;
-      margin-left: 60px;
       margin-right: 20px;
       height: 36px;
       border-radius: 6px;

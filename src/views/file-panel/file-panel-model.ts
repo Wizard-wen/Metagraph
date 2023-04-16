@@ -27,7 +27,9 @@ export const filePanelItemData = reactive<{
   isLoading: false
 });
 
-export const fileData = ref<FileResponseType>();
+export const showId = ref();
+
+export const newFileName = ref('');
 
 export function setFilePanelListConfig(params: {
   pageNumber: number; pageSize: number;
@@ -63,7 +65,7 @@ export async function getFilePanelItemById(id: string): Promise<void> {
     FileApiService.getFileById({ id }).then((result) => {
       if (result.data) {
         filePanelItemData.data = result.data;
-        fileData.value = result.data;
+        newFileName.value = result.data.name;
       }
       resolve();
     }).catch(() => {
@@ -75,15 +77,33 @@ export async function getFilePanelItemById(id: string): Promise<void> {
   });
 }
 
-
 export async function removeFileById(id: string): Promise<void> {
-  return new Promise(() => {
+  return new Promise((resolve) => {
     FileApiService.removeFile({
       id
     }).then(() => {
-
+      message.success('删除成功');
+      resolve();
     }).catch(() => {
+      message.error('删除失败');
+      resolve();
+    });
+  });
+}
 
+export async function updateFile(params: {
+  id: string;
+  name: string
+}): Promise<void> {
+  return new Promise((resolve) => {
+    FileApiService.updateFile({
+      ...params
+    }).then(() => {
+      message.success('更新成功');
+      resolve();
+    }).catch(() => {
+      message.error('更新失败');
+      resolve();
     });
   });
 }
