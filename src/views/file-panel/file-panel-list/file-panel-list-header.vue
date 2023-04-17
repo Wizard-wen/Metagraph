@@ -39,7 +39,11 @@
         </template>
       </ant-input>
     </div>
-
+    <file-upload-modal
+      @close="isUploadModalVisible = false"
+      :provider="'System'"
+      :dom-file="currentFile"
+      :is-modal-visible="isUploadModalVisible"></file-upload-modal>
     <div class="control-bar">
       <m-button :is-icon="true" :size="'large'" :has-border="false" @click="handleUpload">
         <template #icon>
@@ -104,10 +108,13 @@ import {
 import { MButton } from '@/metagraph-ui';
 import { FileEnum } from 'metagraph-constant';
 import { ref } from 'vue';
+import FileUploadModal from '@/views/file-panel/file-panel-list/file-upload-modal.vue';
 
 const AntMenuItem = AntMenu.Item;
 const currentFile = ref();
 const inputElement = ref();
+
+const isUploadModalVisible = ref(false);
 
 function goHomePage() {
   RouterUtil.jumpTo('/');
@@ -145,8 +152,8 @@ const handleFileChange = async (event: InputEvent) => {
   if (target.files === null) {
     return;
   }
-  // eslint-disable-next-line prefer-destructuring
-  currentFile.value = target.files[0];
+  [currentFile.value] = target.files;
+  isUploadModalVisible.value = true;
   console.log(currentFile.value);
 };
 

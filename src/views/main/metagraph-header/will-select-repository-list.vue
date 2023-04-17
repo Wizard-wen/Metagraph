@@ -59,7 +59,7 @@ function handleClickItem(id: string) {
   min-height: 49px;
   line-height: 49px;
   padding: 0 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
 
   &:hover {
