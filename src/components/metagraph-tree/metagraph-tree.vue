@@ -7,7 +7,6 @@
 </template>
 
 <script lang="ts" setup>
-
 import MetagraphTreeItem from '@/components/metagraph-tree/metagraph-tree-item.vue';
 import { defineEmits, defineProps, PropType, ref, watchEffect } from 'vue';
 import { TreeItemType, TreeItemUIType } from '@/components/metagraph-tree/type';

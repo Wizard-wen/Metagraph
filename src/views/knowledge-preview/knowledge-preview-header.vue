@@ -55,7 +55,7 @@ import {
   computed, defineComponent, PropType, toRef
 } from 'vue';
 import { LinkOutlined } from '@ant-design/icons-vue';
-import MentionedControlButton from '@/views/knowledge-editor/knowledge-edit-header/mentioned-control-button.vue';
+import MentionedControlButton from '@/views/knowledge-editor/knowledge-editor-header/mentioned-control-button.vue';
 import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
 import {
   KnowledgeDrawerContent,

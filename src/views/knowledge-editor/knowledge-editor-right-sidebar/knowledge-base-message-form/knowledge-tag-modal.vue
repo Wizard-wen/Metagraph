@@ -33,7 +33,7 @@ import {
   Modal, Button, Tag, Checkbox
 } from 'ant-design-vue';
 import { TagApiService } from '@/api-service';
-import { tag, KnowledgeEdit, draftKnowledgeEntityIdInjectKey } from '../model/knowledge.edit';
+import { tag, KnowledgeEdit, draftKnowledgeEntityIdInjectKey } from '../../model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-tag-modal',

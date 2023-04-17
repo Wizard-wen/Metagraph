@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue';
 import { FileApiService } from '@/api-service';
 import { message } from 'ant-design-vue';
-import { FileEnum, FileResponseType } from '../../../../metagraph-constant';
+import { FileEnum, FileResponseType } from '../../../../../metagraph-constant';
 
 export const filePanelList = ref<{
   isLoading: boolean,
@@ -31,6 +31,11 @@ export const showId = ref();
 
 export const newFileName = ref('');
 
+export function clearFilePanel(): void {
+  showId.value = undefined;
+  filePanelItemData.data = undefined;
+}
+
 export function setFilePanelListConfig(params: {
   pageNumber: number; pageSize: number;
 }): void {
@@ -39,7 +44,7 @@ export function setFilePanelListConfig(params: {
 }
 
 export async function getFilePanelList(): Promise<void> {
-  return new Promise(() => {
+  return new Promise((resolve) => {
     filePanelList.value.isLoading = true;
     FileApiService.getFileList({
       pageIndex: filePanelList.value.pageNumber - 1,
@@ -55,6 +60,7 @@ export async function getFilePanelList(): Promise<void> {
       message.error('获取文件列表时失败');
     }).finally(() => {
       filePanelList.value.isLoading = false;
+      resolve();
     });
   });
 }
@@ -83,9 +89,9 @@ export async function removeFileById(id: string): Promise<void> {
       id
     }).then(() => {
       message.success('删除成功');
-      resolve();
     }).catch(() => {
       message.error('删除失败');
+    }).finally(() => {
       resolve();
     });
   });
@@ -100,9 +106,9 @@ export async function updateFile(params: {
       ...params
     }).then(() => {
       message.success('更新成功');
-      resolve();
     }).catch(() => {
       message.error('更新失败');
+    }).finally(() => {
       resolve();
     });
   });

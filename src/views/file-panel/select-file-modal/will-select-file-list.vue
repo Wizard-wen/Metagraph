@@ -1,20 +1,22 @@
 <template>
   <div class="file-panel">
-    <file-panel-list-header></file-panel-list-header>
+    <will-select-file-header></will-select-file-header>
     <div class="file-panel-content">
       <div class="file-panel-list">
-        <template v-if="filePanelList.isLoading">
+        <template v-if="userFileList.isLoading">
           <a-skeleton v-for="item in 3" :key="item"></a-skeleton>
         </template>
         <div class="list-box" v-else>
-          <template v-if="filePanelList.list.length">
+          <template v-if="userFileList.list.length">
             <div class="file-panel-list-container">
               <div
                 class="file-panel-item"
-                v-for="(item, index) in filePanelList.list"
+                v-for="(item, index) in userFileList.list"
                 :key="index"
                 @click.stop="handleViewFile(item.id)">
-                <div :class="['file-content', showId === item.id ? 'shadow-style' : '']">
+                <div
+                  :class="['file-content',
+                  selectFileItemData.currentId === item.id ? 'shadow-style' : '']">
                   <div class="file-inner">
                     <img class="image-file" v-if="item.type === FileEnum.Image" :src="item.url"
                          alt="">
@@ -29,9 +31,9 @@
             <div class="pagination-box">
               <ant-pagination
                 class="pagination"
-                :pageSize="filePanelList.pageSize"
-                v-model:current="filePanelList.pageNumber"
-                :total="filePanelList.total"
+                :pageSize="userFileList.pageSize"
+                v-model:current="userFileList.pageNumber"
+                :total="userFileList.total"
                 @change="onPaginationChange"/>
             </div>
           </template>
@@ -40,58 +42,59 @@
           </template>
         </div>
       </div>
-      <file-preview-sidebar></file-preview-sidebar>
+      <will-select-file-preview @select="handleSelectFile($event)"></will-select-file-preview>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import { FileEnum } from 'metagraph-constant';
-import {
-  FileWordOutlined
-} from '@ant-design/icons-vue';
-import {
-  Pagination as AntPagination,
-  Skeleton as ASkeleton,
-} from 'ant-design-vue';
-import {
-  filePanelItemData,
-  filePanelList,
-  showId,
-  getFilePanelItemById,
-  getFilePanelList,
-  setFilePanelListConfig
-} from '@/views/file-panel/file-panel-list/file-panel-list-model';
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import FilePreviewSidebar from './file-panel-list/file-preview-sidebar.vue';
-import FilePanelListHeader from './file-panel-list/file-panel-list-header.vue';
+import { FileEnum } from 'metagraph-constant';
+import { FileWordOutlined } from '@ant-design/icons-vue';
+import { Pagination as AntPagination, Skeleton as ASkeleton, } from 'ant-design-vue';
+import WillSelectFilePreview
+  from '@/views/file-panel/select-file-modal/will-select-file-preview.vue';
+import WillSelectFileHeader from '@/views/file-panel/select-file-modal/will-select-file-header.vue';
+import { defineEmits, onMounted } from 'vue';
+import {
+  getSelectFileItemById,
+  getUserFileList,
+  selectFileItemData,
+  setUserFileListConfig,
+  userFileList
+} from './select-file-model';
 
+const emit = defineEmits(['select']);
 const onPaginationChange = async (page: number) => {
-  setFilePanelListConfig({
+  setUserFileListConfig({
     pageNumber: page,
     pageSize: 12
   });
-  await getFilePanelList();
+  await getUserFileList();
 };
 
 async function handleViewFile(id: string) {
-  showId.value = id;
-  await getFilePanelItemById(id);
+  selectFileItemData.currentId = id;
+  await getSelectFileItemById(id);
 }
 
+function handleSelectFile(params: {
+  id: string
+}) {
+  emit('select', params);
+}
 onMounted(async () => {
-  filePanelItemData.data = undefined;
-  setFilePanelListConfig({
+  selectFileItemData.data = undefined;
+  setUserFileListConfig({
     pageNumber: 1,
     pageSize: 12
   });
-  await getFilePanelList();
+  await getUserFileList();
 });
 </script>
 
 <style scoped lang="scss">
-@import "../../style/common.scss";
+@import "../../../style/common.scss";
 
 .file-panel {
   min-width: 1200px;
@@ -180,7 +183,6 @@ onMounted(async () => {
         padding: 12px 0;
       }
     }
-
   }
 }
 </style>

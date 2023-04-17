@@ -1,7 +1,6 @@
 <template>
   <div class="bind-panel">
     <div class="knowledge-connection">
-      <div class="title">引用的知识点</div>
       <div class="content" v-if="mentionedKnowledge.list.length">
         <div
           class="content-item"
@@ -18,13 +17,13 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
 import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
 import {
-  createVNode, inject, ref, defineComponent
+  createVNode, inject, ref
 } from 'vue';
 import { DeleteIcon } from '@/components/icons';
 import {
@@ -32,7 +31,7 @@ import {
   KnowledgeEdit,
   draftKnowledgeEntityIdInjectKey,
   repositoryEntityIdInjectKey
-} from './model/knowledge.edit';
+} from '../model/knowledge.edit';
 
 /**
  * 功能需求
@@ -49,59 +48,43 @@ import {
  * 11.可以考虑展示一下，同一个知识点之间的循环引用关系
  */
 
-export default defineComponent({
-  name: '',
-  components: {
-    DeleteIcon,
-    EyeOutlined
-  },
-  setup() {
-    const repositoryEntityId = inject(repositoryEntityIdInjectKey, ref(''));
-    const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
-    const knowledgeEdit = new KnowledgeEdit();
-    const knowledgePreview = new KnowledgePreview();
+const repositoryEntityId = inject(repositoryEntityIdInjectKey, ref(''));
+const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
+const knowledgeEdit = new KnowledgeEdit();
+const knowledgePreview = new KnowledgePreview();
 
-    function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string }) {
-      console.log(item);
-      const knowledgeContent = item.content as KnowledgeResponseType;
-      Modal.confirm({
-        title: '确定删除知识点关联吗',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: `确定要删除与知识点"${knowledgeContent.name}"的关联吗?`,
-        okText: '确定',
-        cancelText: '取消',
-        async onOk() {
-          await knowledgeEdit.removeMentionKnowledge(
-            knowledgeEntityId.value,
-            item.entity.id
-          );
-        },
-        onCancel() {
-          message.info('取消解绑！');
-        },
-      });
-    }
+function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string }) {
+  console.log(item);
+  const knowledgeContent = item.content as KnowledgeResponseType;
+  Modal.confirm({
+    title: '确定删除知识点关联吗',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: `确定要删除与知识点"${knowledgeContent.name}"的关联吗?`,
+    okText: '确定',
+    cancelText: '取消',
+    async onOk() {
+      await knowledgeEdit.removeMentionKnowledge(
+        knowledgeEntityId.value,
+        item.entity.id
+      );
+    },
+    onCancel() {
+      message.info('取消解绑！');
+    },
+  });
+}
 
-    function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
-      knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'published');
-    }
-
-    return {
-      handleRemoveEdge,
-      showKnowledgeDrawer,
-      mentionedKnowledge
-    };
-  }
-});
+function showKnowledgeDrawer(item: EntityCompletelyListItemType) {
+  knowledgePreview.handleShowKnowledgeDrawer(item.entity.id, 'published');
+}
 
 </script>
 
 <style scoped lang="scss">
-@import '../../style/common.scss';
+@import '../../../style/common.scss';
 
 .bind-panel {
   background: #FFFFFF;
-  border-right: solid 1px $borderColor;
   width: 100%;
   height: calc(100vh - 55px);
 }

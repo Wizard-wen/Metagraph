@@ -1,12 +1,12 @@
 <template>
-  <ant-alert v-if="isNetworkError" message="您的网络环境不稳定!" type="error"></ant-alert>
+  <ant-alert
+    v-if="isNetworkError"
+    message="您的网络环境不稳定!" type="error"></ant-alert>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, onMounted, onUnmounted, ref
-} from 'vue';
-import { notification, Alert } from 'ant-design-vue';
+import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
+import { Alert, notification } from 'ant-design-vue';
 
 export default defineComponent({
   name: 'network-status-alert',

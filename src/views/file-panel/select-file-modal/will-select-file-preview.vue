@@ -1,10 +1,10 @@
 <template>
   <div class="file-panel-view">
-    <template v-if="showId && filePanelItemData.data">
-      <div class="file-name">{{ filePanelItemData.data.name }}</div>
+    <template v-if="selectFileItemData.currentId && selectFileItemData.data">
+      <div class="file-name">{{ selectFileItemData.data.name }}</div>
       <div class="image-container">
         <div class="file-inner">
-          <img class="preview-image" :src="filePanelItemData.data.url" alt="">
+          <img class="preview-image" :src="selectFileItemData.data.url" alt="">
         </div>
       </div>
       <div class="panel-item">
@@ -12,24 +12,21 @@
         <div class="item view-item">
           <div class="left">名称</div>
           <div class="right">
-            <ant-input
-              style="height: 24px;"
-              class="custom-input-style"
-              v-model:value="newFileName"></ant-input>
+            {{ selectFileItemData.data.name }}
           </div>
         </div>
         <div class="item view-item">
           <div class="left">类型</div>
-          <div class="right">{{ filePanelItemData.data.mimeType }}</div>
+          <div class="right">{{ selectFileItemData.data.mimeType }}</div>
         </div>
         <div class="item view-item">
           <div class="left">文件大小</div>
-          <div class="right">{{ CommonUtil.getFileSize(filePanelItemData.data.size) }}</div>
+          <div class="right">{{ CommonUtil.getFileSize(selectFileItemData.data.size) }}</div>
         </div>
         <div class="item view-item">
           <div class="left">创建时间</div>
           <div class="right">
-            {{ CommonUtil.timeAgo(new Date(filePanelItemData.data.createdAt).getTime()) }}
+            {{ CommonUtil.timeAgo(new Date(selectFileItemData.data.createdAt).getTime()) }}
           </div>
         </div>
         <div class="item view-item">
@@ -40,7 +37,7 @@
               :has-border="false"
               v-clipboard:success="handleSuccess"
               v-clipboard:error="handleFail"
-              v-clipboard="filePanelItemData.data.url">
+              v-clipboard="selectFileItemData.data.url">
               <template #icon>
                 <copy-outlined></copy-outlined>
               </template>
@@ -51,37 +48,23 @@
       <div class="control">
         <m-button
           class="change-btn"
-          :title="'修改'"
-          @click="handleUpdateFile(filePanelItemData.data.id)"></m-button>
-        <m-button
-          :is-icon="true"
-          :has-border="false"
-          @click="handleDeleteFile(filePanelItemData.data.id)">
-          <template #icon>
-            <DeleteOutlined/>
-          </template>
-        </m-button>
+          :title="'选择'"
+          @click="handleSelectFileItem(selectFileItemData.data.id)"></m-button>
       </div>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {
-  clearFilePanel,
-  filePanelItemData,
-  getFilePanelItemById,
-  getFilePanelList,
-  newFileName,
-  removeFileById,
-  showId,
-  updateFile
-} from '@/views/file-panel/file-panel-list/file-panel-list-model';
-import { Input as AntInput, message, Modal } from 'ant-design-vue';
-import { createVNode } from 'vue';
-import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { selectFileItemData, } from '@/views/file-panel/select-file-modal/select-file-model';
+import { message } from 'ant-design-vue';
+import { CopyOutlined } from '@ant-design/icons-vue';
 import { CommonUtil } from '@/utils';
 import { MButton } from '@/metagraph-ui';
+import { defineEmits } from 'vue';
+
+
+const emit = defineEmits(['select']);
 
 function handleSuccess() {
   message.success('复制成功');
@@ -91,35 +74,8 @@ function handleFail() {
   message.error('复制失败');
 }
 
-async function handleUpdateFile(id: string) {
-  if (newFileName.value) {
-    await updateFile({
-      id,
-      name: newFileName.value
-    });
-    await getFilePanelItemById(id);
-    await getFilePanelList();
-  } else {
-    message.error('图片名不能为空');
-  }
-}
-
-async function handleDeleteFile(id: string) {
-  Modal.confirm({
-    title: '确定删除当前图片?',
-    okText: '确定',
-    cancelText: '取消',
-    icon: createVNode(ExclamationCircleOutlined),
-    content: '删除关系操作不可恢复，请谨慎操作',
-    async onOk() {
-      await removeFileById(id);
-      await getFilePanelList();
-      await clearFilePanel();
-    },
-    onCancel() {
-      message.info('取消删除');
-    }
-  });
+async function handleSelectFileItem(id: string) {
+  emit('select', { id });
 }
 
 </script>
@@ -130,6 +86,7 @@ async function handleDeleteFile(id: string) {
 .file-panel-view {
   width: 300px;
   height: 100%;
+  box-sizing: border-box;
   border-left: 1px solid $hoverDeepBackColor;
   padding-top: 12px;
 
@@ -157,12 +114,6 @@ async function handleDeleteFile(id: string) {
       font-weight: bold;
       text-align: left;
     }
-
-    //.view-item {
-    //  &:hover {
-    //    background: $hoverBackColor;
-    //  }
-    //}
 
     .item {
       display: flex;
@@ -200,7 +151,7 @@ async function handleDeleteFile(id: string) {
   }
 
   .image-container {
-    width: 300px;
+    width: 100%;
     height: 300px;
 
     .file-inner {
@@ -222,7 +173,5 @@ async function handleDeleteFile(id: string) {
       }
     }
   }
-
-
 }
 </style>

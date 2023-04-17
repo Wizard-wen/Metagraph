@@ -36,8 +36,8 @@ import {
 import {
   defineComponent, onMounted, ref, toRef
 } from 'vue';
-import KnowledgeComparePreviewContent from '../knowledge-preview/knowledge-compare-preview-content.vue';
-import { KnowledgeEdit, compareData } from './model/knowledge.edit';
+import KnowledgeComparePreviewContent from '../../knowledge-preview/knowledge-compare-preview-content.vue';
+import { KnowledgeEdit, compareData } from '../model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-compare-modal',

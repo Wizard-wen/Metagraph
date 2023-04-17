@@ -12,9 +12,10 @@ import { Modal } from 'ant-design-vue';
 import { createVNode } from 'vue';
 import {
   KnowledgeEdit,
-  mentionedKnowledge, repositoryEntityList
+  mentionedKnowledge
 } from '@/views/knowledge-editor/model/knowledge.edit';
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
+import { EntityCompletelyListItemType } from '../../../../metagraph-constant';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   protected limit = 600;
@@ -47,8 +48,10 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
       );
   }
 
-  async initData(): Promise<void> {
-    this.setMentionKnowledgeList(repositoryEntityList.value ?? []);
+  async initData(params: {
+    repositoryEntityList: EntityCompletelyListItemType[]
+  }): Promise<void> {
+    this.setMentionKnowledgeList(params.repositoryEntityList);
   }
 
   handleMention(params: {

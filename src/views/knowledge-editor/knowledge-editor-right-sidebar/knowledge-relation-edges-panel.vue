@@ -61,7 +61,7 @@
 import EmptyView from '@/components/empty-view/empty-view.vue';
 import { Collapse, Empty } from 'ant-design-vue';
 import { ref, defineComponent } from 'vue';
-import { knowledgeEdges } from './model/knowledge.edit';
+import { knowledgeEdges } from '../model/knowledge.edit';
 
 export default defineComponent({
   name: 'knowledge-relation-edges-panel',
@@ -84,7 +84,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import '../../style/common';
+@import '../../../style/common';
 
 .bind-panel {
   width: 100%;

@@ -109,7 +109,7 @@ function handleOpenCreateOrBindEntityModal(params?: {
 </script>
 
 <style lang="scss" scoped>
-@import '../../style/common';
+@import '../../style/common.scss';
 
 .sidebar {
   border-left: solid 1px $borderColor;

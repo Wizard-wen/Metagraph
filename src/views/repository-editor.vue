@@ -389,7 +389,8 @@ const handleMention = (params: {
 .repository-page {
   height: 100vh;
   overflow-y: hidden;
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont,
+  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .editable {
@@ -399,14 +400,7 @@ const handleMention = (params: {
     height: 100%;
     display: flex;
 
-    .section-tree {
-      height: 100%;
-      border-right: solid 1px #eee;
-      background-color: #fff;
-    }
-
     .text-content {
-      //width: calc(100% - 480px);
       height: 100%;
       flex: 1;
     }

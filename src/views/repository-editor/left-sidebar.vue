@@ -129,8 +129,10 @@ function handleClickEntityItem(params: { type: string, params: EntityCompletelyL
 }
 
 .section-tree {
-  height: calc(100vh - 55px);
   position: relative;
+  border-right: solid 1px #eee;
+  height: 100%;
+  background-color: #fff;
 
   .drag-btn {
     box-sizing: border-box;
@@ -139,7 +141,6 @@ function handleClickEntityItem(params: { type: string, params: EntityCompletelyL
     top: 200px;
     height: 44px;
     width: 14px;
-
     cursor: pointer;
     line-height: 44px;
     text-align: center;

@@ -69,25 +69,6 @@
         :count="knowledge.comment"
         :entity-id="knowledge.entity.id"
         :entity-type="knowledge.entity.entityType"></comment-control-button>
-      <!--      <m-button-->
-      <!--        type="primary" class="pull-request-button"-->
-      <!--        @click="handleOpenKnowledgeDrawer"-->
-      <!--        :loading="drawerLoading">侧边预览-->
-      <!--      </m-button>-->
-      <!--      <ant-button-->
-      <!--        type="primary" class="pull-request-button"-->
-      <!--        @click="goPreviewPage">页面预览-->
-      <!--      </ant-button>-->
-      <!--      <ant-button-->
-      <!--        type="primary" class="pull-request-button"-->
-      <!--        @click="publishDraftKnowledge">发布-->
-      <!--      </ant-button>-->
-      <!--      <ant-button-->
-      <!--        type="primary" class="pull-request-button"-->
-      <!--        :loading="compareLoading"-->
-      <!--        v-if="publishedKnowledgeEntityId"-->
-      <!--        @click="compareWithLatestVersion">对比-->
-      <!--      </ant-button>-->
     </div>
   </div>
   <knowledge-compare-modal
@@ -99,39 +80,37 @@
     :repository-entity-id="repositoryEntityId"></knowledge-compare-modal>
 </template>
 <script lang="ts" setup>
-import KnowledgeCompareModal from '@/views/knowledge-editor/knowledge-compare-modal.vue';
+import KnowledgeCompareModal
+  from '@/views/knowledge-editor/knowledge-editor-header/knowledge-compare-modal.vue';
 import {
+  BranchesOutlined,
+  CloudUploadOutlined,
+  DesktopOutlined,
   ExclamationCircleOutlined,
-  LeftOutlined, MenuOutlined, DesktopOutlined,
-  EyeOutlined, CloudUploadOutlined, BranchesOutlined
+  EyeOutlined,
+  LeftOutlined,
+  MenuOutlined
 } from '@ant-design/icons-vue';
 import { Editor } from '@tiptap/vue-3';
-import {
-  Modal, message, Dropdown as AntDropdown, Menu as AntMenu
-} from 'ant-design-vue';
+import { Dropdown as AntDropdown, Menu as AntMenu, message, Modal } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
-import {
-  createVNode, defineProps, inject, PropType, ref
-} from 'vue';
+import { createVNode, defineProps, inject, PropType, ref } from 'vue';
 import { MButton, MTag } from '@/metagraph-ui';
 import MentionedControlButton
-  from '@/views/knowledge-editor/knowledge-edit-header/mentioned-control-button.vue';
+  from '@/views/knowledge-editor/knowledge-editor-header/mentioned-control-button.vue';
 import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
+import { CommentControlButton, StarControlButton, } from '@/business';
 import {
-  CommentControlButton,
-  StarControlButton,
-} from '@/business';
-import {
-  knowledgeName,
-  knowledgeAuthStatus,
-  knowledge,
-  mentionedKnowledge,
-  knowledgePublishStatus,
-  KnowledgeEdit,
-  repositoryEntityIdInjectKey,
   draftKnowledgeEntityIdInjectKey,
+  isCompareModalShow,
+  knowledge,
+  knowledgeAuthStatus,
+  KnowledgeEdit,
+  knowledgeName,
+  knowledgePublishStatus,
+  mentionedKnowledge,
   publishedKnowledgeEntityIdInjectKey,
-  isCompareModalShow
+  repositoryEntityIdInjectKey
 } from './model/knowledge.edit';
 import { KnowledgePreview } from '../knowledge-preview/knowledge.preview';
 
@@ -139,8 +118,7 @@ const AntMenuItem = AntMenu.Item;
 
 const props = defineProps({
   editor: {
-    type: Object as PropType<Editor>,
-    required: true
+    type: Object as PropType<Editor>
   }
 });
 
@@ -188,6 +166,9 @@ async function publishDraftKnowledge() {
     okText: '确定',
     cancelText: '取消',
     async onOk() {
+      if (!props.editor) {
+        return;
+      }
       // 发布之前先存储
       await knowledgeEdit.handleSaveSectionArticle({
         content: props.editor.getJSON(),
@@ -221,6 +202,9 @@ async function publishDraftKnowledge() {
 }
 
 async function handleOpenKnowledgeDrawer() {
+  if (!props.editor) {
+    return;
+  }
   drawerLoading.value = true;
   await knowledgeEdit.handleSaveSectionArticle({
     content: props.editor.getJSON(),
@@ -234,6 +218,9 @@ async function handleOpenKnowledgeDrawer() {
 }
 
 async function compareWithLatestVersion() {
+  if (!props.editor) {
+    return;
+  }
   compareLoading.value = true;
   await knowledgeEdit.handleSaveSectionArticle({
     content: props.editor.getJSON(),
@@ -243,14 +230,12 @@ async function compareWithLatestVersion() {
   compareLoading.value = false;
   isCompareModalShow.value = true;
 }
-
-
 </script>
 <style scoped lang="scss">
 @import "../../style/common.scss";
 
 .knowledge-header {
-  background: #fafbfc;
+  //background: #fafbfc;
   height: 56px;
   border-bottom: 1px solid $borderColor;
   display: flex;

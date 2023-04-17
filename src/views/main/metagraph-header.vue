@@ -52,6 +52,10 @@
               <BookOutlined class="icon-size"/>
               新建知识库
             </ant-menu-item>
+            <ant-menu-item class="menu-item-style" @click="goCreateSectionPage">
+              <ReadOutlined class="icon-size"/>
+              新建文档
+            </ant-menu-item>
             <ant-menu-item class="menu-item-style" @click="goCreateKnowledgePage">
               <ReadOutlined class="icon-size"/>
               新建知识点
@@ -63,6 +67,12 @@
           </ant-menu>
         </template>
       </ant-dropdown>
+      <create-section-modal
+        @close="isCreateSectionModalShow = false"
+        :is-modal-visible="isCreateSectionModalShow"></create-section-modal>
+      <create-knowledge-modal
+        @close="isCreateKnowledgeModalShow = false"
+        :is-modal-visible="isCreateKnowledgeModalShow"></create-knowledge-modal>
       <div class="notify" v-if="isLogin">
         <m-button :is-icon="true" :size="'large'" :has-border="false">
           <template #icon>
@@ -126,7 +136,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import {
   Avatar as AntAvatar,
   Dropdown as AntDropdown,
@@ -140,6 +150,7 @@ import {
   BellOutlined,
   BookOutlined,
   DownOutlined,
+  FileOutlined,
   FireOutlined,
   PlusOutlined,
   PoweroffOutlined,
@@ -148,12 +159,13 @@ import {
   SearchOutlined,
   SettingOutlined,
   StarOutlined,
-  UserOutlined,
-  FileOutlined
+  UserOutlined
 } from '@ant-design/icons-vue';
 import { MutationEnum, useStore } from '@/store';
 import { RouterUtil } from '@/utils/router.util';
+import CreateSectionModal from '@/views/main/metagraph-header/create-section-modal.vue';
 import { searchData } from './metegraph.header';
+import CreateKnowledgeModal from '@/views/main/metagraph-header/create-knowledge-modal.vue';
 
 const AntMenuItem = AntMenu.Item;
 const AntInputSearch = AntInput.Search;
@@ -162,6 +174,8 @@ const isLogin = computed(() => store.state.user.isLogin);
 const userModel = computed(() => store.state.user.user);
 
 const textAvatar = computed(() => userModel.value?.name.charAt(0) ?? 'M');
+const isCreateSectionModalShow = ref(false);
+const isCreateKnowledgeModalShow = ref(false);
 
 async function goSignInPage() {
   await RouterUtil.jumpTo('/login');
@@ -194,7 +208,12 @@ function goCreateInspirationPage() {
   message.info('该功能尚未开放，敬请期待！');
 }
 
+function goCreateSectionPage() {
+  isCreateSectionModalShow.value = true;
+}
+
 function goCreateKnowledgePage() {
+  isCreateKnowledgeModalShow.value = true;
   message.info('该功能尚未开放，敬请期待！');
 }
 

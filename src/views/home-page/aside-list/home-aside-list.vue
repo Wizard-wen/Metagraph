@@ -31,7 +31,6 @@
 import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
 import { computed, defineProps, PropType } from 'vue';
 import { BookOutlined, LockOutlined } from '@ant-design/icons-vue';
-import { Tooltip as AntTooltip } from 'ant-design-vue';
 import { CloneIcon } from '@/components/icons';
 import { RouterUtil } from '@/utils/router.util';
 import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';

@@ -1,59 +1,21 @@
 <template>
   <div class="file-panel-list-header">
     <div class="left">
-      <div class="left-container">
-        <m-button :is-icon="true" :has-border="false" @click="goHomePage">
-          <template #icon>
-            <LeftOutlined/>
-          </template>
-        </m-button>
-        <ant-dropdown
-          :getPopupContainer="getPopupContainer"
-          :trigger="['click']"
-          :placement="'bottomLeft'">
-          <m-button :is-icon="true" :has-border="false">
-            <template #icon>
-              <MenuOutlined/>
-            </template>
-          </m-button>
-          <template #overlay>
-            <ant-menu class="dropdown-menu-style">
-              <div class="divider-style"></div>
-              <ant-menu-item class="menu-item-style">
-                <ArrowLeftOutlined class="icon-size"/>
-                回到首页
-              </ant-menu-item>
-            </ant-menu>
-          </template>
-        </ant-dropdown>
-        <div class="page-title">文件面板</div>
-      </div>
-
       <ant-input
         class="input-search-style"
         @pressEnter="handleSearch"
         placeholder="请输入搜索内容..."
-        v-model:value="filePanelList.searchInput">
+        v-model:value="userFileList.searchInput">
         <template #suffix>
           <search-outlined @click="handleSearch"/>
         </template>
       </ant-input>
     </div>
-
     <div class="control-bar">
-      <m-button :is-icon="true" :size="'large'" :has-border="false" @click="handleUpload">
-        <template #icon>
-          <plus-outlined/>
-        </template>
-      </m-button>
-      <input
-        @change="handleFileChange"
-        ref="inputElement"
-        type="file"
-        name="upload"
-        id="upload"
-        style="display: none;"/>
-      <ant-dropdown :placement="'bottomRight'" :trigger="['click']">
+      <ant-dropdown
+        :getPopupContainer="getPopupContainer"
+        :placement="'bottomRight'"
+        :trigger="['click']">
         <m-button :is-icon="true" :size="'large'" :has-border="false">
           <template #icon>
             <filter-outlined/>
@@ -80,75 +42,43 @@
 </template>
 
 <script lang="ts" setup>
-import { RouterUtil } from '@/utils';
 import {
-  filePanelList,
-  getFilePanelList,
-  setFilePanelListConfig
-} from '@/views/file-panel/file-panel-list/file-panel-list-model';
+  getUserFileList,
+  setUserFileListConfig,
+  userFileList
+} from '@/views/file-panel/select-file-modal/select-file-model';
+import { Dropdown as AntDropdown, Input as AntInput, Menu as AntMenu, } from 'ant-design-vue';
 import {
-  Dropdown as AntDropdown,
-  Input as AntInput,
-  Menu as AntMenu,
-} from 'ant-design-vue';
-import {
-  FileOutlined,
   FileImageOutlined,
+  FileOutlined,
   FilterOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  MenuOutlined,
-  ArrowLeftOutlined,
-  LeftOutlined
+  SearchOutlined
 } from '@ant-design/icons-vue';
 import { MButton } from '@/metagraph-ui';
 import { FileEnum } from 'metagraph-constant';
-import { ref } from 'vue';
 
 const AntMenuItem = AntMenu.Item;
-const currentFile = ref();
-const inputElement = ref();
-
-function goHomePage() {
-  RouterUtil.jumpTo('/');
-}
 
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
 }
 
 async function handleSearch() {
-  setFilePanelListConfig({
+  setUserFileListConfig({
     pageNumber: 1,
     pageSize: 12
   });
-  await getFilePanelList();
+  await getUserFileList();
 }
 
 async function handleTypeChange(type?: FileEnum) {
-  filePanelList.value.type = type;
-  setFilePanelListConfig({
+  userFileList.value.type = type;
+  setUserFileListConfig({
     pageNumber: 1,
     pageSize: 12
   });
-  await getFilePanelList();
+  await getUserFileList();
 }
-
-function handleUpload() {
-  if (inputElement.value) {
-    inputElement.value.click();
-  }
-}
-
-const handleFileChange = async (event: InputEvent) => {
-  const target = event.target as HTMLInputElement;
-  if (target.files === null) {
-    return;
-  }
-  // eslint-disable-next-line prefer-destructuring
-  currentFile.value = target.files[0];
-  console.log(currentFile.value);
-};
 
 </script>
 
@@ -183,7 +113,6 @@ const handleFileChange = async (event: InputEvent) => {
         font-weight: 600;
       }
     }
-
 
     &::v-deep(.ant-input-affix-wrapper-focused) {
       box-shadow: none;
