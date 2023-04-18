@@ -3,14 +3,24 @@
  * @date  2021/11/24 23:45
  */
 import { message } from 'ant-design-vue';
-import { QiniuError, QiniuNetworkError, QiniuRequestError } from 'qiniu-js';
 import * as qiniu from 'qiniu-js';
-import {
-  reactive, ref, computed
-} from 'vue';
+import { QiniuError, QiniuNetworkError, QiniuRequestError } from 'qiniu-js';
+import { ref } from 'vue';
 import { FileEnum, SectionModelType } from 'metagraph-constant';
 import { FileApiService, KnowledgeApiService, SectionApiService } from '@/api-service';
 import { NlpApiService } from '@/api-service/nlp.api.service';
+
+export type StatusType =
+  'preview'
+  | 'confirmName'
+  | 'uploadSuccess'
+  | 'parseSuccess'
+  | 'confirmSectionName';
+export const currentStatus = ref<StatusType>('preview');
+
+export function changeCurrentStatus(type: StatusType): void {
+  currentStatus.value = type;
+}
 
 export type ParsedKeywordType = {
   word: string;
@@ -20,53 +30,38 @@ export type ParsedKeywordType = {
 
 // 待上传文件的重命
 export const textFileForm = ref({
-  title: ''
-});
-export const textFileFormRules = ref({
-  title: [{
-    required: true,
-    message: '请输入单元名称',
-    trigger: 'blur'
-  }]
+  filename: '',
+  sectionName: ''
 });
 
 // 上传的文件的url
 export const fileUrl = ref<string>();
-// 解析出来的关键字
-export const keywords = ref<ParsedKeywordType[]>([]);
-// 解析出来的文本
-export const articleText = ref('');
 
-// 是否展示操作按钮
-export const isShowOperationButton = computed(() => fileUrl.value
-  && keywords.value.length);
-export const textParsingStatus = reactive<{
-  isDoing: boolean,
-  text?: '上传中...' | '解析中...'
+export const parsedResultData = ref<{
+  articleText: string,
+  keywords: ParsedKeywordType[]
 }>({
-  isDoing: false,
-  text: '上传中...'
-});
-export const uploadButtonText = computed(() => {
-  if (textParsingStatus.isDoing) {
-    return textParsingStatus.text;
-  }
-  return '确认上传';
+  articleText: '',
+  keywords: []
 });
 
-export const isShowOperation = computed(() => !(articleText.value && keywords.value.length));
-export const suffixText = computed(
-  () => (isShowOperation.value ? '上传前可修改默认文件名' : '保存前可修改默认文件名(单元名)')
-);
+export const isUploading = ref(false);
+export const isParsing = ref(false);
+export const fileNameErrorMessage = ref('');
+export const sectionNameErrorMessage = ref('');
 
 export class UploadAndParseTextService {
   clearData(): void {
+    currentStatus.value = 'preview';
     fileUrl.value = undefined;
-    articleText.value = '';
-    keywords.value = [];
-    textFileForm.value.title = '';
-    textParsingStatus.text = undefined;
-    textParsingStatus.isDoing = false;
+    parsedResultData.value.articleText = '';
+    parsedResultData.value.keywords = [];
+    textFileForm.value.filename = '';
+    textFileForm.value.sectionName = '';
+    isParsing.value = false;
+    isUploading.value = false;
+    sectionNameErrorMessage.value = '';
+    fileNameErrorMessage.value = '';
   }
 
   async customRequestUploadHandler(params: {
@@ -75,15 +70,14 @@ export class UploadAndParseTextService {
     name: string;
     type: FileEnum
   }): Promise<undefined | { key: string; url: string; }> {
-    textParsingStatus.isDoing = true;
-    textParsingStatus.text = '上传中...';
+    isUploading.value = true;
     const result = await FileApiService.getCredential({
       name: params.name,
       type: params.type,
       provider: 'AlternativeKnowledgeArticle'
     });
     if (!result.data) {
-      message.error('上传文件时出错！');
+      message.error('上传失败！');
       return Promise.resolve(undefined);
     }
     const tokenForUploading = result.data;
@@ -96,13 +90,16 @@ export class UploadAndParseTextService {
         )
         .subscribe({
           complete(response: { key: string; url: string; }) {
-            console.log(response);
             fileUrl.value = response.url;
+            message.success('上传成功！');
+            changeCurrentStatus('uploadSuccess');
+            isUploading.value = false;
             resolve(response);
           },
           error(error: QiniuError | QiniuRequestError | QiniuNetworkError) {
             console.log(error.message);
-            message.error('上传文件时出错！');
+            message.error('上传失败！');
+            isUploading.value = false;
             resolve(undefined);
           }
         });
@@ -113,15 +110,14 @@ export class UploadAndParseTextService {
     fileUrl: string,
     repositoryEntityId: string
   }): Promise<void> {
-    textParsingStatus.isDoing = true;
-    textParsingStatus.text = '解析中...';
+    isParsing.value = true;
     const result = await NlpApiService.parseWord({
       url: params.fileUrl,
       repositoryEntityId: params.repositoryEntityId
     });
     if (result.data) {
-      articleText.value = result.data.text;
-      keywords.value = result.data.list.map((item: {
+      parsedResultData.value.articleText = result.data.text;
+      parsedResultData.value.keywords = result.data.list.map((item: {
         weight: number,
         word: string
       }, index: number) => ({
@@ -129,19 +125,21 @@ export class UploadAndParseTextService {
         word: item.word,
         weight: Number(item.weight.toFixed(2))
       }));
+      changeCurrentStatus('parseSuccess');
+      message.success('解析成功！');
     } else {
-      message.error('解析文本时出错！');
+      message.error('解析失败！');
     }
-    textParsingStatus.isDoing = false;
+    isParsing.value = false;
   }
 
   async createWordTextSection(repositoryEntityId: string): Promise<undefined | SectionModelType> {
-    if (!textFileForm.value.title) {
+    if (!textFileForm.value.sectionName) {
       return undefined;
     }
     const result = await SectionApiService.createSectionTree({
-      text: articleText.value,
-      name: textFileForm.value.title,
+      text: parsedResultData.value.articleText,
+      name: textFileForm.value.sectionName,
       repositoryEntityId
     });
     if (!result.data) {
@@ -153,17 +151,17 @@ export class UploadAndParseTextService {
   }
 
   async createAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
-    if (!textFileForm.value.title || !fileUrl.value) {
+    if (!textFileForm.value.filename || !fileUrl.value) {
       return;
     }
     const result = await KnowledgeApiService.createAlternativeKnowledgeList({
       article: {
-        name: textFileForm.value.title,
+        name: textFileForm.value.filename,
         url: fileUrl.value,
         type: 'word',
       },
       repositoryEntityId,
-      entityList: keywords.value.map((item) => ({
+      entityList: parsedResultData.value.keywords.map((item) => ({
         name: item.word,
         weight: item.weight
       }))

@@ -2,7 +2,7 @@
   <div class="file-panel-view">
     <template v-if="showId && filePanelItemData.data">
       <div class="file-name">{{ filePanelItemData.data.name }}</div>
-      <div class="image-container">
+      <div class="image-container" v-if="filePanelItemData.data.type === 'image'">
         <div class="file-inner">
           <img class="preview-image" :src="filePanelItemData.data.url" alt="">
         </div>
@@ -134,13 +134,13 @@ async function handleDeleteFile(id: string) {
   padding-top: 12px;
 
   .file-name {
-    height: 32px;
+    min-height: 32px;
     line-height: 32px;
     width: 100%;
     font-size: 18px;
     font-weight: 600;
     text-align: left;
-    padding-left: 10px;
+    padding: 0 10px;
     margin-bottom: 12px;
   }
 

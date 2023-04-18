@@ -13,14 +13,14 @@ export const getHomepageStepList = (): Step[] => [{
   intro: '登录后，可以在这里看到您创建的知识库和克隆的知识库',
   position: 'right'
 }, {
-  title: '创建知识库',
+  title: '新建知识库',
   element: document.querySelector('#step2')!, // id为step1的元素
-  intro: '点击创建，跳转至创建知识库页面。',
+  intro: '点击加号，跳转至新建知识库页面',
   position: 'right'
 }, {
   title: '搜索知识库',
   element: document.querySelector('#step3')!, // id为step1的元素
-  intro: '在此搜索目前拥有的知识库。',
+  intro: '在此搜索您创建的知识库',
   position: 'right'
 }, {
   title: '用户动态',
@@ -58,10 +58,9 @@ export function guide(params: {
       steps: stepList
     });
   introInstance.onchange((element: HTMLElement) => {
-    console.log(element.dataset, introInstance.currentStep());
+    // todo
   });
   introInstance.onafterchange((element: HTMLElement) => {
-    console.log(element.dataset, 'after change', introInstance.currentStep());
     store.commit(MutationEnum.SET_GUIDE_STATUS, {
       type: params.type,
       step: introInstance.currentStep(),
@@ -69,7 +68,6 @@ export function guide(params: {
     });
   });
   introInstance.onexit(() => {
-    console.log('exit', introInstance.currentStep());
     store.commit(MutationEnum.SET_GUIDE_STATUS, {
       type: params.type,
       step: introInstance.currentStep(),
@@ -77,14 +75,12 @@ export function guide(params: {
     });
   });
   introInstance.oncomplete(() => {
-    console.log('complete', introInstance.currentStep());
     store.commit(MutationEnum.SET_GUIDE_STATUS, {
       type: params.type,
       step: introInstance.currentStep(),
       status: 'done'
     });
   });
-  console.log(currentStep);
   if (!currentStep) {
     introInstance.start();
   } else {

@@ -19,7 +19,7 @@ import { repositoryBindEntityList } from '../../model/repository.editor';
 export const searchText = ref<string | undefined>(undefined);
 export const searchData = reactive<{
   target:(EntityCompletelyListItemType & { hasBind: boolean })[]
-}>({ target: [] });
+    }>({ target: [] });
 export const bindEntityIdList = reactive<{ target: string[] }>({
   target: []
 });
@@ -38,9 +38,6 @@ export class CreateOrBindKnowledgeModal {
       return undefined;
     }
     const result = await KnowledgeApiService.createDraftKnowledge({
-      // knowledgeBaseTypeId: '606fe62050a08412400387e5',
-      // repositoryEntityId,
-      // name: searchText.value
       ...params
     });
     if (!result.data) {

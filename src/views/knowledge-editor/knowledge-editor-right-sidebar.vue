@@ -11,7 +11,6 @@
       <knowledge-relation-edges-panel
         v-if="currentBar === 'edge'"></knowledge-relation-edges-panel>
     </div>
-
   </div>
 </template>
 

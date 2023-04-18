@@ -6,6 +6,13 @@
           <UploadOutlined/>
         </template>
       </m-button>
+      <input
+        @change="handleFileChange"
+        ref="inputElement"
+        type="file"
+        name="upload"
+        id="upload"
+        style="display: none;"/>
     </div>
     <div class="right-sidebar-content">
       <template v-if="alternative.target.length">
@@ -22,6 +29,11 @@
       <empty-view v-else></empty-view>
     </div>
   </div>
+  <upload-and-parse-text-modal
+    :dom-file="currentFile"
+    v-if="isParseWordModalShow"
+    :is-upload-modal-shown="isParseWordModalShow"
+    @close="handleCloseParseTextModal"></upload-and-parse-text-modal>
 </template>
 
 <script lang="ts" setup>
@@ -29,20 +41,64 @@ import EmptyView from '@/components/empty-view/empty-view.vue';
 import { createVNode, defineEmits, inject, ref } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { AlternativeKnowledgeModelType } from 'metagraph-constant';
+import { AlternativeKnowledgeModelType, SectionModelType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import ArticleItem from '@/views/repository-editor/right-sidebar/article-item.vue';
+import ArticleItem from '@/views/repository-editor/right-sidebar/alternative-knowledge-list/article-item.vue';
 import { KnowledgeArticleModelType } from 'metagraph-constant/dist/type/knowledge.type';
 import { MButton } from '@/metagraph-ui';
+import { FileTypeUtil } from '@/utils';
 import { alternative, RepositoryEditor } from '../model/repository.editor';
+import UploadAndParseTextModal
+  from '@/views/repository-editor/public-component/upload-and-parse-text-modal.vue';
+import {
+  UploadAndParseTextService
+} from '@/views/repository-editor/model/upload.and.parse.text.service';
+const uploadAndParseTextService = new UploadAndParseTextService();
+const emit = defineEmits(['open', 'createOrBindEntity', 'refreshSection']);
 
-const emit = defineEmits(['open', 'createOrBindEntity']);
-
+const isParseWordModalShow = ref(false);
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 const repositoryEditor = new RepositoryEditor();
+const inputElement = ref();
+const currentFile = ref<File>();
+function handleOpenParseTextModal(event: MouseEvent) {
+  if (inputElement.value) {
+    inputElement.value.click();
+    event.preventDefault();
+  }
+}
 
-function handleOpenParseTextModal() {
-  emit('open');
+async function handleFileChange(event: InputEvent) {
+  const target = event.target as HTMLInputElement;
+  if (!target.files) {
+    return;
+  }
+  [currentFile.value] = target.files;
+  const result = await FileTypeUtil.checkFileType(currentFile.value);
+  if (!result) return;
+  if (result.mime !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    message.error('目前只支持.docx格式的文本解析');
+    return;
+  }
+  isParseWordModalShow.value = true;
+  inputElement.value.value = '';
+}
+
+async function handleCloseParseTextModal(params: {
+  type: 'Section' | 'void' | 'Alternative'
+  sectionModel?: SectionModelType
+}) {
+  if (params.type === 'Section' && params.sectionModel) {
+    emit('refreshSection', {
+      sectionId: params.sectionModel.id
+    });
+  }
+  if (params.type === 'Alternative') {
+    await repositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
+  }
+  uploadAndParseTextService.clearData();
+  currentFile.value = undefined;
+  isParseWordModalShow.value = false;
 }
 
 const expendId = ref();
