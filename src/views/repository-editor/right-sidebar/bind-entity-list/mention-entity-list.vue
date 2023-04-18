@@ -5,17 +5,18 @@
       <ant-dropdown
         v-if="isEditable"
         :getPopupContainer="getPopupContainer"
-        :trigger="['click']"
-        :overlayClassName="'dropdown-overlay'">
+        :trigger="['click']">
         <div class="icon-content-style">
           <MoreOutlined/>
         </div>
         <template #overlay>
-          <ant-menu>
+          <ant-menu class="dropdown-menu-style">
             <ant-menu-item
+              class="menu-item-style"
               v-for="(innerItem, index) in operationList"
               :key="index"
               @click="handleClickControl(innerItem.type, item)">
+              <component :is="innerItem.component" class="icon-size"></component>
               {{ innerItem.name }}
             </ant-menu-item>
           </ant-menu>
@@ -49,7 +50,8 @@ defineProps({
   operationList: {
     type: Array as PropType<{
       type: string;
-      name: string
+      name: string;
+      component: any
     }[]>,
     default() {
       return [];

@@ -54,7 +54,7 @@ import {
   UploadImageControl,
   BackColorControl
 } from '@/components/tiptap-text-editor/controls';
-import UploadAndParseTextModal from './upload-and-parse-text-modal.vue';
+import UploadAndParseTextModal from '../public-component/upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
 import { UploadAndParseTextService } from '../model/upload.and.parse.text.service';
 

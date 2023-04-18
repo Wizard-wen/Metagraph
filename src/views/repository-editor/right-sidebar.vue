@@ -12,13 +12,9 @@
       <alternative-knowledge-list
         v-if="currentBar === 'Alternative'"
         @createOrBindEntity="handleOpenCreateOrBindEntityModal"
-        @open="handleOpenParseTextModal"></alternative-knowledge-list>
+        @refreshSection="handleRefreshSection"></alternative-knowledge-list>
     </div>
   </div>
-  <upload-and-parse-text-modal
-    v-if="isParseWordModalShow"
-    :is-upload-modal-shown="isParseWordModalShow"
-    @close="handleCloseParseTextModal"></upload-and-parse-text-modal>
   <create-or-bind-knowledge-modal
     v-if="isCreateOrBindEntityModalShow"
     :search-value="initSearchText"
@@ -34,8 +30,7 @@ import {
 import { SectionModelType } from 'metagraph-constant';
 import { defineEmits, inject, ref } from 'vue';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import UploadAndParseTextModal
-  from '@/views/repository-editor/section-article-tip-tap/upload-and-parse-text-modal.vue';
+
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import ToolbarEntityList from './right-sidebar/bind-entity-list.vue';
 import AlternativeKnowledgeList from './right-sidebar/alternative-knowledge-list.vue';
@@ -45,12 +40,12 @@ import CreateOrBindKnowledgeModal
 const isEditable = inject(isEditableKey, ref(false));
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 const currentBar = ref<string>('EntityList');
+
 // create or bind knowledge modal的初始化搜索字段
 const initSearchText = ref();
-const isParseWordModalShow = ref(false);
+
 const isCreateOrBindEntityModalShow = ref(false);
-// 实例化类
-const uploadAndParseTextService = new UploadAndParseTextService();
+
 const repositoryEditor = new RepositoryEditor();
 const emit = defineEmits(['refreshSection']);
 const elementTabs = ref<{ value: string; label: string; isAuth: boolean }[]>([
@@ -70,25 +65,25 @@ function handleBarChange(value: string) {
   currentBar.value = value;
 }
 
-function handleOpenParseTextModal() {
-  isParseWordModalShow.value = true;
+function handleRefreshSection(params: any) {
+  emit('refreshSection', params);
 }
 
-async function handleCloseParseTextModal(params: {
-  type: 'Section' | 'void' | 'Alternative'
-  sectionModel?: SectionModelType
-}) {
-  if (params.type === 'Section' && params.sectionModel) {
-    emit('refreshSection', {
-      sectionId: params.sectionModel.id
-    });
-  }
-  if (params.type === 'Alternative') {
-    await repositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
-  }
-  uploadAndParseTextService.clearData();
-  isParseWordModalShow.value = false;
-}
+// async function handleCloseParseTextModal(params: {
+//   type: 'Section' | 'void' | 'Alternative'
+//   sectionModel?: SectionModelType
+// }) {
+//   if (params.type === 'Section' && params.sectionModel) {
+//     emit('refreshSection', {
+//       sectionId: params.sectionModel.id
+//     });
+//   }
+//   if (params.type === 'Alternative') {
+//     await repositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
+//   }
+//   uploadAndParseTextService.clearData();
+//   isParseWordModalShow.value = false;
+// }
 
 async function handleCreateOrBindEntityModalClose() {
   isCreateOrBindEntityModalShow.value = false;

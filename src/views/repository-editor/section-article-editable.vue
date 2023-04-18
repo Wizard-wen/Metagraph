@@ -61,7 +61,7 @@ import { sectionTree } from './model/section.tree';
 import {
   SectionArticleControlMenu,
   TiptapEditorArticleLimit
-} from './section-article-tip-tap/index';
+} from './section-article/index';
 
 const props = defineProps({
   editable: {

@@ -55,7 +55,7 @@
 import EmptyView from '@/components/empty-view/empty-view.vue';
 import { computed, defineEmits, inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { PlusOutlined } from '@ant-design/icons-vue';
+import { EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
 import {
   repositoryBindEntityList,
@@ -64,8 +64,8 @@ import {
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import CheckBar from '@/components/metagraph-tab-bar.vue';
-import MentionEntityList from '@/views/repository-editor/mention-entity-list.vue';
-import {MButton} from '@/metagraph-ui';
+import MentionEntityList from '@/views/repository-editor/right-sidebar/bind-entity-list/mention-entity-list.vue';
+import { MButton } from '@/metagraph-ui';
 
 const currentBar = ref<string>('published');
 
@@ -91,14 +91,14 @@ const elementTabs = ref<{ value: string; label: string; isAuth: boolean }[]>([
   },
 ]);
 const publishedOperationList = ref([
-  { type: 'edit', name: '编辑原创知识点' },
-  { type: 'view', name: '查看原创知识点' }
+  { type: 'edit', name: '编辑', component: EditOutlined },
+  { type: 'view', name: '查看', component: EyeOutlined }
 ]);
 const unpublishedOperationList = ref([
-  { type: 'edit', name: '编辑草稿知识点' }
+  { type: 'edit', name: '编辑', component: EditOutlined }
 ]);
 const mentionOperationList = ref([
-  { type: 'view', name: '查看引用知识点' }
+  { type: 'view', name: '查看', component: EyeOutlined }
 ]);
 const emit = defineEmits(['createOrBindEntity']);
 const router = useRouter();
