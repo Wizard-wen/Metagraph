@@ -14,7 +14,7 @@
     <div class="modal-content">
       <div class="parse-container" v-if="currentStatus === 'preview'">
         <div class="preview-container">
-          <div id="container"></div>
+          <div id="first-preview-container"></div>
         </div>
         <div class="control">
           <m-button @click="prepareToUpload" :title="'上传'"></m-button>
@@ -53,7 +53,7 @@
             :element-tabs="elementTabs"></metagraph-tab-bar>
           <div class="parsed-result">
             <div v-show="currentBar === 'preview'">
-              <div id="last-preview"></div>
+              <div id="last-preview-container"></div>
             </div>
             <div class="parsed-content" v-if="currentBar === 'plainText'">
               <div class="doc-text" v-if="parsedResultData.articleText">
@@ -112,12 +112,12 @@ import { renderAsync } from 'docx-preview';
 import { repositoryEntityIdKey } from '../model/provide.type';
 import {
   changeCurrentStatus,
-  isUploading,
-  isParsing,
   currentStatus,
-  fileUrl,
-  parsedResultData,
   fileNameErrorMessage,
+  fileUrl,
+  isParsing,
+  isUploading,
+  parsedResultData,
   sectionNameErrorMessage,
   textFileForm,
   UploadAndParseTextService,
@@ -160,8 +160,6 @@ const props = defineProps({
 });
 const emit = defineEmits(['close']);
 
-
-
 async function previewDoc(container: HTMLElement): Promise<void> {
   await renderAsync(props.domFile, container, undefined, {
     className: 'docx', // 默认和文档样式类的类名/前缀
@@ -179,9 +177,9 @@ async function previewDoc(container: HTMLElement): Promise<void> {
 
 async function handleBarChange(value: string) {
   currentBar.value = value;
-  if(currentBar.value === 'preview') {
+  if (currentBar.value === 'preview') {
     await nextTick(async () => {
-      const container = document.getElementById('last-preview');
+      const container = document.getElementById('last-preview-container');
       if (container) {
         await previewDoc(container);
       }
@@ -191,7 +189,7 @@ async function handleBarChange(value: string) {
 
 watchEffect(async () => {
   await nextTick(async () => {
-    const container = document.getElementById('container');
+    const container = document.getElementById('first-preview-container');
     if (container) {
       await previewDoc(container);
     }
@@ -230,7 +228,7 @@ async function parseFileInServer(): Promise<void> {
     repositoryEntityId: repositoryEntityId.value
   });
   await nextTick(async () => {
-    const container = document.getElementById('last-preview');
+    const container = document.getElementById('last-preview-container');
     if (container) {
       await previewDoc(container);
     }
@@ -361,6 +359,7 @@ function removeKeyword(params: { index: number }) {
       height: calc(100% - 40px);
       overflow-y: auto;
       @include custom-scroll-style;
+
       .parsed-content {
         padding: 20px;
       }
