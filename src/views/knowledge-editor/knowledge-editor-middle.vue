@@ -100,9 +100,7 @@ async function saveKnowledgeArticle() {
   }
 
   .knowledge-editor-content {
-    margin-top: 70px;
-    padding-bottom: 250px;
-    height: calc(100vh - 102px);
+    margin: 70px 0;
   }
 }
 </style>

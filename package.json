@@ -87,7 +87,6 @@
     "@vue/eslint-config-typescript": "^7.0.0",
     "@vue/test-utils": "^2.0.0-0",
     "babel-preset-latest": "^6.24.1",
-    "buffer": "^6.0.3",
     "chalk": "^5.0.0",
     "compression-webpack-plugin": "^6.1.1",
     "cross-env": "^7.0.3",
