@@ -6,7 +6,7 @@
         <template v-if="filePanelList.isLoading">
           <a-skeleton v-for="item in 3" :key="item"></a-skeleton>
         </template>
-        <div class="list-box" v-else>
+        <div class="list-box" v-else ref="listBox">
           <template v-if="filePanelList.list.length">
             <div class="file-panel-list-container">
               <div
@@ -19,7 +19,7 @@
                     <img class="image-file" v-if="item.type === FileEnum.Image" :src="item.url"
                          alt="">
                     <div v-if="item.type === FileEnum.Text">
-                      <FileWordOutlined/>
+                      <FileWordOutlined style="font-size: 20px"/>
                     </div>
                   </div>
                   <div class="file-name">{{ item.name || '暂无名称' }}</div>
@@ -40,13 +40,17 @@
           </template>
         </div>
       </div>
-      <file-preview-sidebar></file-preview-sidebar>
+      <!--      <file-preview-sidebar></file-preview-sidebar>-->
+      <preview-file-modal
+        @close="handleClosePreviewFileModal"
+        :file-model="filePanelItemData.data"
+        :is-preview-modal-shown="isPreviewModalShown"></preview-file-modal>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { FileEnum } from 'metagraph-constant';
 import {
   FileWordOutlined
@@ -66,25 +70,48 @@ import {
 import EmptyView from '@/components/empty-view/empty-view.vue';
 import FilePreviewSidebar from './file-panel-list/file-preview-sidebar.vue';
 import FilePanelListHeader from './file-panel-list/file-panel-list-header.vue';
+import PreviewFileModal from '@/views/file-panel/preview-file-modal.vue';
+
+const listBox = ref<HTMLElement>();
+const isPreviewModalShown = ref(false);
+
+function getSize() {
+  let itemNumber = 6;
+  let itemHeight = 2;
+  if (listBox.value) {
+    const width = listBox.value?.scrollWidth;
+    const height = listBox.value?.scrollHeight;
+    itemNumber = Number((width / 196).toFixed(0));
+    itemHeight = Number(((height - 60) / 196).toFixed(0));
+  }
+  return itemNumber * itemHeight;
+}
 
 const onPaginationChange = async (page: number) => {
   setFilePanelListConfig({
     pageNumber: page,
-    pageSize: 12
+    pageSize: getSize()
   });
   await getFilePanelList();
 };
 
-async function handleViewFile(id: string) {
-  showId.value = id;
-  await getFilePanelItemById(id);
+async function handleClosePreviewFileModal() {
+  isPreviewModalShown.value = false;
+  await getFilePanelList();
 }
+
+async function handleViewFile(id: string) {
+  // showId.value = id;
+  await getFilePanelItemById(id);
+  isPreviewModalShown.value = true;
+}
+
 
 onMounted(async () => {
   filePanelItemData.data = undefined;
   setFilePanelListConfig({
     pageNumber: 1,
-    pageSize: 12
+    pageSize: getSize()
   });
   await getFilePanelList();
 });
@@ -110,6 +137,7 @@ onMounted(async () => {
 
     .file-panel-list {
       height: 100%;
+      overflow-y: auto;
       flex: 1;
       padding: 18px;
 

@@ -10,9 +10,18 @@
     :visible="isPreviewModalShown"
     @cancel="handleCloseParseWordModal">
     <div class="modal-content">
-      <div class="parse-container" v-if="type === 'word'">
+      <div class="file-preview">
         <div class="preview-container">
-          <div id="first-preview-container"></div>
+          <preview-file-container
+            :mime-type="fileModel.mimeType"
+            :url="fileModel.url"
+            :dom-file="domFile"></preview-file-container>
+        </div>
+        <div class="file-message">
+          <file-preview-sidebar
+            @delete="handleDeleteFile"
+            @update="handleUpdateFile"
+            :file-model="fileModel"></file-preview-sidebar>
         </div>
       </div>
     </div>
@@ -20,82 +29,80 @@
 </template>
 
 <script lang="ts" setup>
-import { defineEmits, defineProps, PropType, watchEffect } from 'vue';
-import { Modal as AntModal } from 'ant-design-vue';
-import { renderAsync } from 'docx-preview';
-import axios from 'axios';
+import { createVNode, defineEmits, defineProps, PropType } from 'vue';
+import { message, Modal, Modal as AntModal } from 'ant-design-vue';
+import PreviewFileContainer from '@/views/file-panel/preview-file-container.vue';
+import FilePreviewSidebar from '@/views/file-panel/file-panel-list/file-preview-sidebar.vue';
+import { FileResponseType } from 'metagraph-constant';
+import {
+  removeFileById,
+  updateFile
+} from '@/views/file-panel/file-panel-list/file-panel-list-model';
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 
 const emit = defineEmits(['close']);
-const props = defineProps({
+defineProps({
   isPreviewModalShown: {
     type: Boolean,
     default: false
   },
-  type: {
-    type: String
-  },
-  url: {
-    type: String
+  fileModel: {
+    type: Object as PropType<FileResponseType>
   },
   domFile: {
     type: Object as PropType<File>
   }
 });
 
-async function previewDoc(container: HTMLElement, file: File | ArrayBuffer): Promise<void> {
-  await renderAsync(file, container, undefined, {
-    className: 'docx', // 默认和文档样式类的类名/前缀
-    inWrapper: true, // 启用围绕文档内容渲染包装器
-    ignoreWidth: false, // 禁止页面渲染宽度
-    ignoreHeight: false, // 禁止页面渲染高度
-    ignoreFonts: false, // 禁止字体渲染
-    breakPages: true, // 在分页符上启用分页
-    ignoreLastRenderedPageBreak: true, // 禁用lastRenderedPageBreak元素的分页
-    experimental: false, // 启用实验性功能（制表符停止计算）
-    trimXmlDeclaration: true, // 如果为真，xml声明将在解析之前从xml文档中删除
-    debug: false, // 启用额外的日志记录
+async function handleUpdateFile(params: { id: string, name: string }) {
+  await updateFile({
+    ...params
   });
+  emit('close');
 }
 
-async function uploadFileByUrl(params: {
-  url: string;
-}): Promise<void> {
-  axios.post('http://localhost:7250/public/file/upload/url', {
-    url: params.url
-  }, {
-    responseType: 'arraybuffer'
-  }).then(data => {
-    console.log(data);
-    const container = document.getElementById('first-preview-container');
-    if (container && data) {
-      previewDoc(container, data.data as any);
+async function handleDeleteFile(params: { id: string }) {
+  Modal.confirm({
+    title: '确定删除当前图片?',
+    okText: '确定',
+    cancelText: '取消',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: '删除关系操作不可恢复，请谨慎操作',
+    async onOk() {
+      await removeFileById(params.id);
+      emit('close');
+    },
+    onCancel() {
+      message.info('取消删除');
     }
   });
 }
-
-watchEffect(async () => {
-  if (props.url) {
-    await uploadFileByUrl({
-      url: props.url
-    });
-  }
-  // await nextTick(async () => {
-  //   if (!props.url) return;
-  //   const fileAsBuffer = await FileTypeUtil.downloadFileAsArrayBuffer(props.url);
-  //   console.log(fileAsBuffer, '-----file as buffer');
-  //   const container = document.getElementById('first-preview-container');
-  //   if (container && fileAsBuffer) {
-  //     await previewDoc(container, fileAsBuffer);
-  //   }
-  // });
-
-});
 
 function handleCloseParseWordModal() {
   emit('close');
 }
 </script>
+<style lang="scss">
+.full-modal {
+  .ant-modal {
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+    margin: 0;
+  }
 
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(75vh);
+  }
+
+  .ant-modal-body {
+    flex: 1;
+    padding: 0;
+  }
+}
+</style>
 <style scoped lang="scss">
 @import "../../style/common.scss";
 
@@ -104,16 +111,31 @@ function handleCloseParseWordModal() {
   width: 100%;
   margin: 0 auto;
   background: $contentBackgroundColor;
-  position: relative;
 
-  .preview-container {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 60px;
-    overflow-y: auto;
-    @include custom-scroll-style;
+  .file-preview {
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+    .preview-container {
+      position: absolute;
+      left: 0;
+      right: 400px;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+      @include custom-scroll-style;
+    }
+
+    .file-message {
+      width: 400px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
   }
+
+
 }
 </style>

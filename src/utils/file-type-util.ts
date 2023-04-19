@@ -11,13 +11,23 @@ export class FileTypeUtil {
     });
   }
 
-  static handleChange(file: File): Promise<ArrayBuffer> {
+  static changeFileToArrayBuffer(file: File): Promise<ArrayBuffer> {
     const reader = new FileReader();
     return new Promise((resolve) => {
       reader.onload = () => {
         resolve(reader.result as ArrayBuffer);
       };
       reader.readAsArrayBuffer(file);
+    });
+  }
+
+  static changeFileToBase64(file: File): Promise<string> {
+    const reader = new FileReader();
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     });
   }
 

@@ -1,50 +1,37 @@
 <template>
   <div class="file-panel-view">
-    <template v-if="showId && filePanelItemData.data">
-      <div class="file-name">{{ filePanelItemData.data.name }}</div>
-      <div class="image-container" v-if="filePanelItemData.data.type === 'image'">
-        <div class="file-inner">
-          <img class="preview-image" :src="filePanelItemData.data.url" alt="">
-        </div>
-      </div>
+    <template v-if="fileModel">
+      <div class="file-name">{{ fileModel.name }}</div>
       <div class="panel-item">
         <div class="title">文件信息</div>
         <div class="item view-item">
           <div class="left">名称</div>
           <div class="right">
             <ant-input
-              style="height: 24px;"
-              class="custom-input-style"
+              class="custom-name-input"
               v-model:value="newFileName"></ant-input>
           </div>
         </div>
+        <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
         <div class="item view-item">
           <div class="left">类型</div>
-          <div class="right">{{ filePanelItemData.data.mimeType }}</div>
+          <div class="right">{{ fileModel.mimeType }}</div>
         </div>
         <div class="item view-item">
           <div class="left">文件大小</div>
-          <div class="right">{{ CommonUtil.getFileSize(filePanelItemData.data.size) }}</div>
+          <div class="right">{{ CommonUtil.getFileSize(fileModel.size) }}</div>
         </div>
         <div class="item view-item">
           <div class="left">创建时间</div>
           <div class="right">
-            {{ CommonUtil.timeAgo(new Date(filePanelItemData.data.createdAt).getTime()) }}
+            {{ CommonUtil.timeAgo(new Date(fileModel.createdAt).getTime()) }}
           </div>
         </div>
         <div class="item view-item">
           <div class="left">文件地址</div>
           <div class="right">
-            <m-button
-              :is-icon="true"
-              :has-border="false"
-              v-clipboard:success="handleSuccess"
-              v-clipboard:error="handleFail"
-              v-clipboard="filePanelItemData.data.url">
-              <template #icon>
-                <copy-outlined></copy-outlined>
-              </template>
-            </m-button>
+            <div>{{ fileModel.url }}</div>
+
           </div>
         </div>
       </div>
@@ -52,11 +39,21 @@
         <m-button
           class="change-btn"
           :title="'修改'"
-          @click="handleUpdateFile(filePanelItemData.data.id)"></m-button>
+          @click="handleUpdateFile(fileModel.id)"></m-button>
         <m-button
           :is-icon="true"
           :has-border="false"
-          @click="handleDeleteFile(filePanelItemData.data.id)">
+          v-clipboard:success="handleSuccess"
+          v-clipboard:error="handleFail"
+          v-clipboard="fileModel.url">
+          <template #icon>
+            <copy-outlined></copy-outlined>
+          </template>
+        </m-button>
+        <m-button
+          :is-icon="true"
+          :has-border="false"
+          @click="handleDeleteFile(fileModel.id)">
           <template #icon>
             <DeleteOutlined/>
           </template>
@@ -68,20 +65,29 @@
 
 <script lang="ts" setup>
 import {
-  clearFilePanel,
-  filePanelItemData,
-  getFilePanelItemById,
-  getFilePanelList,
-  newFileName,
   removeFileById,
-  showId,
   updateFile
 } from '@/views/file-panel/file-panel-list/file-panel-list-model';
 import { Input as AntInput, message, Modal } from 'ant-design-vue';
-import { createVNode } from 'vue';
+import { ref, createVNode, defineProps, PropType, watchEffect, defineEmits } from 'vue';
 import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { CommonUtil } from '@/utils';
 import { MButton } from '@/metagraph-ui';
+import { FileResponseType } from '../../../../../metagraph-constant';
+
+const props = defineProps({
+  fileModel: {
+    type: Object as PropType<FileResponseType>,
+    required: true
+  }
+});
+const emit = defineEmits(['update', 'delete']);
+const newFileName = ref();
+const errorMessage = ref();
+
+watchEffect(() => {
+  newFileName.value = props.fileModel?.name;
+});
 
 function handleSuccess() {
   message.success('复制成功');
@@ -92,33 +98,20 @@ function handleFail() {
 }
 
 async function handleUpdateFile(id: string) {
-  if (newFileName.value) {
-    await updateFile({
-      id,
-      name: newFileName.value
-    });
-    await getFilePanelItemById(id);
-    await getFilePanelList();
-  } else {
-    message.error('图片名不能为空');
+  if (!newFileName.value) {
+    errorMessage.value = '请输入文件地址';
+    return;
   }
+  errorMessage.value = '';
+  emit('update', {
+    id,
+    name: newFileName.value
+  });
 }
 
 async function handleDeleteFile(id: string) {
-  Modal.confirm({
-    title: '确定删除当前图片?',
-    okText: '确定',
-    cancelText: '取消',
-    icon: createVNode(ExclamationCircleOutlined),
-    content: '删除关系操作不可恢复，请谨慎操作',
-    async onOk() {
-      await removeFileById(id);
-      await getFilePanelList();
-      await clearFilePanel();
-    },
-    onCancel() {
-      message.info('取消删除');
-    }
+  emit('delete', {
+    id
   });
 }
 
@@ -128,7 +121,8 @@ async function handleDeleteFile(id: string) {
 @import "../../../style/common.scss";
 
 .file-panel-view {
-  width: 300px;
+  background: #FFF;
+  width: 100%;
   height: 100%;
   border-left: 1px solid $hoverDeepBackColor;
   padding-top: 12px;
@@ -158,12 +152,6 @@ async function handleDeleteFile(id: string) {
       text-align: left;
     }
 
-    //.view-item {
-    //  &:hover {
-    //    background: $hoverBackColor;
-    //  }
-    //}
-
     .item {
       display: flex;
       margin: 0 16px 0 8px;
@@ -184,8 +172,24 @@ async function handleDeleteFile(id: string) {
         word-wrap: break-word;
         white-space: normal;
         word-break: break-all;
-        @include custom-input-style-mixin;
+
+        .custom-name-input {
+          height: 36px;
+          border-radius: 6px;
+
+          &:focus {
+            box-shadow: none;
+          }
+        }
       }
+    }
+
+    .error-message {
+      padding-left: 80px;
+      font-size: 12px;
+      line-height: 32px;
+      width: 100%;
+      color: red;
     }
   }
 
@@ -199,28 +203,28 @@ async function handleDeleteFile(id: string) {
     }
   }
 
-  .image-container {
+  .file-preview-container {
     width: 100%;
     height: 300px;
 
-    .file-inner {
-      background-color: #fff;
-      background-image: linear-gradient(45deg, #eee 25%, transparent 0, transparent 75%, #eee 0, #eee),
-      linear-gradient(45deg, #eee 25%, transparent 0, transparent 75%, #eee 0, #eee);
-      background-size: 19px 19px;
-      background-position: 0 0, 9px 9px;
-
-      height: 100%;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .preview-image {
-        max-height: 100%;
-        max-width: 100%;
-      }
-    }
+    //.file-inner {
+    //  background-color: #fff;
+    //  background-image: linear-gradient(45deg, #eee 25%, transparent 0, transparent 75%, #eee 0, #eee),
+    //  linear-gradient(45deg, #eee 25%, transparent 0, transparent 75%, #eee 0, #eee);
+    //  background-size: 19px 19px;
+    //  background-position: 0 0, 9px 9px;
+    //
+    //  height: 100%;
+    //  width: 100%;
+    //  display: flex;
+    //  align-items: center;
+    //  justify-content: center;
+    //
+    //  .preview-image {
+    //    max-height: 100%;
+    //    max-width: 100%;
+    //  }
+    //}
   }
 
 

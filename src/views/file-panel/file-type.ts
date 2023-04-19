@@ -35,11 +35,16 @@
  * .mdb      application/vnd.ms-access
  */
 
-export enum text {
+export enum MimetypeEnum {
   DOC = 'application/msword',
-  DOCX = 'application/msword',
-  PPT = 'application/msword',
-  PPTX = 'application/msword',
-  XLS = 'application/msword',
-  XLSX = 'application/msword',
+  DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  PPT = 'application/vnd.ms-powerpoint',
+  PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  XLS = 'application/vnd.ms-excel',
+  XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+  Image = 'image/png',
+
+  PDF = 'application/pdf'
+
 }
