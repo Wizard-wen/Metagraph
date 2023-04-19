@@ -15,7 +15,7 @@ import {
   mentionedKnowledge
 } from '@/views/knowledge-editor/model/knowledge.edit';
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
-import { EntityCompletelyListItemType } from '../../../../metagraph-constant';
+import { EntityCompletelyListItemType } from 'metagraph-constant';
 
 export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   protected limit = 600;

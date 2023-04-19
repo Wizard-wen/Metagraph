@@ -11,6 +11,7 @@ import type {
 } from 'metagraph-constant';
 import type { PublicApiResponseType } from '@/utils';
 import { RequestNewUntil } from '@/utils/request.new.until';
+import axios from 'axios';
 
 export class FileApiService {
   static async getCredential(params: QiniuUploadingCredentialRequestType): Promise<PublicApiResponseType<QiniuUploadingCredentialResponseType>> {
@@ -55,4 +56,5 @@ export class FileApiService {
       requestBody: params
     });
   }
+
 }

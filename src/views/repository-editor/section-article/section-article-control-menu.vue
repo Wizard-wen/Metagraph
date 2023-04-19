@@ -56,7 +56,7 @@ import {
 } from '@/components/tiptap-text-editor/controls';
 import UploadAndParseTextModal from '../public-component/upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
-import { UploadAndParseTextService } from '../model/upload.and.parse.text.service';
+import { UploadAndParseTextService } from '../public-component/upload.and.parse.text.service';
 
 const isParseWordModalShow = ref(false);
 const uploadAndParseTextService = new UploadAndParseTextService();

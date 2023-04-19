@@ -12,7 +12,7 @@
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType } from 'vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
-import { ParsedKeywordType } from '@/views/repository-editor/model/upload.and.parse.text.service';
+import { ParsedKeywordType } from '@/views/repository-editor/public-component/upload.and.parse.text.service';
 
 const emit = defineEmits(['control']);
 

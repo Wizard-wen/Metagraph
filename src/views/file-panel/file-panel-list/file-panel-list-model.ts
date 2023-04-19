@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue';
 import { FileApiService } from '@/api-service';
 import { message } from 'ant-design-vue';
-import { FileEnum, FileResponseType } from '../../../../../metagraph-constant';
+import { FileEnum, FileResponseType } from 'metagraph-constant';
 
 export const filePanelList = ref<{
   isLoading: boolean,

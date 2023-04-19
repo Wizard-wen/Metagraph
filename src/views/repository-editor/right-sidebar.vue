@@ -24,10 +24,6 @@
 
 <script lang="ts" setup>
 import { RepositoryEditor } from '@/views/repository-editor/model/repository.editor';
-import {
-  UploadAndParseTextService
-} from '@/views/repository-editor/model/upload.and.parse.text.service';
-import { SectionModelType } from 'metagraph-constant';
 import { defineEmits, inject, ref } from 'vue';
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 
@@ -68,22 +64,6 @@ function handleBarChange(value: string) {
 function handleRefreshSection(params: any) {
   emit('refreshSection', params);
 }
-
-// async function handleCloseParseTextModal(params: {
-//   type: 'Section' | 'void' | 'Alternative'
-//   sectionModel?: SectionModelType
-// }) {
-//   if (params.type === 'Section' && params.sectionModel) {
-//     emit('refreshSection', {
-//       sectionId: params.sectionModel.id
-//     });
-//   }
-//   if (params.type === 'Alternative') {
-//     await repositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
-//   }
-//   uploadAndParseTextService.clearData();
-//   isParseWordModalShow.value = false;
-// }
 
 async function handleCreateOrBindEntityModalClose() {
   isCreateOrBindEntityModalShow.value = false;

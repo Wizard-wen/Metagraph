@@ -33,6 +33,12 @@
               <DeleteOutlined class="icon-size"/>
               删除文本
             </ant-menu-item>
+            <ant-menu-item
+              class="menu-item-style"
+              @click="handleControlArticle('View')">
+              <EyeOutlined class="icon-size"/>
+              查看文本
+            </ant-menu-item>
           </ant-menu>
         </template>
       </ant-dropdown>
@@ -84,12 +90,12 @@
 
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType } from 'vue';
-import { CaretRightOutlined, MoreOutlined, DeleteOutlined, ReadOutlined } from '@ant-design/icons-vue';
+import { CaretRightOutlined, MoreOutlined, DeleteOutlined, ReadOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 import type {
   AlternativeKnowledgeModelType,
   KnowledgeArticleModelType
-} from '../metagraph-constant/dist/type/knowledge.type';
+} from 'metagraph-constant';
 
 const AntMenuItem = AntMenu.Item;
 
@@ -105,8 +111,7 @@ const props = defineProps({
       article: KnowledgeArticleModelType;
       children: AlternativeKnowledgeModelType[];
     }>,
-    default: () => {
-    }
+    required: true
   },
   expendItemId: {
     type: String,

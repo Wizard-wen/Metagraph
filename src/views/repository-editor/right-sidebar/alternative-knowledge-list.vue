@@ -19,9 +19,9 @@
         <article-item
           v-for="(item, index) in alternative.target"
           :key="index"
-          :expend-item-id="expendId"
+          :expend-item-id="expendArticleId"
           :article-item="item"
-          @expend="handleExpend"
+          @expend="handleExpendArticle"
           @controlArticle="handleControlArticle"
           @controlKnowledge="handleControlKnowledge"
         ></article-item>
@@ -29,6 +29,12 @@
       <empty-view v-else></empty-view>
     </div>
   </div>
+  <preview-file-modal
+    v-if="isPreviewModalShown"
+    @close="isPreviewModalShown = false"
+    :type="'word'"
+    :url="previewFileUrl"
+    :is-preview-modal-shown="isPreviewModalShown"></preview-file-modal>
   <upload-and-parse-text-modal
     :dom-file="currentFile"
     v-if="isParseWordModalShow"
@@ -43,24 +49,32 @@ import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { AlternativeKnowledgeModelType, SectionModelType } from 'metagraph-constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import ArticleItem from '@/views/repository-editor/right-sidebar/alternative-knowledge-list/article-item.vue';
+import ArticleItem
+  from '@/views/repository-editor/right-sidebar/alternative-knowledge-list/article-item.vue';
 import { KnowledgeArticleModelType } from 'metagraph-constant/dist/type/knowledge.type';
 import { MButton } from '@/metagraph-ui';
 import { FileTypeUtil } from '@/utils';
-import { alternative, RepositoryEditor } from '../model/repository.editor';
 import UploadAndParseTextModal
   from '@/views/repository-editor/public-component/upload-and-parse-text-modal.vue';
 import {
   UploadAndParseTextService
-} from '@/views/repository-editor/model/upload.and.parse.text.service';
+} from '@/views/repository-editor/public-component/upload.and.parse.text.service';
+import { alternative, RepositoryEditor } from '../model/repository.editor';
+import PreviewFileModal from '@/views/file-panel/preview-file-modal.vue';
+
 const uploadAndParseTextService = new UploadAndParseTextService();
 const emit = defineEmits(['open', 'createOrBindEntity', 'refreshSection']);
 
+const previewFileUrl = ref('');
+const isPreviewModalShown = ref(false);
 const isParseWordModalShow = ref(false);
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 const repositoryEditor = new RepositoryEditor();
 const inputElement = ref();
 const currentFile = ref<File>();
+// 展开的文章id
+const expendArticleId = ref();
+
 function handleOpenParseTextModal(event: MouseEvent) {
   if (inputElement.value) {
     inputElement.value.click();
@@ -101,13 +115,11 @@ async function handleCloseParseTextModal(params: {
   isParseWordModalShow.value = false;
 }
 
-const expendId = ref();
-
-function handleExpend(value: string) {
-  if (expendId.value === value) {
-    expendId.value = '';
+function handleExpendArticle(value: string) {
+  if (expendArticleId.value === value) {
+    expendArticleId.value = '';
   } else {
-    expendId.value = value;
+    expendArticleId.value = value;
   }
 }
 
@@ -136,7 +148,11 @@ async function handleControlArticle(params: {
   type: string,
   data: KnowledgeArticleModelType
 }) {
-  // todo
+  if (params.type === 'View') {
+    console.log(params.data);
+    previewFileUrl.value = params.data.url;
+    isPreviewModalShown.value = true;
+  }
 }
 
 async function handleControlKnowledge(params: {

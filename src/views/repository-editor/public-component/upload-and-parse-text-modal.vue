@@ -35,7 +35,6 @@
           <m-button @click="uploadToServer" :is-loading="isUploading" :title="'确认上传'"></m-button>
         </div>
       </div>
-
       <div class="parse-container" v-if="currentStatus === 'uploadSuccess'">
         <div class="uploaded-file">
           {{ fileUrl }}
@@ -121,7 +120,7 @@ import {
   sectionNameErrorMessage,
   textFileForm,
   UploadAndParseTextService,
-} from '../model/upload.and.parse.text.service';
+} from './upload.and.parse.text.service';
 
 const uploadAndParseTextService = new UploadAndParseTextService();
 
