@@ -1,4 +1,11 @@
 <template>
+  <div></div>
+
+
+
+
+
+
   <ant-spin :spinning="isLoading">
     <ant-row class="plan-board" :gutter="[10,0]">
       <ant-col :span="4">
@@ -25,28 +32,7 @@
       </ant-col>
       <ant-col :span="15">
         <div class="plan-content">
-          <div class="operation-header">
-            <ant-button type="primary" @click="addPlanItem">创建计划项</ant-button>
-            <ant-form
-              layout="inline"
-              :model="filterFormState"
-              @submit="handleFilter">
-              <ant-form-item name="type">
-                <ant-select v-model:value="filterFormState.type">
-                  <ant-select-option value="priority">优先级</ant-select-option>
-                  <ant-select-option disabled value="deadlineDate">截止日</ant-select-option>
-                  <ant-select-option disabled value="planDate">计划日</ant-select-option>
-                </ant-select>
-              </ant-form-item>
-              <ant-form-item name="priority">
-                <ant-radio-group v-model:value="filterFormState.orderBy" @change="handleChange">
-                  <ant-radio :value="-1">倒序</ant-radio>
-                  <ant-radio :value="1">正序</ant-radio>
-                  <ant-radio :value="0">默认</ant-radio>
-                </ant-radio-group>
-              </ant-form-item>
-            </ant-form>
-          </div>
+
           <ant-progress :percent="donePercent"/>
           <ant-row :gutter="[10,16]">
             <ant-col :span="8">
@@ -211,14 +197,7 @@ export default defineComponent({
     const planItemId = ref();
     const priorityUp = ref(false);
     const isFormDisabled = ref(true);
-    const filterFormState = ref<{
-      orderBy: 1 | -1 | 0,
-      // type: 'priority' | 'planDate' | 'deadlineDate'
-      type: 'priority'
-    }>({
-      orderBy: 0,
-      type: 'priority'
-    });
+
 
     const donePercent = computed(
       () => Math.round((planBoard.value.doneList.length / planBoard.value.list.length) * 100)
@@ -257,11 +236,7 @@ export default defineComponent({
       planItemId.value = params.id;
     }
 
-    function addPlanItem() {
-      planItemId.value = undefined;
-      planBoardService.clearPlanItem();
-      isShowModal.value = true;
-    }
+
 
     async function closePlanItemModal() {
       isShowModal.value = false;
@@ -272,9 +247,7 @@ export default defineComponent({
 
     }
 
-    function handleFilter() {
 
-    }
 
     function bindEntity() {
 
@@ -313,33 +286,7 @@ export default defineComponent({
       });
     }
 
-    function handleChange(event: any) {
-      console.log(event);
-      const { type } = filterFormState.value;
-      if (event.target.value === 1) {
-        planBoard.value.doingList.sort((a, b) => a.item[type] - b.item[type]);
-        planBoard.value.todoList.sort((a, b) => a.item[type] - b.item[type]);
-        planBoard.value.doneList.sort((a, b) => a.item[type] - b.item[type]);
-      } else if (event.target.value === -1) {
-        planBoard.value.doingList.sort((a, b) => b.item[type] - a.item[type]);
-        planBoard.value.todoList.sort((a, b) => b.item[type] - a.item[type]);
-        planBoard.value.doneList.sort((a, b) => b.item[type] - a.item[type]);
-      } else {
-        console.log(planBoard.value.todoList);
-        planBoard.value.doingList.length && planBoard.value.doingList.sort(
-          (a, b) => b.item.updatedAt.getTime() - a.item.updatedAt.getTime()
-        );
-        planBoard.value.todoList.length && planBoard.value.todoList.sort(
-          (a, b) => {
-            console.log(b.item.updatedAt, b.item.updatedAt.getTime());
-            return b.item.updatedAt.getTime() - a.item.updatedAt.getTime();
-          }
-        );
-        planBoard.value.doneList.length && planBoard.value.doneList.sort(
-          (a, b) => b.item.updatedAt.getTime() - a.item.updatedAt.getTime()
-        );
-      }
-    }
+
 
     onMounted(async () => {
       await planBoardService.getPlan(planId.value);

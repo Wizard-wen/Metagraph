@@ -25,8 +25,8 @@ import { domainBaseTypeId } from '@/business/domain-selector/domain.selector';
 import { EditOutlined } from '@ant-design/icons-vue';
 import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { MButton, MTag } from '@/metagraph-ui';
-import DomainSelectModal from './domain-selector-modal.vue';
 import { Form } from 'ant-design-vue';
+import DomainSelectModal from './domain-selector-modal.vue';
 
 const useForm = Form.useInjectFormItemContext();
 defineProps({

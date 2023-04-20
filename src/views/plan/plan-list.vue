@@ -78,7 +78,7 @@ async function handleCloseModal() {
 
 async function goPlanBoard(id: string) {
   router.push({
-    path: '/planBoard',
+    path: '/plan/board',
     query: {
       id
     }
