@@ -104,7 +104,7 @@
 import { MButton } from '@/metagraph-ui';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import { Button as AntButton, Input as AntInput, Modal as AntModal } from 'ant-design-vue';
-import { FileEnum, SectionModelType } from 'metagraph-constant';
+import { FileEnum, SectionModelType } from '@metagraph/constant';
 import { defineEmits, defineProps, inject, nextTick, PropType, ref, watchEffect } from 'vue';
 import ParsedKeywordList from '@/views/repository-editor/public-component/parsed-keyword-list.vue';
 import { renderAsync } from 'docx-preview';

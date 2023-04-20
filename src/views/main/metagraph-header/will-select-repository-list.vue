@@ -13,7 +13,7 @@
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType } from 'vue';
 import { BookOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 
 const emit = defineEmits(['control']);
 

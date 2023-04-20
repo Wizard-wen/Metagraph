@@ -54,7 +54,7 @@ import type {
   EntityCompletelyListItemType,
   KnowledgeResponseType,
   SectionModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { computed, defineEmits, inject, ref } from 'vue';
 import MetagraphTree from '@/components/metagraph-tree/metagraph-tree.vue';
 import { isEditableKey } from '@/views/repository-editor/model/provide.type';

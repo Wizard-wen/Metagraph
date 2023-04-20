@@ -4,11 +4,11 @@
  */
 
 import { RequestNewUntil } from '@/utils/request.new.until';
-import { KnowledgeAuthedApi } from 'metagraph-constant';
+import { KnowledgeAuthedApi } from '@metagraph/constant';
 import type {
   EntityCompletelyListItemType, KnowledgeEdgeInEdgeGroupType,
   KnowledgeNoAuthApi
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
 
 export class KnowledgeNoAuthApiService {

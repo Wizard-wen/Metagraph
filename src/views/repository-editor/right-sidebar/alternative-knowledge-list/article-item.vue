@@ -95,7 +95,7 @@ import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 import type {
   AlternativeKnowledgeModelType,
   KnowledgeArticleModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 
 const AntMenuItem = AntMenu.Item;
 

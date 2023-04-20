@@ -9,7 +9,7 @@ import type {
   EntityCompletelyListItemType,
   SectionResponseType,
   SectionTreeNodeType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { ToolbarState } from '@/types/toolbar';
 
 type KnowledgePreExtendEntityTreeNodeType = {

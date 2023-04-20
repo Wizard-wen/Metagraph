@@ -11,8 +11,8 @@ import type {
   EntityCompletelyListItemType,
   KnowledgeResponseType,
   SectionModelType
-} from 'metagraph-constant';
-import { SectionEntityType } from 'metagraph-constant';
+} from '@metagraph/constant';
+import { SectionEntityType } from '@metagraph/constant';
 import { reactive, ref } from 'vue';
 import { tiptapInitData } from '@/store/constant';
 import { EntityApiService, SectionApiService, SectionNoAuthApiService } from '@/api-service';

@@ -24,7 +24,7 @@ import { QiniuUploadService } from '@/service/qiniu.upload.service';
 import { KnowledgePicturesFrontendType } from '@/views/knowledge-editor/model/knowledge.edit.type';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message, Modal, Upload as AntUpload } from 'ant-design-vue';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum } from '@metagraph/constant';
 import {
   ref, PropType, createVNode, defineProps, defineEmits, watchEffect
 } from 'vue';

@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { KnowledgeEdgeInEdgeGroupType } from 'metagraph-constant';
+import { KnowledgeEdgeInEdgeGroupType } from '@metagraph/constant';
 import { defineProps, PropType, ref } from 'vue';
 import { EyeOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';

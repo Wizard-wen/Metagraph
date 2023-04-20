@@ -59,7 +59,7 @@ import { Button as AntButton, message, Modal as AntModal } from 'ant-design-vue'
 import { computed, defineEmits, defineProps, nextTick, PropType, ref, watchEffect } from 'vue';
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
-import { FileEnum, FileProvider } from 'metagraph-constant';
+import { FileEnum, FileProvider } from '@metagraph/constant';
 import { renderAsync } from 'docx-preview';
 
 const props = defineProps({

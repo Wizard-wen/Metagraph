@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { EntityCompletelyListItemType, RepositoryModelType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, RepositoryModelType } from '@metagraph/constant';
 import { computed, defineProps, PropType } from 'vue';
 import { BookOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { CloneIcon } from '@/components/icons';

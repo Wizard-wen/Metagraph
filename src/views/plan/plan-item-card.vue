@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PlanListItemType, PlanModelType } from 'metagraph-constant';
+import { PlanListItemType, PlanModelType } from '@metagraph/constant';
 import { computed, defineEmits, defineProps, PropType } from 'vue';
 import { EditOutlined } from '@ant-design/icons-vue';
 import { Progress as AProgress, Tooltip as ATooltip } from 'ant-design-vue';

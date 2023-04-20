@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import type {
   EntityCompletelyListItemType, RepositoryModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { MButton } from '@/metagraph-ui';
 import { computed, defineProps, PropType, ref } from 'vue';
 import { Avatar as AntAvatar } from 'ant-design-vue';

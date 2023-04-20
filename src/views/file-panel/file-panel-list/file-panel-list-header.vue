@@ -106,7 +106,7 @@ import {
   LeftOutlined
 } from '@ant-design/icons-vue';
 import { MButton } from '@/metagraph-ui';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum } from '@metagraph/constant';
 import { ref } from 'vue';
 import FileUploadModal from '@/views/file-panel/file-panel-list/file-upload-modal.vue';
 

@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { PublicEntityType } from 'metagraph-constant';
+import type { PublicEntityType } from '@metagraph/constant';
 import { defineProps, PropType, ref } from 'vue';
 import { MButton } from '@/metagraph-ui';
 import AddToPlanModal from './add-to-plan-modal/add-to-plan-modal.vue';

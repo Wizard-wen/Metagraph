@@ -7,7 +7,7 @@ import type {
   UserModelType,
   EntityCompletelyListItemType,
   ActivityModelType, UpdateRecordType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { ApiPathEnum } from '@/api-service/config/api.config';
 import { PublicApiResponseType, RequestUtil } from '@/utils';
 

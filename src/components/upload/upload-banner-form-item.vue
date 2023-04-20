@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { FileProvider } from 'metagraph-constant';
+import { FileProvider } from '@metagraph/constant';
 
 import { defineEmits, defineProps, PropType, ref, watchEffect } from 'vue';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue';

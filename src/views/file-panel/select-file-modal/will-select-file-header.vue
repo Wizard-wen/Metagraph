@@ -55,7 +55,7 @@ import {
   SearchOutlined
 } from '@ant-design/icons-vue';
 import { MButton } from '@/metagraph-ui';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum } from '@metagraph/constant';
 
 const AntMenuItem = AntMenu.Item;
 

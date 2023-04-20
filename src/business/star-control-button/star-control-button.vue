@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { PublicEntityType } from 'metagraph-constant';
+import type { PublicEntityType } from '@metagraph/constant';
 import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { message } from 'ant-design-vue';
 import { StarFilled, StarOutlined } from '@ant-design/icons-vue';

@@ -8,7 +8,7 @@ import type {
   RepositoryEntityType,
   RepositoryCreateType,
   RepositoryModelType, RepositoryUpdateType, RepositoryAuthApi, EntityCompletelyListItemType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
 
 export class RepositoryApiService {

@@ -3,7 +3,7 @@
  * @date  2022/1/28 15:19
  */
 
-import type { EntityCompletelyListItemType, PublicEntityType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, PublicEntityType } from '@metagraph/constant';
 import { reactive } from 'vue';
 import { EntityNoAuthApiService } from '@/api-service';
 

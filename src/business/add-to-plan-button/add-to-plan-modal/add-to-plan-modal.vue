@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { AddToPlanModal, planOptions } from '@/business/add-to-plan-button/add-to-plan-modal/add.to.plan.modal';
-import type { PublicEntityType } from 'metagraph-constant';
+import type { PublicEntityType } from '@metagraph/constant';
 import {
   defineComponent, onMounted, PropType, ref, toRef
 } from 'vue';

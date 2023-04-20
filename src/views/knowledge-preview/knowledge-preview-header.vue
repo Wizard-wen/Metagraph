@@ -50,7 +50,7 @@
 </template>
 <script lang="ts">
 import { Tag } from 'ant-design-vue';
-import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, KnowledgeResponseType } from '@metagraph/constant';
 import {
   computed, defineComponent, PropType, toRef
 } from 'vue';

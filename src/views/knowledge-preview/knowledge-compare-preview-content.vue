@@ -96,7 +96,7 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType, KnowledgeModelType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, KnowledgeModelType } from '@metagraph/constant';
 import {
   computed, defineComponent, PropType, toRef
 } from 'vue';

@@ -73,7 +73,7 @@ import { ref, createVNode, defineProps, PropType, watchEffect, defineEmits } fro
 import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { CommonUtil } from '@/utils';
 import { MButton } from '@/metagraph-ui';
-import { FileResponseType } from '../../../../../metagraph-constant';
+import { FileResponseType } from '../../../../../@metagraph/constant';
 
 const props = defineProps({
   fileModel: {

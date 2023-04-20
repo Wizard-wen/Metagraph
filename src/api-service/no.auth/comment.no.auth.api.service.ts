@@ -3,7 +3,7 @@
  * @date  2021/9/12 23:28
  */
 
-import type { CommentEntityType, CommentListItemType } from 'metagraph-constant';
+import type { CommentEntityType, CommentListItemType } from '@metagraph/constant';
 import { ApiPathEnum } from '@/api-service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';

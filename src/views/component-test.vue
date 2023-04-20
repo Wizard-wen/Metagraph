@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 
 import 'intro.js/introjs.css';
-import 'metagraph-ui/dist/style.css';
 import { GitStyleLogin } from '@/github.style.component';
 import FilePanelList from '@/views/file-panel/file-panel-list.vue';
 

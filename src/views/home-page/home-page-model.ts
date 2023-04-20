@@ -4,7 +4,7 @@
  */
 
 import { message } from 'ant-design-vue';
-import { ActivityModelType, EntityCompletelyListItemType, UserModelType } from 'metagraph-constant';
+import { ActivityModelType, EntityCompletelyListItemType, UserModelType } from '@metagraph/constant';
 import { reactive, ref } from 'vue';
 import { ActivityApiService } from '@/api-service/activity.api.service';
 import { RepositoryApiService, RepositoryNoAuthApiService } from '@/api-service';

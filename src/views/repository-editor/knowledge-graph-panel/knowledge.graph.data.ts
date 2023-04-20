@@ -13,7 +13,7 @@ import type {
   KnowledgeEdgeModelType,
   KnowledgeEdgeResponseType,
   KnowledgeModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { createVNode, reactive, ref } from 'vue';
 import { WebsocketService } from '@/service/websocket.service';
 import {

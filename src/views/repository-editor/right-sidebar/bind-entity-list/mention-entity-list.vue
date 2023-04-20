@@ -33,7 +33,7 @@
 import { defineEmits, defineProps, PropType } from 'vue';
 import { EyeOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;

@@ -4,7 +4,7 @@
  */
 
 import { RequestNewUntil } from '@/utils/request.new.until';
-import type { KnowledgeEdgeNoAuthApi, KnowledgeEdgeResponseType } from 'metagraph-constant';
+import type { KnowledgeEdgeNoAuthApi, KnowledgeEdgeResponseType } from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
 
 export class EdgeNoAuthApiService {

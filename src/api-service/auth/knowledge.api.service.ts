@@ -8,7 +8,7 @@ import {
   AlternativeKnowledgeListType,
   EntityCompletelyListItemType,
   KnowledgeAuthedApi, KnowledgeModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
 
 export class KnowledgeApiService {

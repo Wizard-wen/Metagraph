@@ -113,7 +113,7 @@
 import {
   Button, Col, List, Row, Tag, Image
 } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
   defineComponent, PropType
 } from 'vue';

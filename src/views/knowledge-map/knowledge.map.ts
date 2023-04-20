@@ -12,7 +12,7 @@ import {
   EntityCompletelyListItemType,
   KnowledgeEdgeModelType, KnowledgeModelType, KnowledgeResponseType,
   RepositoryModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { reactive, ref } from 'vue';
 import {
   EdgeNoAuthApiService, EntityNoAuthApiService, KnowledgeNoAuthApiService,

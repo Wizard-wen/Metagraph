@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { EntityCompletelyListItemType, KnowledgeEdgeInEdgeGroupType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, KnowledgeEdgeInEdgeGroupType } from '@metagraph/constant';
 import {
   defineEmits, defineProps, PropType, ref
 } from 'vue';

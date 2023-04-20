@@ -9,8 +9,8 @@ import {
   PlanEntityModelType,
   PlanItemModelType,
   PlanModelType
-} from 'metagraph-constant';
-import moment, { Moment } from 'moment';
+} from '@metagraph/constant';
+import dayjs, { Dayjs } from 'dayjs';
 import { reactive, ref } from 'vue';
 
 export const planBoard = ref<{
@@ -50,16 +50,16 @@ export const planBindEntityList = ref<{
 
 interface PlanFormState {
   name: string;
-  deadlineDate?: Moment;
-  planDate?: Moment;
+  deadlineDate?: Dayjs;
+  planDate?: Dayjs;
   description?: string;
 }
 
 const dateFormat = 'YYYY/MM/DD';
 export const planFormState = reactive<PlanFormState>({
   name: '',
-  deadlineDate: moment(new Date(), dateFormat),
-  planDate: moment(new Date(), dateFormat),
+  deadlineDate: dayjs(new Date(), dateFormat),
+  planDate: dayjs(new Date(), dateFormat),
   description: ''
 });
 
@@ -68,8 +68,8 @@ export type PlanItemState = {
   priority: 1 | 2 | 3 | 4 | 5;
   status?: 'todo' | 'doing' | 'done';
   description?: string;
-  planDate?: Moment;
-  deadlineDate?: Moment;
+  planDate?: Dayjs;
+  deadlineDate?: Dayjs;
 }
 
 export const planItem = reactive<PlanItemState>({
@@ -77,8 +77,8 @@ export const planItem = reactive<PlanItemState>({
   priority: 1,
   description: '',
   status: undefined,
-  planDate: moment(new Date(), dateFormat),
-  deadlineDate: moment(new Date(), dateFormat),
+  planDate: dayjs(new Date(), dateFormat),
+  deadlineDate: dayjs(new Date(), dateFormat),
 });
 
 export const isLoading = ref(false);
@@ -89,8 +89,8 @@ export class PlanBoard {
     planItem.description = '';
     planItem.priority = 1;
     planItem.status = undefined;
-    planItem.planDate = moment(new Date(), dateFormat);
-    planItem.deadlineDate = moment(new Date(), dateFormat);
+    planItem.planDate = dayjs(new Date(), dateFormat);
+    planItem.deadlineDate = dayjs(new Date(), dateFormat);
   }
 
   async getPlan(id: string): Promise<void> {
@@ -102,8 +102,8 @@ export class PlanBoard {
       planBoard.value.list = result.data.planItemList;
       planFormState.name = result.data.plan.name;
       planFormState.description = result.data.plan.description;
-      planFormState.deadlineDate = moment(result.data.plan.deadlineDate, dateFormat);
-      planFormState.planDate = moment(result.data.plan.planDate, dateFormat);
+      planFormState.deadlineDate = dayjs(result.data.plan.deadlineDate, dateFormat);
+      planFormState.planDate = dayjs(result.data.plan.planDate, dateFormat);
       planBoard.value.doingList = [];
       planBoard.value.todoList = [];
       planBoard.value.doneList = [];
@@ -157,8 +157,8 @@ export class PlanBoard {
     });
     if (result.data) {
       planItem.priority = result.data.priority;
-      planItem.planDate = moment(result.data.planDate, dateFormat);
-      planItem.deadlineDate = moment(result.data.deadlineDate, dateFormat);
+      planItem.planDate = dayjs(result.data.planDate, dateFormat);
+      planItem.deadlineDate = dayjs(result.data.deadlineDate, dateFormat);
       planItem.description = result.data.description;
       planItem.name = result.data.name;
     }

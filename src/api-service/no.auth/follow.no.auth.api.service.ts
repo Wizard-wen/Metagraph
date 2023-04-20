@@ -5,7 +5,7 @@
 
 import { ApiPathEnum } from '@/api-service/config/api.config';
 import { PublicApiResponseType, RequestUtil } from '@/utils';
-import { UserModelType } from 'metagraph-constant';
+import { UserModelType } from '@metagraph/constant';
 
 export class FollowNoAuthApiService {
   static getFollowCount(params: { userId: string; }): Promise<PublicApiResponseType<{

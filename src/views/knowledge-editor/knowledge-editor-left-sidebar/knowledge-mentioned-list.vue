@@ -21,7 +21,7 @@
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
-import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, KnowledgeResponseType } from '@metagraph/constant';
 import {
   createVNode, inject, ref
 } from 'vue';

@@ -27,7 +27,7 @@ import type {
   ActivityModelType,
   EntityCompletelyListItemType,
   UserModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { defineProps, PropType } from 'vue';
 import ActivityFollowUserItem
   from '@/views/home-page/authed-main-list/activity-follow-user-item.vue';

@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType } from 'vue';
-import { DomainTreeNodeResponseType } from 'metagraph-constant';
+import { DomainTreeNodeResponseType } from '@metagraph/constant';
 import { CloseOutlined } from '@ant-design/icons-vue';
 
 const emit = defineEmits(['selectChange']);

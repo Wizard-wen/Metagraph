@@ -46,7 +46,7 @@ import type {
   EntityCompletelyListItemType,
   RepositoryModelType,
   StarResponseType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { computed, defineProps, PropType, ref, toRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { Avatar as AntAvatar, Button as AntButton, message, Tag as AntTag } from 'ant-design-vue';

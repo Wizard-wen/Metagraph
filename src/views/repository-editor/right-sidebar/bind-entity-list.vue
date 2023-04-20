@@ -56,7 +56,7 @@ import EmptyView from '@/components/empty-view/empty-view.vue';
 import { computed, defineEmits, inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import type { EntityCompletelyListItemType, KnowledgeResponseType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, KnowledgeResponseType } from '@metagraph/constant';
 import {
   repositoryBindEntityList,
   unpublishedDraftKnowledgeList

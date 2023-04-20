@@ -47,11 +47,11 @@ import EmptyView from '@/components/empty-view/empty-view.vue';
 import { createVNode, defineEmits, inject, ref } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { AlternativeKnowledgeModelType, SectionModelType } from 'metagraph-constant';
+import { AlternativeKnowledgeModelType, SectionModelType } from '@metagraph/constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ArticleItem
   from '@/views/repository-editor/right-sidebar/alternative-knowledge-list/article-item.vue';
-import { KnowledgeArticleModelType } from 'metagraph-constant/dist/type/knowledge.type';
+import { KnowledgeArticleModelType } from '@metagraph/constant/dist/type/knowledge.type';
 import { MButton } from '@/metagraph-ui';
 import { FileTypeUtil } from '@/utils';
 import UploadAndParseTextModal

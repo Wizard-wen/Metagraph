@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { EntityCompletelyListItemType, } from 'metagraph-constant';
+import type { EntityCompletelyListItemType, } from '@metagraph/constant';
 import { computed, defineProps, PropType } from 'vue';
 import { Avatar as AntAvatar } from 'ant-design-vue';
 import { MTag } from '@/metagraph-ui';

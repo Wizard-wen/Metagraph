@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Avatar, Button, List } from 'ant-design-vue';
-import type { UserModelType } from 'metagraph-constant';
+import type { UserModelType } from '@metagraph/constant';
 import {
   defineComponent, PropType
 } from 'vue';

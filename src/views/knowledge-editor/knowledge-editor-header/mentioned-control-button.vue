@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { Button, List } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { ref, defineComponent, PropType } from 'vue';
 import { SocialActionButton, MetagraphDrawer, CommentIcon } from '@/components';
 import { useRouter } from 'vue-router';

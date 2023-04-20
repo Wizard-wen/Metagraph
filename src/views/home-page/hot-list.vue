@@ -16,10 +16,10 @@
           </div>
           <div class="description-text">{{ item.content.description }}</div>
           <div class="tag-content" v-if="item.content.domain.length">
-            <metagraph-tag
+            <m-tag
               :key="tagIndex"
               v-for="(domainItem, tagIndex) in item.content.domain"
-              :title="domainItem.domainName"></metagraph-tag>
+              :title="domainItem.domainName"></m-tag>
           </div>
           <div class="action">
             <div class="action-item">
@@ -36,11 +36,11 @@
 </template>
 
 <script lang="ts" setup>
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType } from '@metagraph/constant';
 import { Skeleton as AntSkeleton } from 'ant-design-vue';
 import { computed, onMounted, ref } from 'vue';
 import { StarOutlined } from '@ant-design/icons-vue';
-import { MetagraphTag } from 'metagraph-ui';
+import { MTag } from '@/metagraph-ui';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { getHotList, hotRepositoryList } from './home-page-model';

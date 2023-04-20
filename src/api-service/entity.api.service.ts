@@ -3,7 +3,7 @@
  * @date  2022/1/28 15:56
  */
 
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { ApiPathEnum } from '@/api-service/config/api.config';
 import { PublicApiResponseType, RequestUtil } from '@/utils';
 

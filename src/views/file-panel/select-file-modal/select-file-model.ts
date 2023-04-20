@@ -1,7 +1,7 @@
 import { FileApiService } from '@/api-service';
 import { message } from 'ant-design-vue';
 import { reactive, ref } from 'vue';
-import { FileEnum, FileResponseType } from 'metagraph-constant';
+import { FileEnum, FileResponseType } from '@metagraph/constant';
 import {
   filePanelItemData,
   showId

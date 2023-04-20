@@ -55,7 +55,7 @@ import { IndexdbService } from '@/service/indexdb.service';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import type { JSONContent } from '@tiptap/vue-3';
-import { EntityCompletelyListItemType, SectionModelType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, SectionModelType } from '@metagraph/constant';
 import { createVNode, onMounted, onUnmounted, provide, ref } from 'vue';
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 import { message, Modal, Spin as AntSpin } from 'ant-design-vue';

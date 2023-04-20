@@ -52,7 +52,7 @@
 import { defineEmits, defineProps, ref } from 'vue';
 import { Modal as AntModal } from 'ant-design-vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
-import { SectionModelType } from 'metagraph-constant';
+import { SectionModelType } from '@metagraph/constant';
 import { renderAsync } from 'docx-preview';
 import { MButton } from '@/metagraph-ui';
 

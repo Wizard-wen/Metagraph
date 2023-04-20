@@ -11,22 +11,25 @@ import {
 import { JSONContent } from '@tiptap/vue-3';
 import { ValidateInfo } from 'ant-design-vue/es/form/useForm';
 import { differenceWith, isEqual } from 'lodash';
-import moment, { Moment } from 'moment';
-import {
-  computed, InjectionKey, reactive, Ref, ref
-} from 'vue';
+import dayjs from 'dayjs';
+import { computed, InjectionKey, reactive, Ref, ref } from 'vue';
 import type {
-  EntityCompletelyListItemType, KnowledgeCustomFieldType,
+  EntityCompletelyListItemType,
+  KnowledgeCustomFieldType,
   KnowledgeEdgeInEdgeGroupType,
-  KnowledgeModelType, MentionKnowledgeType,
+  KnowledgeModelType,
+  MentionKnowledgeType,
   TagModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { Form, message } from 'ant-design-vue';
 import { v1 as uuidV1 } from 'uuid';
 import {
   DomainNoAuthApiService,
-  KnowledgeApiService, KnowledgeNoAuthApiService, RepositoryApiService,
-  RepositoryNoAuthApiService, TagApiService
+  KnowledgeApiService,
+  KnowledgeNoAuthApiService,
+  RepositoryApiService,
+  RepositoryNoAuthApiService,
+  TagApiService
 } from '@/api-service';
 import { tiptapInitData } from '@/store/constant';
 
@@ -215,7 +218,7 @@ export class KnowledgeEdit {
 
     knowledgeCustomFields.value = customField ?? [];
     knowledgeCustomFields.value.forEach((item) => {
-      customFieldsModelRef.value[item.key] = item.type === 'Date' ? moment(item.value) : item.value;
+      customFieldsModelRef.value[item.key] = item.type === 'Date' ? dayjs(item.value, 'YYYY/MM/DD') : item.value;
       customFieldsRulesRef.value[item.key] = [{
         required: true,
         message: `请输入${item.label}`,

@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType, PlanItemModelType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, PlanItemModelType } from '@metagraph/constant';
 import { defineComponent, PropType, ref } from 'vue';
 import { Tag } from 'ant-design-vue';
 import { EditOutlined } from '@ant-design/icons-vue';

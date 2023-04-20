@@ -8,7 +8,7 @@ import type {
   KnowledgeEdgeAuthApi,
   KnowledgeEdgeResponseType,
   KnowledgeEdgeModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
 
 export class EdgeApiService {

@@ -13,7 +13,7 @@ import type {
   PlanModelType,
   PlanTreeType,
   PublicEntityType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { RequestNewUntil } from '@/utils/request.new.until';
 
 export type CreatePlanType = {

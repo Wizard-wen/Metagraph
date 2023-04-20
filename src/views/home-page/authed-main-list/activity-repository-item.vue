@@ -50,7 +50,7 @@ import type {
   EntityCompletelyListItemType,
   StarResponseType,
   UserModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { MButton } from '@/metagraph-ui';
 import { computed, defineProps, PropType, ref, toRef } from 'vue';
 import { Avatar as AntAvatar, message } from 'ant-design-vue';

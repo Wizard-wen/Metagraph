@@ -2,7 +2,7 @@
  * @author songxiwen
  * @date  2022/5/4 23:41
  */
-import { KnowledgePictureType } from 'metagraph-constant';
+import { KnowledgePictureType } from '@metagraph/constant';
 
 export type KnowledgeBaseFormType = {
   name: string;

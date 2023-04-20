@@ -38,7 +38,7 @@ import type {
   ActivityModelType,
   EntityCompletelyListItemType,
   UserModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import {
   computed, defineComponent, PropType, toRef
 } from 'vue';

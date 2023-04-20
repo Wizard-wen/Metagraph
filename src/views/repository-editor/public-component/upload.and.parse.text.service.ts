@@ -6,7 +6,7 @@ import { message } from 'ant-design-vue';
 import * as qiniu from 'qiniu-js';
 import { QiniuError, QiniuNetworkError, QiniuRequestError } from 'qiniu-js';
 import { ref } from 'vue';
-import { FileEnum, SectionModelType } from 'metagraph-constant';
+import { FileEnum, SectionModelType } from '@metagraph/constant';
 import { FileApiService, KnowledgeApiService, SectionApiService } from '@/api-service';
 import { NlpApiService } from '@/api-service/nlp.api.service';
 

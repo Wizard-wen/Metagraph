@@ -69,7 +69,7 @@
 import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined, LinkOutlined } from '@ant-design/icons-vue';
 import { debounce } from 'lodash';
-import { KnowledgeResponseType } from 'metagraph-constant';
+import { KnowledgeResponseType } from '@metagraph/constant';
 import { createVNode, defineEmits, defineProps, inject, onMounted, ref, toRef, watch } from 'vue';
 import { Input as AntInput, message, Modal, Skeleton as AntSkeleton } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';

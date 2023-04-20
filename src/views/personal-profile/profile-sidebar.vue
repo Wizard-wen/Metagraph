@@ -66,7 +66,7 @@ import {
   computed, onMounted, ref, defineComponent, inject
 } from 'vue';
 import { UserOutlined } from '@ant-design/icons-vue';
-import { UserModelType } from 'metagraph-constant';
+import { UserModelType } from '@metagraph/constant';
 import { PersonalProfile } from './personal.profile';
 import { userProfileKey, userFollowKey } from '@/views/personal-profile/personal.profile.provide';
 import {

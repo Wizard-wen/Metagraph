@@ -41,7 +41,7 @@ import type {
   ActivityModelType,
   EntityCompletelyListItemType,
   UserModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { defineProps, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 import { Avatar as AntAvatar, Popover as AntPopover } from 'ant-design-vue';

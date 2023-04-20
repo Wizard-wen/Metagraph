@@ -80,7 +80,7 @@ import {
   Modal,
   Row as AntRow
 } from 'ant-design-vue';
-import type { KnowledgeCustomFieldType } from 'metagraph-constant';
+import type { KnowledgeCustomFieldType } from '@metagraph/constant';
 import { createVNode, inject, ref } from 'vue';
 import { KnowledgeApiService } from '@/api-service';
 import AddFieldModal from '@/views/knowledge-editor/knowledge-editor-middle/knowledge-custom-fields/add-field-modal.vue';

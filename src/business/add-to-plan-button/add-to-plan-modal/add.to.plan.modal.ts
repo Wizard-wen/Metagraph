@@ -5,7 +5,7 @@
 
 import { PlanApiService } from '@/api-service';
 import { message } from 'ant-design-vue';
-import { PlanItemModelType, PlanModelType, PublicEntityType } from 'metagraph-constant';
+import { PlanItemModelType, PlanModelType, PublicEntityType } from '@metagraph/constant';
 import { ref } from 'vue';
 
 export const planOptions = ref<any[]>([]);

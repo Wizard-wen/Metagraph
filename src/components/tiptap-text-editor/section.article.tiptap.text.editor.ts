@@ -9,7 +9,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Range } from '@tiptap/core';
 import { JSONContent } from '@tiptap/vue-3';
 import { Modal } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { createVNode } from 'vue';
 import {
   SectionTreeService

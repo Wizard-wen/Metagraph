@@ -25,7 +25,7 @@ import {
   draftKnowledgePreviewModel,
   publishedKnowledgePreviewModel
 } from '@/views/knowledge-preview/knowledge.preview';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
   defineComponent, onMounted, toRef, ref, PropType
 } from 'vue';

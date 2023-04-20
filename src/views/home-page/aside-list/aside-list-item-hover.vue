@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { defineProps, PropType } from 'vue';
 import { Popover as AntPopover } from 'ant-design-vue';
 import { LockOutlined, ReadOutlined } from '@ant-design/icons-vue';

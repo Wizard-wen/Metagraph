@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import  { Tag } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
   computed, defineComponent, PropType, toRef
 } from 'vue';

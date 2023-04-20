@@ -7,7 +7,7 @@ import {
   DomainBaseTypeModelType,
   DomainModelType,
   DomainTreeNodeResponseType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { reactive, ref } from 'vue';
 import { DomainNoAuthApiService } from '@/api-service';
 

@@ -4,7 +4,7 @@
  */
 import { KnowledgeApiService, KnowledgeNoAuthApiService } from '@/api-service';
 import { knowledgeDrawerState } from '@/business';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { ref } from 'vue';
 
 // 知识点发布状态

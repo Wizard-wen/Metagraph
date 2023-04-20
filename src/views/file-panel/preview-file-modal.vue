@@ -33,7 +33,7 @@ import { createVNode, defineEmits, defineProps, PropType } from 'vue';
 import { message, Modal, Modal as AntModal } from 'ant-design-vue';
 import PreviewFileContainer from '@/views/file-panel/preview-file-container.vue';
 import FilePreviewSidebar from '@/views/file-panel/file-panel-list/file-preview-sidebar.vue';
-import { FileResponseType } from 'metagraph-constant';
+import { FileResponseType } from '@metagraph/constant';
 import {
   removeFileById,
   updateFile

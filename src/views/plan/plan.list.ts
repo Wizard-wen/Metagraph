@@ -5,7 +5,7 @@
 import { PlanApiService } from '@/api-service/plan.api.service';
 import { CommonUtil } from '@/utils';
 import { message } from 'ant-design-vue';
-import { PlanListItemType } from 'metagraph-constant';
+import { PlanListItemType } from '@metagraph/constant';
 import { ref } from 'vue';
 
 export const plan = ref<{

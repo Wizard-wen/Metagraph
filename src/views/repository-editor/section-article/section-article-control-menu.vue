@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { Editor } from '@tiptap/vue-3';
-import { SectionModelType } from 'metagraph-constant';
+import { SectionModelType } from '@metagraph/constant';
 import { PropType, ref, defineProps, defineEmits } from 'vue';
 import {
   AlignControl,

@@ -33,7 +33,7 @@ import {
   message,
   Spin as AntSpin
 } from 'ant-design-vue';
-import type { PublicEntityType, UserModelType } from 'metagraph-constant';
+import type { PublicEntityType, UserModelType } from '@metagraph/constant';
 import { defineProps, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarApiService } from '@/api-service';

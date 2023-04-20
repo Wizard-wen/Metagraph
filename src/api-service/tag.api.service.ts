@@ -3,7 +3,7 @@
  * @date 2021/09/12
  */
 
-import type { PublicEntityType, TagModelType } from 'metagraph-constant';
+import type { PublicEntityType, TagModelType } from '@metagraph/constant';
 import { ApiPathEnum } from '@/api-service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';

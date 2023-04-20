@@ -56,7 +56,7 @@
 import {
   Form, Input, Modal, Spin, Descriptions, Tag
 } from 'ant-design-vue';
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
   reactive, ref, UnwrapRef, toRef, defineComponent, onMounted

@@ -9,7 +9,7 @@ import {
   AlternativeKnowledgeListType,
   EntityCompletelyListItemType,
   RepositoryModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import {
   reactive, createVNode, computed, ref
 } from 'vue';

@@ -3,12 +3,12 @@
  * @date  2021/9/12 23:28
  */
 
-import { FileAuthApi, FileEnum, FileResponseType } from 'metagraph-constant';
+import { FileAuthApi, FileEnum, FileResponseType } from '@metagraph/constant';
 import type {
   FilePageListResponseType,
   QiniuUploadingCredentialRequestType,
   QiniuUploadingCredentialResponseType,
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
 import { RequestNewUntil } from '@/utils/request.new.until';
 import axios from 'axios';

@@ -9,7 +9,7 @@ import type {
   CommentRemoveRequestType,
   CommentPageListRequestType,
   CommentListItemType,
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { ApiPathEnum } from '@/api-service/config/api.config';
 import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';

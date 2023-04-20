@@ -18,7 +18,6 @@ import './style/hide.style.scss';
 import Contextmenu from './directives/contextmenu';
 import Hide from './directives/hide';
 import './api-service/config/request.intercepter';
-import 'metagraph-ui/dist/style.css';
 import './router/router.interceptor';
 import 'ant-design-vue/dist/antd.variable.min.css';
 

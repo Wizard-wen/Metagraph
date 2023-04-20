@@ -9,7 +9,7 @@ import type {
   EntityCompletelyListItemType,
   KnowledgeEdgeResponseType,
   KnowledgeModelType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import { EdgeApiService } from '@/api-service';
 
 export interface KnowledgeEdgeFormState {

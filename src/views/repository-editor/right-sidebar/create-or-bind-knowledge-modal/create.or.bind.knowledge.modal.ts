@@ -7,7 +7,7 @@ import { message } from 'ant-design-vue';
 import { computed, reactive, ref } from 'vue';
 import type {
   EntityCompletelyListItemType
-} from 'metagraph-constant';
+} from '@metagraph/constant';
 import {
   EntityApiService,
   KnowledgeApiService,

@@ -124,7 +124,7 @@ import {
 } from 'ant-design-vue';
 import {MButton} from '@/metagraph-ui';
 import { computed, defineProps, onMounted, reactive, ref, toRef } from 'vue';
-import { CommentEntityType, CommentListItemType } from 'metagraph-constant';
+import { CommentEntityType, CommentListItemType } from '@metagraph/constant';
 import { UserOutlined } from '@ant-design/icons-vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils';

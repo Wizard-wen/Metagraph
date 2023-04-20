@@ -68,7 +68,7 @@ import { Button as AntButton, message, Modal as AntModal } from 'ant-design-vue'
 import { computed, defineEmits, defineProps, PropType, ref, watchEffect } from 'vue';
 import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
-import { FileEnum, FileProvider } from 'metagraph-constant';
+import { FileEnum, FileProvider } from '@metagraph/constant';
 
 const props = defineProps({
   isModalVisible: {

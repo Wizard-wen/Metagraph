@@ -146,7 +146,7 @@ import {
   Skeleton as AntSkeleton
 } from 'ant-design-vue';
 import { computed, createVNode, defineEmits, defineProps, inject, PropType, ref } from 'vue';
-import type { RepositoryModelType } from 'metagraph-constant';
+import type { RepositoryModelType } from '@metagraph/constant';
 import { useRoute } from 'vue-router';
 import CloneRepositoryModal
   from '@/views/repository-editor/repository-editor-header/clone-repository-modal.vue';

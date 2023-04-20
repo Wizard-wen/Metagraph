@@ -3,7 +3,7 @@
  * @date  2022/1/8 23:01
  */
 
-import { EntityCompletelyListItemType, UpdateRecordType, UserModelType } from 'metagraph-constant';
+import { EntityCompletelyListItemType, UpdateRecordType, UserModelType } from '@metagraph/constant';
 import { reactive, ref } from 'vue';
 import { ActivityApiService } from '@/api-service/activity.api.service';
 import { FollowApiService } from '@/api-service/follow.api.service';

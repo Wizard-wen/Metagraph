@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import { searchData } from '@/views/main/metegraph.header';
 import { Pagination as AntPagination, Skeleton as AntSkeleton } from 'ant-design-vue';
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType } from '@metagraph/constant';
 import { onMounted, ref, watchEffect } from 'vue';
 import {
   NavigationGuardNext,

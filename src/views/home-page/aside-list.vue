@@ -41,7 +41,7 @@
 
 <script lang="ts" setup>
 import HomeAsideList from '@/views/home-page/aside-list/home-aside-list.vue';
-import { RepositoryModelType } from 'metagraph-constant';
+import { RepositoryModelType } from '@metagraph/constant';
 import { MButton } from '@/metagraph-ui';
 import { computed, onMounted, ref } from 'vue';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons-vue';

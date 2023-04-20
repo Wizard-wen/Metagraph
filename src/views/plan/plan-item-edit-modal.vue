@@ -45,14 +45,14 @@ import {
   planItem, PlanBoard, PlanItemState
 } from '@/views/plan/plan.board';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
-import { PlanModelType } from 'metagraph-constant';
+import { PlanModelType } from '@metagraph/constant';
 import {
   reactive, ref, defineComponent, toRef, onMounted, PropType
 } from 'vue';
 import {
   Form, Input, Modal, DatePicker, Rate
 } from 'ant-design-vue';
-import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 
 export default defineComponent({
   name: 'plan-item-edit-modal',
@@ -125,16 +125,16 @@ export default defineComponent({
         });
     }
 
-    const disabledPlanDate = (planValue: Moment) => {
-      return planValue < moment(new Date());
+    const disabledPlanDate = (planValue: Dayjs) => {
+      return planValue < dayjs(new Date());
     };
 
-    const disabledDeadlineDate = (planValue: Moment) => {
+    const disabledDeadlineDate = (planValue: Dayjs) => {
       if (planModel.value?.planDate) {
         if (planItem.planDate) {
           return planValue < planItem.planDate;
         }
-        return planValue < moment(planModel.value.planDate);
+        return planValue < dayjs(planModel.value.planDate);
       }
       return false;
     };

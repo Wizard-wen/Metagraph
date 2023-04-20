@@ -69,7 +69,7 @@
 <script lang="ts" setup>
 import { ControlOutlined, SearchOutlined, ReadOutlined } from '@ant-design/icons-vue';
 import { computed, inject, onMounted, ref } from 'vue';
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType } from '@metagraph/constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import { MButton } from '@/metagraph-ui';

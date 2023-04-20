@@ -4,7 +4,7 @@
  */
 import { knowledgeDrawerState } from '@/business';
 import { AbstractTiptapTextEditor } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
-import type { EntityCompletelyListItemType } from 'metagraph-constant';
+import type { EntityCompletelyListItemType } from '@metagraph/constant';
 
 export class SectionArticleReadonlyTiptapTextEditor extends AbstractTiptapTextEditor {
   protected editable = false;

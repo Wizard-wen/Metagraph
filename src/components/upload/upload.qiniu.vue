@@ -25,7 +25,7 @@ import * as qiniu from 'qiniu-js';
 import {
   defineComponent, ref, toRefs, watch
 } from 'vue';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum } from '@metagraph/constant';
 import { FileApiService } from '@/api-service';
 
 interface FileItem {

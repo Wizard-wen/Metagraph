@@ -51,7 +51,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { FileEnum } from 'metagraph-constant';
+import { FileEnum } from '@metagraph/constant';
 import {
   FileWordOutlined
 } from '@ant-design/icons-vue';

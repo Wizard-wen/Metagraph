@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { EntityCompletelyListItemType } from 'metagraph-constant';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
   defineComponent, watch, ref, toRefs, PropType
 } from 'vue';
