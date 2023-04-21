@@ -40,8 +40,8 @@ export class PlanApiService {
   static async createPlan(params: {
     name: string,
     description?: string,
-    deadlineDate?: Date,
-    planDate?: Date
+    deadlineDate: Date,
+    planDate: Date
   }): Promise<PublicApiResponseType<void>> {
     return RequestNewUntil.post<PlanAuthApi.CreatePlan>({
       apiPath: '/plan/create',
@@ -60,8 +60,8 @@ export class PlanApiService {
     id: string;
     name?: string;
     description?: string;
-    deadlineDate?: Date;
-    planDate?: Date;
+    deadlineDate: Date;
+    planDate: Date;
   }): Promise<PublicApiResponseType<void>> {
     return RequestNewUntil.post<PlanAuthApi.UpdatePlan>({
       apiPath: '/plan/update',

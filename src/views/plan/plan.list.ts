@@ -61,8 +61,8 @@ export class PlanList {
 
   async createPlan(params: {
     name: string,
-    deadlineDate?: Date,
-    planDate?: Date;
+    deadlineDate: Date,
+    planDate: Date;
     description?: string
   }): Promise<void> {
     const result = await PlanApiService.createPlan(params);
@@ -74,8 +74,8 @@ export class PlanList {
   async editPlan(params: {
     id: string;
     name: string,
-    deadlineDate?: Date,
-    planDate?: Date;
+    deadlineDate: Date,
+    planDate: Date;
     description?: string
   }): Promise<void> {
     const result = await PlanApiService.updatePlan(params);

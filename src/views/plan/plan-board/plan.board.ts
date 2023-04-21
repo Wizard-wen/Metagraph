@@ -12,6 +12,7 @@ import {
 } from '@metagraph/constant';
 import dayjs, { Dayjs } from 'dayjs';
 import { reactive, ref } from 'vue';
+import { CommonUtil } from '@/utils';
 
 export const planBoard = ref<{
   data?: PlanModelType,
@@ -55,11 +56,11 @@ interface PlanFormState {
   description?: string;
 }
 
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'YYYY-MM-DD';
 export const planFormState = reactive<PlanFormState>({
   name: '',
-  deadlineDate: dayjs(new Date(), dateFormat),
-  planDate: dayjs(new Date(), dateFormat),
+  deadlineDate: dayjs(),
+  planDate: dayjs(),
   description: ''
 });
 
@@ -68,8 +69,8 @@ export type PlanItemState = {
   priority: 1 | 2 | 3 | 4 | 5;
   status?: 'todo' | 'doing' | 'done';
   description?: string;
-  planDate?: Dayjs;
-  deadlineDate?: Dayjs;
+  planDate: Dayjs;
+  deadlineDate: Dayjs;
 }
 
 export const planItem = reactive<PlanItemState>({
@@ -77,8 +78,8 @@ export const planItem = reactive<PlanItemState>({
   priority: 1,
   description: '',
   status: undefined,
-  planDate: dayjs(new Date(), dateFormat),
-  deadlineDate: dayjs(new Date(), dateFormat),
+  planDate: dayjs(),
+  deadlineDate: dayjs(),
 });
 
 export const isLoading = ref(false);
@@ -89,8 +90,8 @@ export class PlanBoard {
     planItem.description = '';
     planItem.priority = 1;
     planItem.status = undefined;
-    planItem.planDate = dayjs(new Date(), dateFormat);
-    planItem.deadlineDate = dayjs(new Date(), dateFormat);
+    planItem.planDate = dayjs();
+    planItem.deadlineDate = dayjs();
   }
 
   async getPlan(id: string): Promise<void> {
@@ -132,7 +133,6 @@ export class PlanBoard {
   }
 
   async updatePlanItem(planItemId: string, status?: 'todo' | 'doing' | 'done'): Promise<boolean> {
-    console.log(planItemId, status);
     let result;
     if (status) {
       result = await PlanApiService.updatePlanItem({

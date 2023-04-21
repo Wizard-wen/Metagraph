@@ -17,7 +17,7 @@
     "@antv/g6": "4.3.11",
     "@antv/x6": "1.28.1",
     "@antv/x6-vue-shape": "^1.4.0",
-    "@metagraph/constant": "0.0.2",
+    "@metagraph/constant": "0.0.4",
     "@tiptap/core": "^2.0.1",
     "@tiptap/extension-character-count": "^2.0.1",
     "@tiptap/extension-code-block-lowlight": "^2.0.1",

@@ -1,8 +1,6 @@
 <template>
-  <div class="plan-item-card">
-    <div class="content"
-         :style="{background: isShow ? '#fafafa': '#FFF' }"
-         @mouseenter="isShow = true" @mouseleave="isShow = false">
+  <div class="plan-item-card" @mouseenter="isShow = true" @mouseleave="isShow = false">
+    <div class="content">
       <EditOutlined v-if="isShow" class="control" @click="handleClickEdit"/>
       <div class="priority-tags">
         <div v-for="(item ,index) in planItem.priority" :key="index"
@@ -73,9 +71,16 @@ export default defineComponent({
 .plan-item-card {
   max-height: 371px;
   width: 100%;
-  background: #f5f5f5;
+  background: #fff;
   padding: 10px 10px 8px;
   border-radius: 4px;
+  cursor: pointer;
+  //box-shadow: 0 0 1px -1px rgb(0 0 0 / 8%), 0 1px 2px 0 rgb(0 0 0 / 4%), 0 2px 4px 1px rgb(0 0 0 / 2%);
+  box-shadow: 0 1px 4px -2px rgb(0 0 0 / 13%), 0 2px 8px 0 rgb(0 0 0 / 8%), 0 8px 16px 4px rgb(0 0 0 / 4%);
+  //&:hover {
+  //  box-shadow: 0 1px 4px -2px rgb(0 0 0 / 13%), 0 2px 8px 0 rgb(0 0 0 / 8%), 0 8px 16px 4px rgb(0 0 0 / 4%);
+  //}
+
 
   .content {
     background: #FFF;
@@ -83,9 +88,9 @@ export default defineComponent({
     position: relative;
     min-height: 50px;
 
-    &:hover {
-      cursor: pointer;
-    }
+    //&:hover {
+    //  cursor: pointer;
+    //}
 
     .control {
       position: absolute;
