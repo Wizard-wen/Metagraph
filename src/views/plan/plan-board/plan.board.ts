@@ -51,8 +51,8 @@ export const planBindEntityList = ref<{
 
 interface PlanFormState {
   name: string;
-  deadlineDate?: Dayjs;
-  planDate?: Dayjs;
+  deadlineDate: Dayjs;
+  planDate: Dayjs;
   description?: string;
 }
 

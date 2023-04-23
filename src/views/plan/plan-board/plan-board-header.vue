@@ -1,6 +1,6 @@
 <template>
   <div class="plan-board-header">
-    <div class="left">
+    <div class="left-side">
       <div class="left-container">
         <m-button :is-icon="true" :has-border="false" @click="goHomePage">
           <template #icon>
@@ -29,27 +29,35 @@
         <div class="page-title">计划面板</div>
       </div>
     </div>
-    <div class="control-bar">
+    <div class="middle-side">
+      <m-checkbox
+        style="width: 200px; height: 36px"
+        :type="'checkbox'"
+        :modelValue="viewStatus"
+        @update:modelValue="handlePlanViewChange"
+        :option-list="optionList"></m-checkbox>
+    </div>
+    <div class="right-side">
       <ant-button type="primary" @click="addPlanItem">创建计划项</ant-button>
-      <ant-form
-        layout="inline"
-        :model="filterFormState"
-        @submit="handleFilter">
-        <ant-form-item name="type">
-          <ant-select v-model:value="filterFormState.type">
-            <ant-select-option value="priority">优先级</ant-select-option>
-            <ant-select-option disabled value="deadlineDate">截止日</ant-select-option>
-            <ant-select-option disabled value="planDate">计划日</ant-select-option>
-          </ant-select>
-        </ant-form-item>
-        <ant-form-item name="priority">
-          <ant-radio-group v-model:value="filterFormState.orderBy" @change="handleChange">
-            <ant-radio :value="-1">倒序</ant-radio>
-            <ant-radio :value="1">正序</ant-radio>
-            <ant-radio :value="0">默认</ant-radio>
-          </ant-radio-group>
-        </ant-form-item>
-      </ant-form>
+      <!--      <ant-form-->
+      <!--        layout="inline"-->
+      <!--        :model="filterFormState"-->
+      <!--        @submit="handleFilter">-->
+      <!--        <ant-form-item name="type">-->
+      <!--          <ant-select v-model:value="filterFormState.type">-->
+      <!--            <ant-select-option value="priority">优先级</ant-select-option>-->
+      <!--            <ant-select-option disabled value="deadlineDate">截止日</ant-select-option>-->
+      <!--            <ant-select-option disabled value="planDate">计划日</ant-select-option>-->
+      <!--          </ant-select>-->
+      <!--        </ant-form-item>-->
+      <!--        <ant-form-item name="priority">-->
+      <!--          <ant-radio-group v-model:value="filterFormState.orderBy" @change="handleChange">-->
+      <!--            <ant-radio :value="-1">倒序</ant-radio>-->
+      <!--            <ant-radio :value="1">正序</ant-radio>-->
+      <!--            <ant-radio :value="0">默认</ant-radio>-->
+      <!--          </ant-radio-group>-->
+      <!--        </ant-form-item>-->
+      <!--      </ant-form>-->
     </div>
 
   </div>
@@ -58,21 +66,18 @@
 <script lang="ts" setup>
 import {
   Button as AntButton,
+  Dropdown as AntDropdown,
   Form as AntForm,
+  Menu as AntMenu,
   Radio as AntRadio,
   Select as AntSelect,
-  Dropdown as AntDropdown,
-  Menu as AntMenu,
 } from 'ant-design-vue';
 import { PlanBoard, planBoard, } from '@/views/plan/plan-board/plan.board';
-import { defineEmits, ref } from 'vue';
+import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { RouterUtil } from '@/utils';
-import {MButton} from '@/metagraph-ui';
-import {
-  ArrowLeftOutlined,
-  MenuOutlined,
-  LeftOutlined
-} from '@ant-design/icons-vue';
+import { MButton, MCheckbox } from '@/metagraph-ui';
+import { ArrowLeftOutlined, LeftOutlined, MenuOutlined } from '@ant-design/icons-vue';
+
 
 const AntMenuItem = AntMenu.Item;
 
@@ -80,8 +85,19 @@ const AntFormItem = AntForm.Item;
 const AntRadioGroup = AntRadio.Group;
 const AntSelectOption = AntSelect.Option;
 const planBoardService = new PlanBoard();
+defineProps({
+  viewStatus: {
+    type: String as PropType<'card' | 'burnDown'>,
+    required: true
+  },
+});
 
-const emit = defineEmits(['open']);
+const optionList = ref([
+  { key: 'card', name: '卡片' },
+  { key: 'burnDown', name: '燃尽图' }
+]);
+
+const emit = defineEmits(['open', 'viewChange']);
 const filterFormState = ref<{
   orderBy: 1 | -1 | 0,
   // type: 'priority' | 'planDate' | 'deadlineDate'
@@ -97,6 +113,10 @@ function goHomePage() {
 
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
+}
+
+function handlePlanViewChange(status: 'section' | 'graph') {
+  emit('viewChange', status);
 }
 
 function handleFilter() {
@@ -139,6 +159,7 @@ function handleChange(event: any) {
 
 <style scoped lang="scss">
 @import "../../../style/common.scss";
+
 .plan-board-header {
   height: 56px;
   display: flex;
@@ -147,7 +168,7 @@ function handleChange(event: any) {
   align-items: center;
   border-bottom: 1px solid $hoverDeepBackColor;
 
-  .left {
+  .left-side {
     display: flex;
     align-items: center;
 
@@ -166,7 +187,14 @@ function handleChange(event: any) {
       }
     }
   }
-  .control-bar {
+
+  .middle-side {
+    position: absolute;
+    top: 12px;
+    left: calc(50% - 110px);
+  }
+
+  .right-side {
     display: flex;
   }
 }

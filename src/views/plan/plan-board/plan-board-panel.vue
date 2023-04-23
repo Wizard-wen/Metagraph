@@ -18,7 +18,7 @@
                 @edit="handleEditPlanItem($event)"></plan-item-view>
             </template>
           </vue-draggable>
-          <div class="add-list-item">添加</div>
+          <div class="add-list-item" @click="addPlanItem">添加</div>
         </div>
 
       </div>
@@ -66,10 +66,11 @@
 <script lang="ts" setup>
 import VueDraggable from 'vuedraggable';
 import { PlanBoard, planBoard } from '@/views/plan/plan-board/plan.board';
-import { ref } from 'vue';
+import { defineEmits, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PlanItemView from './plan-item-view.vue';
 
+const emit = defineEmits(['createPlanItem']);
 const planBoardService = new PlanBoard();
 
 const route = useRoute();
@@ -92,6 +93,10 @@ function handleEditPlanItem(params: { id: string }) {
   // planItemId.value = params.id;
 }
 
+function addPlanItem() {
+  emit('createPlanItem');
+}
+
 async function handlePlanItemStatus(evt: any, status: 'todo' | 'doing' | 'done') {
   if (evt.added) {
     const result = await planBoardService.updatePlanItem(evt.added.element.item.id, status);
@@ -106,7 +111,6 @@ async function handlePlanItemStatus(evt: any, status: 'todo' | 'doing' | 'done')
     console.log(evt.moved);
   }
 }
-
 
 async function handleDoing(evt: any) {
   await handlePlanItemStatus(evt, 'doing');
@@ -124,6 +128,7 @@ async function handleDone(evt: any) {
 
 <style scoped lang="scss">
 @import "../../../style/common.scss";
+
 .plan-panel {
   width: 100%;
   padding: 20px;

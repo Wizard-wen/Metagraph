@@ -79,7 +79,13 @@ import { MTag } from '@/metagraph-ui';
 import { computed, inject, reactive, ref } from 'vue';
 import { FileImageOutlined } from '@ant-design/icons-vue';
 import { DomainSelectModal } from '@/business';
-import KnowledgeTagModal from './knowledge-base-message-form/knowledge-tag-modal.vue';
+import FormPanelInputItem
+  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/form-panel-input-item.vue';
+import FormPanelItem
+  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/form-panel-item.vue';
+
+import PanelDescription
+  from '@/views/repository-editor/knowledge-graph-panel/knowledge-relation/panel-description.vue';
 import {
   draftKnowledgeEntityIdInjectKey,
   knowledgeBaseForm,
@@ -88,13 +94,7 @@ import {
   repositoryEntityIdInjectKey,
   tag
 } from '../model/knowledge.edit';
-import FormPanelInputItem
-  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/form-panel-input-item.vue';
-import FormPanelItem
-  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/form-panel-item.vue';
-
-import PanelDescription
-  from '@/views/repository-editor/knowledge-graph-panel/knowledge-relation/panel-description.vue';
+import KnowledgeTagModal from './knowledge-base-message-form/knowledge-tag-modal.vue';
 
 const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey);
 const repositoryEntityId = inject(repositoryEntityIdInjectKey);
@@ -158,7 +158,6 @@ const domainListProp = ref<{
   domainName?: string;
   domainBaseTypeId: string;
 }[]>();
-
 
 function handleOpenDomainModal() {
   isDomainModalVisible.value = true;

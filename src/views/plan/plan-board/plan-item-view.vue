@@ -1,5 +1,8 @@
 <template>
-  <div class="plan-item-card" @mouseenter="isShow = true" @mouseleave="isShow = false">
+  <div
+    class="plan-item-card"
+    @mouseenter="isShow = true"
+    @mouseleave="isShow = false">
     <div class="content">
       <EditOutlined v-if="isShow" class="control" @click="handleClickEdit"/>
       <div class="priority-tags">
@@ -75,6 +78,7 @@ export default defineComponent({
   padding: 10px 10px 8px;
   border-radius: 4px;
   cursor: pointer;
+  margin-bottom: 12px;
   //box-shadow: 0 0 1px -1px rgb(0 0 0 / 8%), 0 1px 2px 0 rgb(0 0 0 / 4%), 0 2px 4px 1px rgb(0 0 0 / 2%);
   box-shadow: 0 1px 4px -2px rgb(0 0 0 / 13%), 0 2px 8px 0 rgb(0 0 0 / 8%), 0 8px 16px 4px rgb(0 0 0 / 4%);
   //&:hover {

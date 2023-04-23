@@ -1,38 +1,22 @@
 <template>
   <div class="plan-board">
-    <plan-board-header @open="isShowModal = true"></plan-board-header>
-<!--    <ant-progress :percent="donePercent"/>-->
+    <plan-board-header
+      :view-status="currentView"
+      @viewChange="handleViewChange"
+      @open="isShowModal = true"></plan-board-header>
+    <!--    <ant-progress :percent="donePercent"/>-->
     <div class="plan-board-content">
       <div class="plan-board-left-side">
-        <plan-board-panel></plan-board-panel>
-              <plan-progress :plan-item-list="planBoard.list"></plan-progress>
+        <plan-board-panel
+          v-if="currentView === 'card'"
+          @createPlanItem="isShowModal = true"></plan-board-panel>
+        <plan-progress
+          v-if="currentView === 'burnDown'"
+          :plan-item-list="planBoard.list"></plan-progress>
       </div>
       <plan-board-rightbar></plan-board-rightbar>
     </div>
   </div>
-
-
-
-  <!--  <ant-spin :spinning="isLoading">-->
-  <!--    <ant-row class="plan-board" :gutter="[10,0]">-->
-  <!--      <ant-col :span="4">-->
-
-  <!--      </ant-col>-->
-  <!--      <ant-col :span="15">-->
-  <!--        <div class="plan-content">-->
-
-  <!--          -->
-  <!--          <ant-row :gutter="[10,16]">-->
-  <!--            -->
-  <!--          </ant-row>-->
-  <!--        </div>-->
-  <!--      </ant-col>-->
-  <!--      <ant-col :span="5">-->
-
-  <!--      </ant-col>-->
-  <!--    </ant-row>-->
-  <!--    -->
-  <!--  </ant-spin>-->
   <plan-item-edit-modal
     v-if="isShowModal && planBoard.data"
     @close="closePlanItemModal"
@@ -46,28 +30,22 @@
 import PlanItemEditModal from '@/views/plan/plan-item-edit-modal.vue';
 import { computed, createVNode, onMounted, ref } from 'vue';
 import {
-  Form as AntForm,
-  Input as AntInput,
-  List as AntList,
   message,
-  Modal,
-  Progress as AntProgress
+  Modal
 } from 'ant-design-vue';
 import { useRoute } from 'vue-router';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import PlanProgress from '@/views/plan/plan-board/plan-progress.vue';
-import { planBoard, PlanBoard } from './plan-board/plan.board';
 import PlanBoardHeader from '@/views/plan/plan-board/plan-board-header.vue';
 import PlanBoardPanel from '@/views/plan/plan-board/plan-board-panel.vue';
 import PlanBoardRightbar from '@/views/plan/plan-board/plan-board-rightbar.vue';
+import { planBoard, PlanBoard } from './plan-board/plan.board';
 
-const AntFormItem = AntForm.Item;
-const AntTextarea = AntInput.TextArea;
-const AntListItem = AntList.Item;
 
 const route = useRoute();
 const planId = ref(route.query.id as string);
 const isShowModal = ref(false);
+const currentView = ref<'card' | 'burnDown'>('card');
 
 const planItemId = ref();
 const priorityUp = ref(false);
@@ -78,6 +56,9 @@ const donePercent = computed(
   () => Math.round((planBoard.value.doneList.length / planBoard.value.list.length) * 100)
 );
 
+function handleViewChange(event: 'card' | 'burnDown') {
+  currentView.value = event;
+}
 
 async function closePlanItemModal() {
   isShowModal.value = false;
@@ -124,81 +105,25 @@ function handleFilter() {
 onMounted(async () => {
   await planBoardService.getPlan(planId.value);
 });
-// export default defineComponent({
-//   name: 'plan-board',
-//   components: {
-//     PlanProgress,
-//     PlanItemEditModal,
-//     draggable,
-//     AntRow: Row,
-//     AntCol: Col,
-//     AntSpin: Spin,
-//     AntList: List,
-//     AntSelect: Select,
-//     AntSelectOption: Select.Option,
-//     AntListItem: List.Item,
-//     AntButton: Button,
-//     AntForm: Form,
-//     AntFormItem: Form.Item,
-//     AntRadio: Radio,
-//     AntRadioGroup: Radio.Group,
-//     AntInput: Input,
-//     AntTextArea: Input.TextArea,
-//     AntProgress: Progress,
-//     AntDatePicker: DatePicker,
-//     PlusCircleOutlined,
-//     LockOutlined,
-//     PlanItemView,
-//     UnlockOutlined,
-//     SaveOutlined,
-//     EditOutlined
-//   },
-//   setup() {
-//
-//
-//     return {
-//       drag: false,
-//       planBoard,
-//       addPlanItem,
-//       planId,
-//       isShowModal,
-//       planItemId,
-//       closePlanItemModal,
-//       handleDoing,
-//       handleTodo,
-//       handleDone,
-//       handleEditPlanItem,
-//       priorityUp,
-//       filterFormState,
-//       handleFilter,
-//       handleChange,
-//       bindEntity,
-//       isFormDisabled,
-//       planFormState,
-//       handleSavePlan,
-//       planBindEntityList,
-//       handleRemoveTag,
-//       unbindEntityFromPlan,
-//       isLoading,
-//       donePercent
-//     };
-//   }
-// });
+
 </script>
 
 <style scoped lang="scss">
-
+@import "../../style/common.scss";
 .plan-board {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 
   .plan-board-content {
-    height: calc(100% - 56px);
+    height: calc(100vh - 56px);
+    width: 100%;
     display: flex;
+
     .plan-board-left-side {
       flex: 1;
       height: 100%;
       overflow-y: auto;
+      @include custom-scroll-style;
     }
   }
 
