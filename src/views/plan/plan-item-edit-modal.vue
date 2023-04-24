@@ -21,11 +21,11 @@
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="planDate" label="开始日" name="planDate">
         <ant-date-picker
+          :disabled-date="disabledPlanDate"
           :dropdownClassName="'custom-date-picker'"
           v-model:value="testDate"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="deadlineDate" label="截止日" name="deadlineDate">
-        1
         <ant-date-picker
           :disabled-date="disabledDeadlineDate"
           :dropdownClassName="'custom-date-picker'"

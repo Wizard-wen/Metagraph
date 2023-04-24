@@ -70,7 +70,7 @@ import { defineEmits, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PlanItemView from './plan-item-view.vue';
 
-const emit = defineEmits(['createPlanItem']);
+const emit = defineEmits(['createPlanItem', 'editPlanItem']);
 const planBoardService = new PlanBoard();
 
 const route = useRoute();
@@ -91,6 +91,7 @@ async function handleRemoveTag(params: {
 function handleEditPlanItem(params: { id: string }) {
   // isShowModal.value = true;
   // planItemId.value = params.id;
+  emit('editPlanItem', params);
 }
 
 function addPlanItem() {

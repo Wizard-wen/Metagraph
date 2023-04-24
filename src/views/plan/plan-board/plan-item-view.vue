@@ -23,51 +23,37 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { EntityCompletelyListItemType, PlanItemModelType } from '@metagraph/constant';
-import { defineComponent, PropType, ref } from 'vue';
-import { Tag } from 'ant-design-vue';
+import { PropType, ref, defineProps, defineEmits } from 'vue';
+import { Tag as AntTag } from 'ant-design-vue';
 import { EditOutlined } from '@ant-design/icons-vue';
 
-export default defineComponent({
-  name: 'plan-item-view',
-  components: {
-    AntTag: Tag,
-    EditOutlined
+const props = defineProps({
+  planItem: {
+    type: Object as PropType<PlanItemModelType>,
+    required: true
   },
-  props: {
-    planItem: {
-      type: Object as PropType<PlanItemModelType>,
-      required: true
-    },
-    entityList: {
-      type: Array as PropType<EntityCompletelyListItemType[]>,
-    }
-  },
-  emits: ['edit', 'close'],
-  setup(props, { emit }) {
-    function handleClickEdit() {
-      emit('edit', {
-        id: props.planItem.id
-      });
-    }
-
-    const isShow = ref(false);
-
-    function handleClose(entityId: string) {
-      emit('close', {
-        id: props.planItem.id,
-        entityId
-      });
-    }
-
-    return {
-      isShow,
-      handleClickEdit,
-      handleClose
-    };
+  entityList: {
+    type: Array as PropType<EntityCompletelyListItemType[]>,
   }
 });
+
+const emit = defineEmits(['edit', 'close']);
+function handleClickEdit() {
+  emit('edit', {
+    id: props.planItem.id
+  });
+}
+
+const isShow = ref(false);
+
+function handleClose(entityId: string) {
+  emit('close', {
+    id: props.planItem.id,
+    entityId
+  });
+}
 </script>
 
 <style scoped lang="scss">

@@ -9,6 +9,7 @@
       <div class="plan-board-left-side">
         <plan-board-panel
           v-if="currentView === 'card'"
+          @editPlanItem="handleEditPlanItem"
           @createPlanItem="isShowModal = true"></plan-board-panel>
         <plan-progress
           v-if="currentView === 'burnDown'"
@@ -63,6 +64,13 @@ function handleViewChange(event: 'card' | 'burnDown') {
 async function closePlanItemModal() {
   isShowModal.value = false;
   await planBoardService.getPlan(planId.value);
+}
+
+function handleEditPlanItem(params: {
+  id: string;
+}) {
+  isShowModal.value = true;
+  planItemId.value = params.id;
 }
 
 function handleSavePlan() {
