@@ -1,73 +1,18 @@
 <template>
   <div class="knowledge-map">
-    <div class="header">
-      <div class="left">
-        <img
-          class="logo"
-          src="/hogwarts-logo.webp"
-          height="32" width="32"
-          @click="goHomePage"/>
-        <h3 style="margin-bottom: 0">知识地图</h3>
-        <ant-select
-          ref="select"
-          v-model:value="sourceNode"
-          :placeholder="`${direction === 'left' ? '目标知识点' : '起始知识点'}`"
-          style="width: 200px">
-          <ant-select-option v-for="(item, index) in nodes.list" :key="index" :value="item.id">
-            {{ item.name }}
-          </ant-select-option>
-        </ant-select>
-        <arrow-right-icon
-          v-if="direction === 'right'"
-          @click="direction = 'left'"></arrow-right-icon>
-        <arrow-left-icon
-          v-if="direction === 'left'"
-          @click="direction = 'right'"></arrow-left-icon>
-        <ant-select
-          ref="select"
-          v-model:value="targetNode"
-          :placeholder="`${direction === 'right' ? '目标知识点' : '起始知识点'}`"
-          style="width: 200px">
-          <ant-select-option v-for="(item, index) in nodes.list" :key="index" :value="item.id">
-            {{ item.name }}
-          </ant-select-option>
-        </ant-select>
-        <ant-button
-          type="primary"
-          @click="findPath"
-          :disabled="!targetNode || !sourceNode">查询知识点关联链路
-        </ant-button>
-      </div>
-      <ant-alert
-        style="height: 36px;"
-        message="该功能为体验版本，尚不完善，敬请期待！"
-        type="info"
-        closable
-      />
-    </div>
+    <knowledge-map-header
+      @search="handleSearch"></knowledge-map-header>
     <div class="content">
       <div class="left">
-        <div class="left-header">知识点关联链路</div>
-        <ant-spin :spinning="isPathLoading">
-          <template v-if="path.target">
-            <div class="step-length">链路步长 {{ path.target.length }}</div>
-            <div v-for="(item, index) in path.target.segments" :key="index" class="step-card">
-              <div>第{{ index + 1 }}步</div>
-              <div>From {{ item.start.properties.name }}</div>
-              <arrow-down-icon></arrow-down-icon>
-              <div>To {{ item.end.properties.name }}</div>
-            </div>
-          </template>
-          <ant-empty v-else :image="simpleImage"></ant-empty>
-        </ant-spin>
+        <knowledge-map-sidebar></knowledge-map-sidebar>
       </div>
       <div class="right">
         <div class="control">
-          <zoom-in-icon
+          <ZoomInOutlined
             style="font-size: 25px; margin-right: 10px;cursor: pointer"
-            @click="zoomIn"></zoom-in-icon>
-          <zoom-out-icon
-            style="font-size: 25px;cursor: pointer" @click="zoomOut"></zoom-out-icon>
+            @click="zoomIn"></ZoomInOutlined>
+          <ZoomOutOutlined
+            style="font-size: 25px;cursor: pointer" @click="zoomOut"></ZoomOutOutlined>
         </div>
         <ant-spin :spinning="isLoading">
           <div id="container" style="background: #fff"></div>
@@ -75,35 +20,16 @@
       </div>
     </div>
   </div>
-
 </template>
 
-<script lang="ts">
-import {
-  Empty, Alert, Select, Spin, Button
-} from 'ant-design-vue';
-import {
-  defineComponent, onMounted, ref, reactive, onUnmounted
-} from 'vue';
-import {
-  insertCss
-} from 'insert-css';
-import { useRouter } from 'vue-router';
-import {
-  ArrowDownIcon, ArrowRightIcon, ArrowLeftIcon, ZoomInIcon, ZoomOutIcon
-} from '@/components';
-import { KnowledgeNoAuthApiService } from '@/api-service';
-import {
-  KnowledgeMap,
-  graph,
-  edges,
-  nodes,
-  knowledgeList,
-  repositoryList,
-  combos,
-  graphData,
-  tooltip
-} from '@/views/knowledge-map/knowledge.map';
+<script lang="ts" setup>
+import { Spin as AntSpin } from 'ant-design-vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { insertCss } from 'insert-css';
+import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons-vue';
+import { getKnowledgePath, KnowledgeMap } from '@/views/knowledge-map/knowledge.map';
+import KnowledgeMapHeader from '@/views/knowledge-map/knowledge-map-header.vue';
+import KnowledgeMapSidebar from '@/views/knowledge-map/knowledge-map-sidebar.vue';
 
 insertCss(`
   .g6-component-tooltip {
@@ -117,134 +43,38 @@ insertCss(`
   }
 `);
 
-export default defineComponent({
-  name: 'knowledge-map',
-  components: {
-    ArrowDownIcon,
-    ArrowRightIcon,
-    ArrowLeftIcon,
-    ZoomInIcon,
-    ZoomOutIcon,
-    AntAlert: Alert,
-    AntSpin: Spin,
-    AntEmpty: Empty,
-    AntSelect: Select,
-    AntSelectOption: Select.Option,
-    AntButton: Button
-  },
-  setup() {
-    const router = useRouter();
-    const sourceNode = ref();
-    const targetNode = ref();
-    const isLoading = ref(false);
-    const isPathLoading = ref(false);
-    const path = reactive<{
-      target?: {
-        end: {
-          properties: any
-        };
-        length: number;
-        segments: {
-          start: {
-            properties: any
-          },
-          end: {
-            properties: any
-          },
-          relationship: {
-            properties: any
-          }
-        }[];
-        start: {
-          properties: any
-        };
-      }
-    }>({
-      target: undefined
-    });
-    const direction = ref<'right' | 'left'>('right');
+const isLoading = ref(false);
+const isPathLoading = ref(false);
+const knowledgeMap = new KnowledgeMap();
 
-    async function findPath() {
-      isPathLoading.value = true;
-      let result;
-      if (direction.value === 'left') {
-        result = await KnowledgeNoAuthApiService.getPath({
-          originKnowledgeEntityId: targetNode.value,
-          targetKnowledgeEntityId: sourceNode.value
-        });
-      } else {
-        result = await KnowledgeNoAuthApiService.getPath({
-          originKnowledgeEntityId: sourceNode.value,
-          targetKnowledgeEntityId: targetNode.value
-        });
-      }
-      if (result.data) {
-        console.log(result.data);
-        path.target = result.data;
-        graph.value?.setItemState(path.target?.start.properties.knowledgeEntityId, 'hover', true);
-      }
-      isPathLoading.value = false;
-    }
+async function handleSearch(params: {
+  targetNode: string,
+  sourceNode: string,
+  direction: 'left' | 'right'
+}) {
+  isPathLoading.value = true;
+  await getKnowledgePath(params);
+  isPathLoading.value = false;
+}
 
-    const goHomePage = async () => {
-      router.push('/')
-        .then();
-    };
+function zoomIn() {
+  knowledgeMap.zoomIn();
+}
 
-    const zoomIn = () => {
-      const zoom = graph.value?.getZoom();
-      console.log(zoom);
-      if (zoom && zoom < 3) {
-        graph.value?.zoom(1.2, {
-          x: 0,
-          y: 0
-        });
-      }
-    };
-    const zoomOut = () => {
-      const zoom = graph.value?.getZoom();
-      console.log(zoom);
-      if (zoom && zoom > -3) {
-        graph.value?.zoom(0.8, {
-          x: 0,
-          y: 0
-        });
-      }
-    };
+function zoomOut() {
+  knowledgeMap.zoomOut();
+}
 
-    const knowledgeMap = new KnowledgeMap();
-    onMounted(async () => {
-      isLoading.value = true;
-      await knowledgeMap.initGraph();
-      isLoading.value = false;
-    });
-    onUnmounted(() => {
-      graph.value?.destroy();
-    });
-
-    return {
-      graph,
-      edges,
-      graphData,
-      nodes,
-      knowledgeList,
-      repositoryList,
-      combos,
-      tooltip,
-      sourceNode,
-      targetNode,
-      isLoading,
-      findPath,
-      path,
-      isPathLoading,
-      goHomePage,
-      direction,
-      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      zoomIn,
-      zoomOut
-    };
-  }
+onMounted(async () => {
+  isLoading.value = true;
+  await knowledgeMap.initGraph();
+  isLoading.value = false;
 });
+
+onUnmounted(() => {
+  knowledgeMap.destroy();
+});
+
 </script>
 
 <style scoped lang="scss">
@@ -252,37 +82,20 @@ export default defineComponent({
 
 .knowledge-map {
   height: 100vh;
-  width: 100vw;
-
-  .header {
-    height: 55px;
-    width: 100%;
-    padding: 0 30px;
-    border-bottom: 1px solid $borderColor;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .left {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 10px;
-
-      .logo {
-        margin-right: 10px;
-        cursor: pointer
-      }
-    }
-
-  }
+  width: 100%;
+  position: relative;
 
   .content {
+    position: absolute;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
 
     .left {
       width: 260px;
-      height: calc(100vh - 55px);
+      height: 100%;
       border-right: 1px solid $borderColor;
 
       .left-header {
@@ -290,20 +103,10 @@ export default defineComponent({
         line-height: 50px;
         border-bottom: 1px solid $borderColor;
       }
-
-      .step-length {
-        height: 50px;
-        line-height: 50px;
-        margin-bottom: 15px;
-      }
-
-      .step-card {
-        margin-bottom: 15px;
-      }
     }
 
     .right {
-      height: calc(100vh - 50px);
+      height: 100%;
       flex: 1;
       overflow: hidden;
       position: relative;
@@ -314,6 +117,10 @@ export default defineComponent({
         z-index: 4;
         right: 0;
         top: 0;
+        .control-icon {
+          font-size: 25px;
+          cursor: pointer
+        }
       }
     }
   }

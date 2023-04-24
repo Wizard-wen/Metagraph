@@ -23,7 +23,6 @@
             </template>
           </ant-input>
         </div>
-
       </div>
       <div v-if="ownRepositoryList.isLoading">
         <ant-skeleton v-for="item in 3" :key="item" active/>
@@ -60,6 +59,7 @@ async function goCreateRepositoryPage() {
 }
 
 onMounted(async () => {
+  console.log('222222222222')
   await getOwnRepositoryList();
 });
 

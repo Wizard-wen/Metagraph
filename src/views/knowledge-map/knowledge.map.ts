@@ -3,20 +3,20 @@
  * @date  2022/1/18 15:43
  */
 
-import G6, {
-  Graph, IEdge, INode, Tooltip
-} from '@antv/g6';
-import * as AntvG6 from '@antv/g6';
+import G6, * as AntvG6 from '@antv/g6';
+import { Graph, IEdge, INode, Tooltip } from '@antv/g6';
 import { IG6GraphEvent, Item } from '@antv/g6-core';
 import {
   EntityCompletelyListItemType,
-  KnowledgeEdgeModelType, KnowledgeModelType, KnowledgeResponseType,
+  KnowledgeEdgeModelType,
+  KnowledgeModelType,
   RepositoryModelType
 } from '@metagraph/constant';
 import { reactive, ref } from 'vue';
 import {
-  EdgeNoAuthApiService, EntityNoAuthApiService, KnowledgeNoAuthApiService,
-  RepositoryApiService,
+  EdgeNoAuthApiService,
+  EntityNoAuthApiService,
+  KnowledgeNoAuthApiService,
   RepositoryNoAuthApiService
 } from '@/api-service';
 
@@ -29,8 +29,6 @@ export const repositoryList = reactive<{
 export const nodes = reactive<{
   list?: {
     id: string;
-    // label: string;
-    // comboId: string
   }[]
 }>({});
 export const knowledgeList = reactive<{
@@ -43,6 +41,27 @@ export const combos = reactive<{
 }>({
   list: []
 });
+
+export const currentPath = ref<{
+  end: {
+    properties: any
+  };
+  length: number;
+  segments: {
+    start: {
+      properties: any
+    },
+    end: {
+      properties: any
+    },
+    relationship: {
+      properties: any
+    }
+  }[];
+  start: {
+    properties: any
+  };
+}>();
 
 const nodeObject = ref({});
 const isShow = ref(false);
@@ -92,13 +111,56 @@ export const styleConfig = ref({
   }
 });
 
-// export const fontSize = ref(12);
-// export const labelColor = ref();
-// export const edgeColor = ref();
+export async function getKnowledgePath(params: {
+  targetNode: string,
+  sourceNode: string,
+  direction: 'left' | 'right'
+}): Promise<void> {
+  let result;
+  if (params.direction === 'left') {
+    result = await KnowledgeNoAuthApiService.getPath({
+      originKnowledgeEntityId: params.targetNode,
+      targetKnowledgeEntityId: params.sourceNode
+    });
+  } else {
+    result = await KnowledgeNoAuthApiService.getPath({
+      originKnowledgeEntityId: params.sourceNode,
+      targetKnowledgeEntityId: params.targetNode
+    });
+  }
+  if (result.data) {
+    currentPath.value = result.data;
+    graph.value?.setItemState(currentPath.value?.start.properties.knowledgeEntityId, 'hover', true);
+  }
+}
 
 export class KnowledgeMap {
   initGrid() {
     return new G6.Grid();
+  }
+
+  destroy(): void {
+    graph.value?.destroy();
+  }
+
+  zoomIn(): void {
+    const zoom = graph.value?.getZoom();
+    if (zoom && zoom < 3) {
+      graph.value?.zoom(1.2, {
+        x: 0,
+        y: 0
+      });
+    }
+  }
+
+  zoomOut(): void {
+    const zoom = graph.value?.getZoom();
+    if (zoom && zoom > -3) {
+      graph.value?.zoom(0.8, {
+        x: 0,
+        y: 0
+      });
+    }
   }
 
   async initGraph(): Promise<void> {

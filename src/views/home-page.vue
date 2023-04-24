@@ -7,8 +7,7 @@
       <div class="container">
         <div class="content authed-list-content">
           <div class="list-content" id="step4" data-homepage="4">
-            <authed-main-list v-if="isLogin"></authed-main-list>
-            <no-auth-main-list v-else></no-auth-main-list>
+            <authed-main-list></authed-main-list>
             <ipc-message></ipc-message>
           </div>
           <hot-list></hot-list>

@@ -6,9 +6,11 @@
     <div class="content">
       <EditOutlined v-if="isShow" class="control" @click="handleClickEdit"/>
       <div class="priority-tags">
-        <div v-for="(item ,index) in planItem.priority" :key="index"
-             class="priority-tag-item"
-             :class="planItem.status + '-tag-color'"></div>
+        <div
+          v-for="(item ,index) in planItem.priority"
+          :key="index"
+          class="priority-tag-item"
+          :class="planItem.status + '-tag-color'"></div>
       </div>
       <div class="name">{{ planItem.name }}</div>
       <div class="entity-list">
@@ -25,7 +27,7 @@
 
 <script lang="ts" setup>
 import { EntityCompletelyListItemType, PlanItemModelType } from '@metagraph/constant';
-import { PropType, ref, defineProps, defineEmits } from 'vue';
+import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { Tag as AntTag } from 'ant-design-vue';
 import { EditOutlined } from '@ant-design/icons-vue';
 
@@ -40,6 +42,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['edit', 'close']);
+
 function handleClickEdit() {
   emit('edit', {
     id: props.planItem.id

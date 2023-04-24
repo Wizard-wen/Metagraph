@@ -90,6 +90,7 @@ export async function getActivityList(page?: number): Promise<void> {
 }
 
 export async function getOwnRepositoryList(): Promise<void> {
+  console.log('------------')
   ownRepositoryList.isLoading = true;
   const result = await RepositoryApiService.getOwnRepositoryList();
   if (result.data) {

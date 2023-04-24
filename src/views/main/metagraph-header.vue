@@ -68,9 +68,11 @@
         </template>
       </ant-dropdown>
       <create-section-modal
+        v-if="isCreateSectionModalShow"
         @close="isCreateSectionModalShow = false"
         :is-modal-visible="isCreateSectionModalShow"></create-section-modal>
       <create-knowledge-modal
+        v-if="isCreateKnowledgeModalShow"
         @close="isCreateKnowledgeModalShow = false"
         :is-modal-visible="isCreateKnowledgeModalShow"></create-knowledge-modal>
       <div class="notify" v-if="isLogin">
