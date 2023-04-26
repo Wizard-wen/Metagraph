@@ -210,6 +210,7 @@ async function handleSaveKnowledgeName(event: boolean) {
 
 </script>
 <style lang="scss" scoped>
+@import "../../../style/common.scss";
 .custom-input-style {
   border-radius: 4px;
 
@@ -244,14 +245,16 @@ async function handleSaveKnowledgeName(event: boolean) {
 }
 
 .upload-cover-image {
+  margin-bottom: 12px;
   height: 186px;
   box-sizing: border-box;
   width: 100%;
   padding: 8px 0;
-  background: #fbfbfb;
+  border-radius: 6px;
+  background: $hoverBackColor;
 
   &:hover {
-    background: #eee;
+    background: $hoverDeepBackColor;
   }
 
   .cover-content {
@@ -276,7 +279,7 @@ async function handleSaveKnowledgeName(event: boolean) {
 
     .icon {
       .icon-style {
-        color: #dedede;
+        color: #999;
         font-size: 40px
       }
     }

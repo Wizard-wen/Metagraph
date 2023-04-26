@@ -1,7 +1,7 @@
 <template>
   <div class="knowledge-header">
     <div class="left">
-      <m-button :has-border="false" @click="goBack">
+      <m-button :is-icon="true" :has-border="false" @click="goBack">
         <template #icon>
           <LeftOutlined/>
         </template>
@@ -10,7 +10,7 @@
         :getPopupContainer="getPopupContainer"
         :trigger="['click']"
         :placement="'bottomLeft'">
-        <m-button :has-border="false">
+        <m-button :is-icon="true" :has-border="false">
           <template #icon>
             <MenuOutlined/>
           </template>

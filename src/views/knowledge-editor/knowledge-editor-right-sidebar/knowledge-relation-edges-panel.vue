@@ -1,151 +1,245 @@
 <template>
-  <div class="bind-panel">
-    <ant-collapse
-      v-if="knowledgeEdges.target"
-      accordion
-      :defaultActiveKey="'1'">
-      <ant-collapse-panel key="1" header="知识库内前置知识点">
-        <div class="card-content" v-if="knowledgeEdges.target.preInnerList.length">
-          <div
-            v-for="(item, index) in knowledgeEdges.target.preInnerList"
-            :key="index"
-            data-type="rect"
-            class="dnd-rect">
-            {{ item.item.content.name }}
-          </div>
-        </div>
-        <empty-view v-else></empty-view>
-      </ant-collapse-panel>
-      <ant-collapse-panel key="2" header="知识库外前置知识点" :disabled="false">
-        <div class="card-content" v-if="knowledgeEdges.target.preOuterList.length">
-          <div
-            v-for="(item, index) in knowledgeEdges.target.preOuterList"
-            :key="index"
-            data-type="rect"
-            class="dnd-rect">
-            {{ item.item.content.name }}
-          </div>
-        </div>
-        <empty-view v-else></empty-view>
-      </ant-collapse-panel>
-      <ant-collapse-panel key="3" header="知识库内导出知识点">
-        <div class="card-content" v-if="knowledgeEdges.target.extendInnerList.length">
-          <div
-            v-for="(item, index) in knowledgeEdges.target.extendInnerList"
-            :key="index"
-            data-type="rect"
-            class="dnd-rect">
-            {{ item.item.content.name }}
-          </div>
-        </div>
-        <empty-view v-else></empty-view>
-      </ant-collapse-panel>
-      <ant-collapse-panel key="4" header="知识库外导出知识点">
-        <div class="card-content" v-if="knowledgeEdges.target.extendOuterList.length">
-          <div
-            v-for="(item, index) in knowledgeEdges.target.extendOuterList"
-            :key="index"
-            data-type="rect"
-            class="dnd-rect">
-            {{ item.item.content.name }}
-          </div>
-        </div>
-        <empty-view v-else></empty-view>
-      </ant-collapse-panel>
-    </ant-collapse>
-    <empty-view v-else></empty-view>
+  <div class="knowledge-name">
+    <ReadOutlined class="icon-style"/>
+    {{ knowledgeEdges.entity?.entity.name }}
   </div>
+  <metagraph-tab-bar
+    :is-editable="true"
+    :current-key="currentBar"
+    @selectedChange="handleBarChange"
+    :element-tabs="toolbarElementList"></metagraph-tab-bar>
+  <div class="search-bar">
+    <SearchOutlined class="search-icon"/>
+    <input type="text" class="search-input" placeholder="搜索知识关联">
+    <ant-dropdown :placement="'bottomRight'">
+      <m-button :size="'small'" :has-border="false">
+        <template #icon>
+          <ControlOutlined/>
+        </template>
+      </m-button>
+      <template #overlay>
+        <ant-menu class="dropdown-menu-style">
+          <ant-menu-item class="menu-item-style">
+            我的知识库
+          </ant-menu-item>
+          <ant-menu-item class="menu-item-style">
+            我的知识库
+          </ant-menu-item>
+        </ant-menu>
+      </template>
+    </ant-dropdown>
+  </div>
+  <metagraph-tab-bar
+    :is-editable="true"
+    :current-key="currentMentionBar"
+    @selectedChange="handleMentionBarChange"
+    :element-tabs="mentionStatusList"></metagraph-tab-bar>
+  <div class="content">
+    <div class="card-content"
+         v-if="currentShow === 'preMentioned'">
+      <normal-relation-list
+        :relation-list="knowledgeEdges.preInnerList"></normal-relation-list>
+    </div>
+    <div class="card-content"
+         v-if="currentShow === 'preUnmentioned'">
+      <normal-relation-list
+        :relation-list="knowledgeEdges.preOuterList"
+       ></normal-relation-list>
+    </div>
+    <div class="card-content"
+         v-if="currentShow === 'extendMentioned'">
+      <normal-relation-list
+        :relation-list="knowledgeEdges.extendInnerList"></normal-relation-list>
+    </div>
+    <div class="card-content"
+         v-if="currentShow === 'extendUnmentioned'">
+      <normal-relation-list
+        :relation-list="knowledgeEdges.extendOuterList"
+        ></normal-relation-list>
+    </div>
+</div>
 </template>
 
-<script lang="ts">
-import EmptyView from '@/components/empty-view/empty-view.vue';
-import { Collapse, Empty } from 'ant-design-vue';
-import { ref, defineComponent } from 'vue';
-import { knowledgeEdges } from '../model/knowledge.edit';
+<script lang="ts" setup>
+import { ControlOutlined, SearchOutlined, ReadOutlined } from '@ant-design/icons-vue';
+import { computed, ref } from 'vue';
+import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
+import { MButton } from '@/metagraph-ui';
+import { Menu as AntMenu, Dropdown as AntDropdown } from 'ant-design-vue';
+import {
+  knowledgeEdges,
+} from '../model/knowledge.edit';
+import NormalRelationList
+  from '@/views/repository-editor/knowledge-graph-panel/normal-relation-list.vue';
 
-export default defineComponent({
-  name: 'knowledge-relation-edges-panel',
-  components: {
-    EmptyView,
-    AntCollapse: Collapse,
-    AntCollapsePanel: Collapse.Panel
+
+const AntMenuItem = AntMenu.Item;
+
+const toolbarElementList = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '前置',
+    value: 'pre',
+    isAuth: false
   },
-  setup() {
-    const isInnerPre = ref(false);
-    const isOuterPre = ref(false);
-    return {
-      knowledgeEdges,
-      isOuterPre,
-      isInnerPre,
-      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE
-    };
+  {
+    label: '引申',
+    value: 'extend',
+    isAuth: false
+  },
+]);
+
+const currentBar = ref<string>('pre');
+
+function handleBarChange(value: string) {
+  currentBar.value = value;
+}
+
+
+const mentionStatusList = ref<{ value: string; label: string; isAuth: boolean }[]>([
+  {
+    label: '全部',
+    value: 'all',
+    isAuth: false
+  },
+  {
+    label: '已引用',
+    value: 'mentioned',
+    isAuth: false
+  },
+  {
+    label: '未引用',
+    value: 'unmentioned',
+    isAuth: false
+  },
+]);
+
+const currentMentionBar = ref<string>('mentioned');
+
+function handleMentionBarChange(value: string) {
+  currentMentionBar.value = value;
+}
+
+const currentShow = computed(() => {
+  if (currentBar.value === 'pre' && currentMentionBar.value === 'mentioned') {
+    return 'preMentioned';
   }
+  if (currentBar.value === 'pre' && currentMentionBar.value === 'unmentioned') {
+    return 'preUnmentioned';
+  }
+  if (currentBar.value === 'extend' && currentMentionBar.value === 'mentioned') {
+    return 'extendMentioned';
+  }
+  if (currentBar.value === 'extend' && currentMentionBar.value === 'unmentioned') {
+    return 'extendUnmentioned';
+  }
+  return 'preMentioned';
 });
+
 </script>
 
 <style scoped lang="scss">
-@import '../../../style/common';
+@import '../../../style/common.scss';
 
-.bind-panel {
-  width: 100%;
-  height: calc(100vh - 55px);
+.hide-style {
+
+}
+
+.knowledge-name {
+  display: flex;
+  height: 45px;
+  align-items: center;
+  border-bottom: 1px solid $borderColor;
+  padding-left: 8px;
+  font-weight: bold;
+  .icon-style {
+    margin-right: 8px;
+    font-size: 14px;
+  }
+}
+
+.search-bar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid $borderColor;
+
+  .search-icon {
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .search-input {
+    display: block;
+    height: 32px;
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 12px;
+  }
+
+  .search-control {
+    font-size: 16px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.title {
+  height: 32px;
+  line-height: 32px;
+  text-align: left;
+  font-size: 12px;
+  padding-left: 10px;
+  color: #0006;
+}
+
+.content {
+  font-size: 13px;
+  height: calc(100vh - 88px);
+  padding: 8px;
 
   .card-content {
     height: 100%;
     overflow-y: auto;
-
-    .dnd-rect {
-      width: calc(100% - 6px);
-      height: 40px;
-      border: 1px solid $borderColor;
-      text-align: center;
-      line-height: 40px;
-      margin: 3px auto;
-      cursor: pointer;
-    }
   }
-}
 
-.knowledge-connection {
-  width: 100%;
-  height: 50%;
-  border-bottom: 1px solid #ccc;
-
-  .title {
+  .dnd-rect {
+    width: calc(100% - 6px);
     height: 32px;
-    line-height: 32px;
+    border: 1px solid $borderColor;
     text-align: center;
-    font-size: 16px;
-    border-bottom: 1px solid #ccc;
+    line-height: 32px;
+    margin: 3px auto;
+    cursor: move;
   }
 
-  .sub-title {
-    height: 28px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    justify-items: center;
-    font-size: 12px;
-    border-bottom: 1px solid #ccc;
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    .sub-item {
-      width: 100%;
-      height: 28px;
-      line-height: 28px;
-    }
-
-    .sub-title-active {
-      background: #1790ff;
-      color: #FFFFFF;
-    }
+  .is-active {
+    border: 1px solid #1890FF;
   }
 
-  .content {
-    padding: 10px 0;
+  .card-header {
+    & ::v-deep(.ant-card-head) {
+      min-height: 35px;
+    }
+
+    & ::v-deep(.ant-card-head-title) {
+      padding: 0;
+      line-height: 35px;
+      height: 35px;
+      font-size: 14px;
+    }
+
+    & ::v-deep(.ant-card-body) {
+      padding: 15px 5px;
+      height: calc(100% - 35px);
+    }
   }
 }
 </style>

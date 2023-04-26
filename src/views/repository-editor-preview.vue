@@ -1,13 +1,10 @@
 <template>
-
+知识库预览页面
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { defineProps } from 'vue';
 
-export default defineComponent({
-  name: 'repository-editor-preview'
-});
 </script>
 
 <style scoped lang="scss">

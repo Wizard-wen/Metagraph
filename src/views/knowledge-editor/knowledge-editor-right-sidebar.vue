@@ -9,7 +9,7 @@
       <knowledge-base-message-form
         v-if="currentBar === 'knowledge'"></knowledge-base-message-form>
       <knowledge-relation-edges-panel
-        v-if="currentBar === 'edge'"></knowledge-relation-edges-panel>
+        v-if="currentBar === 'config'"></knowledge-relation-edges-panel>
     </div>
   </div>
 </template>
@@ -20,7 +20,7 @@ import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import KnowledgeBaseMessageForm
   from './knowledge-editor-right-sidebar/knowledge-base-message-form.vue';
 import KnowledgeRelationEdgesPanel
-  from './knowledge-editor-right-sidebar/knowledge-relation-edges-panel.vue';
+  from './knowledge-editor-right-sidebar/knowledge-custom-fields-config.vue';
 
 const isEditable = ref(true);
 const currentBar = ref<string>('knowledge');
@@ -33,8 +33,8 @@ const sidebarElementList = ref<{
   value: 'knowledge',
   isAuth: true
 }, {
-  label: '知识关联',
-  value: 'edge',
+  label: '知识配置',
+  value: 'config',
   isAuth: true
 }]);
 

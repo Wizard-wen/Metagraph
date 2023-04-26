@@ -7,6 +7,8 @@
       :element-tabs="sidebarElementList"></metagraph-tab-bar>
     <knowledge-mentioned-list
       v-if="currentBar === 'mention'"></knowledge-mentioned-list>
+    <knowledge-relation-edges-panel
+      v-if="currentBar === 'edge'"></knowledge-relation-edges-panel>
   </div>
 </template>
 
@@ -14,6 +16,7 @@
 import { ref } from 'vue';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import KnowledgeMentionedList from './knowledge-editor-left-sidebar/knowledge-mentioned-list.vue';
+import KnowledgeRelationEdgesPanel from './knowledge-editor-right-sidebar/knowledge-relation-edges-panel.vue';
 
 const isEditable = ref(true);
 const currentBar = ref<string>('mention');
@@ -25,6 +28,10 @@ const sidebarElementList = ref<{
   label: '引用',
   value: 'mention',
   isAuth: true
+}, {
+  label: '知识关联',
+  value: 'edge',
+  isAuth: true
 }]);
 
 function handleBarChange(value: string) {
@@ -35,7 +42,7 @@ function handleBarChange(value: string) {
 <style scoped lang="scss">
 @import '../../style/common.scss';
 .left-sidebar {
-  width: 220px;
+  width: 240px;
   border-right: 1px solid $borderColor;
 }
 .sidebar {
