@@ -49,7 +49,7 @@
 
 <script lang="ts" setup>
 import EmptyView from '@/components/empty-view/empty-view.vue';
-import { FileEnum } from '@metagraph/constant';
+import { FileEnum, FileResponseType } from '@metagraph/constant';
 import { FileWordOutlined } from '@ant-design/icons-vue';
 import { Pagination as AntPagination, Skeleton as ASkeleton, } from 'ant-design-vue';
 import WillSelectFilePreview
@@ -78,11 +78,10 @@ async function handleViewFile(id: string) {
   await getSelectFileItemById(id);
 }
 
-function handleSelectFile(params: {
-  id: string
-}) {
+function handleSelectFile(params: FileResponseType) {
   emit('select', params);
 }
+
 onMounted(async () => {
   selectFileItemData.data = undefined;
   setUserFileListConfig({

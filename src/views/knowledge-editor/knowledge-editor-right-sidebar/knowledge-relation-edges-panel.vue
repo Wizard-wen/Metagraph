@@ -66,11 +66,11 @@ import { computed, ref } from 'vue';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
 import { MButton } from '@/metagraph-ui';
 import { Menu as AntMenu, Dropdown as AntDropdown } from 'ant-design-vue';
+import NormalRelationList
+  from '@/views/repository-editor/knowledge-graph-panel/normal-relation-list.vue';
 import {
   knowledgeEdges,
 } from '../model/knowledge.edit';
-import NormalRelationList
-  from '@/views/repository-editor/knowledge-graph-panel/normal-relation-list.vue';
 
 
 const AntMenuItem = AntMenu.Item;

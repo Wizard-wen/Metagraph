@@ -63,8 +63,8 @@ export default defineComponent({
     const knowledgeEntityId = toRef(props, 'knowledgeEntityId');
     const selectedImageKey = ref();
     const modalConfirmLoading = ref();
-    selectedImageKey.value = knowledgePictures.value.find((item) => item.isCover)?.fileKey;
-    const selectedUrl = computed(() => knowledgePictures.value.find((item) => item.fileKey === selectedImageKey.value)?.url);
+    selectedImageKey.value = knowledgePictures.value.find((item) => item.isCover)?.fileId;
+    const selectedUrl = computed(() => knowledgePictures.value.find((item) => item.fileId === selectedImageKey.value)?.url);
 
     function handleModalCancel() {
       emit('close');
@@ -75,7 +75,7 @@ export default defineComponent({
     async function handleModalOk() {
       modalConfirmLoading.value = true;
       knowledgePictures.value.forEach((item) => {
-        item.isCover = item.fileKey === selectedImageKey.value;
+        item.isCover = item.fileId === selectedImageKey.value;
       });
       await knowledgeEdit.updateDraftKnowledge(knowledgeEntityId.value, {
         pictures: knowledgePictures.value

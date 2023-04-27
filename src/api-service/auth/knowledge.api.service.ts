@@ -5,8 +5,8 @@
 
 import { RequestNewUntil } from '@/utils/request.new.until';
 import {
-  AlternativeKnowledgeListType,
-  EntityCompletelyListItemType,
+  AlternativeKnowledgeListType, BackupKnowledgeJSONType,
+  EntityCompletelyListItemType, HistoryVersionKnowledgeModelType,
   KnowledgeAuthedApi, KnowledgeModelType
 } from '@metagraph/constant';
 import type { PublicApiResponseType } from '@/utils';
@@ -32,7 +32,7 @@ export class KnowledgeApiService {
       domainId: string;
     }[],
     pictures?: {
-      fileKey: string;
+      fileId: string;
       url: string;
       name?: string;
       size?: number;
@@ -182,7 +182,7 @@ export class KnowledgeApiService {
 
   static async removePicture(params: {
     knowledgeEntityId: string;
-    fileKey: string;
+    fileId: string;
   }): Promise<PublicApiResponseType<void>> {
     return RequestNewUntil.post<KnowledgeAuthedApi.RemoveDraftKnowledgePicture>({
       apiPath: '/knowledge/draft/removePicture',
@@ -216,6 +216,21 @@ export class KnowledgeApiService {
     });
   }
 
+  static async editField(params: {
+    knowledgeEntityId: string;
+    customField: {
+      key: string;
+      label: string;
+      type: 'Date' | 'Input' | 'Textarea';
+      grid: 1 | 2;
+    };
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<KnowledgeAuthedApi.EditCustomField>({
+      apiPath: '/knowledge/editField',
+      requestBody: params
+    });
+  }
+
   static async removeField(params: {
     knowledgeEntityId: string;
     customFieldKey: string;
@@ -236,6 +251,18 @@ export class KnowledgeApiService {
   }): Promise<PublicApiResponseType<void>> {
     return RequestNewUntil.post<KnowledgeAuthedApi.SaveCustomFields>({
       apiPath: '/knowledge/saveFields',
+      requestBody: params
+    });
+  }
+
+  static async GetHistoryVersionList(params: {
+    knowledgeEntityId: string;
+  }): Promise<PublicApiResponseType<{
+    origin: HistoryVersionKnowledgeModelType,
+    parsed: BackupKnowledgeJSONType
+  }[]>> {
+    return RequestNewUntil.post<KnowledgeAuthedApi.GetHistoryVersionList>({
+      apiPath: '/knowledge/getHistoryVersionList',
       requestBody: params
     });
   }

@@ -20,9 +20,9 @@ export type KnowledgeBaseFormType = {
 // 知识点概念图册
 export type KnowledgePicturesFrontendType = KnowledgePictureType & {
   // 非业务字段，是ant design 约定的字段
-  uid: string;
+  // uid: string;
   url: string;
-  fileKey: string;
+  fileId: string;
   isCover?: boolean;
   name?: string;
   size?: number;

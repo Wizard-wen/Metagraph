@@ -10,6 +10,8 @@
         v-if="currentBar === 'knowledge'"></knowledge-base-message-form>
       <knowledge-relation-edges-panel
         v-if="currentBar === 'config'"></knowledge-relation-edges-panel>
+      <knowledge-history-version
+        v-if="currentBar === 'history'"></knowledge-history-version>
     </div>
   </div>
 </template>
@@ -21,6 +23,8 @@ import KnowledgeBaseMessageForm
   from './knowledge-editor-right-sidebar/knowledge-base-message-form.vue';
 import KnowledgeRelationEdgesPanel
   from './knowledge-editor-right-sidebar/knowledge-custom-fields-config.vue';
+import KnowledgeHistoryVersion
+  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/knowledge-history-version.vue';
 
 const isEditable = ref(true);
 const currentBar = ref<string>('knowledge');
@@ -33,26 +37,18 @@ const sidebarElementList = ref<{
   value: 'knowledge',
   isAuth: true
 }, {
-  label: '知识配置',
+  label: '信息栏',
   value: 'config',
+  isAuth: true
+}, {
+  label: '历史版本',
+  value: 'history',
   isAuth: true
 }]);
 
 function handleBarChange(value: string) {
   currentBar.value = value;
 }
-
-
-// const toolbarState = reactive({
-//   label: '',
-//   value: '',
-//   index: 0
-// });
-// const setToolbarState = (tab: { label: string, value: string }, index: number) => {
-//   toolbarState.label = tab.label;
-//   toolbarState.value = tab.value;
-//   toolbarState.index = index;
-// };
 
 </script>
 

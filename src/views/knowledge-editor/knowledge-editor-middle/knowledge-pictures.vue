@@ -7,12 +7,16 @@
       </div>
     </div>
     <div class="content">
-      <qiniu-upload-image-list
-        @remove="handleRemovePicture($event)"
-        :modelValue="knowledgePictures"
-        @update:modelValue="handlePicturesChange($event)"></qiniu-upload-image-list>
+      <!--      <qiniu-upload-image-list-->
+      <!--        @remove="handleRemovePicture($event)"-->
+      <!--        :modelValue="knowledgePictures"-->
+      <!--        @update:modelValue="handlePicturesChange($event)"></qiniu-upload-image-list>-->
+
+      <knowledge-picture-preview-list
+        :knowledge-pictures="knowledgePictures"></knowledge-picture-preview-list>
     </div>
     <select-file-modal
+      :type="fileType"
       @close="handleCloseSelectFileModal($event)"
       :is-modal-visible="isSelectFileModalVisible"></select-file-modal>
   </div>
@@ -30,21 +34,32 @@ import {
   KnowledgeEdit,
   knowledgePictures
 } from '../model/knowledge.edit';
-import QiniuUploadImageList from './knowledge-pictures/knowledge-picture-list.vue';
+import { FileEnum, FileResponseType } from '@metagraph/constant';
+import KnowledgePicturePreviewList
+  from '@/views/knowledge-editor/knowledge-editor-middle/knowledge-pictures/knowledge-picture-preview-list.vue';
 
 const knowledgeEdit = new KnowledgeEdit();
 const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
 const isSelectFileModalVisible = ref(false);
-
+const fileType = ref(FileEnum.Image);
 function handleSelectFile() {
   isSelectFileModalVisible.value = true;
 }
 
-function handleCloseSelectFileModal(params?: {
-  id: string
-}) {
+async function handleCloseSelectFileModal(params?: FileResponseType) {
   console.log(params?.id);
   isSelectFileModalVisible.value = false;
+  if (params) {
+    knowledgePictures.value.push({
+      fileId: params.id,
+      url: params.name,
+      name: params.url
+    });
+    await knowledgeEdit.updateDraftKnowledge(knowledgeEntityId.value, {
+      pictures: knowledgePictures.value
+    });
+    await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
+  }
 }
 
 async function handlePicturesChange(events: KnowledgePicturesFrontendType[]) {
@@ -58,7 +73,7 @@ async function handlePicturesChange(events: KnowledgePicturesFrontendType[]) {
 async function handleRemovePicture(item: KnowledgePicturesFrontendType) {
   await knowledgeEdit.removeKnowledgePicture({
     knowledgeEntityId: knowledgeEntityId.value,
-    fileKey: item.fileKey
+    fileId: item.fileId
   });
   await knowledgeEdit.getKnowledge(knowledgeEntityId.value);
 }

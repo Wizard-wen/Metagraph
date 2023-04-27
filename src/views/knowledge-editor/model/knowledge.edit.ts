@@ -32,6 +32,7 @@ import {
   TagApiService
 } from '@/api-service';
 import { tiptapInitData } from '@/store/constant';
+import { BackupKnowledgeJSONType, HistoryVersionKnowledgeModelType } from '@metagraph/constant';
 
 export const draftKnowledgeEntityIdInjectKey: InjectionKey<Ref<string>> = Symbol('draftKnowledgeEntityId');
 export const publishedKnowledgeEntityIdInjectKey: InjectionKey<Ref<string>> = Symbol('publishedKnowledgeEntityId');
@@ -129,7 +130,10 @@ export const tag = reactive<{
 export const domainList = ref([]);
 
 export const ownRepositoryList = ref<EntityCompletelyListItemType[]>([]);
-
+export const historyVersionList = ref<{
+  origin: HistoryVersionKnowledgeModelType,
+  parsed: BackupKnowledgeJSONType
+}[]>([]);
 export const compareData = ref<{
   add: {
     customField: string[]
@@ -190,7 +194,7 @@ export class KnowledgeEdit {
   }
 
   private setKnowledgePictures(pictures: {
-    fileKey: string;
+    fileId: string;
     isCover?: boolean;
     url: string;
     name?: string;
@@ -230,6 +234,15 @@ export class KnowledgeEdit {
       validateInfos
     } = Form.useForm(customFieldsModelRef, customFieldsRulesRef);
     customFieldsValidateInfo.value = validateInfos;
+  }
+
+  async getHistoryVersionList(knowledgeEntityId: string): Promise<void> {
+    const result = await KnowledgeApiService.GetHistoryVersionList({
+      knowledgeEntityId
+    });
+    if (result.data) {
+      historyVersionList.value = result.data;
+    }
   }
 
   /**
@@ -309,7 +322,7 @@ export class KnowledgeEdit {
 
   async removeKnowledgePicture(params: {
     knowledgeEntityId: string;
-    fileKey: string;
+    fileId: string;
   }): Promise<void> {
     const result = await KnowledgeApiService.removePicture(params);
     if (result.code === 0) {

@@ -46,11 +46,11 @@
                 :placeholder="`请输入${item.label}`"
                 class="form-item-gap"
                 style="max-width: calc(100% - 60px);"></ant-text-area>
-              <DeleteOutlined
-                class="dynamic-operate-button dynamic-operate-button-gap"
-                @click="removeField(item)"/>
-              <EditOutlined
-                class="dynamic-operate-button"/>
+<!--              <DeleteOutlined-->
+<!--                class="dynamic-operate-button dynamic-operate-button-gap"-->
+<!--                @click="removeField(item)"/>-->
+<!--              <EditOutlined-->
+<!--                class="dynamic-operate-button"/>-->
             </ant-form-item>
           </ant-col>
         </ant-row>
@@ -101,29 +101,6 @@ const knowledgeEdit = new KnowledgeEdit();
 const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey);
 const formRef = ref();
 
-async function removeField(item: KnowledgeCustomFieldType) {
-  Modal.confirm({
-    title: '确定删除自定义字段吗?',
-    okText: '确定',
-    cancelText: '取消',
-    zIndex: 9001,
-    icon: createVNode(ExclamationCircleOutlined),
-    content: `该操作不可逆，确定删除自定义字段${item.label}吗？`,
-    async onOk() {
-      const result = await KnowledgeApiService.removeField({
-        knowledgeEntityId: draftKnowledgeEntityId?.value || '',
-        customFieldKey: item.key
-      });
-      if (result.code === 0) {
-        await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value || '');
-        message.success('删除成功！');
-      }
-    },
-    async onCancel() {
-      message.info('取消删除');
-    },
-  });
-}
 
 const isFieldModalVisible = ref(false);
 

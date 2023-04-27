@@ -1,7 +1,7 @@
 <template>
   <ant-modal
     :width="800"
-    title="添加自定义字段"
+    :title="`${isEdit ? '编辑' : '创建'}自定义字段`"
     okText="确定"
     cancelText="取消"
     :visible="isModalVisible"
@@ -16,12 +16,12 @@
       :model="formState"
       :label-col="labelCol"
       :wrapper-col="wrapperCol">
-      <ant-form-item label="字段名" name="name">
+      <ant-form-item label="字段名" name="label">
         <ant-input
           class="custom-input-style"
           placeholder="请输入自定义字段名"
           autocomplete="off"
-          v-model:value="formState.name"/>
+          v-model:value="formState.label"/>
       </ant-form-item>
       <ant-form-item label="字段类型" name="type">
         <ant-radio-group v-model:value="formState.type">
@@ -49,12 +49,21 @@ import {
   Radio as AntRadio
 } from 'ant-design-vue';
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
-import { defineEmits, defineProps, inject, reactive, ref, UnwrapRef } from 'vue';
+import {
+  defineEmits,
+  defineProps,
+  inject,
+  PropType,
+  reactive,
+  ref,
+  UnwrapRef,
+  watchEffect
+} from 'vue';
 import { KnowledgeApiService } from '@/api-service';
 import { draftKnowledgeEntityIdInjectKey } from '@/views/knowledge-editor/model/knowledge.edit';
 
 interface FormState {
-  name: string;
+  label: string;
   grid: 1 | 2;
   type: 'Date' | 'Input' | 'Textarea';
 }
@@ -65,7 +74,7 @@ const AntRadioGroup = AntRadio.Group;
 const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
 const formRef = ref();
 const formState: UnwrapRef<FormState> = reactive({
-  name: '',
+  label: '',
   grid: 1,
   type: 'Input'
 });
@@ -74,9 +83,29 @@ const props = defineProps({
   isModalVisible: {
     type: Boolean,
     required: true
+  },
+  isEdit: {
+    type: Boolean,
+    required: true
+  },
+  fieldModel: {
+    type: Object as PropType<{
+      key: string,
+      grid: 1 | 2,
+      type: 'Date' | 'Input' | 'Textarea',
+      label: string
+    }>
   }
 });
 const emit = defineEmits(['close']);
+
+watchEffect(() => {
+  if (props.fieldModel) {
+    formState.type = props.fieldModel.type;
+    formState.grid = props.fieldModel.grid;
+    formState.label = props.fieldModel.label;
+  }
+});
 
 function handleModalCancel() {
   emit('close');
@@ -109,16 +138,30 @@ function handleModalOk() {
   formRef.value
     .validate()
     .then(async () => {
-      const result = await KnowledgeApiService.addField({
-        knowledgeEntityId: draftKnowledgeEntityId?.value,
-        customField: {
-          label: formState.name,
-          type: formState.type,
-          grid: Number(formState.grid) as 1 | 2
-        }
-      });
-      if (result.data) {
-        message.success('创建成功');
+      let result;
+      if (props.isEdit) {
+        if(!props.fieldModel) return;
+        result = await KnowledgeApiService.editField({
+          knowledgeEntityId: draftKnowledgeEntityId?.value,
+          customField: {
+            key: props.fieldModel.key,
+            label: formState.label,
+            type: formState.type,
+            grid: Number(formState.grid) as 1 | 2
+          }
+        });
+      } else {
+        result = await KnowledgeApiService.addField({
+          knowledgeEntityId: draftKnowledgeEntityId?.value,
+          customField: {
+            label: formState.label,
+            type: formState.type,
+            grid: Number(formState.grid) as 1 | 2
+          }
+        });
+      }
+      if (result.code === 0) {
+        message.success(`${props.isEdit ? '编辑' : '创建'}成功`);
       }
       emit('close');
     })
@@ -131,7 +174,7 @@ const modalConfirmLoading = ref(false);
 const labelCol = { span: 4 };
 const wrapperCol = { span: 14 };
 const rules = reactive({
-  name: [{
+  label: [{
     validator: validateCustomField,
     trigger: 'blur',
     required: true
@@ -149,33 +192,6 @@ const rules = reactive({
   }]
 });
 
-// export default defineComponent({
-//   name: 'add-field-modal',
-//   props: ,
-//   components: {
-//     AntModal: Modal,
-//     AntForm: Form,
-//     AntFormItem: Form.Item,
-//     AntInput: Input,
-//     AntRadio: Radio,
-//     AntRadioGroup: Radio.Group
-//   },
-//   emits: ['close'],
-//   setup(props, { emit }) {
-//
-//     return {
-//       formRef,
-//       formState,
-//       labelCol,
-//       wrapperCol,
-//       rules,
-//       modalConfirmLoading,
-//       handleModalOk,
-//       validateCustomField,
-//       handleModalCancel
-//     };
-//   }
-// });
 </script>
 
 <style scoped lang="scss">

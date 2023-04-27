@@ -49,7 +49,7 @@
         <m-button
           class="change-btn"
           :title="'选择'"
-          @click="handleSelectFileItem(selectFileItemData.data.id)"></m-button>
+          @click="handleSelectFileItem(selectFileItemData.data)"></m-button>
       </div>
     </template>
   </div>
@@ -62,7 +62,7 @@ import { CopyOutlined } from '@ant-design/icons-vue';
 import { CommonUtil } from '@/utils';
 import { MButton } from '@/metagraph-ui';
 import { defineEmits } from 'vue';
-
+import { FileResponseType } from '@metagraph/constant';
 
 const emit = defineEmits(['select']);
 
@@ -74,8 +74,8 @@ function handleFail() {
   message.error('复制失败');
 }
 
-async function handleSelectFileItem(id: string) {
-  emit('select', { id });
+async function handleSelectFileItem(params: FileResponseType) {
+  emit('select', params);
 }
 
 </script>
