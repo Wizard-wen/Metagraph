@@ -43,15 +43,15 @@ function handleViewFile(url: string) {
 
 @keyframes zy {
   0% {
-    transform: rotate(3deg);
+    transform: rotate(1deg);
   }
 
   50% {
-    transform: rotate(-3deg);
+    transform: rotate(-1deg);
   }
 
   100% {
-    transform: rotate(3deg);
+    transform: rotate(1deg);
   }
 }
 
@@ -76,6 +76,7 @@ function handleViewFile(url: string) {
     .file-content {
       height: 100%;
       width: 100%;
+
       &:hover {
         padding: 2px 4px 2px 2px;
         cursor: pointer;
@@ -91,7 +92,16 @@ function handleViewFile(url: string) {
         padding: 4px 6px 4px 4px;
         align-items: flex-end;
         justify-content: center;
-        animation: zy .2s linear infinite;
+        //animation: zy .25s linear infinite;
+        //position: relative;
+
+        //.delete-icon {
+        //  position: absolute;
+        //  height: 30px;
+        //  width: 30px;
+        //  top: -15px;
+        //  left: -15px;
+        //}
 
         .image-file {
           display: inline-block;

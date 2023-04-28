@@ -11,7 +11,6 @@
       <!--        @remove="handleRemovePicture($event)"-->
       <!--        :modelValue="knowledgePictures"-->
       <!--        @update:modelValue="handlePicturesChange($event)"></qiniu-upload-image-list>-->
-
       <knowledge-picture-preview-list
         :knowledge-pictures="knowledgePictures"></knowledge-picture-preview-list>
     </div>
@@ -29,14 +28,14 @@ import type {
 } from '@/views/knowledge-editor/model/knowledge.edit.type';
 import SelectFileModal from '@/views/file-panel/select-file-modal.vue';
 import { MButton } from '@/metagraph-ui';
+import { FileEnum, FileResponseType } from '@metagraph/constant';
+import KnowledgePicturePreviewList
+  from '@/views/knowledge-editor/knowledge-editor-middle/knowledge-pictures/knowledge-picture-preview-list.vue';
 import {
   draftKnowledgeEntityIdInjectKey,
   KnowledgeEdit,
   knowledgePictures
 } from '../model/knowledge.edit';
-import { FileEnum, FileResponseType } from '@metagraph/constant';
-import KnowledgePicturePreviewList
-  from '@/views/knowledge-editor/knowledge-editor-middle/knowledge-pictures/knowledge-picture-preview-list.vue';
 
 const knowledgeEdit = new KnowledgeEdit();
 const knowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));

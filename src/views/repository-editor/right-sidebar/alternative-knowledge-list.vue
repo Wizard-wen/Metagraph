@@ -59,8 +59,8 @@ import UploadAndParseTextModal
 import {
   UploadAndParseTextService
 } from '@/views/repository-editor/public-component/upload.and.parse.text.service';
-import { alternative, RepositoryEditor } from '../model/repository.editor';
 import PreviewFileModal from '@/views/file-panel/preview-file-modal.vue';
+import { alternative, RepositoryEditor } from '../model/repository.editor';
 
 const uploadAndParseTextService = new UploadAndParseTextService();
 const emit = defineEmits(['open', 'createOrBindEntity', 'refreshSection']);
