@@ -141,6 +141,15 @@ export class RepositoryEditor implements RepositoryEditorInterface {
     }
   }
 
+  async removeKnowledgeArticle(params: {
+    id: string;
+  }): Promise<void> {
+    const result = await KnowledgeApiService.removeKnowledgeArticle(params);
+    if (result.code === 0) {
+      message.success('删除成功！');
+    }
+  }
+
   async getAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
     const result = await KnowledgeApiService.getAlternativeKnowledgeList({
       repositoryEntityId

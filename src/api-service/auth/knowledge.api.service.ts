@@ -142,11 +142,20 @@ export class KnowledgeApiService {
     });
   }
 
+  static async removeKnowledgeArticle(params: {
+    id: string
+  }): Promise<PublicApiResponseType<void>> {
+    return RequestNewUntil.post<KnowledgeAuthedApi.RemoveKnowledgeArticle>({
+      apiPath: '/knowledge/removeKnowledgeArticle',
+      requestBody: params
+    });
+  }
+
   static async createAlternativeKnowledgeList(
     params: {
       article: {
         name: string;
-        url: string;
+        fileId: string;
         type: 'word';
       };
       repositoryEntityId: string;

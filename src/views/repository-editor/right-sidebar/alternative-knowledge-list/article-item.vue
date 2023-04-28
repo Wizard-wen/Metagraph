@@ -93,7 +93,7 @@ import { defineEmits, defineProps, PropType } from 'vue';
 import { CaretRightOutlined, MoreOutlined, DeleteOutlined, ReadOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 import type {
-  AlternativeKnowledgeModelType,
+  AlternativeKnowledgeModelType, FileResponseType,
   KnowledgeArticleModelType
 } from '@metagraph/constant';
 
@@ -109,6 +109,7 @@ const props = defineProps({
   articleItem: {
     type: Object as PropType<{
       article: KnowledgeArticleModelType;
+      articleFile: FileResponseType;
       children: AlternativeKnowledgeModelType[];
     }>,
     required: true
@@ -126,7 +127,8 @@ function handleClickItem(params: { id: string }) {
 function handleControlArticle(type: string) {
   emit('controlArticle', {
     type,
-    data: props.articleItem?.article
+    data: props.articleItem?.articleFile,
+    article: props.articleItem.article
   });
 }
 

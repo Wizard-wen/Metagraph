@@ -35,7 +35,12 @@ export const textFileForm = ref({
 });
 
 // 上传的文件的url
-export const fileUrl = ref<string>();
+export const fileObject = ref<{
+  url: string;
+  key: string;
+  id: string;
+  provider: string
+}>();
 
 export const parsedResultData = ref<{
   articleText: string,
@@ -53,7 +58,7 @@ export const sectionNameErrorMessage = ref('');
 export class UploadAndParseTextService {
   clearData(): void {
     currentStatus.value = 'preview';
-    fileUrl.value = undefined;
+    fileObject.value = undefined;
     parsedResultData.value.articleText = '';
     parsedResultData.value.keywords = [];
     textFileForm.value.filename = '';
@@ -89,8 +94,8 @@ export class UploadAndParseTextService {
           tokenForUploading.uploadToken
         )
         .subscribe({
-          complete(response: { key: string; url: string; }) {
-            fileUrl.value = response.url;
+          complete(response: { key: string; url: string; id: string; provider: string }) {
+            fileObject.value = response;
             message.success('上传成功！');
             changeCurrentStatus('uploadSuccess');
             isUploading.value = false;
@@ -151,13 +156,13 @@ export class UploadAndParseTextService {
   }
 
   async createAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
-    if (!textFileForm.value.filename || !fileUrl.value) {
+    if (!textFileForm.value.filename || !fileObject.value) {
       return;
     }
     const result = await KnowledgeApiService.createAlternativeKnowledgeList({
       article: {
         name: textFileForm.value.filename,
-        url: fileUrl.value,
+        fileId: fileObject.value?.id,
         type: 'word',
       },
       repositoryEntityId,

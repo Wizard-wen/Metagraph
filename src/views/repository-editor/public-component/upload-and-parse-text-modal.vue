@@ -113,7 +113,7 @@ import {
   changeCurrentStatus,
   currentStatus,
   fileNameErrorMessage,
-  fileUrl,
+  fileObject,
   isParsing,
   isUploading,
   parsedResultData,
@@ -221,9 +221,9 @@ async function uploadToServer(): Promise<void> {
 }
 
 async function parseFileInServer(): Promise<void> {
-  if (!fileUrl.value) return;
+  if (!fileObject.value) return;
   await uploadAndParseTextService.parseUploadedFileText({
-    fileUrl: fileUrl.value,
+    fileUrl: fileObject.value.url,
     repositoryEntityId: repositoryEntityId.value
   });
   await nextTick(async () => {

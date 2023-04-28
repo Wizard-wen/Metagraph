@@ -32,8 +32,7 @@
   <preview-file-modal
     v-if="isPreviewModalShown"
     @close="isPreviewModalShown = false"
-    :type="'word'"
-    :url="previewFileUrl"
+    :file-model="previewFileModel"
     :is-preview-modal-shown="isPreviewModalShown"></preview-file-modal>
   <upload-and-parse-text-modal
     :dom-file="currentFile"
@@ -47,11 +46,14 @@ import EmptyView from '@/components/empty-view/empty-view.vue';
 import { createVNode, defineEmits, inject, ref } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { AlternativeKnowledgeModelType, SectionModelType } from '@metagraph/constant';
+import {
+  AlternativeKnowledgeModelType,
+  FileResponseType, KnowledgeArticleModelType,
+  SectionModelType
+} from '@metagraph/constant';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ArticleItem
   from '@/views/repository-editor/right-sidebar/alternative-knowledge-list/article-item.vue';
-import { KnowledgeArticleModelType } from '@metagraph/constant/dist/type/knowledge.type';
 import { MButton } from '@/metagraph-ui';
 import { FileTypeUtil } from '@/utils';
 import UploadAndParseTextModal
@@ -65,7 +67,7 @@ import { alternative, RepositoryEditor } from '../model/repository.editor';
 const uploadAndParseTextService = new UploadAndParseTextService();
 const emit = defineEmits(['open', 'createOrBindEntity', 'refreshSection']);
 
-const previewFileUrl = ref('');
+const previewFileModel = ref<FileResponseType>();
 const isPreviewModalShown = ref(false);
 const isParseWordModalShow = ref(false);
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
@@ -146,12 +148,32 @@ async function deleteAlternativeKnowledge(childItem: AlternativeKnowledgeModelTy
 
 async function handleControlArticle(params: {
   type: string,
-  data: KnowledgeArticleModelType
+  article: KnowledgeArticleModelType,
+  data: FileResponseType
 }) {
   if (params.type === 'View') {
     console.log(params.data);
-    previewFileUrl.value = params.data.url;
+    previewFileModel.value = params.data;
     isPreviewModalShown.value = true;
+  }
+  if (params.type === 'Delete') {
+    Modal.confirm({
+      title: '删除文章知识点',
+      icon: createVNode(ExclamationCircleOutlined),
+      content: `确定要删除文章"${params.article.name}"吗?`,
+      okText: '确定',
+      cancelText: '取消',
+      async onOk() {
+        await repositoryEditor.removeKnowledgeArticle({
+          id: params.article.id
+        });
+        await repositoryEditor
+          .getAlternativeKnowledgeList(repositoryEntityId.value);
+      },
+      onCancel() {
+        message.info('取消删除！');
+      },
+    });
   }
 }
 
