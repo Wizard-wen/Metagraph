@@ -50,7 +50,7 @@
         :size="'large'"
         class="login-form-button"
         :title="'找回密码'"
-        @click="login"></m-button>
+        @click="resetPassword"></m-button>
     </ant-form-item>
   </ant-form>
 </template>
@@ -88,7 +88,7 @@ const registerRules = {
       trigger: 'change',
       validator(rule: any, value: string): Promise<void> {
         return new Promise((resolve, reject) => {
-          if (!value) {
+          if(!value) {
             reject('请输入密码');
           }
           resolve();
@@ -102,10 +102,10 @@ const registerRules = {
       trigger: 'change',
       validator(rule: any, value: string): Promise<void> {
         return new Promise((resolve, reject) => {
-          if (!value) {
+          if(!value) {
             reject('请输入密码');
           }
-          if (value !== forgetFormState.value.password) {
+          if(value !== forgetFormState.value.password) {
             reject('两次输入密码不一致');
           }
           resolve();
@@ -115,9 +115,17 @@ const registerRules = {
   ],
 };
 
-function login() {
-  forgetFormRef.value.validate().then(() => {
+function resetPassword() {
+  forgetFormRef.value.validate().then(async() => {
     console.log(forgetFormState.value);
+    const result = await UserNoAuthApiService.resetPasswordByEmail({
+      email: forgetFormState.value.email,
+      verifyCode: forgetFormState.value.verifyCode,
+      password: forgetFormState.value.password
+    });
+    if (result.code === 0) {
+      message.success('修改密码成功！');
+    }
   });
 }
 
@@ -127,7 +135,7 @@ const endTime = ref(new Date().getTime());
 const isEnding = ref(false);
 
 async function handleGetCode() {
-  forgetFormRef.value.validate('email').then(async () => {
+  forgetFormRef.value.validate('email').then(async() => {
     endTime.value = new Date().getTime() + 60000;
     localStorage.setItem('emailEndTime', endTime.value.toString());
     isEnding.value = true;
@@ -136,10 +144,10 @@ async function handleGetCode() {
       email: forgetFormState.value.email,
       type: 'forget'
     });
-    if (result.code === 0) {
+    if(result.code === 0) {
       message.success('邮件发送成功！');
     }
-    if (result.message) {
+    if(result.message) {
       message.error('邮件发送失败！');
     }
   });
@@ -147,7 +155,7 @@ async function handleGetCode() {
 
 onMounted(() => {
   const emailEndTime = localStorage.getItem('emailEndTime');
-  if (emailEndTime) {
+  if(emailEndTime) {
     isEnding.value = true;
     endTime.value = Number(emailEndTime);
   }

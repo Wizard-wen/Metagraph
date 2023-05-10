@@ -242,6 +242,7 @@ export abstract class AbstractTiptapTextEditor {
               let popup: Instance[];
               return {
                 onStart: (suggestionProps: SuggestionProps) => {
+                  console.log('22222')
                   if (_this.editor?.value) {
                     component = new VueRenderer(MentionList, {
                       editor: suggestionProps.editor,

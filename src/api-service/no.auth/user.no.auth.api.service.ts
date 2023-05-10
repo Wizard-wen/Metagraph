@@ -66,4 +66,19 @@ export class UserNoAuthApiService {
       requestBody: params
     });
   }
+
+  static async resetPasswordByEmail(params: {
+    email: string;
+    password: string;
+    verifyCode: string
+  }): Promise<PublicApiResponseType<any>> {
+    return RequestUtil.post<{
+      email: string;
+      password: string;
+      verifyCode: string
+    }, any>({
+      apiPath: ApiPathEnum.ResetPasswordByEmail,
+      requestBody: params
+    });
+  }
 }

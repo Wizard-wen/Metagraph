@@ -13,77 +13,81 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
-  defineComponent, watch, ref, toRefs, PropType
+  defineComponent, watch, ref, toRefs, PropType, defineProps,defineEmits
 } from 'vue';
 
-export default defineComponent({
-  name: 'mention-list',
-  props: {
-    items: {
-      type: Array as PropType<EntityCompletelyListItemType[]>,
-      required: true,
-    },
-    command: {
-      type: Function,
-      required: true,
-    },
+const props = defineProps({
+  items: {
+    type: Array as PropType<EntityCompletelyListItemType[]>,
+    required: true,
   },
-  setup(props) {
-    const { items, command } = toRefs<{
-      items: EntityCompletelyListItemType[],
-      command: any
-    }>(props);
-    const selectedIndex = ref(0);
-    watch(items, () => {
-      selectedIndex.value = 0;
-    });
-
-    function upHandler() {
-      selectedIndex.value = ((selectedIndex.value + items.value.length) - 1) % items.value.length;
-    }
-
-    function downHandler() {
-      selectedIndex.value = (selectedIndex.value + 1) % items.value.length;
-    }
-
-    function selectItem(index: any) {
-      const item = items.value[index];
-      if (item) {
-        command.value({ id: item.entity.id, name: item.entity.name });
-      }
-    }
-
-    function enterHandler() {
-      selectItem(selectedIndex.value);
-    }
-
-    function onKeyDown({ event }: any) {
-      if (event.key === 'ArrowUp') {
-        upHandler();
-        return true;
-      }
-      if (event.key === 'ArrowDown') {
-        downHandler();
-        return true;
-      }
-      if (event.key === 'Enter') {
-        enterHandler();
-        return true;
-      }
-      return false;
-    }
-
-    return {
-      onKeyDown,
-      downHandler,
-      selectItem,
-      selectedIndex
-    };
-  }
+  command: {
+    type: Function,
+    required: true,
+  },
 });
+
+// const { items, command } = toRefs<{
+//   items: EntityCompletelyListItemType[],
+//   command: any
+// }>(props);
+const selectedIndex = ref(0);
+watch(props.items, () => {
+  selectedIndex.value = 0;
+});
+
+function upHandler() {
+  selectedIndex.value = ((selectedIndex.value + props.items.length) - 1) % props.items.length;
+}
+
+function downHandler() {
+  selectedIndex.value = (selectedIndex.value + 1) % props.items.length;
+}
+
+function selectItem(index: any) {
+  const item = props.items[index];
+  if (item) {
+    props.command({ id: item.entity.id, name: item.entity.name });
+  }
+}
+
+function enterHandler() {
+  selectItem(selectedIndex.value);
+}
+
+function onKeyDown({ event }: any) {
+  if (event.key === 'ArrowUp') {
+    upHandler();
+    return true;
+  }
+  if (event.key === 'ArrowDown') {
+    downHandler();
+    return true;
+  }
+  if (event.key === 'Enter') {
+    enterHandler();
+    return true;
+  }
+  return false;
+}
+
+// export default defineComponent({
+//   name: 'mention-list',
+//   props: ,
+//   setup(props) {
+//
+//
+//     return {
+//       onKeyDown,
+//       downHandler,
+//       selectItem,
+//       selectedIndex
+//     };
+//   }
+// });
 </script>
 
 <style lang="scss" scoped>
