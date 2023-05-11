@@ -37,7 +37,7 @@
       </div>
       <div class="parse-container" v-if="currentStatus === 'uploadSuccess'">
         <div class="uploaded-file">
-          {{ fileUrl }}
+          {{ fileObject.url }}
         </div>
         <div class="control">
           <m-button @click="parseFileInServer" :is-loading="isParsing" :title="'确认解析'"></m-button>

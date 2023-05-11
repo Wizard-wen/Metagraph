@@ -4,6 +4,7 @@
       <save-control @save="saveSectionArticle"></save-control>
       <undo-control :editor="editor"></undo-control>
       <redo-control :editor="editor"></redo-control>
+      <clear-format-control :editor="editor"></clear-format-control>
       <div class="line"></div>
       <text-level-select :editor="editor"></text-level-select>
       <font-size-select @fontSizeChange="handleFontSizeChange($event)"
@@ -15,6 +16,9 @@
       <align-control :editor="editor"></align-control>
       <toggle-bullet-list-control :editor="editor"></toggle-bullet-list-control>
       <toggle-ordered-list-control :editor="editor"></toggle-ordered-list-control>
+      <indent-control :editor="editor"></indent-control>
+      <outdent-control :editor="editor"></outdent-control>
+      <line-height-control :editor="editor"></line-height-control>
       <div class="line"></div>
       <back-color-control :editor="editor"></back-color-control>
       <toggle-blockquote-control :editor="editor"></toggle-blockquote-control>
@@ -54,9 +58,13 @@ import {
   UploadImageControl,
   BackColorControl
 } from '@/components/tiptap-text-editor/controls';
+import LineHeightControl from '@/components/tiptap-text-editor/controls/line-height-control.vue';
+import IndentControl from '@/components/tiptap-text-editor/controls/indent-control.vue';
+import OutdentControl from '@/components/tiptap-text-editor/controls/outdent-control.vue';
 import UploadAndParseTextModal from '../public-component/upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
 import { UploadAndParseTextService } from '../public-component/upload.and.parse.text.service';
+import ClearFormatControl from '@/components/tiptap-text-editor/controls/clear-format-control.vue';
 
 const isParseWordModalShow = ref(false);
 const uploadAndParseTextService = new UploadAndParseTextService();

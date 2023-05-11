@@ -60,7 +60,7 @@ async function uploadFileByUrl(params: {
   }, {
     responseType: 'arraybuffer'
   }).then(data => {
-    console.log(data);
+    console.log(typeof data, data);
     const container = document.getElementById('first-preview-container');
     if (container && data) {
       previewDoc(container, data.data as any);

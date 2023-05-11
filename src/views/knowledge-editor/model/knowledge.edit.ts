@@ -302,14 +302,14 @@ export class KnowledgeEdit {
         publishedKnowledge.entity.tag || [],
         isEqual
       );
-      console.log(diff1.map((item) => item.key), diff2.map((item) => item.key));
+      console.log(diff1.map((item: any) => item.key), diff2.map((item: any) => item.key));
       compareData.value = {
         ...result.data,
         add: {
-          customField: diff1.map((item) => item.key)
+          customField: diff1.map((item: any) => item.key)
         },
         delete: {
-          customField: diff2.map((item) => item.key),
+          customField: diff2.map((item: any) => item.key),
         },
         edit: {
           name: draftKnowledge.model.name !== publishedKnowledge.model.name,

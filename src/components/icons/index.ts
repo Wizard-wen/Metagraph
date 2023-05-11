@@ -41,6 +41,10 @@ import AlignRightIcon from './align-right-icon.vue';
 import AlignCenterIcon from './align-center-icon.vue';
 import AlignJustifyIcon from './align-justify-icon.vue';
 import BgColorIcon from './bg-color-icon.vue';
+import IndentIcon from './indent-icon.vue';
+import OutdentIcon from './outdent-icon.vue';
+import LineHeightIcon from './line-height-icon.vue';
+import EraserIcon from './eraser-icon.vue';
 
 export {
   ArrowDownIcon,
@@ -80,5 +84,9 @@ export {
   AlignRightIcon,
   AlignCenterIcon,
   AlignJustifyIcon,
-  BgColorIcon
+  BgColorIcon,
+  IndentIcon,
+  OutdentIcon,
+  LineHeightIcon,
+  EraserIcon
 };

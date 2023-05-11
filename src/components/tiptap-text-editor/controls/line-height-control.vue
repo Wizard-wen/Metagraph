@@ -2,15 +2,27 @@
   <a-dropdown
     :trigger="['click']"
     :overlayClassName="'dropdown-overlay'"
-    v-model:visible="visible">
+    v-model:visible="visible"
+    :disabled="!isParagraph">
+    <!--    <a-tooltip-->
+    <!--      :trigger="['hover']"-->
+    <!--      :title="'调整行高'"-->
+    <!--      :getPopupContainer="getPopupContainer"-->
+    <!--      :overlayClassName="'custom-tool-tip'"-->
+    <!--      placement="bottom">-->
+    <!--      <div class="selector-box"-->
+    <!--           @click="editor.chain().focus()">-->
+    <!--        {{ currentSize }}-->
+    <!--        <LineHeightIcon class="down-arrow-style"/>-->
+    <!--      </div>-->
+    <!--    </a-tooltip>-->
+
     <div class="operation-icon" @click="editor.chain().focus()">
-      <operation-tooltip :desc="currentSize.label">
+      <operation-tooltip :desc="'调整行高'">
         <div class="selector-box">
           <div class="icon">
-            <component
-              :is="currentSize.component"
-              class="icon-svg"
-              :class="{ 'is-active': editor.isActive('bold') }"></component>
+            <LineHeightIcon
+              class="icon-svg"></LineHeightIcon>
           </div>
           <CaretDownOutlined class="down-arrow-style"/>
         </div>
@@ -18,16 +30,14 @@
     </div>
     <template #overlay>
       <div class="list">
-        <operation-tooltip
+        <div
+          @click="handleFontSizeChange(item.value)"
+          class="list-item"
           :key="index"
-          v-for="(item, index) in alignWayList"
-          :desc="item.label">
-          <div
-            @click="handleAlignWayChange(item.value)"
-            class="list-item">
-            <component :is="item.component"></component>
-          </div>
-        </operation-tooltip>
+          v-for="(item, index) in fontSizeList">
+          <CheckOutlined class="check-icon" v-if="articleFontSize === item.value"/>
+          {{ item.label }}
+        </div>
       </div>
     </template>
   </a-dropdown>
@@ -35,19 +45,22 @@
 
 <script lang="ts" setup>
 import { Dropdown as ADropdown } from 'ant-design-vue';
-import { CaretDownOutlined } from '@ant-design/icons-vue';
-import { computed, defineProps, markRaw, PropType, reactive, ref, watch } from 'vue';
+import { CaretDownOutlined, CheckOutlined } from '@ant-design/icons-vue';
+import { computed, defineEmits, defineProps, PropType, reactive, ref, VNodeChild } from 'vue';
 import { Editor } from '@tiptap/vue-3';
-import {
-  AlignCenterIcon,
-  AlignJustifyIcon,
-  AlignLeftIcon,
-  AlignRightIcon
-} from '@/components/icons';
+import { LineHeightIcon } from '@/components/icons';
 import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
 
 const visible = ref(false);
-const alignWay = ref('left');
+const emit = defineEmits(['fontSizeChange']);
+const articleFontSize = ref('14');
+
+interface MenuInfo {
+  key: string;
+  keyPath: string[];
+  item: VNodeChild;
+  domEvent: MouseEvent;
+}
 
 const props = defineProps({
   editor: {
@@ -56,58 +69,41 @@ const props = defineProps({
   }
 });
 
-const currentAlignLevel = computed(() => {
-  if (props.editor.isActive({ textAlign: 'left' })) {
-    return 'left';
-  }
-  if (props.editor.isActive({ textAlign: 'center' })) {
-    return 'center';
-  }
-  if (props.editor.isActive({ textAlign: 'right' })) {
-    return 'right';
-  }
-  if (props.editor.isActive({ textAlign: 'justify' })) {
-    return 'justify';
-  }
-  return 'left';
-});
-
-const alignWayList = reactive([
+const fontSizeList = reactive([
   {
-    label: '左对齐',
-    value: 'left',
-    component: markRaw(AlignLeftIcon)
+    label: '100%',
+    value: '100%'
   },
   {
-    label: '中间对齐',
-    value: 'center',
-    component: markRaw(AlignCenterIcon)
+    label: '115%',
+    value: '115%'
   },
   {
-    label: '右对齐',
-    value: 'right',
-    component: markRaw(AlignRightIcon)
+    label: '150%',
+    value: '150%'
   },
   {
-    label: '两端对齐',
-    value: 'justify',
-    component: markRaw(AlignJustifyIcon)
+    label: '200%',
+    value: '200%'
   }
 ]);
 const currentSize = computed(
-  () => alignWayList.find((item) => item.value === alignWay.value)
+  () => fontSizeList.find((item) => item.value === articleFontSize.value)?.label
 );
 
-watch(currentAlignLevel, (value) => {
-  alignWay.value = value;
-});
+const isParagraph = computed(() => props.editor.isActive('paragraph'));
 
-const handleAlignWayChange = (value: string) => {
-  alignWay.value = value;
-  props.editor.chain().focus().setTextAlign(value).run();
-  console.log('value', value);
+const handleFontSizeChange = (value: string) => {
+  articleFontSize.value = value;
+
+  props.editor.commands.setLineHeight(value);
   visible.value = false;
+  // emit('fontSizeChange', { value });
 };
+
+function getPopupContainer(triggerNode: any) {
+  return triggerNode.parentNode;
+}
 
 </script>
 
@@ -131,9 +127,8 @@ const handleAlignWayChange = (value: string) => {
 }
 
 .list {
-  display: flex;
-  //width: 100px;
-  padding: 5px;
+  padding: 10px 0;
+  width: 100px;
   border: 1px solid $borderColor;
   border-radius: $borderRadius;
   background: #fff;
@@ -142,11 +137,8 @@ const handleAlignWayChange = (value: string) => {
 
 .list-item {
   height: 30px;
-  width: 30px;
-  padding: 0 5px;
-  border-radius: 4px;
-  font-size: 16px;
   line-height: 30px;
+  width: 100%;
   text-align: center;
   position: relative;
 
@@ -168,7 +160,7 @@ const handleAlignWayChange = (value: string) => {
   padding-right: 6px;
   cursor: pointer;
   border-radius: 6px;
-  margin-left: 8px;
+  //margin-left: 8px;
 
   &:hover {
     background: $hoverBackColor;
@@ -190,7 +182,6 @@ const handleAlignWayChange = (value: string) => {
 
   .ant-tooltip-inner {
     height: 20px;
-    width: max-content;
     line-height: 20px;
     border-radius: 6px !important;
     font-size: 12px;

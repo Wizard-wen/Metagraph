@@ -23,10 +23,13 @@ import { lowlight } from 'lowlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { FontSize } from '@/components/tiptap-text-editor/controls/font.size.extension';
+import { Transaction } from '@tiptap/pm/state';
 import MentionList from './components/mention-list.vue';
 import { CustomMention } from './components/tiptap.custom.mention';
 import CodeBlockContainer from './components/code-block-container.vue';
 import TableOfContent from './components/table.of.content';
+import Indent from './extensions/indent';
+import LineHeight from './extensions/line-height';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -166,18 +169,20 @@ export abstract class AbstractTiptapTextEditor {
     const _this = this;
     this.editor = useEditor({
       editable: this.editable,
-      onUpdate: debounce(({ editor }) => {
+      onUpdate: debounce((params: {
+        editor: CoreEditor;
+        transaction: Transaction
+      }) => {
         // 当内容更新后，持久化数据到本地
-        if (editor.getHTML() && editor.getJSON()) {
+        if (params.editor.getHTML() && params.editor.getJSON()) {
           _this.saveToIndexDB({
-            content: editor.getJSON(),
-            contentHtml: editor.getHTML()
+            content: params.editor.getJSON(),
+            contentHtml: params.editor.getHTML()
           }).then();
         }
       }, 1000),
-      onTransaction({ editor, transaction }) {
-        // The editor state has changed.
-        // console.log(transaction);
+      onTransaction(params: { editor: CoreEditor, transaction: Transaction }) {
+        // todo
       },
       editorProps: {
         handleClickOn(
@@ -196,6 +201,7 @@ export abstract class AbstractTiptapTextEditor {
         },
       },
       extensions: [
+
         StarterKit,
         TextAlign.configure({
           types: ['heading', 'paragraph'],
@@ -242,7 +248,6 @@ export abstract class AbstractTiptapTextEditor {
               let popup: Instance[];
               return {
                 onStart: (suggestionProps: SuggestionProps) => {
-                  console.log('22222')
                   if (_this.editor?.value) {
                     component = new VueRenderer(MentionList, {
                       editor: suggestionProps.editor,
@@ -297,7 +302,9 @@ export abstract class AbstractTiptapTextEditor {
               });
             },
           },
-        })
+        }),
+        Indent,
+        LineHeight
       ]
     });
   }
