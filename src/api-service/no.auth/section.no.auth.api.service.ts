@@ -4,39 +4,22 @@
  */
 
 import type {
-  EntityCompletelyListItemType, SectionArticleModelType,
-  SectionArticleResponseType,
+  EntityCompletelyListItemType,
+  SectionArticleModelType,
   SectionModelType,
-  SectionTreeNodeType
+  SectionNoAuthApi,
+  SectionTreeNodeUIType
 } from '@metagraph/constant';
-import { ApiPathEnum } from '@/api-service/config/api.config';
-import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
-
-type SectionItemUIType = {
-  section: SectionModelType,
-  parentId?: string
-  title: string;
-  key: string;
-};
-
-export type SectionTreeNodeUIType = SectionItemUIType & {
-  children?: SectionTreeNodeUIType[]
-};
+import { RequestNewUntil } from '@/utils';
 
 export class SectionNoAuthApiService {
-  static async getSectionTree(params: { repositoryEntityId: string }): Promise<PublicApiResponseType<SectionTreeNodeType[]>> {
-    return RequestUtil.post<{ repositoryEntityId: string }, SectionTreeNodeType[]>({
-      apiPath: ApiPathEnum.GetNoAuthSectionTree,
-      requestBody: params
-    });
-  }
+  static async getNormalSectionTree(params: {
+    repositoryEntityId: string
+  }): Promise<PublicApiResponseType<SectionTreeNodeUIType[]>> {
 
-  static async getNormalSectionTree(params: { repositoryEntityId: string }): Promise<
-    PublicApiResponseType<SectionTreeNodeUIType[]>
-  > {
-    return RequestUtil.post<{ repositoryEntityId: string }, SectionTreeNodeUIType[]>({
-      apiPath: ApiPathEnum.GetNoAuthNormalSectionTree,
+    return RequestNewUntil.post<SectionNoAuthApi.GetSectionTree>({
+      apiPath: '/public/section/tree',
       requestBody: params
     });
   }
@@ -46,12 +29,8 @@ export class SectionNoAuthApiService {
     article: SectionArticleModelType,
     entityList: EntityCompletelyListItemType[]
   }>> {
-    return RequestUtil.post<{ sectionId: string }, {
-      section: SectionModelType,
-      article: SectionArticleModelType,
-      entityList: EntityCompletelyListItemType[]
-    }>({
-      apiPath: ApiPathEnum.GetNoAuthSectionContent,
+    return RequestNewUntil.post<SectionNoAuthApi.GetSectionContent>({
+      apiPath: '/public/section/get/content',
       requestBody: params
     });
   }

@@ -31,7 +31,7 @@ import {
   RepositoryNoAuthApiService,
   TagApiService
 } from '@/api-service';
-import { tiptapInitData } from '@/store/constant';
+import { tiptapInitData } from '@/components/tiptap-text-editor/tiptap.init.data';
 import { BackupKnowledgeJSONType, HistoryVersionKnowledgeModelType } from '@metagraph/constant';
 
 export const draftKnowledgeEntityIdInjectKey: InjectionKey<Ref<string>> = Symbol('draftKnowledgeEntityId');

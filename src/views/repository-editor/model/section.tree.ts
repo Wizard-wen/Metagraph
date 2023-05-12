@@ -3,7 +3,6 @@
  * @date  2021/11/22 00:04
  */
 
-import { SectionTreeNodeUIType } from '@/api-service/no.auth/section.no.auth.api.service';
 import { IndexdbService } from '@/service/indexdb.service';
 import type { JSONContent } from '@tiptap/vue-3';
 import { message } from 'ant-design-vue';
@@ -12,29 +11,28 @@ import type {
   KnowledgeResponseType,
   SectionModelType
 } from '@metagraph/constant';
-import { SectionEntityType } from '@metagraph/constant';
+import { SectionEntityType, SectionTreeNodeUIType } from '@metagraph/constant';
 import { reactive, ref } from 'vue';
-import { tiptapInitData } from '@/store/constant';
+import { tiptapInitData } from '@/components/tiptap-text-editor/tiptap.init.data';
 import { EntityApiService, SectionApiService, SectionNoAuthApiService } from '@/api-service';
-import { TreeItemType } from '@/components/metagraph-tree/type';
+import type { TreeItemType } from '@/components/metagraph-tree/type';
 
 export type SectionOperationType =
-  'Section'
-  | 'Knowledge'
-  | 'Exercise'
-  | 'ChangeSection'
-  | 'Delete';
+  'CreateSection'
+  | 'BindEntityToSection'
+  | 'UpdateSection'
+  | 'DeleteSection';
 
 export const sectionModalData = reactive<{
-  entityType: SectionOperationType;
-  title: '创建目录' | '修改目录名' | '绑定知识点';
+  operationType: SectionOperationType;
+  title: '新建文档' | '修改文档名' | '绑定知识点';
   parentSectionId?: string;
   parentSectionName?: string;
   entityOptionList: { key: string; label: string; value: string }[];
   isConfirmLoading: boolean;
 }>({
-  entityType: 'Section',
-  title: '创建目录',
+  operationType: 'CreateSection',
+  title: '新建文档',
   entityOptionList: [],
   isConfirmLoading: false
 });
@@ -46,16 +44,16 @@ export const sectionModalForm = reactive({
 
 export const sectionModalFormRules = ref({});
 
-function generateTree(tree: SectionTreeNodeUIType[]): TreeItemType[] {
+function generateSectionTree(tree: SectionTreeNodeUIType[]): TreeItemType[] {
   return tree.map((item: SectionTreeNodeUIType) => {
     const newItem = {
       title: item.title,
       name: item.title,
       key: item.key,
-      data: item.section
+      data: item
     };
     if (item.children) {
-      const newList = generateTree(item.children);
+      const newList = generateSectionTree(item.children);
       return {
         ...newItem,
         children: newList
@@ -66,11 +64,9 @@ function generateTree(tree: SectionTreeNodeUIType[]): TreeItemType[] {
 }
 
 export const sectionTree = reactive<{
-  tree: SectionTreeNodeUIType[],
-  metaTree: any[],
+  metaTree: TreeItemType[],
   selectedSectionId: string
 }>({
-  tree: [],
   metaTree: [],
   selectedSectionId: ''
 });
@@ -97,8 +93,7 @@ export class SectionTreeService {
   async getSectionTree(repositoryEntityId: string, selectedSectionId?: string): Promise<void> {
     const response = await SectionNoAuthApiService.getNormalSectionTree({ repositoryEntityId });
     if (response.data) {
-      sectionTree.tree = response.data;
-      sectionTree.metaTree = generateTree(response.data);
+      sectionTree.metaTree = generateSectionTree(response.data);
       if (response.data.length) {
         const currentSectionId = selectedSectionId ?? response.data[0].key;
         // 如果section存在，那么选中第一个，获取section article
@@ -145,7 +140,10 @@ export class SectionTreeService {
     }
   }
 
-  initSectionView() {
+  /**
+   * 初始化目录
+   */
+  initSectionView(): void {
     currentSectionNode.title = '';
     currentSectionNode.content = tiptapInitData;
     currentSectionNode.contentHtml = '';
@@ -163,12 +161,19 @@ export class SectionTreeService {
     contentHtml: string;
     sectionId: string
   }): Promise<void> {
-    const result = await SectionApiService.saveSectionArticle({
-      ...params
+    return new Promise((resolve) => {
+      SectionApiService.saveSectionArticle({
+        ...params
+      }).then((result) => {
+        if (result.code !== 0) {
+          message.error('文章保存失败！');
+        }
+        resolve();
+      }).catch(() => {
+        message.error('文章保存失败！');
+        resolve();
+      });
     });
-    if (result.code !== 0) {
-      message.error('文章保存失败！');
-    }
   }
 
   async createSection(repositoryEntityId: string): Promise<{
@@ -176,7 +181,7 @@ export class SectionTreeService {
     sectionId?: string
   }> {
     let sectionModel: SectionModelType | undefined;
-    if (sectionModalData.entityType === 'Section') {
+    if (sectionModalData.operationType === 'CreateSection') {
       const result = await SectionApiService.createSectionTree({
         name: sectionModalForm.sectionName,
         repositoryEntityId,
@@ -185,7 +190,8 @@ export class SectionTreeService {
       if (result.data) {
         sectionModel = result.data;
       }
-    } else if (sectionModalData.entityType === 'ChangeSection') {
+    }
+    if (sectionModalData.operationType === 'UpdateSection') {
       if (!sectionModalData.parentSectionId) {
         return {};
       }
@@ -196,13 +202,14 @@ export class SectionTreeService {
       if (result.data) {
         sectionModel = result.data;
       }
-    } else {
+    }
+    if (sectionModalData.operationType === 'BindEntityToSection') {
       if (!sectionModalData.parentSectionId) {
         return {};
       }
       await this.bindSectionEntity({
         entityId: sectionModalForm.selectedEntityId,
-        entityType: sectionModalData.entityType as 'Knowledge',
+        entityType: 'Knowledge',
         repositoryEntityId,
         sectionId: sectionModalData.parentSectionId
       });
@@ -235,11 +242,11 @@ export class SectionTreeService {
     section?: SectionModelType,
     isRoot?: boolean
   }): Promise<void> {
-    sectionModalData.entityType = params.type;
+    sectionModalData.operationType = params.type;
     sectionModalData.parentSectionId = params.section?.id;
     sectionModalData.parentSectionName = params.section?.name;
-    if (sectionModalData.entityType === 'Section') {
-      sectionModalData.title = '创建目录';
+    if (sectionModalData.operationType === 'CreateSection') {
+      sectionModalData.title = '新建文档';
       sectionModalForm.sectionName = '';
       sectionModalFormRules.value = {
         sectionName: [{
@@ -254,11 +261,11 @@ export class SectionTreeService {
         }],
       };
     }
-    if (sectionModalData.entityType === 'ChangeSection') {
-      sectionModalData.title = '修改目录名';
+    if (sectionModalData.operationType === 'UpdateSection') {
+      sectionModalData.title = '修改文档名';
       sectionModalForm.sectionName = params?.section?.name || '';
     }
-    if (sectionModalData.entityType === 'Knowledge') {
+    if (sectionModalData.operationType === 'BindEntityToSection') {
       sectionModalData.title = '绑定知识点';
       sectionModalForm.selectedEntityId = '';
       sectionModalFormRules.value = {
@@ -279,7 +286,7 @@ export class SectionTreeService {
   private async initEntityOptionList(value?: string): Promise<void> {
     const result = await EntityApiService.getEntityList({
       name: value,
-      entityType: sectionModalData.entityType,
+      entityType: sectionModalData.operationType,
       pageIndex: 0,
       pageSize: 80
     });

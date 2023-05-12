@@ -8,15 +8,15 @@
     @ok="handleCreateSection"
     @cancel="handleCloseModal({})">
     <div class="section-name-container" v-if="sectionModalData.parentSectionName">
-      <div v-if="sectionModalData.entityType === 'Knowledge'">
+      <div v-if="sectionModalData.operationType === 'BindEntityToSection'">
         当前目录是<span class="section-name">{{ sectionModalData.parentSectionName || '' }}</span>
       </div>
-      <div v-if="sectionModalData.entityType === 'Section'">
+      <div v-if="sectionModalData.operationType === 'CreateSection'">
         当前父级目录是<span class="section-name">{{
           sectionModalData.parentSectionName || ''
         }}</span>
       </div>
-      <div v-if="sectionModalData.entityType === 'ChangeSection'">
+      <div v-if="sectionModalData.operationType === 'UpdateSection'">
         当前目录名称是<span class="section-name">{{
           sectionModalData.parentSectionName || ''
         }}</span>
@@ -33,8 +33,8 @@
       <ant-form-item
         label="目录名称"
         name="sectionName"
-        v-if="sectionModalData.entityType === 'Section'
-      || sectionModalData.entityType === 'ChangeSection'">
+        v-if="sectionModalData.operationType === 'CreateSection'
+      || sectionModalData.operationType === 'UpdateSection'">
         <ant-input
           ref="sectionNameRef"
           autocomplete="off"
@@ -101,6 +101,7 @@ async function handleCreateSection() {
     .then(async () => {
       sectionModalData.isConfirmLoading = true;
       const result = await sectionTreeService.createSection(repositoryEntityId.value);
+      sectionModalData.isConfirmLoading = false;
       handleCloseModal(result);
     });
 }

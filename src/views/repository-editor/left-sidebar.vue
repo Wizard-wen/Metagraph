@@ -11,8 +11,8 @@
         <m-button
           class="add-section-button"
           v-if="isEditable"
-          :title="'创建目录'"
-          @click="openCreateSectionModal({ type: 'Section', isRoot: true })">
+          :title="'新建文档'"
+          @click="openCreateSectionModal({ type: 'CreateSection', isRoot: true })">
           <template #icon>
             <PlusOutlined/>
           </template>
@@ -39,7 +39,7 @@
           <metagraph-list
             @control="handleClickEntityItem"
             v-if="currentSectionNode.entityList.length"
-            :list-data="listData"></metagraph-list>
+            :list-data="sectionBindEntityList"></metagraph-list>
         </div>
       </div>
       <empty-view v-else></empty-view>
@@ -58,18 +58,17 @@ import type {
 import { computed, defineEmits, inject, ref } from 'vue';
 import MetagraphTree from '@/components/metagraph-tree/metagraph-tree.vue';
 import { isEditableKey } from '@/views/repository-editor/model/provide.type';
-import { currentSectionNode, sectionTree } from '@/views/repository-editor/model/section.tree';
+import { currentSectionNode, sectionTree, SectionOperationType } from '@/views/repository-editor/model/section.tree';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
 import MetagraphList from '@/components/metagraph-list.vue';
 import { MButton } from '@/metagraph-ui';
 
-type OperationType = 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete';
 const emit = defineEmits(['selectSection', 'createSection', 'widthChange']);
 const knowledgePreview = new KnowledgePreview();
 const isEditable = inject(isEditableKey, ref(false));
 const isClose = ref(false);
 
-const listData = computed(() => {
+const sectionBindEntityList = computed(() => {
   return currentSectionNode.entityList.map((item) => {
     return {
       title: (item.content as KnowledgeResponseType).name,
@@ -85,7 +84,7 @@ function handleClickDrag() {
 }
 
 async function openCreateSectionModal(params: {
-  type: OperationType,
+  type: SectionOperationType,
   section?: SectionModelType,
   isRoot?: boolean
 }) {
@@ -99,7 +98,7 @@ async function handleSelectedTreeNode(params: {
 }
 
 function handleTreeControl(params: {
-  type: OperationType,
+  type: SectionOperationType,
   data: SectionModelType
 }) {
   openCreateSectionModal({

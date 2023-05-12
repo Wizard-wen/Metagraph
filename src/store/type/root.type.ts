@@ -5,14 +5,10 @@
 
 import type {
   GlobalModuleType,
-  RepositoryEditorStateType,
-  RepositoryListType,
   UserStateType
 } from '@/store/type';
 
 export type RootStateType = {
-  repositoryEditor: RepositoryEditorStateType;
   user: UserStateType;
-  repositoryList: RepositoryListType;
   global: GlobalModuleType;
 };

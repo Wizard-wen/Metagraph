@@ -1,5 +1,4 @@
 <template>
-
   <div class="label" v-for="(item, index) in listData" :key="index">
     <div class="text">{{ item.title }}</div>
     <div class="control">
@@ -11,9 +10,11 @@
           <MoreOutlined/>
         </div>
         <template #overlay>
-          <ant-menu>
-            <ant-menu-item @click="handleClickControl(item)">
-              <div>查看知识点</div>
+          <ant-menu class="dropdown-menu-style">
+            <ant-menu-item
+              class="menu-item-style" @click="handleClickControl(item)">
+              <EyeOutlined class="icon-size"/>
+              查看知识点
             </ant-menu-item>
           </ant-menu>
         </template>
@@ -27,7 +28,7 @@
 
 <script lang="ts" setup>
 import { defineEmits, defineProps, PropType } from 'vue';
-import { MoreOutlined, EyeOutlined } from '@ant-design/icons-vue';
+import { EyeOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 
 function getPopupContainer(triggerNode: any) {

@@ -11,7 +11,7 @@ export { CommentApiService } from './comment.api.service';
 export { EdgeApiService } from './auth/edge.api.service';
 export { KnowledgeApiService } from './auth/knowledge.api.service';
 export { RepositoryApiService } from './auth/repository.api.service';
-export { SectionApiService } from './section.api.service';
+export { SectionApiService } from './auth/section.api.service';
 export { StarApiService } from './star.api.service';
 export { TagApiService } from './tag.api.service';
 export { UserApiService } from './user.api.service';

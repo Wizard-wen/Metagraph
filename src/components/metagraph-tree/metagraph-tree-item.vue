@@ -28,32 +28,32 @@
               <ant-menu class="dropdown-menu-style">
                 <ant-menu-item
                   class="menu-item-style"
-                  @click="handleClickControl('Section', item.data)">
+                  @click="handleClickControl('CreateSection', item.data)">
                   <plus-outlined class="icon-size"/>
                   新建
                 </ant-menu-item>
                 <ant-menu-item
                   class="menu-item-style"
-                  @click="handleClickControl('Knowledge', item.data)">
+                  @click="handleClickControl('BindEntityToSection', item.data)">
                   <link-outlined class="icon-size"/>
                   引用知识点
                 </ant-menu-item>
                 <ant-menu-item
                   class="menu-item-style"
-                  @click="handleClickControl('ChangeSection', item.data)">
+                  @click="handleClickControl('UpdateSection', item.data)">
                   <FormOutlined class="icon-size"/>
                   重命名
                 </ant-menu-item>
                 <ant-menu-item
                   class="menu-item-style"
-                  @click="handleClickControl('Delete', item.data)">
+                  @click="handleClickControl('DeleteSection', item.data)">
                   <delete-outlined class="icon-size"/>
                   删除
                 </ant-menu-item>
               </ant-menu>
             </template>
           </ant-dropdown>
-          <div class="icon-content-style" @click="handleClickControl('Section', undefined)">
+          <div class="icon-content-style" @click="handleClickControl('CreateSection', undefined)">
             <plus-outlined/>
           </div>
         </div>
@@ -82,7 +82,7 @@ import {
 import { Dropdown as AntDropdown, Menu as AntMenu } from 'ant-design-vue';
 import { TreeItemUIType } from './type';
 
-type OperationType = 'Section' | 'Knowledge' | 'Exercise' | 'ChangeSection' | 'Delete';
+import {SectionOperationType} from '@/views/repository-editor/model/section.tree.ts';
 const emit = defineEmits(['control', 'selectedChange']);
 
 function getPopupContainer(triggerNode: any) {
@@ -124,7 +124,7 @@ function handleMouseLeave() {
   expendItemId.value = undefined;
 }
 
-function handleClickControl(type: OperationType, params?: any) {
+function handleClickControl(type: SectionOperationType, params?: any) {
   emit('control', {
     type,
     data: params

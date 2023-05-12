@@ -4,12 +4,14 @@
  */
 
 import type {
-  SectionResponseType,
-  SectionEntityType, SectionArticleUpdateRequestType, SectionModelType
+  SectionArticleUpdateRequestType,
+  SectionAuthApi,
+  SectionEntityType,
+  SectionModelType,
+  SectionResponseType
 } from '@metagraph/constant';
-import { ApiPathEnum } from '@/api-service/config/api.config';
-import { RequestUtil } from '@/utils';
 import type { PublicApiResponseType } from '@/utils';
+import { RequestNewUntil } from '@/utils';
 
 export class SectionApiService {
   static createSectionTree(params: {
@@ -18,12 +20,8 @@ export class SectionApiService {
     repositoryEntityId: string;
     parentId?: string;
   }): Promise<PublicApiResponseType<SectionResponseType>> {
-    return RequestUtil.post<{
-      name: string;
-      repositoryEntityId: string;
-      parentId?: string;
-    }, SectionResponseType>({
-      apiPath: ApiPathEnum.CreateSection,
+    return RequestNewUntil.post<SectionAuthApi.CreateSection>({
+      apiPath: '/section/create',
       requestBody: params
     });
   }
@@ -32,11 +30,8 @@ export class SectionApiService {
     name: string;
     id: string;
   }): Promise<PublicApiResponseType<SectionModelType>> {
-    return RequestUtil.post<{
-      name: string;
-      id: string;
-    }, SectionModelType>({
-      apiPath: ApiPathEnum.UpdateSection,
+    return RequestNewUntil.post<SectionAuthApi.UpdateSection>({
+      apiPath: '/section/update',
       requestBody: params
     });
   }
@@ -44,10 +39,8 @@ export class SectionApiService {
   static bindSectionEntity(params: {
     repositoryEntityId: string; sectionId: string, entityId: string, entityType: SectionEntityType
   }): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      repositoryEntityId: string; sectionId: string, entityId: string, entityType: SectionEntityType
-    }, void>({
-      apiPath: ApiPathEnum.BindSectionEntity,
+    return RequestNewUntil.post<SectionAuthApi.BindEntityToSection>({
+      apiPath: '/section/bind/entity',
       requestBody: params
     });
   }
@@ -57,8 +50,8 @@ export class SectionApiService {
    * @param params
    */
   static saveSectionArticle(params: SectionArticleUpdateRequestType): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<SectionArticleUpdateRequestType, void>({
-      apiPath: ApiPathEnum.SaveSectionArticle,
+    return RequestNewUntil.post<SectionAuthApi.SaveSectionArticle>({
+      apiPath: '/section/save/article',
       requestBody: params
     });
   }
@@ -67,11 +60,8 @@ export class SectionApiService {
     id: string;
     repositoryEntityId: string;
   }): Promise<PublicApiResponseType<void>> {
-    return RequestUtil.post<{
-      id: string;
-      repositoryEntityId: string;
-    }, void>({
-      apiPath: ApiPathEnum.RemoveSection,
+    return RequestNewUntil.post<SectionAuthApi.DeleteSection>({
+      apiPath: '/section/remove',
       requestBody: params
     });
   }

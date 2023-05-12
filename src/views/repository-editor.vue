@@ -147,7 +147,7 @@ async function handleOpenCreateSectionModal(params: {
   section?: SectionModelType,
   isRoot?: boolean
 }) {
-  if (params.type === 'Delete') {
+  if (params.type === 'DeleteSection') {
     Modal.confirm({
       title: '确定删除当前单元吗?',
       okText: '确定',
