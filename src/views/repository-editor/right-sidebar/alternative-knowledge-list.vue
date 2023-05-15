@@ -71,7 +71,6 @@ const previewFileModel = ref<FileResponseType>();
 const isPreviewModalShown = ref(false);
 const isParseWordModalShow = ref(false);
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
-const repositoryEditor = new RepositoryEditor();
 const inputElement = ref();
 const currentFile = ref<File>();
 // 展开的文章id
@@ -110,7 +109,7 @@ async function handleCloseParseTextModal(params: {
     });
   }
   if (params.type === 'Alternative') {
-    await repositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
+    await RepositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
   }
   uploadAndParseTextService.clearData();
   currentFile.value = undefined;
@@ -133,11 +132,11 @@ async function deleteAlternativeKnowledge(childItem: AlternativeKnowledgeModelTy
     okText: '确定',
     cancelText: '取消',
     async onOk() {
-      await repositoryEditor.removeAlternativeKnowledge({
+      await RepositoryEditor.removeAlternativeKnowledge({
         repositoryEntityId: repositoryEntityId.value,
         id: childItem.id
       });
-      await repositoryEditor
+      await RepositoryEditor
         .getAlternativeKnowledgeList(repositoryEntityId.value);
     },
     onCancel() {
@@ -164,10 +163,10 @@ async function handleControlArticle(params: {
       okText: '确定',
       cancelText: '取消',
       async onOk() {
-        await repositoryEditor.removeKnowledgeArticle({
+        await RepositoryEditor.removeKnowledgeArticle({
           id: params.article.id
         });
-        await repositoryEditor
+        await RepositoryEditor
           .getAlternativeKnowledgeList(repositoryEntityId.value);
       },
       onCancel() {

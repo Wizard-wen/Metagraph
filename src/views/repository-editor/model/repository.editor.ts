@@ -10,21 +10,18 @@ import {
   EntityCompletelyListItemType,
   RepositoryModelType
 } from '@metagraph/constant';
+import { computed, createVNode, reactive, ref } from 'vue';
 import {
-  reactive, createVNode, computed, ref
-} from 'vue';
-import { store } from '@/store';
-import {
-  EntityNoAuthApiService, KnowledgeApiService, RepositoryApiService,
+  EntityNoAuthApiService,
+  KnowledgeApiService,
+  RepositoryApiService,
   RepositoryNoAuthApiService,
   SectionApiService
 } from '@/api-service';
+import { currentSectionNode } from '@/views/repository-editor/model/section.tree';
 
 export const isRepositoryEditorLoading = ref(false);
 
-export interface RepositoryEditorInterface {
-  getRepositoryByEntityId(repositoryEntityId: string): Promise<void>
-}
 
 export const alternative = reactive<{
   target: AlternativeKnowledgeListType,
@@ -40,12 +37,6 @@ export const repositoryModel = reactive<{
   target: undefined
 });
 
-export const sectionEntityId = computed(() => {
-  if (store.state.repositoryEditor.selectedTreeNodeSectionKeys) {
-    return store.state.repositoryEditor.selectedTreeNodeSectionKeys[0];
-  }
-  return undefined;
-});
 // 常规绑定的实体
 export const repositoryBindEntityList = ref<EntityCompletelyListItemType[]>([]);
 // 用户的未发布草稿知识点
@@ -53,8 +44,12 @@ export const unpublishedDraftKnowledgeList = ref<EntityCompletelyListItemType[]>
 
 export const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
 
-export class RepositoryEditor implements RepositoryEditorInterface {
-  async getRepositoryByEntityId(repositoryEntityId: string): Promise<void> {
+export class RepositoryEditor {
+  /**
+   * 获取知识库
+   * @param repositoryEntityId
+   */
+  static async getRepositoryByEntityId(repositoryEntityId: string): Promise<void> {
     const response = await EntityNoAuthApiService.getEntityById({
       entityId: repositoryEntityId
     });
@@ -63,7 +58,11 @@ export class RepositoryEditor implements RepositoryEditorInterface {
     }
   }
 
-  async getRepositoryBindEntityList(repositoryEntityId: string): Promise<void> {
+  /**
+   * 知识库绑定的实体
+   * @param repositoryEntityId
+   */
+  static async getRepositoryBindEntityList(repositoryEntityId: string): Promise<void> {
     const result = await RepositoryNoAuthApiService
       .getRepositoryBindEntityList(repositoryEntityId);
     if (result.data) {
@@ -71,27 +70,40 @@ export class RepositoryEditor implements RepositoryEditorInterface {
     }
   }
 
-  async cloneRepository(repositoryEntityId: string, name?: string): Promise<string | undefined> {
-    const response = await RepositoryApiService.cloneRepository({
-      repositoryEntityId,
-      name
+  static async cloneRepository(repositoryEntityId: string, name?: string): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      RepositoryApiService.cloneRepository({
+        repositoryEntityId,
+        name
+      }).then((data) => {
+        if (data.data) {
+          resolve(data.data.clonedRepositoryEntityId);
+          message.success('克隆成功！');
+        } else {
+          message.error('克隆失败！');
+        }
+      }).catch(() => {
+        resolve(undefined);
+        message.error('克隆失败！');
+      });
     });
-    if (response.data) {
-      message.success('克隆成功！');
-      return response.data.clonedRepositoryEntityId;
-    }
-    message.error('克隆失败！');
-    return undefined;
   }
 
-  async getOwnDraftKnowledgeList(repositoryEntityId: string): Promise<void> {
-    const result = await KnowledgeApiService.GetOwnDraftKnowledgeList({ repositoryEntityId });
-    if (result.data) {
-      unpublishedDraftKnowledgeList.value = result.data;
-    }
+  static async getOwnDraftKnowledgeList(repositoryEntityId: string): Promise<void> {
+    return new Promise(() => {
+      KnowledgeApiService
+        .GetOwnDraftKnowledgeList({ repositoryEntityId })
+        .then((result) => {
+          if (result.data) {
+            unpublishedDraftKnowledgeList.value = result.data;
+          }
+        }).catch(() => {
+        message.error('获取失败！');
+      });
+    });
   }
 
-  async handleMention(params: {
+  static async handleMention(params: {
     repositoryEntityId: string;
     name: string,
     id: string,
@@ -108,57 +120,58 @@ export class RepositoryEditor implements RepositoryEditorInterface {
       content: '',
       async onOk() {
         params.success();
-        if (sectionEntityId.value) {
+        if (currentSectionNode.sectionId) {
           await SectionApiService.bindSectionEntity({
             entityId: params.id,
             entityType: 'Knowledge',
             repositoryEntityId: params.repositoryEntityId,
-            sectionId: sectionEntityId.value
+            sectionId: currentSectionNode.sectionId
           });
-          // await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
-          //   content: params.content,
-          //   contentHtml: params.contentHtml
-          // });
         }
       },
       async onCancel() {
         const json = params.fail();
-        // await store.dispatch(ActionEnum.SAVE_SECTION_CONTENT, {
-        //   content: json,
-        //   contentHtml: params.contentHtml
-        // });
       },
     });
   }
 
-  async removeAlternativeKnowledge(params: {
+  static async removeAlternativeKnowledge(params: {
     id: string;
     repositoryEntityId: string;
   }): Promise<void> {
-    const result = await KnowledgeApiService.removeAlternativeKnowledge(params);
-    if (result.code === 0) {
-      message.success('删除成功！');
-    }
+    return new Promise(() => {
+      KnowledgeApiService.removeAlternativeKnowledge(params).then((result) => {
+        if (result.code === 0) {
+          message.success('删除成功！');
+        }
+      });
+    });
   }
 
-  async removeKnowledgeArticle(params: {
+  static async removeKnowledgeArticle(params: {
     id: string;
   }): Promise<void> {
-    const result = await KnowledgeApiService.removeKnowledgeArticle(params);
-    if (result.code === 0) {
-      message.success('删除成功！');
-    }
+    return new Promise(() => {
+      KnowledgeApiService.removeKnowledgeArticle(params).then((result) => {
+        if (result.code === 0) {
+          message.success('删除成功！');
+        }
+      });
+    });
   }
 
-  async getAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
-    const result = await KnowledgeApiService.getAlternativeKnowledgeList({
-      repositoryEntityId
+  static async getAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
+    return new Promise(() => {
+      KnowledgeApiService.getAlternativeKnowledgeList({
+        repositoryEntityId
+      }).then((result) => {
+        if (result.data) {
+          alternative.target = result.data;
+          if (result.data.length) {
+            alternative.activeKey = result.data[0].article.id;
+          }
+        }
+      });
     });
-    if (result.data) {
-      alternative.target = result.data;
-      if (result.data.length) {
-        alternative.activeKey = result.data[0].article.id;
-      }
-    }
   }
 }
