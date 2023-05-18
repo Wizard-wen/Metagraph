@@ -145,7 +145,7 @@ export default defineComponent({
     const hue = ref(0);
     const recentColors = ref<string[]>([]);
 
-    const color = computed({
+      const color = computed({
       get() {
         return tinyColor(props.modelValue).toRgb();
       },
@@ -219,7 +219,7 @@ export default defineComponent({
   width: 240px;
   background: #fff;
   user-select: none;
-  margin-bottom: -10px;
+  //margin-bottom: -10px;
 }
 .picker-saturation-wrap {
   width: 100%;

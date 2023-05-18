@@ -12,7 +12,7 @@
     @cancel="handleModalCancel"
     @ok="handleModalOk">
     <will-select-file-list
-
+      :type="type"
       @select="handleSelectFile($event)"></will-select-file-list>
   </ant-modal>
 </template>

@@ -20,8 +20,6 @@ import {
 } from '@/api-service';
 import { currentSectionNode } from '@/views/repository-editor/model/section.tree';
 
-export const isRepositoryEditorLoading = ref(false);
-
 
 export const alternative = reactive<{
   target: AlternativeKnowledgeListType,
@@ -81,16 +79,17 @@ export class RepositoryEditor {
           message.success('克隆成功！');
         } else {
           message.error('克隆失败！');
+          resolve(undefined);
         }
       }).catch(() => {
-        resolve(undefined);
         message.error('克隆失败！');
+        resolve(undefined);
       });
     });
   }
 
   static async getOwnDraftKnowledgeList(repositoryEntityId: string): Promise<void> {
-    return new Promise(() => {
+    return new Promise((resolve) => {
       KnowledgeApiService
         .GetOwnDraftKnowledgeList({ repositoryEntityId })
         .then((result) => {
@@ -99,6 +98,8 @@ export class RepositoryEditor {
           }
         }).catch(() => {
         message.error('获取失败！');
+      }).finally(() => {
+        resolve();
       });
     });
   }
@@ -139,11 +140,13 @@ export class RepositoryEditor {
     id: string;
     repositoryEntityId: string;
   }): Promise<void> {
-    return new Promise(() => {
+    return new Promise((resolve) => {
       KnowledgeApiService.removeAlternativeKnowledge(params).then((result) => {
         if (result.code === 0) {
           message.success('删除成功！');
         }
+      }).finally(() => {
+        resolve();
       });
     });
   }
@@ -151,17 +154,19 @@ export class RepositoryEditor {
   static async removeKnowledgeArticle(params: {
     id: string;
   }): Promise<void> {
-    return new Promise(() => {
+    return new Promise((resolve) => {
       KnowledgeApiService.removeKnowledgeArticle(params).then((result) => {
         if (result.code === 0) {
           message.success('删除成功！');
         }
+      }).finally(() => {
+        resolve();
       });
     });
   }
 
   static async getAlternativeKnowledgeList(repositoryEntityId: string): Promise<void> {
-    return new Promise(() => {
+    return new Promise((resolve) => {
       KnowledgeApiService.getAlternativeKnowledgeList({
         repositoryEntityId
       }).then((result) => {
@@ -171,6 +176,8 @@ export class RepositoryEditor {
             alternative.activeKey = result.data[0].article.id;
           }
         }
+      }).finally(() => {
+        resolve();
       });
     });
   }

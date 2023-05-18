@@ -46,13 +46,12 @@ function handleSelectFile() {
 }
 
 async function handleCloseSelectFileModal(params?: FileResponseType) {
-  console.log(params?.id);
   isSelectFileModalVisible.value = false;
   if (params) {
     knowledgePictures.value.push({
       fileId: params.id,
-      url: params.name,
-      name: params.url
+      url: params.url,
+      name: params.name
     });
     await knowledgeEdit.updateDraftKnowledge(knowledgeEntityId.value, {
       pictures: knowledgePictures.value
