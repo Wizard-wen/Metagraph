@@ -8,6 +8,7 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 module.exports = {
   runtimeCompiler: true,
+  outputDir: 'metagraph-web',
   css: {
     loaderOptions: {
       less: {

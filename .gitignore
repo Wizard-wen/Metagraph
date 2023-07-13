@@ -2,7 +2,6 @@
 node_modules
 dist
 
-
 # local env files
 .env.local
 .env.*.local
@@ -22,3 +21,5 @@ package-lock.json
 *.sln
 *.sw?
 .npmrc
+
+metagraph-web
