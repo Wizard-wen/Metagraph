@@ -19,7 +19,7 @@ function format(time: number) {
   if (time >= 10) {
     return time;
   }
-  return `0${ time }`;
+  return `0${time}`;
 }
 
 function timeDown() {

@@ -30,7 +30,15 @@
 <script lang="ts" setup>
 import { RuleObject, ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  reactive, ref, UnwrapRef, defineProps, defineEmits, inject, watchEffect, onMounted, nextTick
+  defineEmits,
+  defineProps,
+  inject,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  UnwrapRef,
+  watchEffect
 } from 'vue';
 import { Form as AntForm, Input as AntInput, Modal as AntModal } from 'ant-design-vue';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
@@ -59,14 +67,13 @@ const props = defineProps({
 });
 const emit = defineEmits(['close']);
 
-
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
 });
 watchEffect(() => {
-  formState.name = `${ props.oldRepositoryName }的副本`;
+  formState.name = `${props.oldRepositoryName}的副本`;
 });
 
 const modalConfirmLoading = ref(false);

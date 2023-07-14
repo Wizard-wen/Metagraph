@@ -13,9 +13,10 @@
     <ant-form
       ref="formRef"
       :rules="rules"
+      :wrapper-col="wrapperCol"
       :model="formState">
       <ant-form-item style="margin-top: 20px;" ref="name" label="计划名" name="name">
-        <ant-input v-model:value="formState.name"/>
+        <ant-input v-model:value="formState.name"  autocomplete="off"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="planDate" label="起始日" name="planDate">
         <ant-date-picker
@@ -28,7 +29,7 @@
            v-model:value="formState.deadlineDate"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="description" label="描述" name="description">
-        <ant-textarea  v-model:value="formState.description"/>
+        <ant-textarea  v-model:value="formState.description"  autocomplete="off"/>
       </ant-form-item>
     </ant-form>
   </ant-modal>
@@ -39,7 +40,7 @@ import { PlanApiService } from '@/api-service/plan.api.service';
 import { PlanList } from '@/views/plan/plan.list';
 import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
 import {
-  reactive, ref, toRaw, defineComponent, toRef, onMounted, defineProps, defineEmits
+  reactive, ref, toRaw, toRef, onMounted, defineProps, defineEmits
 } from 'vue';
 import {
   Form as AntForm, Input as AntInput, Modal as AntModal, DatePicker as AntDatePicker
@@ -67,6 +68,7 @@ const props = defineProps({
 });
 
 const formRef = ref();
+const wrapperCol = ref({ span: 24 });
 const planList = new PlanList();
 const planId = toRef(props, 'planId');
 const dateFormat = 'YYYY/MM/DD';
