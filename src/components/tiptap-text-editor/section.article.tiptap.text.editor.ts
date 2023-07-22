@@ -17,7 +17,7 @@ import {
 import { AbstractTiptapTextEditor } from '@/components/tiptap-text-editor/abstract.tiptap.text.editor';
 
 export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
-  protected limit = 1000;
+  protected limit = 10000;
 
   // 当前section
   private sectionId?: string;

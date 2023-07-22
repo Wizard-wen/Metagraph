@@ -1,5 +1,5 @@
 <template>
-  <div class="file-panel">
+  <div class="file-panel" ref="willSelectFileList">
     <will-select-file-header></will-select-file-header>
     <div class="file-panel-content">
       <div class="file-panel-list">
@@ -55,7 +55,8 @@ import { Pagination as AntPagination, Skeleton as ASkeleton, } from 'ant-design-
 import WillSelectFilePreview
   from '@/views/file-panel/select-file-modal/will-select-file-preview.vue';
 import WillSelectFileHeader from '@/views/file-panel/select-file-modal/will-select-file-header.vue';
-import { defineEmits, onMounted } from 'vue';
+import { defineEmits, defineProps, onMounted, PropType, ref } from 'vue';
+import { useFilePageSize } from '@/views/file-panel/use-file-page-size';
 import {
   getSelectFileItemById,
   getUserFileList,
@@ -64,11 +65,20 @@ import {
   userFileList
 } from './select-file-model';
 
+const props = defineProps({
+  type: {
+    type: String as PropType<FileEnum>,
+  }
+});
+
+const willSelectFileList = ref<HTMLElement>();
+const { getSize } = useFilePageSize(willSelectFileList);
 const emit = defineEmits(['select']);
 const onPaginationChange = async (page: number) => {
   setUserFileListConfig({
     pageNumber: page,
-    pageSize: 12
+    pageSize: getSize(),
+    type: props.type
   });
   await getUserFileList();
 };
@@ -86,7 +96,8 @@ onMounted(async () => {
   selectFileItemData.data = undefined;
   setUserFileListConfig({
     pageNumber: 1,
-    pageSize: 12
+    pageSize: getSize(),
+    type: props.type
   });
   await getUserFileList();
 });

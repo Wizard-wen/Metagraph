@@ -39,10 +39,13 @@ export function clearSelectFileItem(): void {
 }
 
 export function setUserFileListConfig(params: {
-  pageNumber: number; pageSize: number;
+  pageNumber: number;
+  pageSize: number;
+  type?: FileEnum
 }): void {
   userFileList.value.pageNumber = params.pageNumber;
   userFileList.value.pageSize = params.pageSize;
+  userFileList.value.type = params.type;
 }
 
 export async function getUserFileList(): Promise<void> {

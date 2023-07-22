@@ -619,7 +619,7 @@ export class KnowledgeGraphData {
         }
         isKnowledgeRelationLoading.value = true;
         // 更新当前知识库绑定的实体列表
-        await new RepositoryEditor().getRepositoryBindEntityList(repositoryEntityId);
+        await RepositoryEditor.getRepositoryBindEntityList(repositoryEntityId);
         isKnowledgeRelationLoading.value = false;
         return true;
       }

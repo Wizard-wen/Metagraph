@@ -66,7 +66,6 @@ import {
   SectionTreeService
 } from '@/views/repository-editor/model/section.tree';
 import {
-  isRepositoryEditorLoading,
   repositoryBindEntityList,
   RepositoryEditor
 } from '@/views/repository-editor/model/repository.editor';
@@ -84,13 +83,13 @@ import { isEditableKey, repositoryEntityIdKey } from './repository-editor/model/
 
 const route = useRoute();
 const router = useRouter();
+const isRepositoryEditorLoading = ref(false);
 // 当前知识库entityId
 const repositoryEntityId = ref<string>(route.query.repositoryEntityId as string);
 const isEditable = ref<boolean>((route.query.type as string) === 'edit');
 const sectionTreeService = new SectionTreeService();
 provide(repositoryEntityIdKey, repositoryEntityId);
 provide(isEditableKey, isEditable);
-const repositoryEditorService = new RepositoryEditor();
 const knowledgePreview = new KnowledgePreview();
 // 视图状态
 const viewStatus = ref<'section' | 'graph'>('section');
@@ -303,13 +302,13 @@ onMounted(async () => {
   const sectionId = route.query.sectionId as string;
   // 无需权限的接口请求
   await Promise.all([
-    repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
-    repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
+    RepositoryEditor.getRepositoryByEntityId(repositoryEntityId.value),
+    RepositoryEditor.getRepositoryBindEntityList(repositoryEntityId.value),
     sectionTreeService.getSectionTree(repositoryEntityId.value, sectionId ?? undefined)
   ]);
   if (isEditable.value) {
-    await repositoryEditorService.getAlternativeKnowledgeList(repositoryEntityId.value);
-    await repositoryEditorService.getOwnDraftKnowledgeList(repositoryEntityId.value);
+    await RepositoryEditor.getAlternativeKnowledgeList(repositoryEntityId.value);
+    await RepositoryEditor.getOwnDraftKnowledgeList(repositoryEntityId.value);
   }
   // 初始化富文本内容
   if (currentSectionNode.sectionId) {
@@ -335,8 +334,8 @@ onBeforeRouteUpdate(async (to, from) => {
     isRepositoryEditorLoading.value = true;
     repositoryEntityId.value = to.query.repositoryEntityId as string;
     await Promise.all([
-      repositoryEditorService.getRepositoryByEntityId(repositoryEntityId.value),
-      repositoryEditorService.getRepositoryBindEntityList(repositoryEntityId.value),
+      RepositoryEditor.getRepositoryByEntityId(repositoryEntityId.value),
+      RepositoryEditor.getRepositoryBindEntityList(repositoryEntityId.value),
       sectionTreeService.getSectionTree(repositoryEntityId.value)
     ]);
     isRepositoryEditorLoading.value = false;
@@ -375,7 +374,7 @@ const handleMention = (params: {
   content: JSONContent,
   contentHtml: string
 }) => {
-  repositoryEditorService.handleMention({
+  RepositoryEditor.handleMention({
     ...params,
     repositoryEntityId: repositoryEntityId.value
   });

@@ -9,7 +9,6 @@ import { Node as ProsemirrorNode } from '@tiptap/pm/model';
 import { EditorView } from '@tiptap/pm/view';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
-import TextStyle from '@tiptap/extension-text-style';
 import Placeholder from '@tiptap/extension-placeholder';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
@@ -24,12 +23,20 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { FontSize } from '@/components/tiptap-text-editor/controls/font.size.extension';
 import { Transaction } from '@tiptap/pm/state';
+import { Color } from '@tiptap/extension-color';
+import TextStyle from '@tiptap/extension-text-style';
 import MentionList from './components/mention-list.vue';
 import { CustomMention } from './components/tiptap.custom.mention';
 import CodeBlockContainer from './components/code-block-container.vue';
 import TableOfContent from './components/table.of.content';
 import Indent from './extensions/indent';
 import LineHeight from './extensions/line-height';
+import ImageView from './components/ImageView.vue';
+import {
+  DEFAULT_IMAGE_DISPLAY,
+  DEFAULT_IMAGE_WIDTH,
+  ImageDisplay
+} from '@/components/tiptap-text-editor/utils/image';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -207,7 +214,85 @@ export abstract class AbstractTiptapTextEditor {
           types: ['heading', 'paragraph'],
         }),
         TextStyle,
-        Image,
+        Color,
+        Image.extend({
+          inline() {
+            return true;
+          },
+
+          group() {
+            return 'inline';
+          },
+
+          addAttributes() {
+            return {
+              ...this.parent?.(),
+              width: {
+                default: DEFAULT_IMAGE_WIDTH,
+                parseHTML: (element) => {
+                  const width =
+                    element.style.width || element.getAttribute('width') || null;
+                  return width == null ? null : parseInt(width, 10);
+                },
+                renderHTML: (attributes) => ({
+                  width: attributes.width,
+                }),
+              },
+              height: {
+                default: null,
+                parseHTML: (element) => {
+                  const height =
+                    element.style.height || element.getAttribute('height') || null;
+                  return height == null ? null : parseInt(height, 10);
+                },
+                renderHTML: (attributes) => {
+                  return {
+                    height: attributes.height,
+                  };
+                },
+              },
+              display: {
+                default: DEFAULT_IMAGE_DISPLAY,
+                parseHTML: (element) => {
+                  const { cssFloat, display } = element.style;
+                  let dp =
+                    element.getAttribute('data-display') ||
+                    element.getAttribute('display');
+                  if (dp) {
+                    dp = /(inline|block|left|right)/.test(dp)
+                      ? dp
+                      : ImageDisplay.INLINE;
+                  } else if (cssFloat === 'left' && !display) {
+                    dp = ImageDisplay.FLOAT_LEFT;
+                  } else if (cssFloat === 'right' && !display) {
+                    dp = ImageDisplay.FLOAT_RIGHT;
+                  } else if (!cssFloat && display === 'block') {
+                    dp = ImageDisplay.BREAK_TEXT;
+                  } else {
+                    dp = ImageDisplay.INLINE;
+                  }
+
+                  return dp;
+                },
+                renderHTML: (attributes) => ({
+                  ['data-display']: attributes.display,
+                }),
+              },
+            };
+          },
+
+          addNodeView() {
+            return VueNodeViewRenderer(ImageView);
+          },
+
+          parseHTML() {
+            return [
+              {
+                tag: 'img[src]',
+              },
+            ];
+          }
+        }),
         CharacterCount.configure({
           limit: _this.limit ?? 30000,
         }),

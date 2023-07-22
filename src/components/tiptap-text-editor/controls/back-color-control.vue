@@ -1,24 +1,25 @@
 <template>
   <a-dropdown
-    :trigger="['click']"
     :overlayClassName="'dropdown-overlay'"
-    v-model:visible="visible">
+    :visible="visible">
     <div class="operation-icon" @click="editor.chain().focus()">
       <operation-tooltip :desc="''">
-        <div class="selector-box">
+        <div class="selector-box" @click="visible = true">
           <div class="icon">
             <BgColorIcon
               class="icon-svg"
               :class="{ 'is-active': editor.isActive('bold') }"/>
           </div>
-          <CaretDownOutlined class="down-arrow-style"/>
+          <CaretDownOutlined class="down-arrow-style" />
         </div>
       </operation-tooltip>
     </div>
     <template #overlay>
-      <color-picker v-model="currentColor"></color-picker>
-      <div class="list">
-
+      <div class="picker-board">
+        <color-picker v-model="currentColor"></color-picker>
+        <div class="close">
+          <m-button @click="visible = false" :title="'关闭'"></m-button>
+        </div>
       </div>
     </template>
   </a-dropdown>
@@ -31,7 +32,7 @@ import { defineProps, PropType, ref, watch } from 'vue';
 import { Editor } from '@tiptap/vue-3';
 import { BgColorIcon } from '@/components/icons';
 import OperationTooltip from '@/components/tiptap-text-editor/controls/operation-tooltip.vue';
-
+import { MButton } from '@/metagraph-ui';
 import ColorPicker from '@/components/color-picker/index.vue';
 
 const visible = ref(false);
@@ -53,22 +54,30 @@ function hex(data: string | number) {
   return rgbtransfer16;
 }
 
-const currentSize = ref();
 const currentColor = ref();
 
 watch(currentColor, (value) => {
-  console.log(value);
+  props.editor.chain().focus().setColor(value).run();
 });
-const handleAlignWayChange = (value: string) => {
-  alignWay.value = value;
-  visible.value = false;
-};
 
 </script>
 
 <style lang="scss" scoped>
 @import "../../../style/common.scss";
 @import "../../../style/tiptap.common.scss";
+
+.picker-board {
+  padding: 10px;
+  background: #FFF;
+  border: 1px solid #eff0f0;
+
+  .close {
+    display: flex;
+    height: 36px;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
 
 .disabled-style {
   opacity: .2;
@@ -83,38 +92,6 @@ const handleAlignWayChange = (value: string) => {
 /* 小箭头 */
 .ant-tooltip-arrow::before {
 
-}
-
-.list {
-  display: flex;
-  //width: 100px;
-  padding: 5px;
-  border: 1px solid $borderColor;
-  border-radius: $borderRadius;
-  background: #fff;
-  cursor: pointer;
-}
-
-.list-item {
-  height: 30px;
-  width: 30px;
-  padding: 0 5px;
-  border-radius: 4px;
-  font-size: 16px;
-  line-height: 30px;
-  text-align: center;
-  position: relative;
-
-  .check-icon {
-    font-size: 14px;
-    position: absolute;
-    left: 14px;
-    top: 8px;
-  }
-
-  &:hover {
-    background: $hoverBackColor;
-  }
 }
 
 .selector-box {

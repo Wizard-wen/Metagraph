@@ -42,7 +42,6 @@ const initSearchText = ref();
 
 const isCreateOrBindEntityModalShow = ref(false);
 
-const repositoryEditor = new RepositoryEditor();
 const emit = defineEmits(['refreshSection']);
 const elementTabs = ref<{ value: string; label: string; isAuth: boolean }[]>([
   {
@@ -67,7 +66,7 @@ function handleRefreshSection(params: any) {
 
 async function handleCreateOrBindEntityModalClose() {
   isCreateOrBindEntityModalShow.value = false;
-  await repositoryEditor.getRepositoryBindEntityList(repositoryEntityId.value);
+  await RepositoryEditor.getRepositoryBindEntityList(repositoryEntityId.value);
 }
 
 function handleOpenCreateOrBindEntityModal(params?: {

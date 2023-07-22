@@ -82,12 +82,8 @@
         </template>
         <ant-skeleton style="max-width: 300px" v-else :paragraph="false"></ant-skeleton>
       </div>
-
     </div>
     <div class="middle-side">
-<!--      <switch-mode-->
-<!--        :view-status="viewStatus"-->
-<!--        @viewChange="handleRepositoryViewChange"></switch-mode>-->
       <m-checkbox
         style="width: 200px; height: 36px"
         :type="'checkbox'"
@@ -125,6 +121,7 @@ import {
   ArrowLeftOutlined,
   CloudSyncOutlined,
   CopyOutlined,
+  DeleteOutlined,
   ExclamationCircleOutlined,
   FileTextOutlined,
   FormOutlined,
@@ -135,8 +132,7 @@ import {
   ReadOutlined,
   SwapOutlined,
   UnlockOutlined,
-  UploadOutlined,
-  DeleteOutlined
+  UploadOutlined
 } from '@ant-design/icons-vue';
 import {
   Dropdown as AntDropdown,
@@ -153,8 +149,7 @@ import CloneRepositoryModal
 import { useStore } from '@/store';
 import { CommentControlButton, StarControlButton } from '@/business';
 import { repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
-import { MButton, MTag, MCheckbox } from '@/metagraph-ui';
-import SwitchMode from '@/views/repository-editor/repository-editor-header/switch-mode.vue';
+import { MButton, MCheckbox, MTag } from '@/metagraph-ui';
 import { RouterUtil } from '@/utils/router.util';
 import { RepositoryEditor, repositoryModel } from './model/repository.editor';
 
@@ -175,23 +170,32 @@ const optionList = ref([
   { key: 'graph', name: '图谱模式' }
 ]);
 
-
 const route = useRoute();
 const store = useStore();
-const repositoryEditor = new RepositoryEditor();
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 const needRefresh = ref(route.query.refresh);
 const isCloning = ref(false);
 const isCloneModalShow = ref(false);
-const isPublicRepository = computed(() => ((repositoryModel.target?.content as RepositoryModelType).type === 'public'));
-const goHomePage = async () => {
-  await RouterUtil.jumpTo('/');
-};
+
+const repositoryModelData = computed(
+  () => (repositoryModel.target?.content as RepositoryModelType)
+);
+
 const isLogin = computed(() => store.state.user.isLogin);
+const isPublicRepository = computed(() => repositoryModelData.value.type === 'public');
+const isAllowedClone = computed(() => repositoryModelData.value.isAllowedClone);
+const isCloneRepository = computed(() => repositoryModelData.value.cloneFromRepositoryEntityId);
+// 只有在登录且非克隆知识库，才能有克隆功能
+const isCloneButtonShow = computed(() => isAllowedClone.value && isLogin.value);
+const currentRepositoryName = computed(() => repositoryModelData.value.name);
+
+async function goHomePage() {
+  await RouterUtil.jumpTo('/');
+}
 
 async function handleStarStatusUpdate() {
   if (repositoryEntityId.value) {
-    await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
+    await RepositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
   }
 }
 
@@ -201,16 +205,17 @@ async function goRepositoryEditPage() {
   });
 }
 
-const handleUpdateComment = async () => {
-  await repositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
-};
+async function handleUpdateComment() {
+  await RepositoryEditor.getRepositoryByEntityId(repositoryEntityId.value);
+}
+
 const handleRepositoryViewChange = (status: 'section' | 'graph') => {
   emit('viewChange', status);
 };
 
 async function cloneRepository(name?: string) {
   isCloning.value = true;
-  const clonedRepositoryEntityId = await repositoryEditor.cloneRepository(
+  const clonedRepositoryEntityId = await RepositoryEditor.cloneRepository(
     repositoryEntityId.value,
     name
   );
@@ -253,12 +258,6 @@ function handleOpenCloneModal() {
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
 }
-
-const isAllowedClone = computed(() => (repositoryModel.target?.content as RepositoryModelType).isAllowedClone);
-const isCloneRepository = computed(() => (repositoryModel.target?.content as RepositoryModelType).cloneFromRepositoryEntityId);
-// 只有在登录且非克隆知识库，才能有克隆功能
-const isCloneButtonShow = computed(() => isAllowedClone.value && isLogin.value);
-const currentRepositoryName = computed(() => (repositoryModel.target?.content as RepositoryModelType).name);
 
 </script>
 

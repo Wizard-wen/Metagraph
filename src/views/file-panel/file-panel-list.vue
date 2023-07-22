@@ -68,9 +68,9 @@ import {
   setFilePanelListConfig
 } from '@/views/file-panel/file-panel-list/file-panel-list-model';
 import EmptyView from '@/components/empty-view/empty-view.vue';
+import PreviewFileModal from '@/views/file-panel/preview-file-modal.vue';
 import FilePreviewSidebar from './file-panel-list/file-preview-sidebar.vue';
 import FilePanelListHeader from './file-panel-list/file-panel-list-header.vue';
-import PreviewFileModal from '@/views/file-panel/preview-file-modal.vue';
 
 const listBox = ref<HTMLElement>();
 const isPreviewModalShown = ref(false);
@@ -105,7 +105,6 @@ async function handleViewFile(id: string) {
   await getFilePanelItemById(id);
   isPreviewModalShown.value = true;
 }
-
 
 onMounted(async () => {
   filePanelItemData.data = undefined;
