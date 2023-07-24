@@ -27,6 +27,11 @@ import FontSizeSelect from '@/components/tiptap-text-editor/controls/font-size-s
 import TextLevelSelect from '@/components/tiptap-text-editor/controls/text-level-select.vue';
 import AlignControl from '@/components/tiptap-text-editor/controls/align-control.vue';
 import BackColorControl from '@/components/tiptap-text-editor/controls/back-color-control.vue';
+import LineHeightControl from '@/components/tiptap-text-editor/controls/line-height-control.vue';
+import IndentControl from '@/components/tiptap-text-editor/controls/indent-control.vue';
+import OutdentControl from '@/components/tiptap-text-editor/controls/outdent-control.vue';
+import ClearFormatControl from '@/components/tiptap-text-editor/controls/clear-format-control.vue';
+
 
 export {
   FindControl,
@@ -47,5 +52,9 @@ export {
   FontSizeSelect,
   TextLevelSelect,
   AlignControl,
-  BackColorControl
+  BackColorControl,
+  LineHeightControl,
+  IndentControl,
+  OutdentControl,
+  ClearFormatControl
 };

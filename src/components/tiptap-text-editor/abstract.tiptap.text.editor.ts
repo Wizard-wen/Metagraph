@@ -91,10 +91,10 @@ export abstract class AbstractTiptapTextEditor {
    * @param content
    */
   setContent(content?: JSONContent): void {
-    if (!this.editor?.value) {
+    if(!this.editor?.value) {
       return;
     }
-    if (content) {
+    if(content) {
       this.editor.value?.commands.setContent(content);
     } else {
       this.editor.value?.commands.setContent(null);
@@ -110,7 +110,7 @@ export abstract class AbstractTiptapTextEditor {
     id: string,
     name: string
   }): undefined | JSONContent {
-    if (!this.editor?.value) {
+    if(!this.editor?.value) {
       return undefined;
     }
     this.editor?.value
@@ -144,7 +144,7 @@ export abstract class AbstractTiptapTextEditor {
     id: string,
     name: string
   }): undefined | JSONContent {
-    if (!this.editor?.value) {
+    if(!this.editor?.value) {
       return undefined;
     }
     this.editor?.value
@@ -181,7 +181,7 @@ export abstract class AbstractTiptapTextEditor {
         transaction: Transaction
       }) => {
         // 当内容更新后，持久化数据到本地
-        if (params.editor.getHTML() && params.editor.getJSON()) {
+        if(params.editor.getHTML() && params.editor.getJSON()) {
           _this.saveToIndexDB({
             content: params.editor.getJSON(),
             contentHtml: params.editor.getHTML()
@@ -197,7 +197,7 @@ export abstract class AbstractTiptapTextEditor {
           pos: number,
           node: ProsemirrorNode
         ) {
-          if (node.type.name === 'mention') {
+          if(node.type.name === 'mention') {
             _this.handleClickMentionItem({
               ...node.attrs
             } as {
@@ -258,15 +258,15 @@ export abstract class AbstractTiptapTextEditor {
                   let dp =
                     element.getAttribute('data-display') ||
                     element.getAttribute('display');
-                  if (dp) {
+                  if(dp) {
                     dp = /(inline|block|left|right)/.test(dp)
                       ? dp
                       : ImageDisplay.INLINE;
-                  } else if (cssFloat === 'left' && !display) {
+                  } else if(cssFloat === 'left' && !display) {
                     dp = ImageDisplay.FLOAT_LEFT;
-                  } else if (cssFloat === 'right' && !display) {
+                  } else if(cssFloat === 'right' && !display) {
                     dp = ImageDisplay.FLOAT_RIGHT;
-                  } else if (!cssFloat && display === 'block') {
+                  } else if(!cssFloat && display === 'block') {
                     dp = ImageDisplay.BREAK_TEXT;
                   } else {
                     dp = ImageDisplay.INLINE;
@@ -298,7 +298,7 @@ export abstract class AbstractTiptapTextEditor {
         }),
         Placeholder.configure({
           placeholder: ({ node }) => {
-            if (node.type.name === 'heading') {
+            if(node.type.name === 'heading') {
               return '请输入标题...';
             }
             return '请输入内容...';
@@ -323,11 +323,10 @@ export abstract class AbstractTiptapTextEditor {
             class: 'mention',
           },
           suggestion: {
-            items: (params: { query: string }) => _this.mentionKnowledgeList
-              .filter(
-                (item: EntityCompletelyListItemType) => (item.content as KnowledgeModelType)
-                  .name.includes(params.query)
-              ) || [],
+            items: (params: { query: string }) => _this.mentionKnowledgeList?.filter(
+              (item: EntityCompletelyListItemType) => (item.content as KnowledgeModelType)
+                .name.includes(params.query)
+            ) || [],
             render: () => {
               let component: VueRenderer;
               let popup: Instance[];
@@ -339,7 +338,7 @@ export abstract class AbstractTiptapTextEditor {
                       props: suggestionProps,
                     });
                   }
-                  if (!suggestionProps.clientRect) {
+                  if(!suggestionProps.clientRect) {
                     return;
                   }
                   popup = tippy('body', {
@@ -353,7 +352,7 @@ export abstract class AbstractTiptapTextEditor {
                   });
                 },
                 onUpdate(suggestionProps: SuggestionProps) {
-                  if (!suggestionProps.clientRect) {
+                  if(!suggestionProps.clientRect) {
                     return;
                   }
                   component.updateProps(suggestionProps);

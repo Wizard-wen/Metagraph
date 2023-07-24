@@ -50,12 +50,14 @@
             </template>
             <empty-view :description="'暂无数据，您可以创建新的知识点'" v-else>
               <template #content>
-                <m-button
-                  style="width: 200px"
-                  :title="'创建新知识点'"
-                  v-if="searchText"
-                  @click="handleCreateCreateDraftKnowledge">
-                </m-button>
+                <div style="width: 100%;display: flex;justify-content: center">
+                  <m-button
+                    style="width: 200px"
+                    :title="'创建新知识点'"
+                    v-if="searchText"
+                    @click="handleCreateCreateDraftKnowledge">
+                  </m-button>
+                </div>
               </template>
             </empty-view>
           </template>
@@ -107,8 +109,8 @@ const isModalShow = ref(false);
 const modalConfirmLoading = ref(false);
 const isCreateDraftKnowledgeFormShow = ref(false);
 isLoading.value = true;
-watch(isModalVisible, async (newValue) => {
-  if (newValue) {
+watch(isModalVisible, async(newValue) => {
+  if(newValue) {
     isModalShow.value = newValue;
   }
 });
@@ -146,7 +148,7 @@ async function createNewDraftKnowledge(params: {
           repositoryEntityId: repositoryEntityId.value
         });
       modalConfirmLoading.value = false;
-      if (result) {
+      if(result) {
         const knowledgeContent = result.content as KnowledgeResponseType;
         await IndexdbService.getInstance()
           .put('knowledge', {
@@ -175,7 +177,7 @@ async function createNewDraftKnowledge(params: {
 }
 
 async function handleCreateCreateDraftKnowledge() {
-  if (!searchText.value) {
+  if(!searchText.value) {
     message.error('搜索文本丢失，请重新输入！');
     return;
   }
@@ -201,8 +203,8 @@ async function getEntityList() {
   modalConfirmLoading.value = false;
 }
 
-const handleChange = debounce(async () => {
-  if (searchText.value === '') {
+const handleChange = debounce(async() => {
+  if(searchText.value === '') {
     searchText.value = undefined;
     isCreateDraftKnowledgeFormShow.value = false;
   }
@@ -216,9 +218,9 @@ async function handleLoadMore() {
   await getEntityList();
 }
 
-onMounted(async () => {
+onMounted(async() => {
   await createOrBindKnowledgeModal.getRepositoryBindEntityList(repositoryEntityId.value);
-  if (searchValue.value) {
+  if(searchValue.value) {
     searchText.value = searchValue.value;
   } else {
     searchText.value = '';

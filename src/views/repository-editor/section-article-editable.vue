@@ -101,7 +101,7 @@ async function saveSectionArticleByUser() {
 async function createTopSection() {
   emit('createSection', {
     isRoot: true,
-    type: 'Section'
+    type: 'CreateSection'
   });
 }
 

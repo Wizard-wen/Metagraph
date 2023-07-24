@@ -7,8 +7,9 @@
       <clear-format-control :editor="editor"></clear-format-control>
       <div class="line"></div>
       <text-level-select :editor="editor"></text-level-select>
-      <font-size-select @fontSizeChange="handleFontSizeChange($event)"
-                        :editor="editor"></font-size-select>
+      <font-size-select
+        @fontSizeChange="handleFontSizeChange($event)"
+        :editor="editor"></font-size-select>
       <toggle-bold-control :editor="editor"></toggle-bold-control>
       <toggle-italic-control :editor="editor"></toggle-italic-control>
       <toggle-strike-control :editor="editor"></toggle-strike-control>
@@ -56,15 +57,20 @@ import {
   ToggleTaskControl,
   UndoControl,
   UploadImageControl,
-  BackColorControl
+  BackColorControl,
+  LineHeightControl,
+  IndentControl,
+  OutdentControl,
+  ClearFormatControl
 } from '@/components/tiptap-text-editor/controls';
-import LineHeightControl from '@/components/tiptap-text-editor/controls/line-height-control.vue';
-import IndentControl from '@/components/tiptap-text-editor/controls/indent-control.vue';
-import OutdentControl from '@/components/tiptap-text-editor/controls/outdent-control.vue';
+// import LineHeightControl from '@/components/tiptap-text-editor/controls/line-height-control.vue';
+// import IndentControl from '@/components/tiptap-text-editor/controls/indent-control.vue';
+// import OutdentControl from '@/components/tiptap-text-editor/controls/outdent-control.vue';
+// eslint-disable-next-line max-len
+// import ClearFormatControl from '@/components/tiptap-text-editor/controls/clear-format-control.vue';
 import UploadAndParseTextModal from '../public-component/upload-and-parse-text-modal.vue';
 import ParseTextControl from './control-menus/parse-text-control.vue';
 import { UploadAndParseTextService } from '../public-component/upload.and.parse.text.service';
-import ClearFormatControl from '@/components/tiptap-text-editor/controls/clear-format-control.vue';
 
 const isParseWordModalShow = ref(false);
 const uploadAndParseTextService = new UploadAndParseTextService();
@@ -90,7 +96,7 @@ async function handleCloseParseWordModal(params: {
   type: 'Section' | 'void' | 'Alternative'
   sectionModel?: SectionModelType
 }) {
-  if (params.type === 'Section' && params.sectionModel) {
+  if(params.type === 'Section' && params.sectionModel) {
     emit('refreshSection', {
       sectionId: params.sectionModel.id
     });

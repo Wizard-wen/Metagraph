@@ -14,7 +14,7 @@
     v-if="knowledgeDrawerState.isShow"
     :is-visible="knowledgeDrawerState.isShow"
     :type="type"
-    :knowledge-entity-id="knowledgeDrawerState.entityId"
+    :knowledge-entity-id="knowledgeDrawerState?.entityId"
     @close="knowledgeDrawerState.isShow = false"></knowledge-drawer-content>
   <select-knowledge-cover-modal
     :knowledge-entity-id="draftKnowledgeEntityId"

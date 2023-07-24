@@ -59,6 +59,7 @@
     </div>
   </div>
   <add-field-modal
+    :is-edit="false"
     v-if="isFieldModalVisible"
     @close="handleAddFieldModalClose"
     :isModalVisible="isFieldModalVisible"></add-field-modal>

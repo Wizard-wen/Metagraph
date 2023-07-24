@@ -70,23 +70,24 @@ const currentFieldModel = ref<{
   key: string;
 }>();
 
-const knowledgeDescList = computed<KnowledgeConfigItemType[]>(() => knowledgeCustomFields.value.map(item => ({
-  classicName: item.label,
-  key: item.key,
-  grid: item.grid,
-  type: item.type,
-  label: item.label,
-  descList: [{
-    title: '名称',
-    content: item.label
-  }, {
-    title: '分栏',
-    content: item.grid.toFixed()
-  }, {
-    title: '类型',
-    content: item.type
-  }]
-})));
+const knowledgeDescList = computed<KnowledgeConfigItemType[]>(
+  () => knowledgeCustomFields.value.map(item => ({
+    classicName: item.label,
+    key: item.key,
+    grid: item.grid,
+    type: item.type,
+    label: item.label,
+    descList: [{
+      title: '名称',
+      content: item.label
+    }, {
+      title: '分栏',
+      content: item.grid.toFixed()
+    }, {
+      title: '类型',
+      content: item.type
+    }]
+  })));
 
 async function removeField(item: KnowledgeConfigItemType) {
   Modal.confirm({
@@ -101,7 +102,7 @@ async function removeField(item: KnowledgeConfigItemType) {
         knowledgeEntityId: draftKnowledgeEntityId?.value || '',
         customFieldKey: item.key
       });
-      if (result.code === 0) {
+      if(result.code === 0) {
         await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value || '');
         message.success('删除成功！');
       }

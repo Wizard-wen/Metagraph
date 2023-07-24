@@ -26,7 +26,7 @@ axios.interceptors.response.use((response: AxiosResponse<PublicApiResponseType<a
   if (response.config.url?.includes(process.env.VUE_APP_API_BASE_URL!) && response.data.code !== 0) {
     message.error(response.data?.message ?? 'server unknown error');
   }
-  if (response.data.code === 70006) {
+  if (response.data.code === 16006) {
     message.error('权限认证失败，请重新登录');
     ErrorDetailSystemApiService.create({
       code: response.data.code,
