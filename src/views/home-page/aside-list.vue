@@ -59,7 +59,6 @@ async function goCreateRepositoryPage() {
 }
 
 onMounted(async () => {
-  console.log('222222222222')
   await getOwnRepositoryList();
 });
 

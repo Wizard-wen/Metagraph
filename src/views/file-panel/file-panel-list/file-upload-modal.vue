@@ -6,11 +6,10 @@
     :maskClosable="false"
     :footer="null"
     :visible="isModalVisible"
-    :confirm-loading="modalConfirmLoading"
     :zIndex="9999"
     @cancel="handleModalCancel">
     <vueCropper
-      v-if="uploadItemType === 'image'"
+      v-if="uploadComponentType === 'image'"
       style="height: 400px"
       ref="cropperRef"
       :img="cropUrl"
@@ -39,9 +38,9 @@
       :mode="cropOption.mode"
       :limitMinSize="cropOption.limitMinSize"
     ></vueCropper>
-    <img v-if="uploadItemType === 'gif'" :src="gifBase64" alt="">
-    <template v-if="uploadItemType === 'word'">
-      <div id="container"></div>
+    <img v-if="uploadComponentType === 'gif'" :src="gifBase64" alt="">
+    <template v-if="uploadComponentType === 'word'">
+      <div id="doc-container"></div>
     </template>
     <div class="control-box">
       <ant-button
@@ -93,12 +92,17 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['close']);
-// const fileProvider = toRef(props, 'provider');
-const modalConfirmLoading = ref(false);
 const isLoading = ref(false);
+// gif型图片
+const isGif = ref(false);
+const gifBase64 = ref<string>();
+// 上传组件大分类
+const uploadComponentType = ref<'image' | 'gif' | 'word'>();
+// 裁切图片组件
+const cropperRef = ref<any>();
 // 裁剪图片的地址
 const cropUrl = ref('');
-
+// 裁切组件配置
 const cropOption = computed(() => {
   let fixedNumber = [1, 1];
   if (props.fixed) {
@@ -146,56 +150,69 @@ const cropOption = computed(() => {
     limitMinSize: [100, 120]
   };
 });
-const domFile = ref<File>();
-// const isGif = ref(false);
-const gifBase64 = ref<string>();
-const uploadItemType = ref<'image' | 'gif' | 'word'>();
-const inputRef = ref<HTMLInputElement>();
-const cropperRef = ref<any>();
 
-function changeFile(file: File) {
+function changeFileToBlob(file: File) {
   const reader = new FileReader();
   reader.onload = () => {
     let data;
     if (typeof reader.result === 'object') {
+      console.log(reader.result);
       // 把Array Buffer转化为blob 如果是base64不需要
       data = window.URL.createObjectURL(new Blob([reader.result!]));
     } else {
       data = reader.result;
     }
-    if (uploadItemType.value !== 'gif') {
+    console.log(data);
+    if (uploadComponentType.value !== 'gif') {
       cropUrl.value = data;
     } else {
       gifBase64.value = data;
     }
-    if (inputRef.value) {
-      inputRef.value.value = '';
-    }
   };
-  // 转化为base64
-  // reader.readAsDataURL(file)
   // 转化为blob
   reader.readAsArrayBuffer(file);
+}
+
+function changeFileToBase64(file: File): Promise<string | undefined> {
+  const reader = new FileReader();
+  // 转化为base64
+  reader.readAsDataURL(file);
+  return new Promise((resolve) => {
+    reader.onload = () => {
+      if (reader.result) {
+        resolve(reader.result as string);
+      } else {
+        resolve(undefined)
+      }
+    };
+  });
 }
 
 watchEffect(async () => {
   if (!props.domFile) return;
   const { type } = props.domFile;
+  // 图片类型
   if (type.startsWith('image')) {
-    uploadItemType.value = FileEnum.Image;
-    if (type.split('/')[1] === 'git') {
-      uploadItemType.value = 'gif';
+    uploadComponentType.value = FileEnum.Image;
+    // 判断图片是否属于可接受图片
+    if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(props.domFile?.name)) {
+      return;
     }
-    changeFile(props.domFile);
+    // 如果是gif则不可以裁切，直接上传
+    if (/\.(gif|GIF)$/.test(props.domFile?.name) && type.split('/')[1] === 'git') {
+      isGif.value = true;
+      uploadComponentType.value = 'gif';
+    }
+    // 转换文件
+    changeFileToBlob(props.domFile);
   }
+  // 文件类型
   if (type.startsWith('application')) {
-    console.log('sssssssssssssssssssssssssss');
-    uploadItemType.value = 'word';
+    uploadComponentType.value = 'word';
     await nextTick(async () => {
-      const container = document.getElementById('container');
-      if (container) {
-        console.log('inner -----------');
-        const result = await renderAsync(props.domFile, container, undefined, {
+      const docContainer = document.getElementById('doc-container');
+      if (docContainer) {
+        const result = await renderAsync(props.domFile, docContainer, undefined, {
           className: 'docx', // 默认和文档样式类的类名/前缀
           inWrapper: true, // 启用围绕文档内容渲染包装器
           ignoreWidth: false, // 禁止页面渲染宽度
@@ -210,33 +227,24 @@ watchEffect(async () => {
       }
     });
   }
-
-
-  // if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(props.domFile?.name)) {
-  //   return;
-  // }
-  // if (/\.(gif|GIF)$/.test(target.value)) {
-  //   isGif.value = true;
-  // }
 });
 
+function handleModalCancel() {
+  emit('close');
+}
 
-const handleModalOk = () => {
-  emit('close');
-};
-const handleModalCancel = () => {
-  emit('close');
-};
 // 实时预览事件
-const handleRealTime = (data: { w: number, h: number }) => {
+function handleRealTime(data: { w: number, h: number }) {
   // console.log(data);
-};
+}
+
 // 图片加载的回调, 返回结果 success, error
-const handleImgLoad = (value: string) => {
+function handleImgLoad(value: string) {
   // console.log(value);
-};
+}
+
 // 截图框移动回调函数
-const handleCropMoving = (params: {
+function handleCropMoving(params: {
   moving: boolean, // moving 是否在移动
   axis: {
     x1: number, // 左上角
@@ -244,18 +252,21 @@ const handleCropMoving = (params: {
     y1: number, // 左下角
     y2: number // 右下角
   }
-}) => {
+}) {
   // console.log(params);
-};
+}
 
-
-async function uploadToQiniu(data: string) {
+/**
+ * 针对裁切的图片，裁切后会生成base64
+ * @param data
+ */
+async function uploadBase64ToQiniu(data: string) {
   isLoading.value = true;
   const qiniuUploadService = new QiniuUploadService();
   const result = await qiniuUploadService.customRequestUploadHandler({
     base64: data,
     type: FileEnum.Image,
-    name: domFile.value?.name || '',
+    name: props.domFile?.name || '',
     provider: props.provider
   });
   if (result) {
@@ -268,13 +279,16 @@ async function uploadToQiniu(data: string) {
   isLoading.value = false;
 }
 
+/**
+ * 直接上传dom File类型文件
+ */
 async function uploadFileToQiniu() {
   isLoading.value = true;
   const qiniuUploadService = new QiniuUploadService();
   const result = await qiniuUploadService.customRequestUploadHandler({
-    file: domFile.value,
+    file: props.domFile,
     type: FileEnum.Image,
-    name: domFile.value?.name || '',
+    name: props.domFile?.name || '',
     provider: props.provider
   });
   if (result) {
@@ -292,7 +306,7 @@ async function handleUpload() {
     await uploadFileToQiniu();
   } else {
     cropperRef.value.getCropData(async (data: string) => {
-      await uploadToQiniu(data);
+      await uploadBase64ToQiniu(data);
     });
   }
 }

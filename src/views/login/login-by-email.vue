@@ -13,7 +13,7 @@
         placeholder="请输入邮箱">
       </ant-input>
     </ant-form-item>
-    <ant-form-item name="password">
+    <ant-form-item name="verifyCode">
       <ant-input
         class="custom-input-style"
         v-model:value="emailFormState.verifyCode"
@@ -62,8 +62,20 @@ const emailFormState = ref({
 
 const emailRules = {
   email: {
+    trigger: ['blur', 'change'],
     required: true,
-    message: '请输入邮箱！',
+    validator(rule: any, value: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        if (!value) {
+          reject('请输入邮箱');
+        }
+        const regExp = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/i;
+        if (!regExp.test(value)) {
+          reject('邮箱格式不正确');
+        }
+        resolve();
+      });
+    }
   },
   verifyCode: {
     required: true,
@@ -86,6 +98,8 @@ function login() {
     } else {
       message.error(result?.message || '登录时出现问题！');
     }
+  }).catch(() => {
+
   });
 }
 

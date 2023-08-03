@@ -40,7 +40,7 @@
       </ant-input>
     </div>
     <file-upload-modal
-      @close="isUploadModalVisible = false"
+      @close="handleUploadModalClose"
       :provider="'System'"
       :dom-file="currentFile"
       :is-modal-visible="isUploadModalVisible"></file-upload-modal>
@@ -90,20 +90,16 @@ import {
   getFilePanelList,
   setFilePanelListConfig
 } from '@/views/file-panel/file-panel-list/file-panel-list-model';
+import { Dropdown as AntDropdown, Input as AntInput, Menu as AntMenu, } from 'ant-design-vue';
 import {
-  Dropdown as AntDropdown,
-  Input as AntInput,
-  Menu as AntMenu,
-} from 'ant-design-vue';
-import {
-  FileOutlined,
-  FileImageOutlined,
-  FilterOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  MenuOutlined,
   ArrowLeftOutlined,
-  LeftOutlined
+  FileImageOutlined,
+  FileOutlined,
+  FilterOutlined,
+  LeftOutlined,
+  MenuOutlined,
+  PlusOutlined,
+  SearchOutlined
 } from '@ant-design/icons-vue';
 import { MButton } from '@/metagraph-ui';
 import { FileEnum } from '@metagraph/constant';
@@ -132,6 +128,11 @@ async function handleSearch() {
   await getFilePanelList();
 }
 
+function handleUploadModalClose() {
+  isUploadModalVisible.value = false;
+  inputElement.value.value = null;
+}
+
 async function handleTypeChange(type?: FileEnum) {
   filePanelList.value.type = type;
   setFilePanelListConfig({
@@ -153,8 +154,8 @@ const handleFileChange = async (event: InputEvent) => {
     return;
   }
   [currentFile.value] = target.files;
+  inputElement.value = null;
   isUploadModalVisible.value = true;
-  console.log(currentFile.value);
 };
 
 </script>
@@ -190,7 +191,6 @@ const handleFileChange = async (event: InputEvent) => {
         font-weight: 600;
       }
     }
-
 
     &::v-deep(.ant-input-affix-wrapper-focused) {
       box-shadow: none;

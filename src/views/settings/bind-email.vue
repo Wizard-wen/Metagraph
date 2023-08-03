@@ -112,7 +112,6 @@ export default defineComponent({
           trigger: 'blur',
           required: true,
           validator(rule: any, value: string): Promise<void> {
-            console.log(value);
             return new Promise((resolve, reject) => {
               if (!value) {
                 isEmailValid.value = false;
@@ -123,7 +122,6 @@ export default defineComponent({
                 isEmailValid.value = false;
                 reject('邮箱格式不正确');
               } else {
-                console.log('zhixing');
                 isEmailValid.value = true;
                 resolve();
               }

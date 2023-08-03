@@ -107,7 +107,6 @@ export default defineComponent({
     };
 
     const handleFinish = (values: FormState) => {
-      console.log(values, formState);
       UserApiService.updatePassword({
         oldPassword: formState.oldPassword,
         newPassword: formState.newPassword

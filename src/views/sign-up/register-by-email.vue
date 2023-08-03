@@ -75,12 +75,37 @@ const registerFormState = ref({
 
 const registerRules = {
   email: {
+    trigger: ['blur', 'change'],
     required: true,
-    message: '请输入邮箱！',
+    validator(rule: any, value: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        if (!value) {
+          reject('请输入邮箱');
+        }
+        const regExp = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/i;
+        if (!regExp.test(value)) {
+          reject('邮箱格式不正确');
+        }
+        resolve();
+      });
+    }
   },
+
   verifyCode: {
+    trigger: ['blur', 'change'],
     required: true,
-    message: '请输入验证码！',
+    validator(rule: any, value: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        if (!value) {
+          reject('请输入验证码');
+        }
+        const regExp = /^\d{6}$/;
+        if (!regExp.test(value)) {
+          reject('验证码格式不正确');
+        }
+        resolve();
+      });
+    }
   },
   password: [
     {
@@ -117,7 +142,6 @@ const registerRules = {
 
 function login() {
   registerFormRef.value.validate().then(async () => {
-    console.log(registerFormState.value);
     const response = await UserNoAuthApiService.registerByEmail({
       email: registerFormState.value.email,
       password: registerFormState.value.password,
@@ -266,6 +290,7 @@ onMounted(() => {
   background: $themeColor;
   color: #FFF;
   font-size: 14px;
+
   &:hover {
     background: $themeHoverColor;
   }

@@ -124,7 +124,6 @@ async function handleSaveCustomField() {
           const customFieldItem = knowledgeCustomFields.value.find(
             (customFieldItem) => customFieldItem.key === item
           );
-          console.log(customFieldItem);
           if (customFieldItem) {
             customFieldItem.value = customFieldsModelRef.value[item];
           }
