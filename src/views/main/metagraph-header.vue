@@ -252,7 +252,7 @@ async function goFollowerPage() {
 }
 
 async function goSignUpPage() {
-  await RouterUtil.jumpTo('/signup');
+  await RouterUtil.jumpTo('/login');
 }
 
 async function goHomePage() {

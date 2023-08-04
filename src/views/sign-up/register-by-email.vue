@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, defineEmits } from 'vue';
 import { Form as AntForm, Input as AntInput, message } from 'ant-design-vue';
 import { MButton } from '@/metagraph-ui';
 import EndTime from '@/views/settings/end-time.vue';
@@ -64,6 +64,8 @@ import { UserNoAuthApiService } from '@/api-service';
 
 const AntFormItem = AntForm.Item;
 const AntInputPassword = AntInput.Password;
+
+const emit = defineEmits(['changeStatus']);
 
 const registerFormRef = ref();
 const registerFormState = ref({
@@ -149,6 +151,7 @@ function login() {
     });
     if (response.code === 0) {
       message.success('注册成功');
+      emit('changeStatus');
     }
     if (response.message) {
       message.error(response?.message || '注册时出现问题！');
