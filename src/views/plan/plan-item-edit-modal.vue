@@ -10,29 +10,44 @@
     @cancel="handleModalCancel"
     @ok="handleModalOk">
     <ant-form
+      class="plan-item-form"
       ref="formRef"
       :rules="rules"
+      :label-col="labelCol"
       :model="planItem">
       <ant-form-item style="margin-top: 20px;" ref="name" label="计划项名" name="name">
-        <ant-input v-model:value="planItem.name"/>
+        <ant-input
+          v-model:value="planItem.name"
+          class="custom-input-style"
+          placeholder="请输入计划项名称"
+          autocomplete="off"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="priority" label="优先级" name="priority">
         <ant-rate v-model:value="planItem.priority"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="planDate" label="开始日" name="planDate">
         <ant-date-picker
+          :getPopupContainer="getPopupContainer"
           :disabled-date="disabledPlanDate"
-          :dropdownClassName="'custom-date-picker'"
-          v-model:value="testDate"/>
+          placeholder="请选择开始日期"
+          v-model:value="planItem.planDate"/>
       </ant-form-item>
-      <ant-form-item style="margin-top: 20px;" ref="deadlineDate" label="截止日" name="deadlineDate">
+      <ant-form-item style="margin-top: 20px;" ref="deadlineDate" label="截止日"
+                     name="deadlineDate">
         <ant-date-picker
+          :getPopupContainer="getPopupContainer"
           :disabled-date="disabledDeadlineDate"
-          :dropdownClassName="'custom-date-picker'"
+          placeholder="请选择结束日期"
           v-model:value="planItem.deadlineDate"/>
       </ant-form-item>
       <ant-form-item style="margin-top: 20px;" ref="description" label="描述" name="description">
-        <ant-input v-model:value="planItem.description"/>
+        <!--        <ant-input v-model:value="planItem.description"/>-->
+
+        <ant-textarea
+          class="custom-input-style"
+          v-model:value="planItem.description"
+          placeholder="请对计划做一个简短的描述"
+          autocomplete="off"/>
       </ant-form-item>
     </ant-form>
   </ant-modal>
@@ -48,7 +63,8 @@ import {
   Form as AntForm,
   Input as AntInput,
   Modal as AntModal,
-  Rate as AntRate
+  Rate as AntRate,
+  Textarea as AntTextarea
 } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -70,9 +86,8 @@ const props = defineProps({
     type: String
   }
 });
-
+const labelCol = ref({ span: 4 });
 const emit = defineEmits(['close']);
-const testDate = ref<Dayjs>();
 const formRef = ref();
 const planList = new PlanBoard();
 // const planId = toRef(props, 'planId');
@@ -82,6 +97,10 @@ const modalConfirmLoading = ref(false);
 
 function handleModalCancel() {
   emit('close');
+}
+
+function getPopupContainer(triggerNode: any) {
+  return triggerNode.parentNode;
 }
 
 async function createPlan() {
@@ -102,7 +121,7 @@ function handleModalOk() {
   formRef.value
     .validate()
     .then(async () => {
-      if (props.planItemId) {
+      if(props.planItemId) {
         await updatePlan(props.planItemId);
       } else {
         await createPlan();
@@ -118,8 +137,8 @@ const disabledPlanDate = (planValue: Dayjs) => {
 };
 
 const disabledDeadlineDate = (planValue: Dayjs) => {
-  if (props.planModel?.planDate) {
-    if (planItem.planDate) {
+  if(props.planModel?.planDate) {
+    if(planItem.planDate) {
       return planValue < planItem.planDate;
     }
     return planValue < dayjs(props.planModel.planDate);
@@ -128,58 +147,25 @@ const disabledDeadlineDate = (planValue: Dayjs) => {
 };
 const rules = reactive({
   name: [{
-    message: '请输入计划名',
+    message: '请输入计划项名称',
     trigger: 'blur',
     required: true
   }]
 });
 
 onMounted(async () => {
-  if (props.planItemId) {
+  if(props.planItemId) {
     await planList.getPlanItemDetail(props.planItemId);
   }
 });
 
-// export default defineComponent({
-//   name: 'plan-item-edit-modal',
-//   props: ,
-//   emits: ['close'],
-//   components: {
-//     AntModal: Modal,
-//     AntForm: Form,
-//
-//     AntInput: Input,
-//     AntDatePicker: DatePicker,
-//     AntRate: Rate
-//   },
-//   setup(props, context) {
-//
-//     return {
-//       rules,
-//       wrapperCol: { span: 14 },
-//       labelCol: { span: 4 },
-//       handleModalOk,
-//       handleModalCancel,
-//       planItem,
-//       formRef,
-//       modalConfirmLoading,
-//       dateFormat,
-//       disabledPlanDate,
-//       disabledDeadlineDate
-//     };
-//   }
-// });
-
 </script>
 
 <style scoped lang="scss">
-.custom-date-picker {
-  &::v-deep(.ant-calendar-picker-container) {
-    z-index: 10000;
-  }
-}
 
-.ant-calendar-picker-container {
-  z-index: 10000;
+@import "../../style/common.scss";
+
+.plan-item-form {
+  @include custom-input-style-mixin;
 }
 </style>

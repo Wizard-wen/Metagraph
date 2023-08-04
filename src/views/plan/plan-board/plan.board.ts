@@ -68,7 +68,7 @@ export type PlanItemState = {
   name: string;
   priority: 1 | 2 | 3 | 4 | 5;
   status?: 'todo' | 'doing' | 'done';
-  description?: string;
+  description: string;
   planDate: Dayjs;
   deadlineDate: Dayjs;
 }
@@ -79,7 +79,7 @@ export const planItem = reactive<PlanItemState>({
   description: '',
   status: undefined,
   planDate: dayjs(),
-  deadlineDate: dayjs(),
+  deadlineDate: dayjs().add(7, 'day'),
 });
 
 export const isLoading = ref(false);
@@ -159,7 +159,7 @@ export class PlanBoard {
       planItem.priority = result.data.priority;
       planItem.planDate = dayjs(result.data.planDate, dateFormat);
       planItem.deadlineDate = dayjs(result.data.deadlineDate, dateFormat);
-      planItem.description = result.data.description;
+      planItem.description = result.data.description ?? '';
       planItem.name = result.data.name;
     }
   }
