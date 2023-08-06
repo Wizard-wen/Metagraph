@@ -105,15 +105,15 @@ function login() {
 
 async function handleGetCode() {
   formRef.value.validate('email').then(async () => {
-    endTime.value = new Date().getTime() + 60000;
-    localStorage.setItem('loginEmailEndTime', endTime.value.toString());
-    isEnding.value = true;
     const result = await UserNoAuthApiService.sendRegisterEmailCode({
       email: emailFormState.value.email,
       type: 'login'
     });
     if (result.code === 0) {
       message.success('邮件发送成功！');
+      endTime.value = new Date().getTime() + 60000;
+      localStorage.setItem('loginEmailEndTime', endTime.value.toString());
+      isEnding.value = true;
     }
     if (result.message) {
       message.error(result.message || '邮件发送失败！');

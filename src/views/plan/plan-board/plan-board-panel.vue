@@ -150,7 +150,7 @@ async function handleDone(evt: any) {
     margin-right: 10px;
     padding: 0 10px 32px;
     border-radius: 6px;
-    background: $hoverDeepBackColor;
+    background: $hoverBackColor;
     position: relative;
 
     .plan-list-header {

@@ -9,7 +9,7 @@
     <div class="login-box" v-if="type === 'register'">
       <div class="login-content">
         <div class="login-title">邮箱注册</div>
-        <register-by-email></register-by-email>
+        <register-by-email @change-status="handleRegisterSuccess"></register-by-email>
         <div class="register-way">
           已有账号？
           <div class="register" @click="checkType('login')">登录</div>
@@ -75,6 +75,10 @@ function checkType(params: 'login' | 'register' | 'forget') {
 }
 
 const loginType = ref('email');
+
+function handleRegisterSuccess() {
+  checkType('login');
+}
 
 async function goHomePage() {
   await RouterUtil.replaceTo('/');

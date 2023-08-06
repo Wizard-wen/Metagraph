@@ -27,6 +27,27 @@
           :format="'YYYY/MM/DD'" v-model:value="planFormState.planDate"/>
       </template>
     </form-panel-input-item>
+
+    <form-panel-input-item
+      :editable="formStatus.deadlineDate"
+      @change="handleSaveDeadlineDate"
+      :title="'截止日'">
+      <template #content>
+        <ant-date-picker
+          :disabled="!formStatus.deadlineDate"
+          style="width: 100%;"
+          :dropdownClassName="'custom-date-picker'"
+          :format="'YYYY/MM/DD'" v-model:value="planFormState.deadlineDate"/>
+      </template>
+    </form-panel-input-item>
+    <form-panel-input-item
+      :editable="formStatus.description"
+      @change="handleSaveDescription"
+      :title="'描述'">
+      <template #content>
+        <ant-text-area :disabled="isFormDisabled" v-model:value="planFormState.description"/>
+      </template>
+    </form-panel-input-item>
   </div>
 
   <ant-form
@@ -69,7 +90,8 @@ import { CommonUtil } from '@/utils';
 const formStatus = ref({
   name: false,
   planDate: false,
-  deadlineDate: false
+  deadlineDate: false,
+  description: false
 });
 const AntFormItem = AntForm.Item;
 const AntTextArea = AntInput.TextArea;
@@ -94,16 +116,26 @@ const planBaseDesc = computed<{
 const isFormDisabled = ref(true);
 
 function handleSavePlanName(event: boolean) {
-  if (event) {
+  // if (event) {
     formStatus.value.name = event;
-    return;
-  }
+  // }
 }
 
 function handleSavePlanDate(event: boolean) {
   if (event) {
     formStatus.value.planDate = event;
-    return;
+  }
+}
+
+function handleSaveDeadlineDate(event: boolean) {
+  if (event) {
+    formStatus.value.deadlineDate = event;
+  }
+}
+
+function handleSaveDescription(event: boolean) {
+  if (event) {
+    formStatus.value.description = event;
   }
 }
 
