@@ -1,10 +1,10 @@
 <template>
   <div class="knowledge-preview">
 
-    <p class="title">{{previewModel.entity.content.name}}</p>
+    <p class="title">{{ previewModel.entity.content.name }}</p>
     <div class="author">
       <div class="author-name">wizard.song</div>
-      <div  class="publish-date">2023-08-06 19:20</div>
+      <div class="publish-date">2023-08-06 19:20</div>
     </div>
     <p class="h2-level-title-style" id="preview-card-1">基本信息</p>
     <div class="content-padding">
@@ -36,9 +36,11 @@
         <ant-col :span="24">
           <description-item title="知识点领域">
             <template #content>
-              <ant-tag v-for="(item, index) in previewModel.entity.content.domain" :key="index">
-                {{ item.domainName }}
-              </ant-tag>
+              <m-tag
+                :title="item.domainName"
+                v-for="(item, index) in previewModel.entity.content.domain"
+                :key="index">
+              </m-tag>
             </template>
           </description-item>
         </ant-col>
@@ -121,70 +123,76 @@
 
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {
   Button, Col, List, Row, Tag, Image
 } from 'ant-design-vue';
 import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
-  defineComponent, PropType
+  PropType, defineProps
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { LinkOutlined } from '@ant-design/icons-vue';
 import TiptapEditorReadonly from '@/components/tiptap-text-editor/tiptap-editor-readonly.vue';
 import DescriptionItem from '@/business/knowledge-drawer/description-item.vue';
+import { MTag } from '@/metagraph-ui';
 
-export default defineComponent({
-  name: 'knowledge-preview-component',
-  props: {
-    previewModel: {
-      type: Object as PropType<{
-        entity: EntityCompletelyListItemType,
-        mentionList: EntityCompletelyListItemType[]
-      }>,
-      required: true
-    },
-    provider: {
-      type: String as PropType<'drawer' | 'page'>
-    }
+defineProps({
+  previewModel: {
+    type: Object as PropType<{
+      entity: EntityCompletelyListItemType,
+      mentionList: EntityCompletelyListItemType[]
+    }>,
+    required: true
   },
-  components: {
-    TiptapEditorReadonly,
-    DescriptionItem,
-    AntCol: Col,
-    AntRow: Row,
-    AntTag: Tag,
-    AntButton: Button,
-    AntList: List,
-    AntListItemMeta: List.Item.Meta,
-    AntListItem: List.Item,
-    AntImage: Image,
-    AntImagePreviewGroup: Image.PreviewGroup,
-    LinkOutlined
-  },
-  setup() {
-    const router = useRouter();
-
-    function goProfilePage(id: string) {
-      const { href } = router.resolve({
-        path: '/knowledge/preview',
-        query: {
-          publishedKnowledgeEntityId: id
-        }
-      });
-      window.open(href, '_blank');
-    }
-
-    function goRepositoryPage() {
-
-    }
-
-    return {
-      goProfilePage,
-      goRepositoryPage
-    };
+  provider: {
+    type: String as PropType<'drawer' | 'page'>
   }
 });
+
+const AntCol = Col;
+const AntRow = Row;
+const AntTag = Tag;
+const AntButton = Button;
+const AntList = List;
+const AntListItemMeta = List.Item.Meta;
+const AntListItem = List.Item;
+const AntImage = Image;
+const AntImagePreviewGroup = Image.PreviewGroup;
+const router = useRouter();
+
+function goProfilePage(id: string) {
+  const { href } = router.resolve({
+    path: '/knowledge/preview',
+    query: {
+      publishedKnowledgeEntityId: id
+    }
+  });
+  window.open(href, '_blank');
+}
+
+function goRepositoryPage() {
+
+}
+
+// export default defineComponent({
+//   name: 'knowledge-preview-component',
+//   props: {},
+//   components: {
+//     TiptapEditorReadonly,
+//     DescriptionItem,
+//
+//     LinkOutlined
+//   },
+//   setup() {
+//
+//
+//     return {
+//       goProfilePage,
+//       goRepositoryPage
+//     };
+//   }
+// });
 </script>
 
 <style scoped lang="scss">
@@ -193,23 +201,28 @@ export default defineComponent({
   margin-bottom: 100px;
   box-shadow: 0 0 3px rgba(0, 0, 0, .2);
   background: #FFFFFF;
+
   .title {
     font-size: 32px;
     margin-bottom: 20px;
   }
+
   .author {
     display: flex;
     line-height: 28px;
     margin-bottom: 20px;
+
     .author-name {
 
       margin-right: 18px;
     }
+
     .publish-date {
       color: #8a919f;
     }
   }
 }
+
 .content-padding {
   padding: 5px;
   min-height: 100px;

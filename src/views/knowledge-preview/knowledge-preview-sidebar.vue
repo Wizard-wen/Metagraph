@@ -31,11 +31,11 @@
     <div class="sidebar-content catalog">
       <p class="h2-level-title-style">目录</p>
       <ant-anchor wrapperClass="custom-ant-anchor" :affix="false" @click="handleAnchorClick">
-        <ant-anchor-link href="#preview-card-1" title="基本信息"/>
-        <ant-anchor-link href="#preview-card-2" title="信息栏"/>
-        <ant-anchor-link href="#preview-card-3" title="知识点描述"/>
-        <ant-anchor-link href="#preview-card-4" title="概念图册"/>
-        <ant-anchor-link href="#preview-card-5" title="参考知识点"/>
+        <ant-anchor-link href="preview-card-1" title="基本信息"/>
+        <ant-anchor-link href="preview-card-2" title="信息栏"/>
+        <ant-anchor-link href="preview-card-3" title="知识点描述"/>
+        <ant-anchor-link href="preview-card-4" title="概念图册"/>
+        <ant-anchor-link href="preview-card-5" title="参考知识点"/>
       </ant-anchor>
     </div>
   </div>
@@ -52,6 +52,7 @@ function handleAnchorClick(e: Event, link: any) {
   // 阻止点击的默认事件修改路由
   e.preventDefault();
   const scrolls = document.getElementById(link.href);
+  console.log(scrolls, link.href)
   scrolls?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 </script>
@@ -63,6 +64,7 @@ function handleAnchorClick(e: Event, link: any) {
   margin-left: 20px;
 
   .sidebar-content {
+    width: 300px;
     box-shadow: 0 0 3px rgba(0, 0, 0, .2);
     background: #FFFFFF;
     padding: 16px 20px;

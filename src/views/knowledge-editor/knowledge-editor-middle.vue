@@ -63,6 +63,7 @@ async function saveKnowledgeArticle() {
       contentHtml: props.editor?.getHTML(),
       knowledgeEntityId: draftKnowledgeEntityId.value
     });
+    console.log(result)
     await IndexdbService.getInstance()
       .update(
         'knowledge',

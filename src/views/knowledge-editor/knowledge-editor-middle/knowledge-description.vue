@@ -51,7 +51,7 @@ defineProps({
 }
 
 .custom-editor-style {
-  width: 620px;
+  //width: 620px;
   height: 390px;
   overflow-y: auto;
   -ms-overflow-style: none;

@@ -3,10 +3,13 @@
     <p class="title">
       {{ title }}：
     </p>
-    <template v-if="content" class="content">
+    <div v-if="content" class="content">
       {{ content }}
-    </template>
-    <slot v-else name="content"/>
+    </div>
+    <div v-else class="content">
+      <slot name="content"/>
+    </div>
+
   </div>
 </template>
 <script lang="ts">
@@ -23,20 +26,24 @@ export default defineComponent({
 <style lang="scss" scoped>
 .description-line {
   font-size: 14px;
-  height: 32px;
-
+  min-height: 32px;
+  display: flex;
   margin-bottom: 7px;
   color: rgba(0, 0, 0, 0.65);
 
   .title {
-    line-height: 32px;
+    line-height: 22px;
+    margin-bottom: 0;
     margin-right: 8px;
     display: inline-block;
     font-weight: 600;
+    min-width: 100px;
+    text-align: right;
   }
 
   .content {
     line-height: 22px;
+    word-break: break-all;
   }
 }
 </style>
