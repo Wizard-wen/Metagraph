@@ -4,8 +4,9 @@
       class="file-panel-item"
       v-for="(item, index) in knowledgePictures"
       :key="index"
-      @click.stop="handleViewFile(item.url)">
+    >
       <div
+        @dblclick="handleViewFile(item.url)"
         :class="['file-content',
                   currentId === item.fileId ? 'shadow-style' : '']">
         <div class="file-inner">
@@ -15,12 +16,24 @@
       </div>
     </div>
   </div>
+  <ant-image
+    :width="200"
+    :style="{ display: 'none' }"
+    :preview="{
+        visible: isModalVisible,
+        onVisibleChange: setVisible,
+      }"
+    :src="previewUrl"
+  />
 </template>
 
 <script lang="ts" setup>
 import { defineProps, PropType, ref } from 'vue';
+import { Image as AntImage } from 'ant-design-vue';
 
 const currentId = ref();
+const previewUrl = ref('');
+const isModalVisible = ref(false);
 defineProps({
   knowledgePictures: {
     type: Array as PropType<{
@@ -34,8 +47,13 @@ defineProps({
 });
 
 function handleViewFile(url: string) {
-
+  isModalVisible.value = true;
+  previewUrl.value = url;
 }
+
+const setVisible = (value: boolean): void => {
+  isModalVisible.value = value;
+};
 </script>
 
 <style scoped lang="scss">
@@ -66,6 +84,11 @@ function handleViewFile(url: string) {
     width: 180px;
     margin: 6px;
     box-sizing: border-box;
+    -moz-user-select: none; /*火狐*/
+    -webkit-user-select: none; /*webkit浏览器*/
+    -ms-user-select: none; /*IE10*/
+    -khtml-user-select: none; /*早期浏览器*/
+    user-select: none;
 
     .shadow-style {
       cursor: pointer;

@@ -33,16 +33,21 @@
               <ant-date-picker
                 v-model:value="customFieldsModelRef[item.key]"
                 class="form-item-gap"
-                style="width: 80%;"
+                style="width: 90%;"
                 v-if="item.type === 'Date'"/>
               <ant-input
+                @blur="handleValidateItem(item.key)"
                 class="custom-input-style form-item-gap"
                 v-if="item.type === 'Input'"
+                autocomplete="off"
+                :style="{width: item.grid === 1 ? '90%' : 'calc(100% - 60px)'}"
                 v-model:value="customFieldsModelRef[item.key]"
                 :placeholder="`请输入${item.label}`"
-                style="width: 80%;"/>
+              />
               <ant-text-area
                 :rows="3"
+                autocomplete="off"
+                @blur="handleValidateItem(item.key)"
                 class="custom-input-style form-item-gap"
                 v-if="item.type === 'Textarea'"
                 v-model:value="customFieldsModelRef[item.key]"
@@ -62,9 +67,7 @@
     :isModalVisible="isFieldModalVisible"></add-field-modal>
 </template>
 <script lang="ts" setup>
-import {
-  PlusOutlined
-} from '@ant-design/icons-vue';
+import { PlusOutlined } from '@ant-design/icons-vue';
 import {
   Button as AntButton,
   Col as AntCol,
@@ -72,13 +75,12 @@ import {
   Form,
   Input as AntInput,
   message,
-  Modal,
   Row as AntRow
 } from 'ant-design-vue';
-import type { KnowledgeCustomFieldType } from '@metagraph/constant';
-import { createVNode, inject, ref } from 'vue';
+import { inject, ref } from 'vue';
 import { KnowledgeApiService } from '@/api-service';
-import AddFieldModal from '@/views/knowledge-editor/knowledge-editor-middle/knowledge-custom-fields/add-field-modal.vue';
+import AddFieldModal
+  from '@/views/knowledge-editor/knowledge-editor-middle/knowledge-custom-fields/add-field-modal.vue';
 import EmptyView from '@/components/empty-view/empty-view.vue';
 import {
   customFieldsModelRef,
@@ -96,7 +98,6 @@ const knowledgeEdit = new KnowledgeEdit();
 const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey);
 const formRef = ref();
 
-
 const isFieldModalVisible = ref(false);
 
 function handleOpenAddFieldModal() {
@@ -108,8 +109,21 @@ async function handleAddFieldModalClose() {
   await knowledgeEdit.getKnowledge(draftKnowledgeEntityId?.value || '');
 }
 
+
+function handleValidateItem(key: string) {
+  const {
+    validate, validateInfos
+  } = Form.useForm(customFieldsModelRef.value, customFieldsRulesRef.value);
+  customFieldsValidateInfo.value = validateInfos;
+  validate(key, { trigger: ['change', 'blur'] }).catch(() => {
+  });
+}
+
 async function handleSaveCustomField() {
-  const { validate } = Form.useForm(customFieldsModelRef.value, customFieldsRulesRef.value);
+  const {
+    validate, validateInfos
+  } = Form.useForm(customFieldsModelRef.value, customFieldsRulesRef.value);
+  customFieldsValidateInfo.value = validateInfos;
   validate()
     .then(async (value: any) => {
       console.log(value, knowledgeCustomFields.value, customFieldsModelRef.value);
@@ -118,7 +132,7 @@ async function handleSaveCustomField() {
           const customFieldItem = knowledgeCustomFields.value.find(
             (customFieldItem) => customFieldItem.key === item
           );
-          if (customFieldItem) {
+          if(customFieldItem) {
             customFieldItem.value = customFieldsModelRef.value[item];
           }
         });
@@ -126,7 +140,7 @@ async function handleSaveCustomField() {
         knowledgeEntityId: draftKnowledgeEntityId?.value || '',
         customFields: knowledgeCustomFields.value
       });
-      if (result.code === 0) {
+      if(result.code === 0) {
         message.success('保存成功！');
       }
     })
@@ -142,6 +156,7 @@ async function handleSaveCustomField() {
 .custom-field-form {
   @include custom-input-style-mixin;
 }
+
 .custom-field-item {
   &::v-deep(.ant-form-item-label) {
     width: 100px;
