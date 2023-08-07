@@ -1,7 +1,7 @@
 <template>
   <ant-modal
     :width="800"
-    :title="`${isEdit ? '编辑' : '创建'}自定义字段`"
+    :title="`${isEdit ? '编辑' : '创建'}自定义信息项`"
     okText="确定"
     cancelText="取消"
     :visible="isModalVisible"

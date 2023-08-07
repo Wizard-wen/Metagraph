@@ -5,7 +5,7 @@
       <div class="right">
         <ant-button @click="handleOpenAddFieldModal">
           <PlusOutlined/>
-          添加字段
+          添加
         </ant-button>
         <ant-button type="primary" @click="handleSaveCustomField">
           保存
