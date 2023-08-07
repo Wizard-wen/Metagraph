@@ -16,6 +16,7 @@
       <ant-form
         v-if="knowledgeCustomFields.length"
         :model="customFieldsModelRef"
+        class="custom-field-form"
         ref="formRef">
         <ant-row>
           <ant-col
@@ -35,22 +36,18 @@
                 style="width: 80%;"
                 v-if="item.type === 'Date'"/>
               <ant-input
+                class="custom-input-style form-item-gap"
                 v-if="item.type === 'Input'"
                 v-model:value="customFieldsModelRef[item.key]"
                 :placeholder="`请输入${item.label}`"
-                class="form-item-gap"
                 style="width: 80%;"/>
               <ant-text-area
+                :rows="3"
+                class="custom-input-style form-item-gap"
                 v-if="item.type === 'Textarea'"
                 v-model:value="customFieldsModelRef[item.key]"
                 :placeholder="`请输入${item.label}`"
-                class="form-item-gap"
                 style="max-width: calc(100% - 60px);"></ant-text-area>
-<!--              <DeleteOutlined-->
-<!--                class="dynamic-operate-button dynamic-operate-button-gap"-->
-<!--                @click="removeField(item)"/>-->
-<!--              <EditOutlined-->
-<!--                class="dynamic-operate-button"/>-->
             </ant-form-item>
           </ant-col>
         </ant-row>
@@ -66,9 +63,6 @@
 </template>
 <script lang="ts" setup>
 import {
-  DeleteOutlined,
-  EditOutlined,
-  ExclamationCircleOutlined,
   PlusOutlined
 } from '@ant-design/icons-vue';
 import {
@@ -145,6 +139,9 @@ async function handleSaveCustomField() {
 @import '../../../style/common.scss';
 @import "../style/knowledge.edit.scss";
 
+.custom-field-form {
+  @include custom-input-style-mixin;
+}
 .custom-field-item {
   &::v-deep(.ant-form-item-label) {
     width: 100px;

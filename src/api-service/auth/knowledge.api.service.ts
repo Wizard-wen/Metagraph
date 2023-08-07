@@ -203,6 +203,7 @@ export class KnowledgeApiService {
     knowledgeEntityId: string;
     customField: {
       label: string;
+      key?: string;
     };
   }): Promise<PublicApiResponseType<{ isExists: boolean }>> {
     return RequestNewUntil.post<KnowledgeAuthedApi.CheckCustomField>({

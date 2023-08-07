@@ -1,5 +1,5 @@
 <template>
-  <ant-spin :spinning="isLoading">
+  <div class="knowledge-preview-page">
     <knowledge-preview-header
       v-if="draftKnowledgePreviewModel"
       :type="'draft'"
@@ -14,70 +14,82 @@
       <knowledge-preview-component
         :provider="'page'"
         :preview-model="draftKnowledgePreviewModel"></knowledge-preview-component>
+      <knowledge-preview-sidebar></knowledge-preview-sidebar>
     </div>
     <div v-if="publishedKnowledgePreviewModel" class="preview-content">
       <knowledge-preview-component
         :provider="'page'"
         :preview-model="publishedKnowledgePreviewModel"></knowledge-preview-component>
     </div>
-  </ant-spin>
+  </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {
-  KnowledgePreview,
   draftKnowledgePreviewModel,
+  KnowledgePreview,
   publishedKnowledgePreviewModel
 } from '@/views/knowledge-preview/knowledge.preview';
 import KnowledgePreviewComponent from '@/views/knowledge-preview/knowledge-preview-component.vue';
 import KnowledgePreviewHeader from '@/views/knowledge-preview/knowledge-preview-header.vue';
-import {
-  defineComponent, onMounted, ref
-} from 'vue';
+import { onMounted, ref } from 'vue';
 import { LocationQueryValue, useRoute } from 'vue-router';
-import { Spin } from 'ant-design-vue';
 
-export default defineComponent({
-  name: 'knowledge-preview-page',
-  components: {
-    KnowledgePreviewComponent,
-    KnowledgePreviewHeader,
-    AntSpin: Spin
-  },
-  setup() {
-    const route = useRoute();
-    const isLoading = ref(false);
-    const draftKnowledgeEntityId = ref(route.query.draftKnowledgeEntityId as LocationQueryValue);
-    const publishedKnowledgeEntityId = ref(route.query.publishedKnowledgeEntityId as LocationQueryValue);
-    const knowledgePreview = new KnowledgePreview();
-    onMounted(async () => {
-      isLoading.value = true;
-      if (draftKnowledgeEntityId.value) {
-        await knowledgePreview.initDraftKnowledge(draftKnowledgeEntityId.value);
-      }
-      if (publishedKnowledgeEntityId.value) {
-        await knowledgePreview.initPublishedKnowledge(publishedKnowledgeEntityId.value);
-      }
-      isLoading.value = false;
-    });
-    return {
-      draftKnowledgePreviewModel,
-      publishedKnowledgePreviewModel,
-      isLoading
-    };
+import KnowledgePreviewSidebar from '@/views/knowledge-preview/knowledge-preview-sidebar.vue';
+
+const route = useRoute();
+const isLoading = ref(false);
+const draftKnowledgeEntityId = ref(route.query.draftKnowledgeEntityId as LocationQueryValue);
+const publishedKnowledgeEntityId = ref(route.query.publishedKnowledgeEntityId as LocationQueryValue);
+const knowledgePreview = new KnowledgePreview();
+onMounted(async () => {
+  isLoading.value = true;
+  if(draftKnowledgeEntityId.value) {
+    await knowledgePreview.initDraftKnowledge(draftKnowledgeEntityId.value);
   }
+  if(publishedKnowledgeEntityId.value) {
+    await knowledgePreview.initPublishedKnowledge(publishedKnowledgeEntityId.value);
+  }
+  isLoading.value = false;
 });
+// export default defineComponent({
+//   name: 'knowledge-preview-page',
+//   components: {
+//     KnowledgePreviewSidebar,
+//     KnowledgePreviewComponent,
+//     KnowledgePreviewHeader,
+//     AntSpin: Spin
+//   },
+//   setup() {
+//
+//     return {
+//       draftKnowledgePreviewModel,
+//       publishedKnowledgePreviewModel,
+//       isLoading
+//     };
+//   }
+// });
 </script>
 
 <style scoped lang="scss">
+@import "../style/common.scss";
+
+.knowledge-preview-page {
+  height: 100vh;
+  width: 100vw;
+  background: #f2f3f5;
+  overflow-y: auto;
+  @include custom-scroll-style;
+}
 
 .preview-content {
   text-align: left;
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #e5e5e5;
-  background: #fafbfc;
+  width: 1120px;
+  margin: 25px auto;
+  display: flex;
+  //padding: 20px;
+  //border: 1px solid #e5e5e5;
+  //background: #fafbfc;
 
 }
 

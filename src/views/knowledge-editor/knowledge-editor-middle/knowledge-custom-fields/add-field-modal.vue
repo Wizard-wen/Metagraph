@@ -119,7 +119,8 @@ async function validateCustomField(rule: RuleObject, value: string): Promise<unk
     KnowledgeApiService.checkField({
       knowledgeEntityId: draftKnowledgeEntityId?.value,
       customField: {
-        label: value
+        label: value,
+        key: props.fieldModel?.key
       }
     })
       .then((result) => {

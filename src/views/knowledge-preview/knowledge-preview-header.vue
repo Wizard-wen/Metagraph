@@ -1,22 +1,37 @@
 <template>
   <div class="knowledge-header">
     <div class="left">
+      <!--      <m-button :is-icon="true" :has-border="false" @click="goBack">-->
+      <!--        <template #icon>-->
+      <!--          <LeftOutlined/>-->
+      <!--        </template>-->
+      <!--      </m-button>-->
+
+      <div class="logo-container">
+        <img
+          @click="goHomePage"
+          class="logo"
+          src="@/assets/logo-header.png"
+          height="32"
+          alt="logo"/>
+      </div>
       <LinkOutlined/>
       <div class="title">{{ knowledgeModel.content.name }}</div>
-      <ant-tag class="status-tag">{{ knowledgeAuthStatus }}</ant-tag>
-      <ant-tag
+      <m-tag :title="knowledgeAuthStatus"></m-tag>
+      <m-tag
         v-if="type === 'published'"
-        class="status-tag">{{ previewKnowledgePublishStatus }}
-      </ant-tag>
-      <ant-tag
+        :title="previewKnowledgePublishStatus">
+      </m-tag>
+      <m-tag
         v-if="type === 'draft'"
-        class="status-tag">版本xx
-      </ant-tag>
+        :title="'版本xx'">
+      </m-tag>
     </div>
     <div class="right" v-if="type === 'published'">
       <social-action-button
         :title="'引用'" :total="mentionList.length"></social-action-button>
       <mentioned-control-button
+        v-if="publishedKnowledgeMentioned"
         :mentioned-knowledge="publishedKnowledgeMentioned"></mentioned-control-button>
       <star-control-button
         @update="handleStarStatusUpdate"
@@ -43,98 +58,82 @@
   </div>
   <knowledge-drawer-content
     :knowledgeEntityId="knowledgeDrawerState.entityId"
-    v-if="knowledgeDrawerState.isShow"
+    v-if="knowledgeDrawerState && knowledgeDrawerState.isShow"
     :isVisible="knowledgeDrawerState.isShow"
     :type="knowledgeDrawerState.type"
     @close="handleCloseDrawer"></knowledge-drawer-content>
 </template>
-<script lang="ts">
-import { Tag } from 'ant-design-vue';
+<script lang="ts" setup>
 import type { EntityCompletelyListItemType, KnowledgeResponseType } from '@metagraph/constant';
-import {
-  computed, defineComponent, PropType, toRef
-} from 'vue';
+import { computed, defineProps, PropType } from 'vue';
 import { LinkOutlined } from '@ant-design/icons-vue';
-import MentionedControlButton from '@/views/knowledge-editor/knowledge-editor-header/mentioned-control-button.vue';
+import MentionedControlButton
+  from '@/views/knowledge-editor/knowledge-editor-header/mentioned-control-button.vue';
 import SocialActionButton from '@/components/social-action-button/social-action-button.vue';
 import {
-  KnowledgeDrawerContent,
   CommentControlButton,
-  StarControlButton,
-  knowledgeDrawerState
+  KnowledgeDrawerContent,
+  knowledgeDrawerState,
+  StarControlButton
 } from '@/business';
 
 import {
+  KnowledgePreview,
   previewKnowledgePublishStatus,
-  publishedKnowledgeMentioned,
-  KnowledgePreview
+  publishedKnowledgeMentioned
 } from './knowledge.preview';
+import { MTag } from '@/metagraph-ui';
+import { RouterUtil } from '@/utils';
 
-export default defineComponent({
-  name: 'knowledge-preview-header',
-  props: {
-    knowledgeModel: {
-      type: Object as PropType<EntityCompletelyListItemType>,
-      required: true
-    },
-    mentionList: {
-      type: Array as PropType<EntityCompletelyListItemType[]>,
-      required: true
-    },
-    type: {
-      type: String as PropType<'draft' | 'published'>,
-      required: true
-    }
+const props = defineProps({
+  knowledgeModel: {
+    type: Object as PropType<EntityCompletelyListItemType>,
+    required: true
   },
-  components: {
-    CommentControlButton,
-    StarControlButton,
-    MentionedControlButton,
-    KnowledgeDrawerContent,
-    SocialActionButton,
-    AntTag: Tag,
-    LinkOutlined
+  mentionList: {
+    type: Array as PropType<EntityCompletelyListItemType[]>,
+    required: true
   },
-  setup(props) {
-    const knowledgeModel = toRef(props, 'knowledgeModel');
-    const type = toRef(props, 'type');
-    const knowledgePreview = new KnowledgePreview();
-
-    const knowledgeAuthStatus = computed(
-      () => ((knowledgeModel.value.content as KnowledgeResponseType)?.isCertificated ? '已认证' : '未认证')
-    );
-
-    async function handleStarStatusUpdate() {
-      if (type.value === 'published') {
-        await knowledgePreview.getPublishedKnowledgePreview(knowledgeModel.value.entity.id);
-      }
-    }
-
-    function handleCloseDrawer() {
-      knowledgePreview.handleCloseKnowledgeDrawer();
-    }
-
-    return {
-      handleStarStatusUpdate,
-      previewKnowledgePublishStatus,
-      knowledgeAuthStatus,
-      publishedKnowledgeMentioned,
-      knowledgeDrawerState,
-      handleCloseDrawer
-    };
+  type: {
+    type: String as PropType<'draft' | 'published'>,
+    required: true
   }
 });
+
+function goBack() {
+
+}
+
+async function goHomePage() {
+  await RouterUtil.jumpTo('/');
+}
+
+const knowledgePreview = new KnowledgePreview();
+
+const knowledgeAuthStatus = computed(
+  () => ((props.knowledgeModel.content as KnowledgeResponseType)?.isCertificated ? '已认证' : '未认证')
+);
+
+async function handleStarStatusUpdate() {
+  if(props.type === 'published') {
+    await knowledgePreview.getPublishedKnowledgePreview(props.knowledgeModel.entity.id);
+  }
+}
+
+function handleCloseDrawer() {
+  knowledgePreview.handleCloseKnowledgeDrawer();
+}
 
 </script>
 <style scoped lang="scss">
 @import "../../style/common.scss";
 
 .knowledge-header {
-  background: #fafbfc;
   height: 56px;
   border-bottom: 1px solid $borderColor;
   display: flex;
   justify-content: space-between;
+  background: #FFFFFF;
 
   .left {
     display: flex;
@@ -143,6 +142,13 @@ export default defineComponent({
     padding: 0 32px;
     height: 56px;
     gap: 15px;
+
+    .logo-container {
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+      cursor: pointer;
+    }
 
     .back-icon {
       cursor: pointer;
@@ -153,13 +159,6 @@ export default defineComponent({
       height: 32px;
       line-height: 32px;
       font-size: 18px;
-    }
-
-    .status-tag {
-      height: 24px;
-      line-height: 24px;
-      border-radius: 4px;
-      margin-right: 0;
     }
   }
 

@@ -235,7 +235,6 @@ async function compareWithLatestVersion() {
 @import "../../style/common.scss";
 
 .knowledge-header {
-  //background: #fafbfc;
   height: 56px;
   border-bottom: 1px solid $borderColor;
   display: flex;
