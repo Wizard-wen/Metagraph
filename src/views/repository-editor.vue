@@ -93,7 +93,7 @@ provide(isEditableKey, isEditable);
 const knowledgePreview = new KnowledgePreview();
 // 视图状态
 const viewStatus = ref<'section' | 'graph'>('section');
-const isSaving = ref();
+const isSaving = ref(false);
 const isCreateSectionModalShown = ref(false);
 const sectionArticleTiptapTextEditor = new SectionArticleTiptapTextEditor(
   repositoryEntityId.value,
@@ -139,6 +139,7 @@ async function handleSelectSection(sectionId: string) {
   // 更新富文本
   sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
   isRepositoryEditorLoading.value = false;
+  editor.value?.commands.focus();
 }
 
 async function handleOpenCreateSectionModal(params: {
@@ -192,9 +193,11 @@ async function handleOpenCreateSectionModal(params: {
             });
             // 更新富文本
             sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
+            editor.value?.commands.focus();
           } else {
             sectionArticleTiptapTextEditor.updateCurrentSectionId(undefined);
             sectionArticleTiptapTextEditor?.setContent();
+            editor.value?.commands.focus();
           }
         }
       },
@@ -322,6 +325,7 @@ onMounted(async () => {
     sectionArticleTiptapTextEditor?.setContent(currentSectionNode.content);
   }
   isRepositoryEditorLoading.value = false;
+  editor.value?.commands.focus();
   document.addEventListener('contextmenu', preventContextmenu);
 });
 onUnmounted(() => {
@@ -358,15 +362,15 @@ const saveSectionArticle = async (params: {
   content: JSONContent,
   contentHtml: string
 }) => {
-  isSaving.value = 'saving...';
+  isSaving.value = true;
   await sectionTreeService.saveSectionArticle({
     content: params.content,
     contentHtml: params.contentHtml,
     sectionId: currentSectionNode.sectionId
   });
-  isSaving.value = 'saved';
+  isSaving.value = true;
   setTimeout(() => {
-    isSaving.value = undefined;
+    isSaving.value = false;
   }, 500);
 };
 const handleMention = (params: {

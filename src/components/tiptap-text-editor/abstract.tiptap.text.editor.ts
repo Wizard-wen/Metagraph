@@ -25,6 +25,11 @@ import { FontSize } from '@/components/tiptap-text-editor/controls/font.size.ext
 import { Transaction } from '@tiptap/pm/state';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
+import {
+  DEFAULT_IMAGE_DISPLAY,
+  DEFAULT_IMAGE_WIDTH,
+  ImageDisplay
+} from '@/components/tiptap-text-editor/utils/image';
 import MentionList from './components/mention-list.vue';
 import { CustomMention } from './components/tiptap.custom.mention';
 import CodeBlockContainer from './components/code-block-container.vue';
@@ -32,11 +37,6 @@ import TableOfContent from './components/table.of.content';
 import Indent from './extensions/indent';
 import LineHeight from './extensions/line-height';
 import ImageView from './components/ImageView.vue';
-import {
-  DEFAULT_IMAGE_DISPLAY,
-  DEFAULT_IMAGE_WIDTH,
-  ImageDisplay
-} from '@/components/tiptap-text-editor/utils/image';
 
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
@@ -190,6 +190,7 @@ export abstract class AbstractTiptapTextEditor {
       }, 1000),
       onTransaction(params: { editor: CoreEditor, transaction: Transaction }) {
         // todo
+        console.log(params)
       },
       editorProps: {
         handleClickOn(
@@ -211,7 +212,7 @@ export abstract class AbstractTiptapTextEditor {
 
         StarterKit,
         TextAlign.configure({
-          types: ['heading', 'paragraph'],
+          types: [ 'paragraph'],
         }),
         TextStyle,
         Color,
@@ -298,7 +299,8 @@ export abstract class AbstractTiptapTextEditor {
         }),
         Placeholder.configure({
           placeholder: ({ node }) => {
-            if(node.type.name === 'heading') {
+            console.log(node);
+            if (node.type.name === 'heading') {
               return '请输入标题...';
             }
             return '请输入内容...';

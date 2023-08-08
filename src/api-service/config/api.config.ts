@@ -47,10 +47,10 @@ export enum ApiPathEnum {
   /**
    * file
    */
-  GetQiniuFileCredential = '/public/file/getCredential',
-  RemoveFile = '/public/file/remove',
-  GetFileList = '/public/file/getList',
-  GetFileByKey = '/public/file/get/key',
+  // GetQiniuFileCredential = '/public/file/getCredential',
+  // RemoveFile = '/public/file/remove',
+  // GetFileList = '/public/file/getList',
+  // GetFileByKey = '/public/file/get/key',
   /**
    * comment
    */

@@ -193,6 +193,18 @@ $textBackgroundColor: #FFF;
         background: #FFFFFF !important;
         -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
       }
+
+      &:-ms-input-placeholder {
+        font-size: 14px;
+      }
+
+      &::-webkit-input-placeholder {
+        font-size: 14px;
+      }
+
+      &::-moz-placeholder {
+        font-size: 14px;
+      }
     }
   }
 }

@@ -5,14 +5,14 @@
         <UploadIcon class="icon-svg"/>
       </div>
     </operation-tooltip>
-    <input
-      @change="handleFileChange"
-      ref="inputElement"
-      type="file"
-      name="upload"
-      id="upload"
-      style="display: none;"/>
   </div>
+  <input
+    @change="handleFileChange"
+    ref="inputElement"
+    type="file"
+    name="upload-file"
+    id="upload-file"
+    style="display: none;"/>
 </template>
 <script setup lang="ts">
 import { defineEmits, ref } from 'vue';

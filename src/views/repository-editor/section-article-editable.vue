@@ -78,7 +78,7 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['clickMention', 'mention', 'save', 'createSection', 'refreshSection']);
-const editor = toRef(props, 'editor');
+// const editor = toRef(props, 'editor');
 const limit = ref(1000);
 const articleFontSize = ref('14');
 const changeArticleFontSize = (event: { value: string }) => {
@@ -86,14 +86,14 @@ const changeArticleFontSize = (event: { value: string }) => {
 };
 const editorContainer = ref();
 
-const characterCount = computed(() => editor.value.storage.characterCount.characters());
+const characterCount = computed(() => props.editor.storage.characterCount.characters());
 
 // 存储单元文章
 async function saveSectionArticleByUser() {
-  if (editor?.value) {
+  if (props.editor) {
     emit('save', {
-      content: editor.value.getJSON(),
-      contentHtml: editor.value.getHTML()
+      content: props.editor.getJSON(),
+      contentHtml: props.editor.getHTML()
     });
   }
 }

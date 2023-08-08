@@ -25,15 +25,15 @@
       <toggle-blockquote-control :editor="editor"></toggle-blockquote-control>
       <toggle-code-control :editor="editor"></toggle-code-control>
       <find-control :editor="editor"></find-control>
-      <parse-text-control></parse-text-control>
+      <parse-text-control @open="handleOpenParseModal"></parse-text-control>
       <upload-image-control :editor="editor"></upload-image-control>
       <toggle-task-control style="margin-right: 10px;" :editor="editor"></toggle-task-control>
     </div>
   </div>
   <upload-and-parse-text-modal
-    v-if="isParseWordModalShow"
+    v-if="isParseWordModalShow && willParseDomFile"
     :is-upload-modal-shown="isParseWordModalShow"
-    @close="handleCloseParseWordModal"></upload-and-parse-text-modal>
+    @close="handleCloseParseWordModal" :dom-file="willParseDomFile"></upload-and-parse-text-modal>
 </template>
 
 <script setup lang="ts">
@@ -74,6 +74,7 @@ import { UploadAndParseTextService } from '../public-component/upload.and.parse.
 
 const isParseWordModalShow = ref(false);
 const uploadAndParseTextService = new UploadAndParseTextService();
+const willParseDomFile = ref<File>();
 defineProps({
   editor: {
     type: Object as PropType<Editor>,
@@ -82,6 +83,12 @@ defineProps({
 });
 const emit = defineEmits(['save', 'fontSizeChange', 'refreshSection']);
 
+function handleOpenParseModal(params: {
+  file: File
+}) {
+  willParseDomFile.value = params.file;
+  isParseWordModalShow.value = true;
+}
 // 保存文章
 function saveSectionArticle() {
   emit('save');

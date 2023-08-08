@@ -26,7 +26,7 @@
 
       <div class="list-container">
         <div class="list-box">
-          <ant-skeleton v-if="isLoading"></ant-skeleton>
+          <ant-skeleton v-for="item in 5" :key="item" v-if="isLoading"></ant-skeleton>
           <template v-else>
             <template v-if="searchData.target.length">
               <knowledge-view-item

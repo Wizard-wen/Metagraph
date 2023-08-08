@@ -76,7 +76,7 @@
             </template>
           </m-button>
           <div class="saving-status">
-            <LoadingOutlined v-if="savingStatus === 'saving...'" class="saving-icon-style"/>
+            <LoadingOutlined v-if="savingStatus" class="saving-icon-style"/>
             <CloudSyncOutlined v-else class="saved-icon-style"/>
           </div>
         </template>
@@ -160,7 +160,7 @@ defineProps({
     required: true
   },
   savingStatus: {
-    type: String as PropType<'saving' | 'saved'>,
+    type: Boolean,
   }
 });
 const emit = defineEmits(['viewChange']);

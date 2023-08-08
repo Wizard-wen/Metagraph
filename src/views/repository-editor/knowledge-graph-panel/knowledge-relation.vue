@@ -4,7 +4,7 @@
       :is-editable="true"
       :current-key="currentBar"
       @selectedChange="handleBarChange"
-      :element-tabs="menuList"></metagraph-tab-bar>
+      :element-tabs="viewMenuList"></metagraph-tab-bar>
     <graph-panel-config v-if="currentBar === 'panel'"></graph-panel-config>
     <knowledge-panel-config v-if="currentBar === 'knowledge'"></knowledge-panel-config>
   </div>
@@ -43,8 +43,8 @@ const menuList = ref<{ value: string; label: string; isAuth: boolean }[]>([
   },
 ]);
 
-computed(() => {
-  if (selectedGraphNodeEntityId.value) {
+const viewMenuList = computed(() => {
+  if(selectedGraphNodeEntityId.value) {
     return [
       {
         label: '面板',
@@ -56,6 +56,14 @@ computed(() => {
         value: 'knowledge',
         isAuth: false
       },
+    ];
+  } else {
+    return [
+      {
+        label: '面板',
+        value: 'panel',
+        isAuth: false
+      }
     ]
   }
 });

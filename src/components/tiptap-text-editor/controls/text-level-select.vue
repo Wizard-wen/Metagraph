@@ -2,7 +2,7 @@
   <a-dropdown :trigger="['click']" :overlayClassName="'dropdown-overlay'" v-model:visible="visible">
     <a-tooltip :title="'正文与标题'" :getPopupContainer="getPopupContainer"
                :overlayClassName="'custom-tool-tip'" placement="bottom">
-      <div class="selector-box" :class="{'disabled-style': currentTextLevel === '1'}">
+      <div class="selector-box" >
         {{ currentTextLevelLabel }}
         <CaretDownOutlined class="down-arrow-style"/>
       </div>
@@ -52,15 +52,15 @@ const textLevelList = reactive([
   // },
   {
     label: '标题1',
-    value: '2'
+    value: '1'
   },
   {
     label: '标题2',
-    value: '3'
+    value: '2'
   },
   {
     label: '标题3',
-    value: '4'
+    value: '3'
   }
 ]);
 
@@ -77,9 +77,9 @@ const currentTextLevel = computed(() => {
   if (props.editor.isActive('heading', { level: 3 })) {
     return '3';
   }
-  if (props.editor.isActive('heading', { level: 4 })) {
-    return '4';
-  }
+  // if (props.editor.isActive('heading', { level: 4 })) {
+  //   return '4';
+  // }
   return '0';
 });
 const currentTextLevelLabel = computed(
@@ -90,7 +90,7 @@ const currentTextLevelLabel = computed(
 );
 type LevelType = 1 | 2 | 3 | 4 | 5 | 6;
 const handleFontSizeChange = (value: string) => {
-  if (value === '1') return;
+  // if (value === '1') return;
   visible.value = false;
   if (value !== '0') {
     props.editor.chain()
@@ -107,7 +107,7 @@ function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
 }
 
-function toggleHeading(level: 2 | 3 | 4) {
+function toggleHeading(level: 1 | 2 | 3) {
   props.editor.chain()
     .focus()
     .toggleHeading({ level })

@@ -88,7 +88,7 @@ const isParagraph = computed(() => props.editor.isActive('paragraph'));
 const handleFontSizeChange = (value: string) => {
   articleFontSize.value = value;
 
-  props.editor.chain().focus().setMark('textStyle', { fontSize: '20px' }).run();
+  props.editor.chain().focus().setMark('textStyle', { fontSize: value + 'px' }).run();
   console.log('value', value);
   visible.value = false;
   emit('fontSizeChange', { value });
