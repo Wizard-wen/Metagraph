@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { EntityCompletelyListItemType } from '@metagraph/constant';
 import {
-  defineComponent, watch, ref, toRefs, PropType, defineProps,defineEmits
+  watch, ref, PropType, defineProps, defineExpose
 } from 'vue';
 
 const props = defineProps({
@@ -30,10 +30,6 @@ const props = defineProps({
   },
 });
 
-// const { items, command } = toRefs<{
-//   items: EntityCompletelyListItemType[],
-//   command: any
-// }>(props);
 const selectedIndex = ref(0);
 watch(props.items, () => {
   selectedIndex.value = 0;
@@ -74,24 +70,15 @@ function onKeyDown({ event }: any) {
   return false;
 }
 
-// export default defineComponent({
-//   name: 'mention-list',
-//   props: ,
-//   setup(props) {
-//
-//
-//     return {
-//       onKeyDown,
-//       downHandler,
-//       selectItem,
-//       selectedIndex
-//     };
-//   }
-// });
+defineExpose({
+  onKeyDown
+});
 </script>
 
 <style lang="scss" scoped>
+@import "../../../style/common.scss";
 .items {
+  min-width: 120px;
   position: relative;
   border-radius: 0.25rem;
   background: white;
@@ -112,8 +99,8 @@ function onKeyDown({ event }: any) {
 
   &.is-selected,
   &:hover {
-    color: #A975FF;
-    background: rgba(#A975FF, 0.1);
+    color: $themeColor;
+    background: rgba($themeColor, 0.1);
   }
 }
 </style>

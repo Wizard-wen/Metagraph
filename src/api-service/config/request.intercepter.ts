@@ -16,7 +16,7 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
   config.baseURL = process.env.VUE_APP_API_BASE_URL;
   config.headers = {
     ...config.headers,
-    'edu-user-token': store.state.user.token || ''
+    'metagraph-token': store.state.user.token || ''
   };
   return config;
 });

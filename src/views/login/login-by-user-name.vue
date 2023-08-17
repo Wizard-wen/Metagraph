@@ -10,7 +10,7 @@
         class="custom-input-style"
         autocomplete="off"
         v-model:value="formState.name"
-        placeholder="请输入用户名">
+        placeholder="请输入邮箱">
       </ant-input>
     </ant-form-item>
     <ant-form-item name="password">
@@ -54,8 +54,20 @@ const formState = ref<{
 
 const rules = {
   name: {
+    trigger: ['blur', 'change'],
     required: true,
-    message: '请输入用户名！',
+    validator(rule: any, value: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        if (!value) {
+          reject('请输入邮箱');
+        }
+        const regExp = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/i;
+        if (!regExp.test(value)) {
+          reject('邮箱格式不正确');
+        }
+        resolve();
+      });
+    }
   },
   password: {
     required: true,
@@ -78,7 +90,7 @@ function login() {
       }
     })
     .catch((error: Error) => {
-      message.error(error.message);
+      // todo
     });
 }
 

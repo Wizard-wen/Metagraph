@@ -18,6 +18,7 @@
         class="custom-input-style"
         v-model:value="emailFormState.verifyCode"
         placeholder="请输入验证码"
+        maxlength="6"
         autocomplete="off">
         <template #suffix>
           <div class="send-code">
@@ -78,8 +79,20 @@ const emailRules = {
     }
   },
   verifyCode: {
+    trigger: ['blur', 'change'],
     required: true,
-    message: '请输入验证码！',
+    validator(rule: any, value: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        if (!value) {
+          reject('请输入验证码');
+        }
+        const regExp = /^\d{6}$/;
+        if (!regExp.test(value)) {
+          reject('验证码格式不正确');
+        }
+        resolve();
+      });
+    }
   },
 };
 

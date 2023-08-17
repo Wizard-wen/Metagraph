@@ -31,6 +31,7 @@ import LineHeightControl from '@/components/tiptap-text-editor/controls/line-hei
 import IndentControl from '@/components/tiptap-text-editor/controls/indent-control.vue';
 import OutdentControl from '@/components/tiptap-text-editor/controls/outdent-control.vue';
 import ClearFormatControl from '@/components/tiptap-text-editor/controls/clear-format-control.vue';
+import ClearMentionControl from '@/components/tiptap-text-editor/controls/clear-mention.vue';
 
 
 export {
@@ -56,5 +57,6 @@ export {
   LineHeightControl,
   IndentControl,
   OutdentControl,
-  ClearFormatControl
+  ClearFormatControl,
+  ClearMentionControl
 };

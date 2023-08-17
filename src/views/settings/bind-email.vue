@@ -63,7 +63,7 @@
     <!--        <end-time v-else @timeEnd="isEnding = false;" :endTime="endTime"></end-time>-->
     <!--      </ant-button>-->
     <!--    </div>-->
-    <ant-form-item :wrapper-col="{ span: 4 }">
+    <ant-form-item :wrapper-col="{ span: 4 }" style="margin-top: 50px;">
       <ant-button type="primary" @click="unbindEmail">解绑邮箱</ant-button>
     </ant-form-item>
   </ant-form>

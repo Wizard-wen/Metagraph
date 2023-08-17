@@ -38,6 +38,7 @@ import Indent from './extensions/indent';
 import LineHeight from './extensions/line-height';
 import ImageView from './components/ImageView.vue';
 
+
 export abstract class AbstractTiptapTextEditor {
   editor!: Ref<Editor | undefined>;
 
@@ -91,10 +92,10 @@ export abstract class AbstractTiptapTextEditor {
    * @param content
    */
   setContent(content?: JSONContent): void {
-    if(!this.editor?.value) {
+    if (!this.editor?.value) {
       return;
     }
-    if(content) {
+    if (content) {
       this.editor.value?.commands.setContent(content);
     } else {
       this.editor.value?.commands.setContent(null);
@@ -110,7 +111,7 @@ export abstract class AbstractTiptapTextEditor {
     id: string,
     name: string
   }): undefined | JSONContent {
-    if(!this.editor?.value) {
+    if (!this.editor?.value) {
       return undefined;
     }
     this.editor?.value
@@ -144,7 +145,7 @@ export abstract class AbstractTiptapTextEditor {
     id: string,
     name: string
   }): undefined | JSONContent {
-    if(!this.editor?.value) {
+    if (!this.editor?.value) {
       return undefined;
     }
     this.editor?.value
@@ -181,7 +182,7 @@ export abstract class AbstractTiptapTextEditor {
         transaction: Transaction
       }) => {
         // 当内容更新后，持久化数据到本地
-        if(params.editor.getHTML() && params.editor.getJSON()) {
+        if (params.editor.getHTML() && params.editor.getJSON()) {
           _this.saveToIndexDB({
             content: params.editor.getJSON(),
             contentHtml: params.editor.getHTML()
@@ -190,7 +191,7 @@ export abstract class AbstractTiptapTextEditor {
       }, 1000),
       onTransaction(params: { editor: CoreEditor, transaction: Transaction }) {
         // todo
-        console.log(params)
+        console.log(params.editor.getJSON());
       },
       editorProps: {
         handleClickOn(
@@ -198,7 +199,7 @@ export abstract class AbstractTiptapTextEditor {
           pos: number,
           node: ProsemirrorNode
         ) {
-          if(node.type.name === 'mention') {
+          if (node.type.name === 'mention') {
             _this.handleClickMentionItem({
               ...node.attrs
             } as {
@@ -212,7 +213,7 @@ export abstract class AbstractTiptapTextEditor {
 
         StarterKit,
         TextAlign.configure({
-          types: [ 'paragraph'],
+          types: ['paragraph'],
         }),
         TextStyle,
         Color,
@@ -231,8 +232,7 @@ export abstract class AbstractTiptapTextEditor {
               width: {
                 default: DEFAULT_IMAGE_WIDTH,
                 parseHTML: (element) => {
-                  const width =
-                    element.style.width || element.getAttribute('width') || null;
+                  const width = element.style.width || element.getAttribute('width') || null;
                   return width == null ? null : parseInt(width, 10);
                 },
                 renderHTML: (attributes) => ({
@@ -242,32 +242,28 @@ export abstract class AbstractTiptapTextEditor {
               height: {
                 default: null,
                 parseHTML: (element) => {
-                  const height =
-                    element.style.height || element.getAttribute('height') || null;
+                  const height = element.style.height || element.getAttribute('height') || null;
                   return height == null ? null : parseInt(height, 10);
                 },
-                renderHTML: (attributes) => {
-                  return {
-                    height: attributes.height,
-                  };
-                },
+                renderHTML: (attributes) => ({
+                  height: attributes.height,
+                }),
               },
               display: {
                 default: DEFAULT_IMAGE_DISPLAY,
                 parseHTML: (element) => {
                   const { cssFloat, display } = element.style;
-                  let dp =
-                    element.getAttribute('data-display') ||
-                    element.getAttribute('display');
-                  if(dp) {
+                  let dp = element.getAttribute('data-display')
+                    || element.getAttribute('display');
+                  if (dp) {
                     dp = /(inline|block|left|right)/.test(dp)
                       ? dp
                       : ImageDisplay.INLINE;
-                  } else if(cssFloat === 'left' && !display) {
+                  } else if (cssFloat === 'left' && !display) {
                     dp = ImageDisplay.FLOAT_LEFT;
-                  } else if(cssFloat === 'right' && !display) {
+                  } else if (cssFloat === 'right' && !display) {
                     dp = ImageDisplay.FLOAT_RIGHT;
-                  } else if(!cssFloat && display === 'block') {
+                  } else if (!cssFloat && display === 'block') {
                     dp = ImageDisplay.BREAK_TEXT;
                   } else {
                     dp = ImageDisplay.INLINE;
@@ -276,7 +272,7 @@ export abstract class AbstractTiptapTextEditor {
                   return dp;
                 },
                 renderHTML: (attributes) => ({
-                  ['data-display']: attributes.display,
+                  'data-display': attributes.display,
                 }),
               },
             };
@@ -340,7 +336,7 @@ export abstract class AbstractTiptapTextEditor {
                       props: suggestionProps,
                     });
                   }
-                  if(!suggestionProps.clientRect) {
+                  if (!suggestionProps.clientRect) {
                     return;
                   }
                   popup = tippy('body', {
@@ -354,7 +350,7 @@ export abstract class AbstractTiptapTextEditor {
                   });
                 },
                 onUpdate(suggestionProps: SuggestionProps) {
-                  if(!suggestionProps.clientRect) {
+                  if (!suggestionProps.clientRect) {
                     return;
                   }
                   component.updateProps(suggestionProps);

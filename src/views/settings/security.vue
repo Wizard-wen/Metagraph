@@ -30,7 +30,7 @@
         placeholder="请再次确认新密码"
         v-model:value="formState.confirmNewPassword"/>
     </ant-form-item>
-    <ant-form-item :wrapper-col="{ span: 8 }">
+    <ant-form-item :wrapper-col="{ span: 8 }" style="margin-top: 50px;">
       <ant-button type="primary" html-type="submit">更新密码</ant-button>
       <ant-button style="margin-left: 10px" @click="resetForm">重置</ant-button>
     </ant-form-item>

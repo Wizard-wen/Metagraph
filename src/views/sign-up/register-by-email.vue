@@ -112,7 +112,7 @@ const registerRules = {
   password: [
     {
       required: true,
-      trigger: 'change',
+      trigger:['blur', 'change'],
       validator(rule: any, value: string): Promise<void> {
         return new Promise((resolve, reject) => {
           if (!value) {
@@ -126,7 +126,7 @@ const registerRules = {
   confirmPassword: [
     {
       required: true,
-      trigger: 'change',
+      trigger: ['blur', 'change'],
       validator(rule: any, value: string): Promise<void> {
         return new Promise((resolve, reject) => {
           if (!value) {

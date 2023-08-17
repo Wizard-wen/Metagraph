@@ -38,10 +38,10 @@
         <template v-if="loginType === 'email'">
           <div class="login-title">邮箱登录</div>
           <login-by-email></login-by-email>
-          <div class="check-way" @click="loginType = 'username'">账户登录</div>
+          <div class="check-way" @click="loginType = 'username'">密码登录</div>
         </template>
         <template v-else>
-          <div class="login-title">用户名登录</div>
+          <div class="login-title">密码登录</div>
           <login-by-user-name></login-by-user-name>
           <div class="check-way" @click="loginType = 'email'">邮箱登录</div>
         </template>

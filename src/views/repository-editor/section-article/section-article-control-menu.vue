@@ -5,6 +5,7 @@
       <undo-control :editor="editor"></undo-control>
       <redo-control :editor="editor"></redo-control>
       <clear-format-control :editor="editor"></clear-format-control>
+      <clear-mention-control :editor="editor"></clear-mention-control>
       <div class="line"></div>
       <text-level-select :editor="editor"></text-level-select>
       <font-size-select
@@ -61,7 +62,8 @@ import {
   LineHeightControl,
   IndentControl,
   OutdentControl,
-  ClearFormatControl
+  ClearFormatControl,
+  ClearMentionControl
 } from '@/components/tiptap-text-editor/controls';
 // import LineHeightControl from '@/components/tiptap-text-editor/controls/line-height-control.vue';
 // import IndentControl from '@/components/tiptap-text-editor/controls/indent-control.vue';

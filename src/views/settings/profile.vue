@@ -63,7 +63,7 @@
         class="custom-input-style"
         v-model:value="userProfileFormState.location"/>
     </ant-form-item>
-    <ant-form-item :wrapper-col="{ span: 4 }">
+    <ant-form-item :wrapper-col="{ span: 4 }" style="margin-top: 50px;">
       <ant-button type="primary" @click="onSubmit">更新用户信息</ant-button>
     </ant-form-item>
   </ant-form>
@@ -108,14 +108,12 @@ function onSubmit() {
       if (!userId) {
         return;
       }
-      console.log(userProfileFormState);
       UserApiService.updateUser({
         ...toRaw(userProfileFormState),
         userId
       })
         .then((data) => {
           if (data.data) {
-            console.log(data.data);
             store.commit(MutationEnum.UPDATE_USER_MODEL, { userModel: data.data });
             message.success('修改成功！');
           }
@@ -127,41 +125,15 @@ function onSubmit() {
     .catch((error: ValidateErrorEntity<UserProfileFormStateType>) => {
       message.error('修改信息时出现问题！');
     });
-};
-// export default defineComponent({
-//   name: 'Profile',
-//   components: {
-//     UploadFormItem,
-//     SettingHeader,
-//     AntForm: Form,
-//     AntFormItem: Form.Item,
-//     AntButton: Button,
-//     AntRadio: Radio,
-//     AntRadioGroup: Radio.Group,
-//     AntInput: Input
-//   },
-//   setup() {
-//
-//     return {
-//
-//       userProfileFormState,
-//       userProfileFormRef,
-//       userProfileFormRules,
-//       onSubmit,
-//       formIconRef
-//     };
-//   }
-// });
+}
 </script>
 
 <style scoped lang="scss">
 @import "../../style/common.scss";
 
-//.ant-form-item-style {
-//  margin-bottom: 10px;
-//}
 .profile-form {
   @include custom-input-style-mixin;
+  margin-bottom: 100px;
 }
 
 </style>
