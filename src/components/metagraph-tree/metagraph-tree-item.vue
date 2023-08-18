@@ -53,7 +53,7 @@
               </ant-menu>
             </template>
           </ant-dropdown>
-          <div class="icon-content-style" @click="handleClickControl('CreateSection', undefined)">
+          <div class="icon-content-style" @click="handleClickControl('CreateSection', item.data)">
             <plus-outlined/>
           </div>
         </div>

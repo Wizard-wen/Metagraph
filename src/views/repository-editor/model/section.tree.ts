@@ -286,7 +286,7 @@ export class SectionTreeService {
   private async initEntityOptionList(value?: string): Promise<void> {
     const result = await EntityApiService.getEntityList({
       name: value,
-      entityType: sectionModalData.operationType,
+      entityType: 'Knowledge',
       pageIndex: 0,
       pageSize: 80
     });
