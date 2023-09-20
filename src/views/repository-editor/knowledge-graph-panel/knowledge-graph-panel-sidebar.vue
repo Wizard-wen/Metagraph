@@ -18,11 +18,10 @@ import KnowledgePanelConfig
 import GraphPanelConfig
   from '@/views/repository-editor/knowledge-graph-panel/knowledge-relation/graph-panel-config.vue';
 import { selectedGraphNodeEntityId } from './knowledge.graph.data';
-
-const currentBar = ref<string>('panel');
+import { currentBar, setCurrentBar } from './knowledge-graph-panel-sidebar';
 
 function handleBarChange(value: string) {
-  currentBar.value = value;
+  setCurrentBar(value);
 }
 
 const menuList = ref<{ value: string; label: string; isAuth: boolean }[]>([
@@ -57,15 +56,14 @@ const viewMenuList = computed(() => {
         isAuth: false
       },
     ];
-  } else {
-    return [
-      {
-        label: '面板',
-        value: 'panel',
-        isAuth: false
-      }
-    ]
   }
+  return [
+    {
+      label: '面板',
+      value: 'panel',
+      isAuth: false
+    }
+  ];
 });
 </script>
 

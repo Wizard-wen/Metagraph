@@ -36,7 +36,7 @@ import {
 import { isEditableKey, repositoryEntityIdKey } from '@/views/repository-editor/model/provide.type';
 import ZoomInIcon from '@/components/icons/zoom.in.icon.vue';
 import ZoomOutIcon from '@/components/icons/zoom.out.icon.vue';
-import KnowledgeConnection from './knowledge-graph-panel/knowledge-relation.vue';
+import KnowledgeConnection from './knowledge-graph-panel/knowledge-graph-panel-sidebar.vue';
 
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 const isEditable = inject(isEditableKey, ref(false));
