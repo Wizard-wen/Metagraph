@@ -66,7 +66,7 @@ const date = computed(() => CommonUtil.timeAgo(
 const isStarButtonDisabled = ref(false);
 const userModel = computed(() => store.state.user.user);
 const goRepositoryPage = () => {
-  RouterUtil.jumpToBlankPage('/repository/editor', {
+  RouterUtil.jumpToBlankPage('/repository/editor/preview', {
     repositoryEntityId: props.activityItem.entity.id,
     type: props.activityItem.author.id === userModel.value?.id ? 'edit' : 'view'
   });

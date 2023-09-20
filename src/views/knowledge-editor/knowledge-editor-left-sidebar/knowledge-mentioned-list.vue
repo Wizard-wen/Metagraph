@@ -14,6 +14,7 @@
             <ant-menu-item
               class="menu-item-style"
               @click="handleRemoveEdge(item)">
+              <DeleteOutlined class="icon-size"></DeleteOutlined>
               删除
             </ant-menu-item>
           </ant-menu>
@@ -24,43 +25,20 @@
       </div>
     </div>
   </div>
-<!--  <div class="bind-panel">-->
-<!--    <div class="knowledge-connection">-->
-<!--      <div class="content" v-if="mentionedKnowledge.list.length">-->
-<!--        <div-->
-<!--          class="content-item"-->
-<!--          :key="index"-->
-<!--          v-for="(item, index) in mentionedKnowledge.list">-->
-<!--          {{ item.content.name }}-->
-<!--          <div class="control-right">-->
-<!--            <EyeOutlined @click="showKnowledgeDrawer(item)"/>-->
-<!--            <delete-icon @click="handleRemoveEdge(item)"></delete-icon>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
 </template>
 
 <script lang="ts" setup>
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
-import { ExclamationCircleOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons-vue';
-// import { Modal, message } from 'ant-design-vue';
+import { ExclamationCircleOutlined, EyeOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import type { EntityCompletelyListItemType, KnowledgeResponseType } from '@metagraph/constant';
+import { createVNode, inject, ref } from 'vue';
+import { Dropdown as AntDropdown, Menu as AntMenu, message, Modal } from 'ant-design-vue';
 import {
-  createVNode, inject, ref
-} from 'vue';
-import { DeleteIcon } from '@/components/icons';
-import {
-  mentionedKnowledge,
-  KnowledgeEdit,
   draftKnowledgeEntityIdInjectKey,
+  KnowledgeEdit,
+  mentionedKnowledge,
   repositoryEntityIdInjectKey
 } from '../model/knowledge.edit';
-
-// import { defineEmits, defineProps, PropType } from 'vue';
-// import { EyeOutlined } from '@ant-design/icons-vue';
-import { Dropdown as AntDropdown, Menu as AntMenu, Modal, message } from 'ant-design-vue';
 
 function getPopupContainer(triggerNode: any) {
   return triggerNode.parentNode;
@@ -96,7 +74,6 @@ function handleClickControl(item: EntityCompletelyListItemType) {
 }
 
 function handleRemoveEdge(item: EntityCompletelyListItemType & { edgeId: string }) {
-  console.log(item);
   const knowledgeContent = item.content as KnowledgeResponseType;
   Modal.confirm({
     title: '确定删除知识点关联吗',

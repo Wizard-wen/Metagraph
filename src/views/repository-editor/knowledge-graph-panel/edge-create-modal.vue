@@ -10,13 +10,16 @@
     <ant-form
       :rules="knowledgeEdgeFormRules"
       ref="knowledgeEdgeFormRef"
-      :model="knowledgeEdgeFormState">
+      :model="knowledgeEdgeFormState"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+      class="relation-form">
       <ant-form-item label="关联所属知识点" name="knowledgeEntityId">
         <ant-select
           v-model:value="knowledgeEdgeFormState.knowledgeEntityId"
           placeholder="请选择所属知识点">
-          <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
-            {{ d.content.name }}
+          <ant-select-option v-for="edgeItem in knowledgeInEdgeList" :key="edgeItem.entity.id">
+            {{ edgeItem.content.name }}
           </ant-select-option>
         </ant-select>
       </ant-form-item>
@@ -25,8 +28,8 @@
           v-model:value="knowledgeEdgeFormState.originKnowledgeEntityId"
           :disabled="true"
           placeholder="请选择源知识点">
-          <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
-            {{ d.content.name }}
+          <ant-select-option v-for="edgeItem in knowledgeInEdgeList" :key="edgeItem.entity.id">
+            {{ edgeItem.content.name }}
           </ant-select-option>
         </ant-select>
       </ant-form-item>
@@ -35,13 +38,14 @@
           v-model:value="knowledgeEdgeFormState.targetKnowledgeEntityId"
           :disabled="true"
           placeholder="请选择目标知识点">
-          <ant-select-option v-for="d in knowledgeInEdgeList" :key="d.entity.id">
-            {{ d.content.name }}
+          <ant-select-option v-for="edgeItem in knowledgeInEdgeList" :key="edgeItem.entity.id">
+            {{ edgeItem.content.name }}
           </ant-select-option>
         </ant-select>
       </ant-form-item>
       <ant-form-item label="关联描述" name="description">
         <ant-text-area
+          class="custom-input-style"
           v-model:value="knowledgeEdgeFormState.description"
           placeholder="请填写关联理由">
         </ant-text-area>
@@ -74,6 +78,9 @@ import {
 
 const knowledgeEdgeFormRef = ref();
 const emit = defineEmits(['close']);
+
+const labelCol = ref({ span: 6 });
+const wrapperCol = ref({ offset: 0 });
 defineProps({
   isModalVisible: {
     type: Boolean,
@@ -121,7 +128,7 @@ const knowledgeGraphPanel = new KnowledgeGraphPanel();
 const knowledgeGraphData = new KnowledgeGraphData();
 const repositoryEntityId = inject(repositoryEntityIdKey, ref(''));
 const handleModalCancel = () => {
-  if (knowledgeEdgeFormState.temporaryEdgeId) {
+  if(knowledgeEdgeFormState.temporaryEdgeId) {
     graph.value?.removeEdge(knowledgeEdgeFormState.temporaryEdgeId);
   }
   message.info('取消创建关联');
@@ -142,12 +149,12 @@ async function validateEdge(): Promise<undefined | ValidateErrorEntity<Knowledge
 
 const handleModalOk = async () => {
   const errorMessage = await validateEdge();
-  if (errorMessage) {
+  if(errorMessage) {
     return;
   }
   modalConfirmLoading.value = true;
   const edgeData = await knowledgeGraphPanel.createEdgeInServer(repositoryEntityId.value);
-  if (edgeData) {
+  if(edgeData) {
     knowledgeGraphData.createNewEdge(edgeData);
     message.success('关联创建成功');
   } else {
@@ -159,6 +166,10 @@ const handleModalOk = async () => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "../../../style/common.scss";
 
+.relation-form {
+  @include custom-input-style-mixin;
+}
 </style>

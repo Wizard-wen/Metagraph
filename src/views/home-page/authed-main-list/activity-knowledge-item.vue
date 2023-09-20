@@ -35,6 +35,13 @@
           <div class="updatedAt">{{ date }}</div>
         </div>
         <div class="control-btn">
+          <m-button
+            @click="goPreviewPage"
+            :title="'预览'">
+            <template #icon>
+              <EyeOutlined/>
+            </template>
+          </m-button>
           <add-to-plan-button
             :custom-class="['control-btn', 'plan-btn']"
             :entity-id="activityItem.entity.entity.id"
@@ -63,10 +70,11 @@ import type {
   StarResponseType,
   UserModelType
 } from '@metagraph/constant';
+import { KnowledgeResponseType } from '@metagraph/constant';
 import { computed, defineProps, PropType, ref, toRef } from 'vue';
 import { Avatar as AntAvatar, message } from 'ant-design-vue';
 import { MButton, MTag } from '@/metagraph-ui';
-import { CommentOutlined, StarFilled, StarOutlined } from '@ant-design/icons-vue';
+import { CommentOutlined, EyeOutlined, StarFilled, StarOutlined } from '@ant-design/icons-vue';
 import ActivityItemTitle from '@/views/home-page/authed-main-list/activity-item-title.vue';
 import { useStore } from '@/store';
 import { CommonUtil } from '@/utils/common.util';
@@ -89,12 +97,33 @@ const props = defineProps({
 const store = useStore();
 const activityItem = toRef(props, 'activityItem');
 const isLogin = computed(() => store.state.user.isLogin);
+const currentUser = computed(() => store.state.user.user);
 const date = computed(() => CommonUtil.timeAgo(
   new Date(activityItem.value.entity.content.updatedAt).getTime()
 ));
 const isStarButtonDisabled = ref(false);
 
 function goProfilePage() {
+  // RouterUtil.jumpToBlankPage('/knowledge/preview', {
+  //   publishedKnowledgeEntityId: activityItem.value.entity.entity.id
+  // });
+  if(currentUser.value?.id !== activityItem.value?.user.id) {
+    RouterUtil.jumpToBlankPage('/knowledge/preview', {
+      publishedKnowledgeEntityId: activityItem.value.entity.entity.id
+    });
+    return;
+  }
+  const knowledgeData = (activityItem.value?.entity.content as KnowledgeResponseType);
+  if(knowledgeData.draft) {
+    RouterUtil.jumpToBlankPage('/knowledge/edit', {
+      publishedKnowledgeEntityId: activityItem.value.entity.entity.id,
+      draftKnowledgeEntityId: knowledgeData.draft.entityId,
+      repositoryEntityId: knowledgeData.repositoryEntityId
+    });
+  }
+}
+
+function goPreviewPage() {
   RouterUtil.jumpToBlankPage('/knowledge/preview', {
     publishedKnowledgeEntityId: activityItem.value.entity.entity.id
   });
@@ -104,7 +133,7 @@ async function addStar(event: MouseEvent, status: boolean) {
   event.stopPropagation();
   isStarButtonDisabled.value = true;
   let result: PublicApiResponseType<void | StarResponseType>;
-  if (status) {
+  if(status) {
     result = await StarApiService.cancel({
       entityId: activityItem.value.entity.entity.id,
       entityType: 'Knowledge'
@@ -115,10 +144,10 @@ async function addStar(event: MouseEvent, status: boolean) {
       entityType: 'Knowledge'
     });
   }
-  if (result.code === 0) {
-    if (status) {
+  if(result.code === 0) {
+    if(status) {
       activityItem.value.entity.hasStared = false;
-      if (activityItem.value.entity.star > 0) {
+      if(activityItem.value.entity.star > 0) {
         activityItem.value.entity.star -= 1;
       } else {
         activityItem.value.entity.star = 0;

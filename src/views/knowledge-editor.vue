@@ -11,11 +11,11 @@
     </div>
   </ant-spin>
   <knowledge-drawer-content
-    v-if="knowledgeDrawerState.isShow"
+    v-if="knowledgeDrawerState.isShow && currentKnowledgeDrawerEntityId"
     :is-visible="knowledgeDrawerState.isShow"
     :type="type"
-    :knowledge-entity-id="knowledgeDrawerState?.entityId"
-    @close="knowledgeDrawerState.isShow = false"></knowledge-drawer-content>
+    :knowledge-entity-id="currentKnowledgeDrawerEntityId"
+    @close="handleCloseKnowledgeDrawer"></knowledge-drawer-content>
   <select-knowledge-cover-modal
     :knowledge-entity-id="draftKnowledgeEntityId"
     @close="isSelectKnowledgeCoverModalShow = false"
@@ -47,7 +47,7 @@ import {
   KnowledgeEditorRightSidebar
 } from '@/views/knowledge-editor/index';
 
-import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
+import { closeKnowledgeDrawer, KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
 import {
   draftKnowledgeEntityIdInjectKey,
   knowledgeDescription,
@@ -74,6 +74,9 @@ const isLoading = ref(false);
 
 const isSelectKnowledgeCoverModalShow = ref(false);
 
+// 当前侧边预览的entity id
+const currentKnowledgeDrawerEntityId = computed(() => knowledgeDrawerState.value.entityId);
+
 /**
  * 初始化knowledge tiptap editor
  */
@@ -90,17 +93,21 @@ async function handleRouteLeaveConfirm(): Promise<boolean> {
   return true;
 }
 
+function handleCloseKnowledgeDrawer() {
+  closeKnowledgeDrawer();
+}
+
 onBeforeRouteLeave(async () => {
   // 取消导航并停留在同一页面上
   const result = await handleRouteLeaveConfirm();
-  if (result) {
+  if(result) {
     const description = editor.value?.getHTML();
     const descriptionInIndexDB = await IndexdbService.getInstance()
       .get('knowledge', draftKnowledgeEntityId.value);
-    if (descriptionInIndexDB !== description) {
+    if(descriptionInIndexDB !== description) {
       console.log('indexdb与当前富文本数据不一致', descriptionInIndexDB, description);
     }
-    if (editor.value) {
+    if(editor.value) {
       await knowledgeEdit.handleSaveSectionArticle({
         content: editor.value?.getJSON(),
         contentHtml: editor.value?.getHTML(),
@@ -117,7 +124,7 @@ onBeforeRouteUpdate(async (
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) => {
-  if (
+  if(
     JSON.stringify(to.query) !== JSON.stringify(from.query)
   ) {
     /**
@@ -126,7 +133,7 @@ onBeforeRouteUpdate(async (
      */
     const draftEntityId = to.query.draftKnowledgeEntityId;
     const publishedEntityId = to.query.publishedKnowledgeEntityId;
-    if (draftEntityId && publishedEntityId) {
+    if(draftEntityId && publishedEntityId) {
       await Promise.all([
         knowledgeEdit.getKnowledge(draftEntityId as string),
         knowledgeEdit.getRepositoryBindList(repositoryEntityId.value),
@@ -159,7 +166,7 @@ onMounted(async () => {
       publishedKnowledgeEntityId: publishedKnowledgeEntityId.value ?? undefined,
     })
   ]);
-  if (publishedKnowledgeEntityId.value) {
+  if(publishedKnowledgeEntityId.value) {
     await knowledgeEdit.findEdgesByKnowledgeEntityId({
       knowledgeEntityId: publishedKnowledgeEntityId.value,
       repositoryEntityId: repositoryEntityId.value

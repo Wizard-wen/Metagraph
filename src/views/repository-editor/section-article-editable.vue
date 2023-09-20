@@ -187,39 +187,39 @@ onUnmounted(() => {
       background: $textBackgroundColor;
     }
 
-    .article-container {
-      margin-top: 80px;
-      height: 100%;
-      width: 100%;
-
-      .editor-range {
-        position: relative;
-        width: 100%;
-        height: max-content;
-        margin: 0 auto;
-      }
-
-      .editor-container {
-        width: 750px;
-        margin: 0 auto;
-        position: absolute;
-        min-height: 100%;
-        background: $textBackgroundColor;
-      }
-
-      .editor-container-view {
-        width: 816px;
-        margin: 0 auto;
-        min-height: 100%;
-        padding-top: 50px;
-      }
-
-      .comment-content {
-        width: 816px;
-        margin: 0 auto;
-        padding-top: 35px;
-      }
-    }
+    //.article-container {
+    //  margin-top: 80px;
+    //  height: 100%;
+    //  width: 100%;
+    //
+    //  .editor-range {
+    //    position: relative;
+    //    width: 100%;
+    //    height: max-content;
+    //    margin: 0 auto;
+    //  }
+    //
+    //  .editor-container {
+    //    width: 750px;
+    //    margin: 0 auto;
+    //    position: absolute;
+    //    min-height: 100%;
+    //    background: $textBackgroundColor;
+    //  }
+    //
+    //  .editor-container-view {
+    //    width: 816px;
+    //    margin: 0 auto;
+    //    min-height: 100%;
+    //    padding-top: 50px;
+    //  }
+    //
+    //  .comment-content {
+    //    width: 816px;
+    //    margin: 0 auto;
+    //    padding-top: 35px;
+    //  }
+    //}
   }
 }
 

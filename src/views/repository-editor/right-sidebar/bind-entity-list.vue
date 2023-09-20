@@ -131,7 +131,7 @@ function handlePublishedControl(params: {
     knowledgePreview.handleShowKnowledgeDrawer(params.item.entity.id, 'published');
   } else {
     router.push({
-      name: 'KnowledgeEdit',
+      name: 'KnowledgeEditor',
       query: {
         publishedKnowledgeEntityId: params.item.entity.id,
         draftKnowledgeEntityId: (params.item.content as KnowledgeResponseType).draft?.entityId,
@@ -148,7 +148,7 @@ function handleUnpublishedControl(params: {
 }) {
   if (params.type === 'edit') {
     router.push({
-      name: 'KnowledgeEdit',
+      name: 'KnowledgeEditor',
       query: {
         draftKnowledgeEntityId: params.item.entity.id,
         repositoryEntityId: repositoryEntityId.value

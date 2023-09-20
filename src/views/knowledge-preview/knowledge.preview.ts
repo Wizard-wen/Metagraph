@@ -3,7 +3,7 @@
  * @date  2022/5/4 19:51
  */
 import { KnowledgeApiService, KnowledgeNoAuthApiService } from '@/api-service';
-import { knowledgeDrawerState } from '@/business';
+import { closeKnowledgeDrawer, showKnowledgeDrawer } from '@/business';
 import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { ref } from 'vue';
 
@@ -44,15 +44,11 @@ export class KnowledgePreview {
   }
 
   handleShowKnowledgeDrawer(entityId: string, type: 'published' | 'draft'): void {
-    knowledgeDrawerState.entityId = entityId;
-    knowledgeDrawerState.isShow = true;
-    knowledgeDrawerState.type = type;
+    showKnowledgeDrawer(type, entityId);
   }
 
   handleCloseKnowledgeDrawer(): void {
-    knowledgeDrawerState.isShow = false;
-    knowledgeDrawerState.entityId = undefined;
-    knowledgeDrawerState.type = undefined;
+    closeKnowledgeDrawer();
     draftKnowledgePreviewModel.value = undefined;
     publishedKnowledgePreviewModel.value = undefined;
   }
@@ -65,14 +61,14 @@ export class KnowledgePreview {
   private async setLatestVersionStatus(params: {
     publishedKnowledgeEntityId: string;
   }): Promise<void> {
-    if (!params.publishedKnowledgeEntityId) {
+    if(!params.publishedKnowledgeEntityId) {
       previewKnowledgePublishStatus.value = '未发布';
       return;
     }
     const result = await KnowledgeNoAuthApiService.getLatestVersion({
       publishedKnowledgeEntityId: params.publishedKnowledgeEntityId
     });
-    if (result.data) {
+    if(result.data) {
       previewKnowledgePublishStatus.value = `版本${result.data}`;
     }
   }
@@ -83,7 +79,7 @@ export class KnowledgePreview {
    */
   private async getPublishedKnowledgeMentioned(publishedKnowledgeEntityId: string): Promise<void> {
     const result = await KnowledgeNoAuthApiService.getMentionedList(publishedKnowledgeEntityId);
-    if (result.data) {
+    if(result.data) {
       publishedKnowledgeMentioned.value = result.data;
     }
   }
@@ -92,7 +88,7 @@ export class KnowledgePreview {
     const result = await KnowledgeApiService.getDraftKnowledgePreview({
       draftKnowledgeEntityId
     });
-    if (result.data) {
+    if(result.data) {
       draftKnowledgePreviewModel.value = result.data;
     }
   }
@@ -101,7 +97,7 @@ export class KnowledgePreview {
     const result = await KnowledgeNoAuthApiService.getPublishedKnowledgePreview({
       publishedKnowledgeEntityId
     });
-    if (result.data) {
+    if(result.data) {
       publishedKnowledgePreviewModel.value = result.data;
     }
   }

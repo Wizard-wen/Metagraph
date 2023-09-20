@@ -3,9 +3,9 @@
  * @date  2022/5/5 00:38
  */
 
-import { reactive } from 'vue';
+import { ref } from 'vue';
 
-export const knowledgeDrawerState = reactive<{
+export const knowledgeDrawerState = ref<{
   isShow: boolean,
   type?: 'published' | 'draft',
   entityId?: string
@@ -14,3 +14,15 @@ export const knowledgeDrawerState = reactive<{
   type: undefined,
   entityId: undefined
 });
+
+export function showKnowledgeDrawer(type: 'published' | 'draft', entityId: string): void {
+  knowledgeDrawerState.value.entityId = entityId;
+  knowledgeDrawerState.value.isShow = true;
+  knowledgeDrawerState.value.type = type;
+}
+
+export function closeKnowledgeDrawer(): void {
+  knowledgeDrawerState.value.isShow = false;
+  knowledgeDrawerState.value.entityId = undefined;
+  knowledgeDrawerState.value.type = undefined;
+}

@@ -3,7 +3,7 @@
  * @date  2022/1/11 10:38
  */
 
-import { knowledgeDrawerState } from '@/business';
+import { showKnowledgeDrawer } from '@/business';
 import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Range } from '@tiptap/core';
@@ -158,8 +158,6 @@ export class SectionArticleTiptapTextEditor extends AbstractTiptapTextEditor {
   }
 
   handleClickMentionItem(params: { id: string; name: string }): void {
-    knowledgeDrawerState.type = 'published';
-    knowledgeDrawerState.entityId = params.id;
-    knowledgeDrawerState.isShow = true;
+    showKnowledgeDrawer('published', params.id);
   }
 }

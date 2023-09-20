@@ -108,13 +108,18 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/repository-editor.vue'),
   },
   {
+    path: '/repository/editor/preview',
+    name: 'RepositoryEditorPreview',
+    component: () => import('@/views/repository-editor-preview.vue'),
+  },
+  {
     path: '/knowledge/map',
     name: 'KnowledgeMap',
     component: () => import('@/views/knowledge-map.vue')
   },
   {
     path: '/knowledge/edit',
-    name: 'KnowledgeEdit',
+    name: 'KnowledgeEditor',
     component: () => import('@/views/knowledge-editor.vue')
   },
 

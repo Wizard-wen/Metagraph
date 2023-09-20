@@ -22,7 +22,7 @@
           </ant-menu>
         </template>
       </ant-dropdown>
-      <div class="icon-content-style" @click="handleClickControl">
+      <div class="icon-content-style" @click="handleClickControl('view', item)">
         <eye-outlined/>
       </div>
     </div>
