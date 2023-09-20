@@ -119,7 +119,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/knowledge/edit',
-    name: 'KnowledgeEdit',
+    name: 'KnowledgeEditor',
     component: () => import('@/views/knowledge-editor.vue')
   },
 

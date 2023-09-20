@@ -162,7 +162,7 @@ async function createNewDraftKnowledge(params: {
             knowledgeKey: knowledgeContent.knowledgeKey
           });
         router.push({
-          name: 'KnowledgeEdit',
+          name: 'KnowledgeEditor',
           query: {
             draftKnowledgeEntityId: result.entity.id,
             repositoryEntityId: repositoryEntityId.value,

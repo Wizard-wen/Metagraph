@@ -19,6 +19,10 @@
               </section-article-viewable>
             </div>
           </template>
+          <template v-else>
+            <div class="graph-content">
+            </div>
+          </template>
           <div class="right-sidebar">
             <right-sidebar-preview></right-sidebar-preview>
           </div>
@@ -26,6 +30,11 @@
       </div>
     </div>
   </ant-spin>
+  <knowledge-drawer-content
+    v-if="knowledgeDrawerState.isShow && knowledgeDrawerState.entityId"
+    :is-visible="knowledgeDrawerState.isShow"
+    :knowledge-entity-id="knowledgeDrawerState.entityId"
+    @close="handleCloseKnowledgeDrawer" :type="'published'"></knowledge-drawer-content>
 </template>
 
 <script lang="ts" setup>
@@ -33,8 +42,8 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import {
   LeftSidebarPreview,
   RepositoryEditorPreviewHeader,
-  SectionArticleViewable,
-  RightSidebarPreview
+  RightSidebarPreview,
+  SectionArticleViewable
 } from '@/views/repository-editor-preview/index';
 import { Spin as AntSpin } from 'ant-design-vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -51,8 +60,7 @@ import {
   SectionArticleReadonlyTiptapTextEditor
 } from '@/components/tiptap-text-editor/section.article.readonly.tiptap.text.editor';
 import { KnowledgePreview } from '@/views/knowledge-preview/knowledge.preview';
-
-
+import { KnowledgeDrawerContent, knowledgeDrawerState } from '@/business';
 
 const route = useRoute();
 const router = useRouter();
@@ -137,6 +145,10 @@ onUnmounted(() => {
 
 function handleClickMention(event: { id: string, name: string }) {
   knowledgePreview.handleShowKnowledgeDrawer(event.id, 'published');
+}
+
+function handleCloseKnowledgeDrawer() {
+  knowledgePreview.handleCloseKnowledgeDrawer();
 }
 </script>
 

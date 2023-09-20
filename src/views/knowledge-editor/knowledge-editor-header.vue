@@ -194,7 +194,7 @@ async function publishDraftKnowledge() {
           publishedKnowledgeEntityId: result.publishedKnowledgeEntityId
         });
         router.push({
-          name: 'KnowledgeEdit',
+          name: 'KnowledgeEditor',
           query: {
             publishedKnowledgeEntityId: result.publishedKnowledgeEntityId,
             draftKnowledgeEntityId: result.draftKnowledgeEntityId,

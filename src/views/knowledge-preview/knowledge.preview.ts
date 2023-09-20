@@ -61,14 +61,14 @@ export class KnowledgePreview {
   private async setLatestVersionStatus(params: {
     publishedKnowledgeEntityId: string;
   }): Promise<void> {
-    if (!params.publishedKnowledgeEntityId) {
+    if(!params.publishedKnowledgeEntityId) {
       previewKnowledgePublishStatus.value = '未发布';
       return;
     }
     const result = await KnowledgeNoAuthApiService.getLatestVersion({
       publishedKnowledgeEntityId: params.publishedKnowledgeEntityId
     });
-    if (result.data) {
+    if(result.data) {
       previewKnowledgePublishStatus.value = `版本${result.data}`;
     }
   }
@@ -79,7 +79,7 @@ export class KnowledgePreview {
    */
   private async getPublishedKnowledgeMentioned(publishedKnowledgeEntityId: string): Promise<void> {
     const result = await KnowledgeNoAuthApiService.getMentionedList(publishedKnowledgeEntityId);
-    if (result.data) {
+    if(result.data) {
       publishedKnowledgeMentioned.value = result.data;
     }
   }
@@ -88,7 +88,7 @@ export class KnowledgePreview {
     const result = await KnowledgeApiService.getDraftKnowledgePreview({
       draftKnowledgeEntityId
     });
-    if (result.data) {
+    if(result.data) {
       draftKnowledgePreviewModel.value = result.data;
     }
   }
@@ -97,7 +97,7 @@ export class KnowledgePreview {
     const result = await KnowledgeNoAuthApiService.getPublishedKnowledgePreview({
       publishedKnowledgeEntityId
     });
-    if (result.data) {
+    if(result.data) {
       publishedKnowledgePreviewModel.value = result.data;
     }
   }
