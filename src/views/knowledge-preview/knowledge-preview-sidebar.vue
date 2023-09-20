@@ -2,22 +2,29 @@
   <div class="sidebar">
     <div class="sidebar-content">
       <div class="author-card">
-        <div class="avatar"></div>
+        <div class="avatar">
+          <ant-avatar :size="48"
+                      :src="knowledgeEntity.author.avatar"
+                      alt="Han Solo"/>
+        </div>
         <div class="right-message">
-          <div class="user-name">用户名</div>
-          <div class="user-desc">用户描述信息</div>
+          <div class="user-name">{{ knowledgeEntity.author.name }}</div>
+          <div class="user-desc">{{ knowledgeEntity.author.email }}</div>
         </div>
       </div>
       <div class="operation">
-        <ant-button type="primary" style="margin-right: 10px; width: calc(50% - 5px)">关注
+        <ant-button
+          type="primary"
+          style="margin-right: 10px; width: calc(50% - 5px)"
+          @click="handleFollowAuthor">关注
         </ant-button>
-        <ant-button style="width: calc(50% - 5px)">私信</ant-button>
+        <!--        <ant-button style="width: calc(50% - 5px)">私信</ant-button>-->
       </div>
       <div class="activity">
         <div class="activity-item">
           <StarOutlined style="margin-right: 12px;"/>
           获得点赞
-          <span class="numbers">55</span></div>
+          <span class="numbers">{{ knowledgeEntity.star }}</span></div>
         <div class="activity-item">
           <EyeOutlined style="margin-right: 12px;"/>
           总访问量
@@ -42,9 +49,27 @@
 </template>
 
 <script setup lang="ts">
-import { Anchor as AntAnchor, Button as AntButton } from 'ant-design-vue';
+import { Anchor as AntAnchor, Avatar as AntAvatar, Button as AntButton } from 'ant-design-vue';
 import { EyeOutlined, StarOutlined } from '@ant-design/icons-vue';
 import EmptyView from '@/components/empty-view/empty-view.vue';
+import { computed, defineProps, PropType } from 'vue';
+import { EntityCompletelyListItemType } from '@metagraph/constant';
+
+const props = defineProps({
+  previewModel: {
+    type: Object as PropType<{
+      entity: EntityCompletelyListItemType,
+      mentionList: EntityCompletelyListItemType[]
+    }>,
+    required: true
+  },
+  type: {
+    type: String as PropType<'draft' | 'published'>,
+    required: true
+  }
+});
+
+const knowledgeEntity = computed<EntityCompletelyListItemType>(() => props.previewModel?.entity);
 
 const AntAnchorLink = AntAnchor.Link;
 
@@ -52,8 +77,11 @@ function handleAnchorClick(e: Event, link: any) {
   // 阻止点击的默认事件修改路由
   e.preventDefault();
   const scrolls = document.getElementById(link.href);
-  console.log(scrolls, link.href)
   scrolls?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+
+function handleFollowAuthor() {
+  // todo
 }
 </script>
 

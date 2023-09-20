@@ -3,7 +3,7 @@
  * @date  2022/5/4 19:51
  */
 import { KnowledgeApiService, KnowledgeNoAuthApiService } from '@/api-service';
-import { knowledgeDrawerState } from '@/business';
+import { closeKnowledgeDrawer, showKnowledgeDrawer } from '@/business';
 import { EntityCompletelyListItemType } from '@metagraph/constant';
 import { ref } from 'vue';
 
@@ -44,15 +44,11 @@ export class KnowledgePreview {
   }
 
   handleShowKnowledgeDrawer(entityId: string, type: 'published' | 'draft'): void {
-    knowledgeDrawerState.entityId = entityId;
-    knowledgeDrawerState.isShow = true;
-    knowledgeDrawerState.type = type;
+    showKnowledgeDrawer(type, entityId);
   }
 
   handleCloseKnowledgeDrawer(): void {
-    knowledgeDrawerState.isShow = false;
-    knowledgeDrawerState.entityId = undefined;
-    knowledgeDrawerState.type = undefined;
+    closeKnowledgeDrawer();
     draftKnowledgePreviewModel.value = undefined;
     publishedKnowledgePreviewModel.value = undefined;
   }

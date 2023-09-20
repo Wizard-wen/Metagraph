@@ -23,6 +23,7 @@ import { defineEmits, defineProps, PropType, ref } from 'vue';
 import { Modal as AntModal } from 'ant-design-vue';
 import WillSelectFileList from '@/views/file-panel/select-file-modal/will-select-file-list.vue';
 import { FileEnum, FileResponseType } from '@metagraph/constant';
+import { clearSelectFileItem } from '@/views/file-panel/select-file-modal/select-file-model';
 
 defineProps({
   isModalVisible: {
@@ -37,13 +38,16 @@ const emit = defineEmits(['close']);
 const modalConfirmLoading = ref(false);
 
 function handleSelectFile(params: FileResponseType) {
+  clearSelectFileItem();
   emit('close', params);
 }
 
 const handleModalOk = () => {
+  clearSelectFileItem();
   emit('close');
 };
 const handleModalCancel = () => {
+  clearSelectFileItem();
   emit('close');
 };
 </script>

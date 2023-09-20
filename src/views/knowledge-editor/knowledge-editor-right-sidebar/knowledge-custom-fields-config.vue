@@ -71,7 +71,7 @@ const currentFieldModel = ref<{
 }>();
 
 const knowledgeDescList = computed<KnowledgeConfigItemType[]>(
-  () => knowledgeCustomFields.value.map(item => ({
+  () => knowledgeCustomFields.value.map((item) => ({
     classicName: item.label,
     key: item.key,
     grid: item.grid,

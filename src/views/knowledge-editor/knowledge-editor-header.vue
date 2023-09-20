@@ -1,11 +1,14 @@
 <template>
   <div class="knowledge-header">
     <div class="left">
-      <m-button :is-icon="true" :has-border="false" @click="goBack">
-        <template #icon>
-          <LeftOutlined/>
-        </template>
-      </m-button>
+      <div class="logo-container">
+        <img
+          @click="goHomePage"
+          class="logo"
+          src="@/assets/logo-header.png"
+          height="32"
+          alt="logo"/>
+      </div>
       <ant-dropdown
         :getPopupContainer="getPopupContainer"
         :trigger="['click']"
@@ -41,6 +44,13 @@
               @click="compareWithLatestVersion">
               <BranchesOutlined class="icon-size"/>
               对比
+            </ant-menu-item>
+            <div class="divider-style"></div>
+            <ant-menu-item
+              class="menu-item-style"
+              @click="jumpToRepositoryEditor">
+              <BookOutlined class="icon-size"/>
+              知识库面板
             </ant-menu-item>
           </ant-menu>
         </template>
@@ -83,12 +93,12 @@
 import KnowledgeCompareModal
   from '@/views/knowledge-editor/knowledge-editor-header/knowledge-compare-modal.vue';
 import {
+  BookOutlined,
   BranchesOutlined,
   CloudUploadOutlined,
   DesktopOutlined,
   ExclamationCircleOutlined,
   EyeOutlined,
-  LeftOutlined,
   MenuOutlined
 } from '@ant-design/icons-vue';
 import { Editor } from '@tiptap/vue-3';
@@ -142,7 +152,7 @@ const draftKnowledgeEntityId = inject(draftKnowledgeEntityIdInjectKey, ref(''));
 const publishedKnowledgeEntityId = inject(publishedKnowledgeEntityIdInjectKey, ref(''));
 
 async function handleStarStatusUpdate() {
-  if (knowledge.value?.entity.id) {
+  if(knowledge.value?.entity.id) {
     await knowledgeEdit.getKnowledge(knowledge.value.entity.id);
   }
 }
@@ -166,7 +176,7 @@ async function publishDraftKnowledge() {
     okText: '确定',
     cancelText: '取消',
     async onOk() {
-      if (!props.editor) {
+      if(!props.editor) {
         return;
       }
       // 发布之前先存储
@@ -179,7 +189,7 @@ async function publishDraftKnowledge() {
         knowledgeEntityId: draftKnowledgeEntityId.value,
         repositoryEntityId: repositoryEntityId.value
       });
-      if (result) {
+      if(result) {
         await knowledgeEdit.setLatestVersionStatus({
           publishedKnowledgeEntityId: result.publishedKnowledgeEntityId
         });
@@ -202,7 +212,7 @@ async function publishDraftKnowledge() {
 }
 
 async function handleOpenKnowledgeDrawer() {
-  if (!props.editor) {
+  if(!props.editor) {
     return;
   }
   drawerLoading.value = true;
@@ -212,13 +222,13 @@ async function handleOpenKnowledgeDrawer() {
     knowledgeEntityId: draftKnowledgeEntityId.value
   });
   drawerLoading.value = false;
-  if (knowledge.value?.entity.id) {
+  if(knowledge.value?.entity.id) {
     knowledgePreview.handleShowKnowledgeDrawer(knowledge.value.entity.id, 'draft');
   }
 }
 
 async function compareWithLatestVersion() {
-  if (!props.editor) {
+  if(!props.editor) {
     return;
   }
   compareLoading.value = true;
@@ -229,6 +239,14 @@ async function compareWithLatestVersion() {
   });
   compareLoading.value = false;
   isCompareModalShow.value = true;
+}
+
+function jumpToRepositoryEditor() {
+  // todo
+}
+
+function goHomePage() {
+
 }
 </script>
 <style scoped lang="scss">
@@ -247,6 +265,13 @@ async function compareWithLatestVersion() {
     padding: 0 32px;
     height: 56px;
     gap: 15px;
+
+    .logo-container {
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+      cursor: pointer;
+    }
 
     .back-icon {
       cursor: pointer;

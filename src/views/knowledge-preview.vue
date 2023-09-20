@@ -14,12 +14,17 @@
       <knowledge-preview-component
         :provider="'page'"
         :preview-model="draftKnowledgePreviewModel"></knowledge-preview-component>
-      <knowledge-preview-sidebar></knowledge-preview-sidebar>
+      <knowledge-preview-sidebar
+        :type="'draft'"
+        :preview-model="draftKnowledgePreviewModel"></knowledge-preview-sidebar>
     </div>
     <div v-if="publishedKnowledgePreviewModel" class="preview-content">
       <knowledge-preview-component
         :provider="'page'"
         :preview-model="publishedKnowledgePreviewModel"></knowledge-preview-component>
+      <knowledge-preview-sidebar
+        :type="'published'"
+        :preview-model="publishedKnowledgePreviewModel"></knowledge-preview-sidebar>
     </div>
   </div>
 </template>
@@ -52,23 +57,6 @@ onMounted(async () => {
   }
   isLoading.value = false;
 });
-// export default defineComponent({
-//   name: 'knowledge-preview-page',
-//   components: {
-//     KnowledgePreviewSidebar,
-//     KnowledgePreviewComponent,
-//     KnowledgePreviewHeader,
-//     AntSpin: Spin
-//   },
-//   setup() {
-//
-//     return {
-//       draftKnowledgePreviewModel,
-//       publishedKnowledgePreviewModel,
-//       isLoading
-//     };
-//   }
-// });
 </script>
 
 <style scoped lang="scss">
@@ -90,7 +78,6 @@ onMounted(async () => {
   //padding: 20px;
   //border: 1px solid #e5e5e5;
   //background: #fafbfc;
-
 }
 
 .h1-level-title-style {

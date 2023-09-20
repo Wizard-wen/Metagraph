@@ -3,17 +3,14 @@
  * @date  2021/12/8 15:12
  */
 
-import { knowledgeDrawerState } from '@/business';
+import { showKnowledgeDrawer } from '@/business';
 import { IndexdbService } from '@/service/indexdb.service';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { JSONContent } from '@tiptap/vue-3';
 import { Range } from '@tiptap/core';
 import { Modal } from 'ant-design-vue';
 import { createVNode } from 'vue';
-import {
-  KnowledgeEdit,
-  mentionedKnowledge
-} from '@/views/knowledge-editor/model/knowledge.edit';
+import { KnowledgeEdit, mentionedKnowledge } from '@/views/knowledge-editor/model/knowledge.edit';
 import { AbstractTiptapTextEditor } from './abstract.tiptap.text.editor';
 import { EntityCompletelyListItemType } from '@metagraph/constant';
 
@@ -65,7 +62,7 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
     const that = this;
     const entity = mentionedKnowledge.list
       .find((item) => item.entity.id === params.id);
-    if (entity) {
+    if(entity) {
       // 如果已经绑定了知识点，就
       that.handleMentionedSuccess(params.range, {
         id: params.id,
@@ -91,7 +88,7 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
           knowledgeEntityId: that.params.knowledgeEntityId
         });
         await that.knowledgeEdit.getMentionedList(that.params.knowledgeEntityId);
-        if (that.params.hasPublished) {
+        if(that.params.hasPublished) {
           await that.knowledgeEdit.findEdgesByKnowledgeEntityId({
             knowledgeEntityId: that.params.knowledgeEntityId,
             repositoryEntityId: that.params.repositoryEntityId
@@ -118,8 +115,6 @@ export class KnowledgeTiptapTextEditor extends AbstractTiptapTextEditor {
   }
 
   handleClickMentionItem(params: { id: string; name: string }): void {
-    knowledgeDrawerState.type = 'published';
-    knowledgeDrawerState.entityId = params.id;
-    knowledgeDrawerState.isShow = true;
+    showKnowledgeDrawer('published', params.id);
   }
 }

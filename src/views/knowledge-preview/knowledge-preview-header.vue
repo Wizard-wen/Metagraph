@@ -1,12 +1,6 @@
 <template>
   <div class="knowledge-header">
     <div class="left">
-      <!--      <m-button :is-icon="true" :has-border="false" @click="goBack">-->
-      <!--        <template #icon>-->
-      <!--          <LeftOutlined/>-->
-      <!--        </template>-->
-      <!--      </m-button>-->
-
       <div class="logo-container">
         <img
           @click="goHomePage"
@@ -58,9 +52,9 @@
   </div>
   <knowledge-drawer-content
     :knowledgeEntityId="knowledgeDrawerState.entityId"
-    v-if="knowledgeDrawerState && knowledgeDrawerState.isShow"
+    v-if="knowledgeDrawerState.entityId && knowledgeDrawerState.isShow"
     :isVisible="knowledgeDrawerState.isShow"
-    :type="knowledgeDrawerState.type"
+    :type="type"
     @close="handleCloseDrawer"></knowledge-drawer-content>
 </template>
 <script lang="ts" setup>
@@ -77,13 +71,13 @@ import {
   StarControlButton
 } from '@/business';
 
+import { MTag } from '@/metagraph-ui';
+import { RouterUtil } from '@/utils';
 import {
   KnowledgePreview,
   previewKnowledgePublishStatus,
   publishedKnowledgeMentioned
 } from './knowledge.preview';
-import { MTag } from '@/metagraph-ui';
-import { RouterUtil } from '@/utils';
 
 const props = defineProps({
   knowledgeModel: {

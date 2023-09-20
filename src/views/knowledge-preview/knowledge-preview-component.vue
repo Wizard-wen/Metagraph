@@ -174,25 +174,6 @@ function goProfilePage(id: string) {
 function goRepositoryPage() {
 
 }
-
-// export default defineComponent({
-//   name: 'knowledge-preview-component',
-//   props: {},
-//   components: {
-//     TiptapEditorReadonly,
-//     DescriptionItem,
-//
-//     LinkOutlined
-//   },
-//   setup() {
-//
-//
-//     return {
-//       goProfilePage,
-//       goRepositoryPage
-//     };
-//   }
-// });
 </script>
 
 <style scoped lang="scss">

@@ -10,8 +10,7 @@
         v-if="currentBar === 'knowledge'"></knowledge-base-message-form>
       <knowledge-relation-edges-panel
         v-if="currentBar === 'config'"></knowledge-relation-edges-panel>
-      <knowledge-history-version
-        v-if="currentBar === 'history'"></knowledge-history-version>
+      <knowledge-history-version v-if="currentBar === 'history'"></knowledge-history-version>
     </div>
   </div>
 </template>
@@ -19,12 +18,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import MetagraphTabBar from '@/components/metagraph-tab-bar.vue';
+import KnowledgeHistoryVersion
+  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/knowledge-history-version.vue';
 import KnowledgeBaseMessageForm
   from './knowledge-editor-right-sidebar/knowledge-base-message-form.vue';
 import KnowledgeRelationEdgesPanel
   from './knowledge-editor-right-sidebar/knowledge-custom-fields-config.vue';
-import KnowledgeHistoryVersion
-  from '@/views/knowledge-editor/knowledge-editor-right-sidebar/knowledge-history-version.vue';
 
 const isEditable = ref(true);
 const currentBar = ref<string>('knowledge');
@@ -71,6 +70,7 @@ function handleBarChange(value: string) {
     font-size: 13px;
     overflow-y: auto;
     @include custom-scroll-style;
+
   }
 }
 </style>
